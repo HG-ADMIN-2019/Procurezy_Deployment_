@@ -15,9 +15,10 @@ from django.views.decorators.csrf import csrf_exempt
 from flask.app import Flask
 
 app = Flask(__name__)
-
+print("Before defining index function")
 
 def index(request):
+    print("Inside index function")
     context = {
         'inc_nav': True,
         'inc_footer': True,
@@ -26,8 +27,10 @@ def index(request):
     }
     return render(request, 'marketing.html', context)
 
-
+# Add debugging statement
+print("Before defining send_whatsapp_message function")
 def send_whatsapp_message(phone_number, message, image_path, send_time):
+    print("Inside send_whatsapp_message function")
     try:
         # Check if either message or image is missing
         if not message and not image_path:
@@ -60,8 +63,12 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
         traceback.print_exc()
 
 
+print("Before defining send_message function")
+
+
 @csrf_exempt
 def send_message(request):
+    print("Inside send_message function")
     global image_path
     try:
         message = request.POST['message']
@@ -130,4 +137,5 @@ def send_message(request):
 
 
 if __name__ == '__main__':
+    print("Before running the app")
     app.run(debug=True)

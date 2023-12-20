@@ -104,23 +104,33 @@ def send_message(request):
         send_time = now.replace(hour=start_hours, minute=start_minutes, second=0, microsecond=0) + datetime.timedelta(
             seconds=5)
 
-        # Create a virtual display
-        with Display():
-            # Call the existing function for each phone number
-            for phone_number in phone_numbers:
-                try:
-                    # Send both text message and image at the same time
-                    send_whatsapp_message(phone_number, message, image_path, send_time)
+        # Create a virtual display only if DISPLAY is available
+        display = None
+        try:
+            display = Display()
+            display.start()
+        except Exception as e:
+            print(f"Error starting virtual display: {e}")
 
-                    # Increment send_time for the next contact
-                    send_time += interval
+        # Call the existing function for each phone number
+        for phone_number in phone_numbers:
+            try:
+                # Send both text message and image at the same time
+                send_whatsapp_message(phone_number, message, image_path, send_time)
 
-                    # Handle hour transition
-                    if send_time.minute >= 60:
-                        send_time = send_time.replace(hour=send_time.hour + 1, minute=send_time.minute % 60)
+                # Increment send_time for the next contact
+                send_time += interval
 
-                except Exception as e:
-                    print(f'Error sending message to {phone_number}: {str(e)}')
+                # Handle hour transition
+                if send_time.minute >= 60:
+                    send_time = send_time.replace(hour=send_time.hour + 1, minute=send_time.minute % 60)
+
+            except Exception as e:
+                print(f'Error sending message to {phone_number}: {str(e)}')
+
+        # Stop the virtual display if started
+        if display:
+            display.stop()
 
         return JsonResponse({'result': 'Messages sent successfully'})
     except Exception as e:

@@ -7,15 +7,16 @@ import time
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
-import pywhatkit as kit
 from io import TextIOWrapper
 from io import StringIO
 
 from django.views.decorators.csrf import csrf_exempt
 from flask.app import Flask
 
-app = Flask(__name__)
+from pyvirtualdisplay import Display
+import pywhatkit as kit
 
+app = Flask(__name__)
 
 def index(request):
     context = {
@@ -25,7 +26,6 @@ def index(request):
         'is_configuration_active': True
     }
     return render(request, 'marketing.html', context)
-
 
 def send_whatsapp_message(phone_number, message, image_path, send_time):
     try:
@@ -45,31 +45,21 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
             print(f"Waiting for {delay} seconds until the scheduled send time.")
             time.sleep(delay)
 
-        # Print some debug information
-        print(f"Sending message to {phone_number} at {send_time}")
-        print(f"Message: {message}")
-        print(f"Image Path: {image_path}")
+        # Create a virtual display
+        with Display(visible=0, size=(800, 600)):
+            # Send the completed message (either text or image or both)
+            if message or image_path:
+                kit.sendwhats_image(phone_number, image_path, caption=message)
 
-        # Send the completed message (either text or image or both)
-        if message or image_path:
-            kit.sendwhats_image(phone_number, image_path, caption=message)
+                # Wait for a few seconds before moving on
+                time.sleep(5)
 
-            # Wait for a few seconds before moving on
-            time.sleep(5)
-
-            print(f"Message sent successfully to {phone_number}")
-
-    except KeyError as ke:
-        print(f'KeyError in send_whatsapp_message: {ke}')
-        import traceback
-        traceback.print_exc()
+                print(f"Message sent successfully to {phone_number}")
 
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
         import traceback
         traceback.print_exc()
-
-
 
 @csrf_exempt
 def send_message(request):
@@ -138,7 +128,6 @@ def send_message(request):
     except Exception as e:
         print(f'Error: {str(e)}')
         return JsonResponse({'result': f'Error: {str(e)}'})
-
 
 if __name__ == '__main__':
     app.run(debug=True)

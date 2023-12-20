@@ -12,9 +12,9 @@ from io import TextIOWrapper
 from io import StringIO
 
 from django.views.decorators.csrf import csrf_exempt
-# from flask.app import Flask
-#
-# app = Flask(__name__)
+from flask.app import Flask
+
+app = Flask(__name__)
 
 
 def index(request):
@@ -130,5 +130,4 @@ def send_message(request):
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    pass
+    app.run(debug=True)

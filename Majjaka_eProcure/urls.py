@@ -71,7 +71,7 @@ urlpatterns = [
     path('timesheet/', include('eProc_Time_Sheet.urls')),
     path('projects/', include('eProc_Projects.urls')),
     path('som/', include('eProc_Supplier_Order_Management.urls')),
-    # path('marketing/', include('eProc_Marketing.urls')),
+    path('marketing/', include('eProc_Marketing.urls')),
 
 ]
 

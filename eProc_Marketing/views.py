@@ -45,6 +45,11 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
             print(f"Waiting for {delay} seconds until the scheduled send time.")
             time.sleep(delay)
 
+        # Print some debug information
+        print(f"Sending message to {phone_number} at {send_time}")
+        print(f"Message: {message}")
+        print(f"Image Path: {image_path}")
+
         # Send the completed message (either text or image or both)
         if message or image_path:
             kit.sendwhats_image(phone_number, image_path, caption=message)
@@ -54,10 +59,16 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
 
             print(f"Message sent successfully to {phone_number}")
 
+    except KeyError as ke:
+        print(f'KeyError in send_whatsapp_message: {ke}')
+        import traceback
+        traceback.print_exc()
+
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
         import traceback
         traceback.print_exc()
+
 
 
 @csrf_exempt

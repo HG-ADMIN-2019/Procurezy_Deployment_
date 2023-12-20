@@ -127,17 +127,6 @@
         {% endif %}
 
 
-<!--        {% if slide_menu.MARKETING %}-->
-<!--        <li class="sidenav__listitem {% if is_marketing_active %} sidenav__listitem-active {% endif %}" title="Marketing" id="sidenav__listitem-marketing">-->
-<!--            <a href="{% url 'eProc_Marketing:index' %}" >-->
-<!--                <div>-->
-<!--                    <div class="sidenav__icon-container"><i class="fas fa-sliders-h fa-lg"></i></div>-->
-<!--                </div>-->
-<!--                <p class="hg_link_text">Marketing</p>-->
-<!--            </a>-->
-<!--        </li>-->
-<!--        {% endif %}-->
-
         {% if slide_menu.SYSTEM_SETTINGS %}
         <li class="sidenav__listitem {% if is_system_settings_active %} sidenav__listitem-active {% endif %}" title="System Settings" id="sidenav__listitem-settings">
             <a href="{% url 'eProc_System_Settings:system_settings_new' %}">

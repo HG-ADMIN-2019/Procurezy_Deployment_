@@ -67,7 +67,7 @@ def send_message(request):
     try:
         # Start the virtual display
         vdisplay.start()
-
+        os.environ['DISPLAY'] = ':0'
         message = request.POST['message']
         start_hours = int(request.POST['hours'].strip('"'))
         start_minutes = int(request.POST['minutes'])

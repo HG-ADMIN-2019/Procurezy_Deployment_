@@ -1,0 +1,253 @@
+<div class="container-fluid">
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-support-title"> Call Support</h5>
+<button type="button" class="btn btn-outline-secondary remove_upload_data" data-dismiss="modal"><i
+                            class="fas fa-times"></i> close</button>
+
+                </div>
+                <div class="modal-body scrollbox">
+                    <div class="alert" id="org_support_update_success" role="alert" hidden>
+                        <span id="success_msg_id"></span>
+                    </div>
+                    <div id="id_check_error_messages" class="alert alert-danger check_error_messages display-none" hidden></div>
+                    <div >
+                        <p id="id_error_msg" class="alert alert-danger" hidden></p>
+                    </div>
+                    <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                        <thead>
+                        <tr>
+                            <th>Support Number</th>
+                            <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                            <th hidden></th>
+                        </tr>
+                        </thead>
+                        <tbody id=id_popup_tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary display-none" id="edit_id" onclick="onclick_edit()"><i class="fas fa-save"></i> edit</button>
+                    <div id="save_cancel_btn" class="display-none">
+                        <button class="btn btn-primary " id="save_id" onclick="save_support_data()"><i class="fas fa-save"></i> save</button>
+                        <button id="cancel_id" type="button" class="btn btn-primary"  onclick="cancel_support_details()"><i class="fas fa-times"></i> cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+//onclick of add button display myModal popup and set GLOBAL_ACTION button value
+function onclick_add_button(button) {
+    // Show the modal immediately
+    $('#myModal').modal('show');
+    GLOBAL_ACTION = button.value;
+    $("#id_popup_tbody").empty();
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:get_support_data' %}",
+        data: {
+            // calender_id: GLOBAL_CALENDER_ID
+        },
+        success: function (response) {
+            if (response['call_support_data_array'].length == 0) {
+                document.getElementById('save_cancel_btn').style.display = 'block';
+                document.getElementById('edit_id').style.display = 'none';
+                basic_add_new_html = '<tr><td id="call_checkbox" class="class_call_checkbox" hidden><input type="checkbox" onchange="call_delete_check(this);" required></td>' +
+                    '<td><input class="input form-control check_phone_number" type="text" id="support_number" name="support_number" required></td>' +
+                    '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>' +
+                    '<td hidden><input type="text" id="org_support_guid"></td></tr>';
+                $('#id_popup_tbody').append(basic_add_new_html);
+                $('#id_popup_table tbody').html(basic_add_new_html);
+            } else {
+                document.getElementById('edit_id').style.display = 'block';
+                document.getElementById('save_cancel_btn').style.display = 'none';
+                var i;
+                content = '';
+                for (i = 0; i < response['call_support_data_array'].length; i++) {
+                    content += '<tr><td id="call_checkbox" class="class_call_checkbox" hidden><input type="checkbox" onchange="call_delete_check(this);" required></td>';
+                    content += '<td><input class="input form-control hg_edit_display_mode check_phone_number" id="support_number" required type="text" name="support_number" value="' + response['call_support_data_array'][i] + '" onkeypress="return /[a-z 0-9]/i.test(event.key)"></td>';
+                    content += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                    content += '<td hidden><input class="input" type="text" name="org_support_guid" value="' + response['call_support_guid_array'][i] + '" /></td>';
+                    content += '</tr>';
+                }
+                $('#id_popup_table tbody').html(content);
+
+                // Disable the input fields
+                $('.hg_edit_display_mode').prop('disabled', true);
+            }
+        },
+        error: function (error) {
+            // Handle the error
+            // error_msg.innerHTML = error.responseText
+        }
+    });
+
+    $("#id_del_ind_checkbox").prop("hidden", true);
+    $("#select_call").prop("hidden", true);
+}
+
+
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+        basic_add_new_html = '<tr ><td class="call_checkbox_row"><input type="checkbox" onchange="call_delete_check(this)" required></td>'+
+            '<td><input class="input form-control check_phone_number"  type="text" id="support_number" name="support_number"  required></td>'+
+            '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>'+
+            '<td hidden><input type="text" id="org_support_guid"></td></tr>';
+            $('#id_popup_tbody').append(basic_add_new_html);
+            if (GLOBAL_ACTION == "country_upload") {
+                $(".class_del_checkbox").prop("hidden", false);
+        }
+        table_sort_filter_popup_pagination('id_popup_table');
+    }
+
+    //*******************
+    function onclick_edit() {
+        // Enable the necessary elements for editing
+        $(".hg_edit_display_mode").prop("disabled", false);
+        $("#id_del_add_button").prop("hidden", false);
+        $("#save_cancel_btn").css("display", "block");
+        $("#save_id").prop("disabled", false); // Enable the Save button
+        // Hide the Edit button
+        $("#edit_id").hide();
+        // Hide the support number column header
+        $("#select_call").prop("hidden", true);
+        // Show the support number input fields for editing
+        $(".class_popup_table tbody tr td:nth-child(2) input").prop("disabled", false);
+    }
+
+    //************************
+    function save_support_data() {
+    var form_data = [];
+    var isValid = 'Y';
+    $("#id_popup_table TBODY TR").each(function () {
+        var row = $(this);
+        var support_data = {};
+        support_data.support_type = 'CALL';
+        support_data.support_email = '';
+        support_data.support_number = row.find("TD").eq(1).find('input[type="text"]').val();
+        support_data.username = '';
+        support_data.org_support_guid = row.find("TD").eq(3).find('input[type="text"]').val();
+
+        // Validate the support number
+        if (!phonenumber(support_data.support_number)) {
+            isValid = 'N'; // Set isValid to 'N' if the number is invalid
+        }
+
+        form_data.push(support_data);
+    });
+
+    if (isValid === 'N') {
+        // Display the error message within the same alert div
+        $("#org_support_update_success").removeClass("alert-success").addClass("alert-danger");
+        $("#success_msg_id").text("Invalid phone number. Please enter a valid 10-digit phone number.");
+        $("#org_support_update_success").prop("hidden", false);
+        return; // Exit the function and prevent the AJAX request
+    }
+
+    // Clear any previous error messages
+    $("#org_support_update_success").removeClass("alert-danger").addClass("alert-success");
+    $("#success_msg_id").text(""); // Clear the error message
+    $("#org_support_update_success").prop("hidden", true);
+
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:org_support_save' %}",
+        data: JSON.stringify(form_data),
+        success: function (response) {
+            // Handle the AJAX success response here
+            $("#success_msg_id").text(response.message);
+            $("#org_support_update_success").prop("hidden", false);
+            $("#org_support_guid").val(response.updated_guid);
+            // Disable the necessary elements after saving
+            $(".hg_edit_display_mode").prop("disabled", true);
+            $("#id_del_add_button").prop("hidden", true);
+            $("#select_call").prop("hidden", true);
+            $(".class_call_checkbox").prop("hidden", true);
+            $("#save_cancel_btn").css("display", "none");
+            $("#edit_id").show(); // Show the Edit button
+            $("#call_checkbox").hide();
+            $(".call_checkbox_row").hide();
+            setTimeout(function () {
+                $('#org_support_update_success').prop('hidden', true); // Hide the success message
+                $('#myModal').modal('hide'); // Hide the entire modal
+            }, 5000); // 5000 milliseconds = 5 seconds
+        }
+    });
+}
+
+    //**********************
+    function cancel_support_details() {
+        $(".hg_edit_display_mode").prop("disabled", true);
+        $("#save_cancel_btn").css("display", "none");
+        $("#edit_id").show();
+        $(".class_call_checkbox").prop("hidden", true);
+        $("#select_call").prop("hidden", true);
+        $("#call_checkbox").hide();
+        $("#id_del_add_button").prop("hidden", true);
+        $("#org_support_update_success").prop("hidden", true);
+        $(".call_checkbox_row").hide();
+        // Close the modal when the Cancel button is clicked
+        $('#myModal').modal('hide');
+    }
+
+    //***********************
+    function phonenumber(inputtxt){
+        console.log(inputtxt);
+        var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+        if(inputtxt.match(phoneno))
+        {
+	        return true;
+	    }
+        else{
+	        // alert("Not a valid Phone Number");
+            return false;
+        }
+    }
+
+    //***********************************
+    function delete_table_row(id_popup_table){
+        var form_data=[];
+        $("#id_popup_table TBODY TR").each(function () {
+        var row = $(this);
+        var support_data = {};
+        support_data.del_ind = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+        if(support_data.del_ind){
+            support_data.support_type = 'CALL'
+            support_data.support_email = ''
+            support_data.support_number = row.find("TD").eq(1).find('input[type="text"]').val()
+            support_data.username = ''
+            support_data.org_support_guid = row.find("TD").eq(3).find('input[type="text"]').val()
+             form_data.push(support_data)
+        }
+        console.log(support_data)
+    });
+    console.log(form_data)
+    data = {'data':form_data}
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:delete_table_row' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+<!--           $("#success_msg_id").text(response.message);-->
+<!--           $("#org_support_update_success").prop( "hidden", false );-->
+<!--           $("#org_support_guid").val(response.updated_guid);-->
+        }
+    });
+    application_settings_delete_Row(id_popup_table);
+}
+</script>

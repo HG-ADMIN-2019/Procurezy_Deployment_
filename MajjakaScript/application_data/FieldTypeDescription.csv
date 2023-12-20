@@ -1,0 +1,403 @@
+FIELD_TYPE_ID,FIELD_TYPE_DESC,USED_FLAG,del_ind,FIELD_NAME
+THEME_COLOUR,Theme Colour,0,0,sys_attr_type
+I,Test,0,0,address_type
+MSG015,Error,0,0,messages_id
+MSG187,Error,0,0,messages_id
+MSG176,Error,0,0,messages_id
+MSG034,Success,0,0,messages_id
+MSG174,Error,0,0,messages_id
+MSG041,Error,0,0,messages_id
+MSG121,Information,0,0,messages_id
+MSG086,Error,0,0,messages_id
+JMSG300,Error,0,0,messages_id
+JMSG010,Success,0,0,messages_id
+MSG055,Error,0,0,messages_id
+DOC01,Shopping Cart,1,0,document_type
+MSG117,Error,0,0,messages_id
+MSG065,Error,0,0,messages_id
+MSG054,Error,0,0,messages_id
+DEL_ADDR,Delivery Address,1,0,attribute_id
+DOC02,Purchase Order,1,0,document_type
+MSG032,Error,0,0,messages_id
+MSG038,Error,0,0,messages_id
+MSG011,Error,0,0,messages_id
+MSG075,Error,0,0,messages_id
+MSG191,Error,0,0,messages_id
+AUTH_GROUP_03,Approvals,0,0,auth_obj_grp
+MSG057,Error,0,0,messages_id
+AUTH_0009,Purchasing,0,0,auth_obj_id
+Activate,Activate,0,0,purchase_ctrl_flag
+Deactivate,Deactivate,0,0,purchase_ctrl_flag
+MSG071,Error,0,0,messages_id
+FORM,Form,1,0,auth_level
+MSG115,Error,0,0,messages_id
+MSG134,Error,0,0,messages_id
+JMSG013,Success,0,0,messages_id
+US_ROLE,User Role,1,0,attribute_id
+JMSG049,Error,0,0,messages_id
+MSG123,Error,0,0,messages_id
+MSG039,Error,0,0,messages_id
+JMSG041,Error,0,0,messages_id
+MSG105,Error,0,0,messages_id
+Node type,Test,1,0,org_node_types
+MSG031,Error,0,0,messages_id
+MSG140,Error,0,0,messages_id
+AUTH_GROUP_06,Admin,0,0,auth_obj_grp
+AUTH_GROUP_07,Content Management,0,0,auth_obj_grp
+AUTH_0008,Form Builder,0,0,auth_obj_id
+MSG060,Error,0,0,messages_id
+CCODE,Company Code,1,0,org_node_types
+MSG009,Error,0,0,messages_id
+JMSG024,Error,0,0,messages_id
+MSG070,Error,0,0,messages_id
+SCHEMADEMO,SCHEMADEMO,1,0,workflow_schema
+MSG033,Error,0,0,messages_id
+MSG148,Error,0,0,messages_id
+Medium,Medium Priority,0,0,Priority
+MSG076,Error,0,0,messages_id
+DEMO,DEMO,0,0,document_type
+JMSG050,Success,0,0,messages_id
+MSG120,Success,0,0,messages_id
+JMSG027,Error,0,0,messages_id
+MSG022,Error,0,0,messages_id
+MSG103,Error,0,0,messages_id
+JMSG003,Error,0,0,messages_id
+JMSG006,Error,0,0,messages_id
+ATTACHMENT_EXTENSION,Attachment Extension,0,0,sys_attr_type
+7,Purchase Requisition,1,0,split_type
+MSG042,Error,0,0,messages_id
+High,High Priority,0,0,Priority
+MSG112,Success,0,0,messages_id
+NODE,Node,1,0,org_node_types
+AUTH_0021,User Admin,0,0,auth_obj_id
+MSG001,Error,0,0,messages_id
+Support,Support,0,0,user_type
+JMSG035,Error,0,0,messages_id
+MSG013,Error,0,0,messages_id
+JMSG034,Error,0,0,messages_id
+AUTH_0012,Appl Settings,0,0,auth_obj_id
+AUTH_GROUP_01,Shopping,0,0,auth_obj_grp
+JMSG031,Error,0,0,messages_id
+JMSG033,Error,0,0,messages_id
+MSG059,Error,0,0,messages_id
+SCHEMA_TEST,SCHEMA_TEST,1,0,workflow_schema
+JMSG051,Error,0,0,messages_id
+JMSG039,Success,0,0,messages_id
+SC_TRANS_TYPE,Sc Transaction Type,1,0,attribute_id
+MSG128,Error,0,0,messages_id
+MSG158,Error,0,0,messages_id
+ACC_CAT,Account Assignment Category,1,0,attribute_id
+MSG066,Error,0,0,messages_id
+MSG184,Success,0,0,messages_id
+MSG165,Error,0,0,messages_id
+MSG138,Error,0,0,messages_id
+4,Purchasing Group,1,0,split_type
+MSG082,Error,0,0,messages_id
+MSG155,Success,0,0,messages_id
+MSG090,Error,0,0,messages_id
+DEF_DOC_SEARCH,Default Document Search,1,0,attribute_id
+Test,Test Approval Type,0,0,approval_type
+JMSG017,Error,0,0,messages_id
+JMSG008,Error,0,0,messages_id
+Demo_role,Test Role,1,0,roles
+MSG088,Error,0,0,messages_id
+AUTH_0017,Catalog,0,0,auth_obj_id
+MSG118,Error,0,0,messages_id
+MSG107,Error,0,0,messages_id
+SUCCESS,Success,0,0,messages_type
+JMSG026,Error,0,0,messages_id
+MSG096,Error,0,0,messages_id
+CALENDAR_ID,Calendar Description,1,0,attribute_id
+Activate,Activate,0,0,activate
+JMSG002,Error,0,0,messages_id
+JMSG009,Error,0,0,messages_id
+AUTH_0026,Personal Settings,0,0,auth_obj_id
+INV_ADDR,Invoice Recipient Address,1,0,attribute_id
+CAT_ID,Catalog Id,1,0,attribute_id
+8,Incoterm,1,0,split_type
+MSG058,Error,0,0,messages_id
+MSG153,Error,0,0,messages_id
+MSG185,Information,0,0,messages_id
+MSG046,Error,0,0,messages_id
+AUTH_0015,Free Text,0,0,auth_obj_id
+MSG008,Error,0,0,messages_id
+AUTH_0027,Purchase Settings,0,0,auth_obj_id
+MSG099,Error,0,0,messages_id
+CUSTOM,Custom,0,0,auth_type
+MSG064,Error,0,0,messages_id
+JMSG109,Error,0,0,messages_id
+JMSG011,Success,0,0,messages_id
+MSG087,Error,0,0,messages_id
+LOGIN_ATTEMPTS,Login Attempts,0,0,sys_attr_type
+MSG047,Error,0,0,messages_id
+INFORMATION,Information Message,0,0,messages_type
+MSG178,Success,0,0,messages_id
+MSG021,Error,0,0,messages_id
+MSG027,Error,0,0,messages_id
+MSG130,Success,0,0,messages_id
+MSG007,Error,0,0,messages_id
+GEN_ACC,Generic Account Assignment (St,1,0,attribute_id
+MSG135,Error,0,0,messages_id
+MSG043,Error,0,0,messages_id
+MSG045,Error,0,0,messages_id
+AS,Asset,1,0,acct_assignment_category
+JMSG004,Error,0,0,messages_id
+WBS,Project,1,0,acct_assignment_category
+JMSG016,Error,0,0,messages_id
+CC,Cost Center,1,0,acct_assignment_category
+MSG097,Error,0,0,messages_id
+Deactivate,Deactivate,0,0,activate
+MSG079,Information,0,0,messages_id
+AUTH_0040,Supplier Management,0,0,auth_obj_id
+AUTH_0100,Demo,1,0,auth_obj_id
+AUTH_0042,CONTENT_MANAGEMENT,0,0,auth_obj_id
+AUTH_0043,PRODUCT_AND_SERVICE_CONFIG,0,0,auth_obj_id
+AUTH_0044,CATALOG_CONFIG,0,0,auth_obj_id
+AUTH_0045,TIME_SHEET,0,0,auth_obj_id
+AUTH_0046,PROJECTS,0,0,auth_obj_id
+AUTH_0047,EFFORTS,0,0,auth_obj_id
+AUTH_0048,APPLICATION_MONITOR,0,0,auth_obj_id
+AUTH_0049,SHOP_ASSIST,0,0,auth_obj_id
+AUTH_0050,SOM,0,0,auth_obj_id
+AUTH_0051,SUB_SOM,0,0,auth_obj_id
+AUTH_0052,RFQ,0,0,auth_obj_id
+AUTH_0053,SOURCING,0,0,auth_obj_id
+AUTH_0054,SC_GROUPING,0,0,auth_obj_id
+MSG100,Error,0,0,messages_id
+MSG179,Success,0,0,messages_id
+9,Payment Terms,1,0,split_type
+AUTH_0010,Admin Tool,0,0,auth_obj_id
+JMSG053,Success,0,0,messages_id
+MSG132,Success,0,0,messages_id
+AUTH_0018,My Order,0,0,auth_obj_id
+JMSG048,Error,0,0,messages_id
+MSG091,Error,0,0,messages_id
+AUTH_0003,Shopping Plus,0,0,auth_obj_id
+MSG189,Error,0,0,messages_id
+MSG053,Error,0,0,messages_id
+MSG104,Error,0,0,messages_id
+MSG106,Error,0,0,messages_id
+JMSG040,Error,0,0,messages_id
+AUTH_0016,Requisition,0,0,auth_obj_id
+JMSG029,Error,0,0,messages_id
+MSG119,Error,0,0,messages_id
+MSG020,Error,0,0,messages_id
+AUTH_GROUP_05,Purchaser,0,0,auth_obj_grp
+AUTH_0011,Org Model,0,0,auth_obj_id
+MSG002,Success,0,0,messages_id
+10,Product Type,1,0,split_type
+JMSG036,Error,0,0,messages_id
+MSG018,Success,0,0,messages_id
+FIN,Financial Approver,0,0,approval_type
+MSG116,Error,0,0,messages_id
+MSG084,Error,0,0,messages_id
+MSG129,Error,0,0,messages_id
+MSG152,Error,0,0,messages_id
+JMSG052,Error,0,0,messages_id
+JMSG014,Success,0,0,messages_id
+SHOP,Shop Users,1,0,roles
+SHOP_ASSIST,Shopper Assist,1,0,roles
+SHOP_MANAGER,MANAGER,1,0,roles
+SHOP_PLUS,Shopper Plus,1,0,roles
+SHOP_PURCHASER,Purchaser,1,0,roles
+SHOP_SUPPLIER,Supplier,1,0,roles
+SHOP_ADMIN,Admin,1,0,roles
+SHOP_DATA_MANAGER,Shop Data Manager,1,0,roles
+SHOP,AUTH_GROUP_01,1,0,authorization
+SHOP_PURCHASER,AUTH_GROUP_05,1,0,authorization
+SHOP_DATA_MANAGER,AUTH_GROUP_07,0,0,authorization
+SHOP_ADMIN,AUTH_GROUP_06,1,0,authorization
+SHOP_ASSIST,AUTH_GROUP_04,1,0,authorization
+SHOP_MANAGER,AUTH_GROUP_03,1,0,authorization
+SHOP_PLUS,AUTH_GROUP_02,1,0,authorization
+SHOP_SUPPLIER,AUTH_GROUP_08,1,0,authorization
+MSG127,Success,0,0,messages_id
+MSG061,Error,0,0,messages_id
+USER,User,1,0,org_node_types
+JMSG023,Error,0,0,messages_id
+SESSION_TIMEOUT,Session Timeout,0,0,sys_attr_type
+Buyer,Buyer,0,0,user_type
+MSG139,Error,0,0,messages_id
+MSG145,Error,0,0,messages_id
+MSG160,Error,0,0,messages_id
+MSG077,Information,0,0,messages_id
+MSG162,Error,0,0,messages_id
+DOC07,Test,0,0,document_type
+MSG182,Error,0,0,messages_id
+JMSG005,Error,0,0,messages_id
+MSG146,Error,0,0,messages_id
+MSG063,Error,0,0,messages_id
+EXW,Ex Works,0,0,incoterm
+MSG133,Error,0,0,messages_id
+AUTH_0002,Shopping,0,0,auth_obj_id
+US_SUBS,User Substitutes,1,0,attribute_id
+PROD_CAT,Product Categories,1,0,attribute_id
+MSG147,Error,0,0,messages_id
+PORG,Purchasing Organization,1,0,org_node_types
+MSG073,Error,0,0,messages_id
+JMSG043,Error,0,0,messages_id
+L_CURR,Local Currency,1,0,attribute_id
+MSG092,Error,0,0,messages_id
+MSG026,Error,0,0,messages_id
+CT_CTR,Cost Center,1,0,attribute_id
+MSG102,Error,0,0,messages_id
+MSG_DISPLAY,Message Display Time,0,0,sys_attr_type
+MSG144,Error,0,0,messages_id
+AUTH_0014,Limit Order,0,0,auth_obj_id
+MSG056,Error,0,0,messages_id
+MSG005,Error,0,0,messages_id
+MSG028,Error,0,0,messages_id
+MSG016,Success,0,0,messages_id
+MSG163,Error,0,0,messages_id
+MSG083,Error,0,0,messages_id
+AUTH_0038,Work Flow Items,0,0,auth_obj_id
+MSG035,Success,0,0,messages_id
+ATTACHMENT_SIZE,Attachment Size,0,0,sys_attr_type
+JMSG108,Error,0,0,messages_id
+FEATURE,Feature,1,0,auth_level
+MSG095,Error,0,0,messages_id
+MSG067,Error,0,0,messages_id
+MSG037,Error,0,0,messages_id
+MSG159,Error,0,0,messages_id
+MSG003,Success,0,0,messages_id
+MSG150,Error,0,0,messages_id
+MSG188,Error,0,0,messages_id
+MSG114,Error,0,0,messages_id
+MSG125,Success,0,0,messages_id
+MSG010,Error,0,0,messages_id
+MSG154,Error,0,0,messages_id
+WBS_ELEM,Wbs Element,1,0,attribute_id
+PWD_POLICY,Password Policy,0,0,sys_attr_type
+All,All,0,0,user_type
+AS_SET,Asset,1,0,attribute_id
+MSG025,Error,0,0,messages_id
+MSG098,Error,0,0,messages_id
+Demo_Acc,Project,0,0,acct_assignment_category
+MSG024,Error,0,0,messages_id
+MSG142,Information,0,0,messages_id
+MSG068,Error,0,0,messages_id
+D,Demo,0,0,address_type
+JMSG032,Error,0,0,messages_id
+MSG108,Error,0,0,messages_id
+MSG081,Error,0,0,messages_id
+MSG029,Error,0,0,messages_id
+INT_ORD,Internal Order,1,0,attribute_id
+MSG137,Error,0,0,messages_id
+MSG167,Error,0,0,messages_id
+GLACC,General Ledger Account,1,0,acct_assignment_category
+JMSG015,Error,0,0,messages_id
+MSG124,Error,0,0,messages_id
+MSG190,Error,0,0,messages_id
+MSG143,Error,0,0,messages_id
+FC_TRANS_TYPE,Favorite Transaction Type,1,0,attribute_id
+MSG151,Error,0,0,messages_id
+AUTH_0039,Employee Management,0,0,auth_obj_id
+JMSG042,Success,0,0,messages_id
+Active,Status Active,0,0,status
+ERROR,Error Message,0,0,messages_type
+AUTH_GROUP_41,Shopping Plus,0,0,auth_obj_grp
+FIELD,Field,0,0,auth_level
+MSG049,Error,0,0,messages_id
+MSG181,Error,0,0,messages_id
+MSG175,Error,0,0,messages_id
+FCA,Free Carrier,0,0,incoterm
+MSG113,Success,0,0,messages_id
+JMSG110,Error,0,0,messages_id
+MSG050,Error,0,0,messages_id
+WARNING,Warning Message,0,0,messages_type
+Inactive,Status Inactive,0,0,status
+6,Limit Order,1,0,split_type
+MSG078,Information,0,0,messages_id
+PLANT,Plant,1,0,org_node_types
+MSG019,Error,0,0,messages_id
+JMSG030,Error,0,0,messages_id
+JMSG019,Success,0,0,messages_id
+AUTH_0006,Approvals,0,0,auth_obj_id
+STD,Standard,0,0,auth_type
+MSG186,Error,0,0,messages_id
+MSG051,Error,0,0,messages_id
+MSG180,Error,0,0,messages_id
+MSG006,Error,0,0,messages_id
+JMSG028,Error,0,0,messages_id
+AUTH_0007,User Settings,0,0,auth_obj_id
+MSG156,Success,0,0,messages_id
+JMSG047,Error,0,0,messages_id
+MSG131,Success,0,0,messages_id
+MSG014,Error,0,0,messages_id
+MSG074,Error,0,0,messages_id
+JMSG046,Error,0,0,messages_id
+MSG170,Error,0,0,messages_id
+DOC03,Confirmation,0,0,document_type
+Low,Low Priority,0,0,Priority
+MSG012,Error,0,0,messages_id
+RESP_PROD_CAT,Responsibility Product Categor,1,0,attribute_id
+MSG192,Error,0,0,messages_id
+MSG089,Information,0,0,messages_id
+AUTH_0019,Email Notif,0,0,auth_obj_id
+MSG094,Error,0,0,messages_id
+AUTH_0023,Sc Completion,0,0,auth_obj_id
+MSG072,Error,0,0,messages_id
+MSG040,Error,0,0,messages_id
+JMSG045,Error,0,0,messages_id
+JMSG007,Error,0,0,messages_id
+AUTH_GROUP_04,Shopper Assist,0,0,auth_obj_grp
+MSG177,Success,0,0,messages_id
+MSG164,Error,0,0,messages_id
+MSG161,Error,0,0,messages_id
+JMSG020,Error,0,0,messages_id
+MSG023,Error,0,0,messages_id
+RNODE,Root Node,1,0,org_node_types
+MSG048,Error,0,0,messages_id
+MSG157,Success,0,0,messages_id
+MSG166,Error,0,0,messages_id
+MSG168,Error,0,0,messages_id
+JMSG038,Error,0,0,messages_id
+MSG172,Error,0,0,messages_id
+3,Ship To Address,1,0,split_type
+MSG069,Error,0,0,messages_id
+MSG183,Success,0,0,messages_id
+MSG149,Error,0,0,messages_id
+MSG030,Error,0,0,messages_id
+JMSG012,Success,0,0,messages_id
+AUTH_0020,Reports,0,0,auth_obj_id
+MSG109,Error,0,0,messages_id
+JMSG001,Error,0,0,messages_id
+JMSG022,Error,0,0,messages_id
+1,Supplier,1,0,split_type
+MSG062,Error,0,0,messages_id
+MSG052,Error,0,0,messages_id
+AUTH_GROUP_02,Shopping Plus,0,0,auth_obj_grp
+MSG126,Success,0,0,messages_id
+SOBO,Shop On Behalf Of,1,0,attribute_id
+CAT,Category Approver,0,0,approval_type
+MSG017,Success,0,0,messages_id
+PAGINATION_COUNT,Pagination Count,0,0,sys_attr_type
+AUTH_0005,System Settings,0,0,auth_obj_id
+JMSG025,Error,0,0,messages_id
+MSG111,Error,0,0,messages_id
+PGRP,Purchasing Group,1,0,org_node_types
+MSG122,Error,0,0,messages_id
+MSG171,Error,0,0,messages_id
+JMSG018,Error,0,0,messages_id
+DOC04,Favorite Cart,1,0,document_type
+MSG101,Error,0,0,messages_id
+CO_CODE,Company Code,1,0,attribute_id
+MSG044,Error,0,0,messages_id
+MSG169,Error,0,0,messages_id
+MSG080,Information,0,0,messages_id
+JMSG021,Error,0,0,messages_id
+2,Currency,1,0,split_type
+MSG085,Error,0,0,messages_id
+MSG004,Error,0,0,messages_id
+AUTH_0013,Home,0,0,auth_obj_id
+MSG093,Error,0,0,messages_id
+MSG110,Error,0,0,messages_id
+OR,Internal Order,0,0,acct_assignment_category
+JMSG044,Error,0,0,messages_id
+MSG141,Information,0,0,messages_id
+JMSG037,Error,0,0,messages_id
+GL_ACC,General Ledger Account,1,0,attribute_id
+MSG173,Error,0,0,messages_id
+MSG136,Error,0,0,messages_id
+MSG036,Error,0,0,messages_id
+5,Call Off,1,0,split_type

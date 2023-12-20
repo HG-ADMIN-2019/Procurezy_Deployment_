@@ -1,0 +1,194 @@
+{% load static %}
+<div id="slide_menu" class="sidenav">
+    <div class="sidenav__expand" id="open_side_panel" onclick="openNav()">
+        <i class="fas fa-chevron-right fa-lg"></i>
+    </div>
+
+    <div class="sidenav__expand hg_close_button" id="close_side_panel" onclick="closeNav()">
+        <div class="hg_adjust_image_open_nav"><i class="fas fa-chevron-left fa-lg"></i></div>
+    </div>
+
+    <ul class="sidenav__list">
+
+        <li title="Home" class="sidenav__listitem {% if is_home_active %}  sidenav__listitem-active {% endif %}" title="Home" id="sidenav__listitem-home">
+            <a href="{% url 'eProc_Shop_Home:shopping_cart_home' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="material-icons">home</i></div>
+                </div>
+                <p class="hg_link_text" >Home</p>
+            </a>
+        </li>
+
+        {% if slide_menu.SHOPPING %}
+        <li title="Shop" class="sidenav__listitem {% if is_shop_active %}  sidenav__listitem-active {% endif %}" title="Shop" id="sidenav__listitem-shop">
+            <a href="{% url 'eProc_Catalog:get_catalogs' 'All' 'create' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-shopping-basket fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">Shop</p>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if slide_menu.SHOP_ASSIST %}
+        <li class="sidenav__listitem {% if is_purchase_active %}  sidenav__listitem-active {% endif %}" title="Purchase" id="sidenav__listitem-purchase">
+            <a href="{% url 'eProc_Doc_Search_and_Display:sc_completion_doc_search' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-people-carry"></i></div>
+                </div>
+                <p class="hg_link_text">Purchase</p>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if slide_menu.ADMIN_TOOL %}
+        <li class="sidenav__listitem {% if is_admin_active %} sidenav__listitem-active {% endif %}" title="Admin Tool" id="sidenav__listitem-admintool">
+            <a href="{% url 'eProc_Admin_Tool:employee_search' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-user-cog fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">Admin Tool</p>
+            </a>
+        </li>
+        {% endif %}
+        {% if slide_menu.CONTENT_MANAGEMENT %}
+        <li class="sidenav__listitem {% if is_content_mgmnt_active %} sidenav__listitem-active {% endif %}" title="Content Management" id="sidenav__listitem-contentmgmt">
+            <a href="{% url 'eProc_Manage_Content:product_and_service_config' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-list fa-lg" ></i></div>
+                </div>
+                <p class="hg_link_text">Content Management</p>
+            </a>
+        </li>
+        {% endif %}
+        {% if slide_menu.SOM %}
+        <li class="sidenav__listitem {% if is_som_active %} sidenav__listitem-active {% endif %}" title="Content Management" id="sidenav__listitem-som">
+            <a href="{% url 'eProc_Supplier_Order_Management:po_extract' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-list fa-lg" ></i></div>
+                </div>
+                <p class="hg_link_text">Supplier Order Management</p>
+            </a>
+        </li>
+        {% endif %}
+        {% if slide_menu.SOURCING %}
+        <li class="sidenav__listitem {% if is_sourcing_active %} sidenav__listitem-active {% endif %}" title="Sourcing" id="sidenav__listitem-sourcing">
+            <a href="{% url 'eProc_Purchaser_Cockpit:sc_item_field_filter' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-chalkboard-teacher fa-lg" ></i></div>
+                </div>
+                <p class="hg_link_text">Sourcing</p>
+            </a>
+        </li>
+        {% endif %}
+        {% if slide_menu.TIME_SHEET %}
+        <li class="sidenav__listitem {% if is_timesheet_active %} sidenav__listitem-active {% endif %}" title="Time Sheet" id="sidenav__listitem-timesheet">
+            <a href="{% url 'eProc_Projects:proj_user_search' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="far fa-clock fa-lg" ></i></div>
+                </div>
+                <p class="hg_link_text">Time Sheet</p>
+            </a>
+        </li>
+        {% endif %}
+
+
+        {% if slide_menu.ADMIN_TOOL %}
+        <li class="sidenav__listitem" title="Org Model" id="sidenav__listitem-orgmodel" title="Org Model">
+            <a href="{% url 'eProc_Org_Model:org_structure' %}" target="_blank">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-sitemap"></i></div>
+                </div>
+                <p class="hg_link_text">Org Model</p>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if slide_menu.APPROVALS %}
+        <li class="sidenav__listitem {% if is_approvals_active %} sidenav__listitem-active {% endif %}" title="Approvals" id="sidenav__listitem-approvals">
+            <a href="{% url 'eProc_Doc_Search_and_Display:get_sc_for_approval' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-clipboard-check fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">Approvals</p>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if slide_menu.APPL_SETTINGS %}
+        <li class="sidenav__listitem {% if is_configuration_active %} sidenav__listitem-active {% endif %}" title="Configuration" id="sidenav__listitem-config">
+            <a href="{% url 'eProc_Configuration:basic_settings' %}" >
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-sliders-h fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">Configuration</p>
+            </a>
+        </li>
+        {% endif %}
+
+
+        {% if slide_menu.MARKETING %}
+        <li class="sidenav__listitem {% if is_marketing_active %} sidenav__listitem-active {% endif %}" title="Marketing" id="sidenav__listitem-marketing">
+            <a href="{% url 'eProc_Marketing:index' %}" >
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-sliders-h fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">Marketing</p>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if slide_menu.SYSTEM_SETTINGS %}
+        <li class="sidenav__listitem {% if is_system_settings_active %} sidenav__listitem-active {% endif %}" title="System Settings" id="sidenav__listitem-settings">
+            <a href="{% url 'eProc_System_Settings:system_settings_new' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="fas fa-cog fa-lg"></i></div>
+                </div>
+                <p class="hg_link_text">System Settings</p>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+
+<script>
+    function openNav() {
+        document.getElementById("navOuter").style.transition = "0.3s";
+        $('#close_side_panel').css('display', 'inline-block')
+        $('#open_side_panel').hide()
+        document.getElementById("slide_menu").style.width = "300px";
+        document.getElementById("main_div").style.marginLeft = "300px";
+        document.getElementById("navOuter").style.marginLeft = "300px";
+        $('.hg_link_text').show()
+    }
+
+    function closeNav() {
+        $('#open_side_panel').show()
+        $('#close_side_panel').hide()
+        document.getElementById("slide_menu").style.width = "65px";
+        document.getElementById("main_div").style.marginLeft = "65px";
+        document.getElementById("navOuter").style.marginLeft = "65px";
+        document.getElementById("navOuter").style.transition = "0.3s";
+        $('.hg_link_text').hide()
+    }
+
+    $(".sidenav__listitem").click(function(){
+        var id = $(this).attr("id")
+
+        $(".sidenav__list").find(".sidenav__listitem-active").removeClass("sidenav__listitem-active");
+        $("#"+id).addClass("sidenav__listitem-active")
+        // localStorage.setItem("previously_selected_link", id);
+        sessionStorage.removeItem("previously_selected_menuitem_link");
+    });
+
+    // $(document).ready(function(){
+    //     var previously_selected_link = localStorage.getItem('previously_selected_link');
+
+    //     if(previously_selected_link) {
+    //         $(".sidenav__list").find(".sidenav__listitem-active").removeClass("sidenav__listitem-active");
+    //         $('#' + previously_selected_link).addClass("sidenav__listitem-active");
+    //     }
+    // })
+
+</script>

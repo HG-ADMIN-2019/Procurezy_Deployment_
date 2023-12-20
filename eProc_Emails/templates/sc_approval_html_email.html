@@ -1,0 +1,241 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load static %}
+
+<head>
+
+</head>
+
+<body>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="700"
+        style="border: none; border-collapse: collapse; font-family: Helvetica,Arial, sans-serif; font-size: 14px; line-height: 1.5;background-color:#E9ECEF;">
+        <tbody>
+            <tr class="context-header">
+                <td style="color: white; background-color: #4E4E4E;" align="center">
+                    <div style="padding: 35px;">
+                        <img src="http://majjaka-eprocure.com/static/images/majjakalogo-white.png"
+                            style="width: 300px;">
+                    </div>
+                </td>
+            </tr>
+            <tr class="context-body">
+                <td style="padding: 20px;">
+                    <table style="width: 100%;">
+                        <tbody>
+                         {% for res in context.header_res %}
+                            <tr>
+                                <td style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                                    <span style="font-weight: 600; font-size: 2em;">ACTION REQUIRED</span><br>
+                                    <span style="color: grey;"> Approve shopping cart {{res.doc_number|safe}} today</span>
+                                </td>                                
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p style="color: grey;">View below the details for this Shopping Cart.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table style="width: 100%; background-color: white;border-radius: 5px;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="font-weight: 600; color:#0080ff">Shopping Cart Details:</p>
+                                                    <p><span><b>Shopping Cart No. :</b></span> <span>{{res.doc_number|safe}}</span></p>
+                                                    <p><span><b>Shopping Cart Name. :</b></span><span>{{res.description|safe}}</span></p>
+                                                    <p> <span> <b>Company Code :</b> </span> <span>{{res.co_code|safe}}</span></p>
+                                                    <p> <span> <b>Ordered By :</b> </span> <span>{{res.requester|safe}} {{context.user_lastname|safe}} {{context.user_email|safe}} </span></p>
+                                                    <p> <span> <b>Total Value of Shopping Cart :</b> </span> <span>{{res.total_value|safe}} {{res.currency|safe}} </span></p>
+                                                    {% if context.approver_note.0 %}
+                                                        <p><b>Approver Note :</b></p>
+                                                        <p>{{context.approver_note}}</p>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="color: grey;">To Approve or Reject shopping cart {{res.doc_number|safe}} please click on the login button below</p>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="padding: 20px; text-align: center;">
+                                        <a href="www.majjaka.com">
+                                            <button class="button-37" role="button" style="  background-color: #13aa52; border: 1px solid #13aa52; border-radius: 4px; box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0; box-sizing: border-box; color: #fff; cursor: pointer; font-size: 16px; font-weight: 400; outline: none; outline: 0; padding: 10px 25px; text-align: center; transform: translateY(0); user-select: none; -webkit-user-select: none; width: 50%;"> Login
+                                            </button>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table style="background-color: white;border-radius: 5px; width: 100%;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="font-weight: 600; color:#0080ff">Item Data</p>
+                                                    <table style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%; color: #212529;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">Sl.no</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px">	
+                                                                    Item Description</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px">Quantity</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px">Price</th>
+                                                            </tr>
+                                                            
+                                                        </thead>
+                                                        <tbody>
+                                                         {% for item in context.item_details %}
+                                                            <tr>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px">{{ forloop.counter }}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px">{{item.description|safe}}<br>
+                                                                    Product ID: {{item.int_product_id|safe}}<br>
+                                                                    Delivery Date: {{item.item_del_date|safe}}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px">{{item.quantity|safe}} {{item.unit_desc|safe}}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px">{{item.price|safe}} {{item.currency|safe}}/ {{item.unit_desc|safe}}</td>
+                                                            </tr>
+                                                         {% endfor %}
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+    
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="font-weight: 600; color:#0080ff">Account Data</p>
+                                                    <table style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%; color: #212529;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">Sl.no</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">	
+                                                                    Account Details</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;"> Acc. Category</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">GL Acc.</th>
+                                                            </tr>
+                                                            
+                                                        </thead>
+                                                        <tbody>
+                                                          {% for acct in context.acct_details %}
+                                                            <tr>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{ forloop.counter }}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">
+                                                                    Cost Object: {{context.cost_object_val|safe}}<br>
+                                                                    Distribution: {{acct.dist_perc|safe}} %
+                                                                </td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{acct.acct_desc|safe}}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{acct.gl_acc_num|safe}}</td>
+                                                            </tr>
+                                                          {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="font-weight: 600; color:#0080ff">Supplier Data</p>
+                                                    <table style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%; color: #212529;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">Sl.no</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">	
+                                                                    Supplier Details</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;"> Supplier Id</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">Supplier Email</th>
+                                                            </tr>
+                                                            
+                                                        </thead>
+                                                        <tbody>
+                                                           {% for item in context.item_details %}
+                                                            <tr>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">{{ forloop.counter }}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">
+                                                                    {{item.supplier_username|safe}}
+                                                                </td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">{{item.supplier_id|safe}}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">{{item.supplier_email|safe}}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                
+                                            <tr>
+                                                <td style="padding: 5px 15px 15px;">
+                                                    <p style="font-weight: 600; color:#0080ff">Approval Preview</p>
+                                                    <table style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">Step.no</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">	
+                                                                    Step Details</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;"> Received On</th>
+                                                                <th style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">Processed On</th>
+                                                            </tr>
+                                                            
+                                                        </thead>
+                                                        <tbody>
+
+                                                          {% for app in context.appr_res %}
+                                                            <tr>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{app.step_num|safe}}</td>
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse;padding: 2px;">
+                                                                    {{app.app_desc|safe}}<br>
+                                                                    Approver:
+                                                                    {% for name in app.mgr_name %}
+                                                                        {% if name %}
+                                                                         {{name|safe}},
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    <br>
+                                                                    Decision Status: {{app.proc_lvl_sts|safe}}<br>
+                                                                    Approval status: {{app.app_sts|safe}}
+                                                                </td>
+                                                                {% if app.received_time %}
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{app.received_time|safe}} {{app.time_zone|safe}}</td>
+                                                                {% endif %}
+                                                                {% if app.proc_time %}
+                                                                <td style="border: 1px solid #dee2e6; border-collapse: collapse; padding: 2px;">{{app.proc_time|safe}} {{app.time_zone|safe}}</td>
+                                                                {% endif %}
+                                                            </tr>
+                                                          {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr class="context-footer">
+                <td style="color: rgb(212, 202, 202); background-color: #4E4E4E; font-size: 11px;" align="center">
+                    <div style="padding: 5px;">
+                        <img src="http://majjaka-eprocure.com/static/images/majjakalogo-white.png" alt="MajjakaProcure"
+                            style="width: 100px;">
+                    </div>
+                    <p><a style="color: rgb(212, 202, 202);" href="https://majjaka.com/"
+                            target="_blank">www.majjaka.com</a></p>
+                    <p>© 2022 MajjakaProcure, Bangalore, Karnataka</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

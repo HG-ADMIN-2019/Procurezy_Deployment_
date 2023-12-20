@@ -1,0 +1,396 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Purchaser Cockpit {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="d-flex justify-content-between">
+            <h3>Sourcing Cockpit</h3>
+        </div>
+        <hr>
+        <div class="card card-shadow-1">
+            <div class="card-body">
+                 <form method="POST">
+                    {% csrf_token %}
+                  <div id="error_msg" class="alert alert-danger display-none" role="alert"><span id="error_message_search"></span></div>
+                 <div class="row">
+                    <div class="col-md">
+                        <label for="">SC Number</label>
+                        <input type="text" class="form-control check_for_search reset_field" id="sc_number" name="sc_number" >
+                    </div>
+                    <div class="col-md">
+                        <label for="">Product Description</label>
+                        <input type="text" class="form-control check_for_search reset_field" id="product_desc" name="product_desc">
+                    </div>
+                    <div class="col-md">
+                        <label for="">From Delivery Date</label>
+                        <input type="date" class="form-control" id="from_date" name='from_date' value="dd-mm-yyyy">
+                    </div>
+                    <div class="col-md">
+                        <label for="">To Delivery Date</label>
+                        <input type="date" class="form-control " id="to_date" name='to_date'>
+                    </div>
+                    <div class="col-md">
+                        <label for="">Company Number</label>
+<!--                        <input type="text" class="form-control check_for_search" id="company_code" name="company_code" value="3000">-->
+                         <select name="company_code" id="company_code" class="form-control reset_field">
+                                {% for comp in comp_list %}<option value="{{ comp.company_id }}"> {{ comp.company_id}} - {{comp.name1 }} </option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto my-1">
+                        <button class="button-search-users btn btn-primary" type="submit" name="sc_search"
+                            title="Please click to get the search details!" onclick="reload()"><i class="fas fa-search"></i> search
+                        </button>
+                    </div>
+                 </div>
+                 <br>
+                <div class="elements-space-between">
+                    <input type="reset" value="Clear filters" class="ip-form-clear-filters">
+                    <div>
+                        <span class="badge help-text-badge help-text-star-search"></span>
+                    </div>
+                </div>
+            </form>
+            <hr>
+        </div>
+    </div>
+    {% if count > 0 %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+              <h6 class="card-title">Total number of results found :{{count}}</h6>
+            </div>
+        </div>
+    {% elif count == 0  %}
+    <div class="search_result_count_card card">
+        <div class="card-body">
+            <h6 class="card-title">No Results Found</h6>
+        </div>
+    </div>
+    {% endif %}
+     <div style="margin-top:25px" id="error_msg_div" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+    {% if sc_header_item_details %}
+        <div class="card">
+            <div style="margin: 10px;">
+                 <button class="btn btn-primary  btn-sm mt-2 ml-2"  title="Generate PO" id="id_generate_po" value="generate_po" onclick="create_po()" style="display:none;" >
+                    <i></i> Generate PO
+                </button>
+            <div>
+<!--            <div style="margin-top: 17px;margin-left: 10px;margin-bottom: 6px;">-->
+                <table id="sc_header_item" class="table table_sort_filter_export_excel">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">SC Number</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Supplier ID</th>
+                            <th scope="col">Company Number</th>
+                            <th scope="col">Delivery Date</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Product Category</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="add_attr_body" >
+                        {% for header_item in sc_header_item_details %}
+                        <tr>
+                            <td scope="row"><input class="generate_po" type="checkbox" id="generate_po" name="select" value="select" onclick="po_generate()"></td>
+                            <td scope="row">{{ header_item.0 }}</td>
+                            <td scope="row" class="hg-desc">{{ header_item.1 }}</td>
+                            <td scope="row">{{ header_item.2 }}</td>
+                            <td scope="row">{{ header_item.3 }}</td>
+                            <td scope="row">{{ header_item.4|date:'d-m-Y' }}</td>
+                            <td scope="row">{{ header_item.5 }}</td>
+                            <td scope="row">{{ header_item.6 }}</td>
+                            <td scope="row">{{ header_item.7 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+</div>
+<!--    </div>-->
+    <div class="modal fade" id="confirm_po_pop_up" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You Are About To Generate PO  "<span id="form_id_del"></span>". Are You Sure?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="create_po()">Generate PO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!--modal popup for PO grouping-->
+    <div class="modal fade" id="poGroupModal">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Generate PO</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+<!--                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>-->
+<!--                            <button class="btn btn-outline-danger" title="Delete" onclick="delete_popup_row('id_popup_table')"><i class="fa fa-trash"></i> delete</button>-->
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages"
+                            class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_sequence"></p>
+                            <p id="id_error_msg_starting"></p>
+                            <p id="id_error_msg_ending"></p>
+                            <p id="id_error_msg_current"></p>
+                            <p id="id_error_msg_range"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                                <tr>
+                                    <th>SC Number</th>
+                                    <th>Description</th>
+                                    <th>Supplier Id</th>
+                                    <th>Company Number</th>
+                                    <th>Delivery Date</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Product Category</th>
+<!--                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>-->
+                                </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" title="Save" id="create_po" onclick="generate_po()"><i class="fas fa-save" ></i> Create PO</button>
+<!--                    <button class="btn btn-primary btn-sm" title="Delete" id="delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" onclick="hideModal()">-->
+<!--                        <i class="fa fa-trash"></i> Delete-->
+<!--                    </button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+</div>
+<script>
+
+$(document).ready( function() {
+  nav_bar_shop_assist()
+  table_sort_filter_export_excel();
+  $('#sc_number').val(localStorage.getItem("sc_number"));
+  $('#product_desc').val(localStorage.getItem("product_desc"));
+  $('#company_code').val(localStorage.getItem("company_code"));
+  document.getElementById('from_date').value = new Date().toISOString().substring(0, 10);
+  document.getElementById('to_date').value = new Date().toISOString().substring(0, 10);
+});
+function reload(){
+      localStorage.setItem("sc_number", document.getElementById("sc_number").value);
+      localStorage.setItem("product_desc", document.getElementById("product_desc").value);
+      localStorage.setItem("company_code", document.getElementById("company_code").value);
+      localStorage.setItem("from_date", document.getElementById("from_date").value);
+      localStorage.setItem("to_date", document.getElementById("to_date").value);
+  }
+  $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var ccode = document.getElementById("company_code").value;
+      if((ccode == '')||(ccode == null)){
+            $('#error_msg').show();
+            document.getElementById("error_message_search").innerHTML = "Please enter Company number";
+            valid = false;
+      }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
+    });
+
+function po_generate(){
+    if($('.generate_po').is(':checked')){
+         $("#id_generate_po").prop("hidden", false);
+    $("#id_generate_po").show();
+    }
+    else{
+        $("#id_generate_po").prop("hidden", true);
+    $("#id_generate_po").hide();
+    }
+}
+// Function to delete User
+function create_po() {
+        var user_info = [];
+        var add_attr_unique_list = [];
+        var selected_row_data = new Array
+        var main_table_data = new Array
+        var edit_basic_data = "";
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+<!--        $('#confirm_po_pop_up').modal('hide');-->
+        $("#sc_header_item TBODY TR").each(function () {
+            var row = $(this);
+            po_data={};
+            var check_status = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+            if(check_status){
+            po_data.doc_number = row.find("TD").eq(1).html();
+            po_data.supplier_id = row.find("TD").eq(3).html();
+            selected_row_data.push(po_data);
+            }
+        });
+        data =  selected_row_data
+        OpenLoaderPopup();
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Purchaser_Cockpit:PO_grouping' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            console.log(Response);
+            if(Response){
+                var grid = document.getElementById("sc_header_item");
+                var checkBoxes = grid.getElementsByTagName("INPUT");
+                for (var i = 0; i < checkBoxes.length; i++) {
+                    if (checkBoxes[i].checked) {
+                        var row = checkBoxes[i].parentNode.parentNode;
+                        edit_basic_data +=
+                                    '<tr>'+
+                                    '<td><input type="number" class="form-control" value="' + row.cells[1].innerHTML + '" name="sc_number" disabled></td>' +
+                                    '<td><input class="form-control" value="' + row.cells[2].innerHTML + '" type="text"  name="description"  disabled></td>' +
+                                    '<td><input value="' + row.cells[3].innerHTML + '" type="text" class="form-control"  name="supplier_id"   disabled></td>' +
+                                    '<td><input value="' + row.cells[4].innerHTML + '" type="text" class="form-control"  name="company_code"  disabled></td>' +
+                                    '<td><input  type="text" class="form-control" value="' + row.cells[5].innerHTML + '" name="delivery_date" disabled></td>' +
+                                    '<td><input value="' + row.cells[6].innerHTML + '" type="text" class="form-control"  name="unit"  disabled></td>' +
+                                    '<td><input value="' + row.cells[7].innerHTML + '" type="text" class="form-control"  name="quantity" disabled></td>' +
+                                    '<td><input value="' + row.cells[8].innerHTML + '" type="text" class="form-control"  name="prod_cat"  disabled></td>' +
+<!--                                    '<td class="class_del_checkbox"><input type="checkbox" required></td>' +-->
+                                    '</tr>';
+                            }
+                }
+                $('#id_popup_table').append(edit_basic_data);
+                table_sort_filter('id_popup_table');
+                $('#poGroupModal').modal('show');
+            }
+            else{
+                   $('#success_msg_id').text("Cannot generate PO")
+                    $("#error_msg_div").prop("hidden",false);
+            }
+            CloseLoaderPopup();
+        }
+    });
+}
+
+function generate_po(){
+    $('#id_popup_table').DataTable().destroy();
+    po_data = new Array();
+    validate_add_attributes = [];
+    $("#id_popup_table TBODY TR").each(function () {
+        var row = $(this);
+        po={};
+        po.doc_number = row.find("TD").eq(0).find('input[type="number"]').val();
+        po.description = row.find("TD").eq(1).find('input[type="text"]').val();
+        po.supplier_id = row.find("TD").eq(2).find('input[type="text"]').val();
+        po.company_code = row.find("TD").eq(3).find('input[type="text"]').val();
+        po.del_date = row.find("TD").eq(4).find('input[type="text"]').val();
+        po.unit = row.find("TD").eq(5).find('input[type="text"]').val();
+        po.qty = row.find("TD").eq(6).find('input[type="text"]').val();
+        po.prod_cat = row.find("TD").eq(7).find('input[type="text"]').val();
+        if (po == undefined){
+            po.doc_number = row.find("TD").eq(0).find('input[type="text"]').val();
+        }
+        po_data.push(po);
+    });
+    table_sort_filter('id_popup_table');
+    data =  po_data
+    OpenLoaderPopup();
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Purchaser_Cockpit:generate_po' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            console.log(Response);
+            display_sourcing_data(Response.sourcing_data);
+            $('#success_msg_id').text(Response.message);
+            $("#error_msg_div").prop("hidden",false);
+            if(Response.grping_error)
+            {
+                $('#success_msg_id').text(Response.grping_error);
+            }
+            setTimeout(function() {$("#error_msg_div").prop("hidden",true);}, 4000);
+            $('#poGroupModal').modal('hide');
+            CloseLoaderPopup();
+        }
+    });
+}
+
+    function display_sourcing_data(sourcing_data){
+        var sourcing_detail_html = '';
+        var is_active = '';
+        var block_input = '';
+        $('#sc_header_item').DataTable().destroy();
+        $("#add_attr_body").empty();
+        $.each(sourcing_data, function (i, sourcing_detail) {
+            sourcing_detail_html += '<tr id="'+sourcing_detail.doc_number+'">'+
+                    '<td><input class="generate_po" type="checkbox" id="generate_po" name="select" value="select" onclick="po_generate()"></td>'+
+                    '<td>'+ sourcing_detail[0] +'</td>'+
+                    '<td> '+ sourcing_detail[1] +'</td>'+
+                    '<td>'+ sourcing_detail[2] +'</td>'+
+                    '<td>'+ sourcing_detail[3] +'</td>'+
+                    '<td>'+ format(sourcing_detail[4]) +'</td>'+
+                    '<td> '+ sourcing_detail[5] +'</td>'+
+                    '<td>'+ sourcing_detail[6] +'</td>'+
+                    '<td>'+ sourcing_detail[7] +'</td>'+
+                    '</tr>';
+        });
+        $("#add_attr_body").append(sourcing_detail_html);
+        $("#id_generate_po").prop("hidden", true);
+        table_sort_filter('sc_header_item');
+    }
+
+   $(document).on("click", "input[type='reset']", function(e){
+         e.preventDefault();
+         var temp = document.getElementsByClassName('reset_field');
+         for (var i = 0; i<temp.length; i++) {
+            if(temp[i].nodeName == "INPUT"){
+                temp[i].value = '';
+            }
+            else{
+                if(temp[i].nodeName == "SELECT"){
+                    temp[i].selectedIndex = 0;
+                }
+            }
+
+         }
+         document.getElementById('from_date').value = new Date().toISOString().substring(0, 10);
+        document.getElementById('to_date').value = new Date().toISOString().substring(0, 10);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+<form method="post" id="update_catalog_items">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-5 text-right">
+            <span class="h5">Quantity</span>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button type="button" class="quantity-left-minus btn btn-outline-secondary"  data-type="minus" data-field=""><i class="fas fa-minus"></i></button>
+                </div>
+                <input type="text" id="catalog_quantity" onchange="check_quantity(this)" name="catalog_quantity" class="form-control input-number" min="1" max="100">
+                <div class="input-group-append">
+                    <button type="button" class="quantity-right-plus btn btn-outline-secondary" data-type="plus" data-field=""><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <span id="cat_price_per_unit" hidden></span>
+    <br>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> save</button>
+    </div>
+</form>
+
+<script>
+
+    if (is_first_step == 'True') {
+        update_url = "{% url 'eProc_Shopping_Cart:update_catalog_item' %}"
+    } else {
+        update_url = "{% url 'eProc_Doc_Details:update_saved_item' %}"
+    }
+
+
+
+    $('#update_catalog_items').submit(function(e){
+        $('#update_pop_up').modal('hide')
+        e.preventDefault();
+        OpenLoaderPopup();
+        quantity = document.getElementById("catalog_quantity").value
+        price     = document.getElementById("cat_price_per_unit").value
+        item_data = {
+            guid    : update_item_guid,
+            price   : price,
+            quantity: quantity,
+        }
+        if (is_first_step != 'True') {
+            let item_value_object = {};
+            index_of_item_guid = rendered_item_guid.indexOf(update_item_guid)
+            accounting_guid = rendered_acc_guid[index_of_item_guid]
+            item_data['account_assignment_category'] = (document.getElementById('ScAccounting-acc_cat-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['account_assignment_value'] = (document.getElementById('ScAccounting-acc_val-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['sc_header_guid'] = GLOBAL_HEADER_GUID
+            item_value_class = document.getElementsByClassName('hg_item_total_value')
+            for (let i=0; i<item_value_class.length; i++) {
+                let item_guid = item_value_class[i].id.split('-')[2]
+                let item_value = item_value_class[i].innerHTML
+                item_value_object[item_guid] = item_value
+            }
+            item_data['item_value_object'] = item_value_object
+            item_data['call_off'] = '01'
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: update_url,
+            data: JSON.stringify(item_data),
+            success: function (response) {
+                if (is_first_step == 'True') {
+                    document.getElementById("quantity_"+guid).innerHTML        = quantity
+                    $('.item_price-'+row_num).html(response.item_price);
+                    //document.getElementById("price-"+guid).innerHTML        = response.price
+                    document.getElementById("item_value_"+guid).innerHTML  = response.item_value
+                    document.getElementById("total_cart_value").innerHTML  = response.total_value
+                    document.getElementById("discount_value").innerHTML = response.price_details.discount_value
+                    document.getElementById("actual_price").innerHTML = response.price_details.actual_price
+                } else {
+                    update_catalog_item_info_at_doc_detail(response)
+                }
+                CloseLoaderPopup();
+                $('#update_modal_popup').modal('hide');
+            }
+        });
+
+    })
+
+    $(document).ready(function(){
+
+        var quantitiy=0;
+        $('.quantity-right-plus').click(function(e){
+            e.preventDefault();
+            // Get the field name
+            var quantity = parseInt($('#catalog_quantity').val());
+            $('#catalog_quantity').val(quantity + 1);
+        });
+
+        $('.quantity-left-minus').click(function(e){
+            e.preventDefault();
+            var quantity = parseInt($('#catalog_quantity').val());
+            // decrement
+            if(quantity>1){
+                $('#catalog_quantity').val(quantity - 1);
+            }
+        });
+        
+    });
+
+
+const update_catalog_item_info_at_doc_detail = (response) => {
+    item_details = response.item_details
+    update_item_details[update_item_guid] = item_details
+
+    // Update highest item value guid and row
+    GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(response.item_with_highest_value) + 1;
+    highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    highest_item_change_acc_value = (document.getElementById('ScAccounting-acc_val-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+
+
+    $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html(response.total_value)
+    $('#ScIem-value-' + update_item_guid).html(response.item_value)
+    $('#item_quantity-' + update_item_guid).html(item_details.catalog_qty)
+    document.getElementById("discount_value").innerHTML = response.price_details.discount_value
+    document.getElementById("actual_price").innerHTML = response.price_details.actual_price
+    document.getElementById("ScIem-price-"+guid).innerHTML        = item_details.price
+    check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value)
+};
+
+function check_quantity(detail){
+    if(!detail.value){
+        $('#'+detail.id).val('1');
+    }
+}
+</script>

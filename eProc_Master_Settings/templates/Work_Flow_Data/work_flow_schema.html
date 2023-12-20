@@ -1,0 +1,816 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Work Flow Schemas (Master Settings) {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Work Flow Schemas</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Master_Settings:extract_workflowschema_data' %}'"type="button">
+                    <i class="fas fa-download"></i> extract data
+                </button>
+                <button class="btn btn-primary " id="id_add_data" value="ADD" title="Add Workflow Schema," data-toggle="modal" onclick="onclick_add_button(this);">
+                    <i class="fa fa-plus"></i> Add Work Flow Schema
+                </button>
+                  <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <!--   display basic country table-->
+            <div class="table-container tcw-80">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button();">
+                        <i class="far fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" title= "DELETE" value="Delete" style="display:none;" onclick="onclick_delete_button()">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;"  value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel"  id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_country_table table table-bordered custom-table">
+                    <thead  id="id_WorkFlow_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox"  hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th>Company Number</th>
+                            <th>WorkFlow Schema</th>
+                            <th>Approval Type</th>
+                            <th hidden>Guid</th>
+                            <th hidden>Del Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_workflow_tbody">
+                        {% for wfschema in work_flow_schema %}
+                        <tr>
+                            <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                            <td>{{wfschema.company_id}}</td>
+                            <td>{{wfschema.workflow_schema}}</td>
+                            <td>{{wfschema.app_types}}</td>
+                            <td hidden>{{wfschema.workflow_schema_guid}}</td>
+                            <td hidden>wfschema.del_ind</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- !--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="Wfschema_Modal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title"> Maintain Work Flow Schema</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                     <div class="popup-vertical-scroll">
+                    <div id="id_del_add_button" class="mb-4">
+                        <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                            <i class="fa fa-plus"></i> add new row
+                        </button>
+                        <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                            <i class="fa fa-trash"></i> delete
+                        </button>
+                    </div>
+                    <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                    <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                    <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                        <p id="id_error_msg_workflow_schema"></p>
+                        <p id="id_error_msg_app_types"></p>
+                        <p id="id_error_msg_company_id"></p>
+                        <p id="id_error_msg_workflow_schema_length"></p>
+                    </div>
+                    <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                    <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                    <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                    <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                        <thead>
+                        <tr>
+                            <th id="header_select">Select</th>
+                            <th>Company Number</th>
+                            <th>WorkFlow Schema</th>
+                            <th>Approval Type</th>
+                            <th hidden>Guid</th>
+                            <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                        </tr>
+                        </thead>
+                        <tbody id="id_popup_tbody">
+                        </tbody>
+                    </table>
+                     </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" title="Delete" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button class="btn btn-primary btn-sm" title="Delete" id="delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" onclick="hideModal()">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<script>
+    var master_data_settings = '{{master_data_settings|safe}}';
+    var rendered_wfschema_data = {{ work_flow_schema| safe}};
+    var messages_list = {{messages_list|safe}};
+    var rendered_company_data = {{upload_data_company|safe}};
+    var rendered_approvartype_data = {{upload_data_apptypes|safe}};
+    var dropdown_db_values = {{dropdown_db_values|safe}};
+    var workflowschema_data_array = {}
+    var main_table_low_value = [];
+    var edit_basic_data ='';
+    var GLOBAL_ACTION ='';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_WFSCHEMA"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants['WORKFLOW SCEHMA','APPROVAR TYPES','COMPANY CODE','del_ind']
+    var duplicate_entry = [];
+    var validate_add_attributes = [];
+    var wfschema_data  = new Array();
+    var wfschema = {};
+    var wrksch_types_dropdown_onload  = '';
+    var approvar_types_dropdown = '';
+    var company_id_dropdown = '';
+    var unique_work_flow = [];
+    var unique_appr_type = [];
+
+
+    //*******************************
+    function workflow_dropdown() {
+        approvar_types_dropdown = '';
+        $.each(rendered_approvartype_data, function(i, item){
+            approvar_types_dropdown += '<option value="' + item.app_types + '">' + item.app_types + '</option>';
+        })
+        company_id_dropdown = '';
+        $.each(rendered_company_data, function(i, item){
+            company_id_dropdown += '<option value="' + item.company_id + '">' + item.company_id + '</option>';
+        })
+        wrksch_types_dropdown_onload = '';
+        $.each(dropdown_db_values, function(i, item){
+            wrksch_types_dropdown_onload+= '<option value="' + item.field_type_id + '">' + item.field_type_desc + '</option>';
+        })
+    }
+
+    var available_company_data = [];
+    function on_page_load_dropdown() {
+        hide_company_values() // function call to filter company values
+        used_wf_schema = [];
+        if (available_company_data.length > 0) {
+            var company_value = available_company_data[0];
+            var wf_schema = main_table_data[company_value];
+            if (!wf_schema) {
+                company_id_dropdown = '';
+                $.each(available_company_data, function(i, item){
+                    company_id_dropdown += '<option value="' + item + '">' + item + '</option>';
+                })
+
+                wrksch_types_dropdown_onload = '';
+                $.each(dropdown_db_values, function(i, item){
+                    wrksch_types_dropdown_onload+= '<option value="' + item.field_type_id + '">' + item.field_type_desc + '</option>';
+                })
+
+                 approvar_types_dropdown = '';
+                $.each(rendered_approvartype_data, function(i, item){
+                    approvar_types_dropdown += '<option value="' + item.app_types + '">' + item.app_types + '</option>';
+                })
+                return;
+            }else {
+                wrksch_types_dropdown_onload = '';
+                dropdown_db_values.forEach(item => {
+                    var found = wf_schema.some(wf_value => wf_value.workflow_schema === item.field_type_id);
+                    if (found) {
+                        used_wf_schema.push(item.field_type_id)
+                    } else {
+                        wrksch_types_dropdown_onload+= '<option value="' + item.field_type_id + '">' + item.field_type_desc + '</option>';
+                    }
+                })
+
+                company_id_dropdown = '';
+                $.each(available_company_data, function(i, item){
+                    company_id_dropdown += '<option value="' + item + '">' + item + '</option>';
+                })
+
+                approvar_types_dropdown = '';
+                $.each(rendered_approvartype_data, function(i, item){
+                    approvar_types_dropdown += '<option value="' + item.app_types + '">' + item.app_types + '</option>';
+                })
+            }
+        }
+    }
+
+    // function to filter used company values
+    function hide_company_values() {
+        available_company_data = [];
+        hidden_company_value = [];
+        for(i = 0; i < rendered_company_data.length; i++) {
+            var item = rendered_company_data[i];
+            var company = item.company_id
+            var company_value = main_table_data[company];
+
+            if (company_value === undefined) {
+                available_company_data.push(company);
+                continue;
+            }
+
+            if (dropdown_db_values.length === company_value.length) {
+                hidden_company_value.push(company);
+            } else {
+                available_company_data.push(company);
+            }
+        }
+    }
+
+    //onclick of add button display Wfschema_Modal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        OpenLoaderPopup();
+        var data = {'table_name':'WorkflowSchema'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_company_data = response.upload_data_company
+                rendered_approvartype_data = response.upload_data_apptypes
+                dropdown_db_values = response.dropdown_db_values
+                display_tb_data() // Read data from the main table
+                on_page_load_dropdown();
+                $("#error_msg_id").css("display", "none")
+                $( "#header_select").prop( "hidden", false );
+                GLOBAL_ACTION = button.value
+                display_button();
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#Wfschema_Modal').modal('show');
+                new_row_data();   // Add a new row in popup
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //onclick of cancel display the table in display mode............
+    function display_basic_db_data() {
+        $('#display_basic_table').DataTable().destroy();
+        $('#id_workflow_tbody').empty();
+        var edit_basic_data = '';
+        $.each(rendered_wfschema_data, function (i, item) {
+            edit_basic_data += '<tr><td class="class_select_checkbox"><input class="checkbox_check" onclick="valueChanged()" type="checkbox" required></td><td>' + item.company_id + '</td><td>' + item.workflow_schema + '</td><td>' + item.app_types + '</td><td hidden>' + item.workflow_schema_guid + '</td><td hidden>' + item.del_ind + '</td></tr>';
+        });
+        $('#id_workflow_tbody').append(edit_basic_data);
+        $( "#hg_select_checkbox").prop( "hidden", true );
+        $(".class_select_checkbox").prop("hidden", true);
+        $('input:checkbox').removeAttr('checked');
+        $('#id_edit_data').show();
+        $('#id_cancel_data').hide();
+        $('#id_delete_data').hide();
+        $('#id_copy_data').hide();
+        $('#id_update_data').hide();
+        $('#id_save_confirm_popup').modal('hide');
+        $('#id_delete_confirm_popup').modal('hide');
+        $('#id_check_all').hide();
+        table_sort_filter('display_basic_table');
+    }
+
+    // Onclick delete Button
+    function onclick_delete_button() {
+        $("#error_msg_id").css("display", "none");
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        GLOBAL_ACTION = "DELETE";
+        var edit_basic_data = "";
+        var guid = '';
+        main_table_checked = [];
+        get_row_data("#display_basic_table"); // Function call to get the selected row data
+        display_button(); // Call the display_button function to show/hide the buttons
+        var data = {'data': main_table_checked, 'table_name': 'WorkflowSchema', 'action': GLOBAL_ACTION };
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_delete_flags' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                var docTypeArray = Response.delete_flags; // Get the delete_flags array from the response
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                var j = 0; // Index for docTypeArray
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        if (j < docTypeArray.length && docTypeArray[j] === false) {
+                            check = '<input type="checkbox" disabled>';
+                            $('#delete_data').prop('disabled', true);
+                        } else {
+                            check = '<input type="checkbox" onclick="enableDeleteButton()">';
+                            $('#delete_data').prop('disabled', true);
+                        }
+                        j++; // Move to the next index in docTypeArray
+                        edit_basic_data +=
+                            `<tr>
+                                <td>${check}</td>
+                                <td><input class="form-control" type="text" id="company_dropdw" value=${row.cells[1].innerHTML} disabled></td>
+                                <td><input id="acc_dropdwn" type="text" class="form-control" value=${row.cells[2].innerHTML} disabled></td>
+                                <td><input class="form-control" type="text" value=${row.cells[3].innerHTML} disabled></td>
+                                <td hidden><input required></td>
+                                <td class="class_del_checkbox" hidden><input type="checkbox" required></td>
+                            </tr>`;
+                    }
+                }
+                $('#id_popup_tbody').append(edit_basic_data);
+                $("#header_select").prop( "hidden", false );
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#Wfschema_Modal').modal('show');
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            },
+        });
+    }
+
+    //delete the selected row in db................
+    var main_table_checked = [];
+    function main_table_delete(){
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_row_data("#id_popup_table");
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_checked,'table_name':'WorkflowSchema','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_wfschema_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //hide the myModal popup: Implemented Dependency delete purpose
+    function hideModal() {
+        $('#Wfschema_Modal').modal('hide');
+    }
+
+    // Function to get the selected row data
+    function get_selected_row_data() {
+        $("#display_basic_table TBODY TR").each(function () {
+            var row = $(this);
+            var workflowschema_arr_obj ={};
+            workflowschema_arr_obj.del_ind = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+            if(workflowschema_arr_obj.del_ind){
+                workflowschema_arr_obj.workflow_schema = row.find("TD").eq(2).html();
+                workflowschema_arr_obj.company_id = row.find("TD").eq(1).html();
+                workflowschema_arr_obj.app_types = row.find("TD").eq(3).html();
+                workflowschema_arr_obj.workflow_schema_guid = row.find("TD").eq(4).html();
+                main_table_workflowschema_checked.push(workflowschema_arr_obj);
+            }
+        });
+    }
+
+    // Function to get the selected row data
+    function get_row_data(tableSelector) {
+        main_table_checked = [];
+        $(tableSelector).DataTable().$('input[type="checkbox"]').each(function () {
+            var checkbox = $(this);
+            var row = checkbox.closest("tr");
+            var wf_schema_obj = {};
+            wf_schema_obj.del_ind = checkbox.is(':checked');
+            if(wf_schema_obj.del_ind) {
+                wf_schema_obj.company_id = row.find("TD").eq(1).find('input[type="text"]').val() || row.find("TD").eq(1).html()
+                wf_schema_obj.workflow_schema = row.find("TD").eq(2).find('input[type="text"]').val() || row.find("TD").eq(2).html();
+                wf_schema_obj.app_types = row.find("TD").eq(3).find('input[type="text"]').val() || row.find("TD").eq(3).html();
+                wf_schema_obj.workflow_schema_guid = row.find("TD").eq(4).find('input').val() || row.find("TD").eq(4).html();
+                main_table_checked.push(wf_schema_obj);
+            }
+        });
+    }
+
+    //onclick of cancel empty the popup table body and error messages
+    $(".remove_upload_data").click(() => {
+        $("#id_error_msg").html("");
+        $("#id_popup_tbody").empty();
+        $("#id_error_msg").empty();
+        $('#Wfschema_Modal').modal('hide');
+        $("#id_error_msg").prop("hidden", true);
+        $("#id_error_msg_workflow_schema").prop("hidden", true);
+        $("#id_error_msg_app_types").prop("hidden", true);
+        $("#id_error_msg_company_id_length").prop("hidden", true);
+        $("#id_check_error_messages").prop("hidden", true);
+        $("#id_check_success_messages").prop("hidden", true);
+        $("#id_check_special_character_messages").prop("hidden", true)
+        $("#id_check_data").prop("hidden", true);
+        $('#id_popup_table').DataTable().destroy();
+    });
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        $('#display_basic_table').DataTable().destroy();
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes,wfschema_data )
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else{
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                // compare main table and pop up for duplicate values
+                [no_duplicate_entries,error_message]  = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#Wfschema_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var add_basic_data = '';
+                var wfschema_data_array = wfschema_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':wfschema_data,'table_name':'WorkflowSchema','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_wfschema_data  = Response[0];
+                        rendered_company_data = Response[2].upload_data_company
+                        rendered_approvartype_data = Response[2].upload_data_apptypes
+                        dropdown_db_values = Response[2].dropdown_db_values
+                        display_basic_db_data();
+                        $('#Wfschema_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message){
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+   // Function to get main table data
+    function get_main_table_data()  {
+        main_table_low_value = [];
+        $('#display_basic_table').DataTable().destroy();
+        $("#display_basic_table TBODY TR").each(function() {
+            var row = $(this);
+            var main_attribute = {};
+            main_attribute.workflow_schema = row.find("TD").eq(2).html();
+            main_attribute.company_id = row.find("TD").eq(1).html();
+            main_attribute.app_types = row.find("TD").eq(3).html();
+            main_attribute.workflow_schema_guid = row.find("TD").eq(4).html();
+            var wfschm_compare_maintable = main_attribute.workflow_schema +'-'+ main_attribute.company_id
+            main_table_low_value.push(wfschm_compare_maintable);
+        });
+        table_sort_filter('display_basic_table');
+    }
+
+
+    // Function for add a new row data
+    function new_row_data() {
+        basic_add_new_html = '<tr><td><input type="checkbox" required></td><td><select class=" input form-control" onchange="GetUnusedWf(this)">'+company_id_dropdown+'</select></td><td><select id="workflow_schema" name="workflow_schema"  type="text" class="input form-control">'+wrksch_types_dropdown_onload+'</select></td><td><select class=" input form-control">'+approvar_types_dropdown+'</select></td><td hidden></td><td hidden> del_ind</td></tr>';
+        $('#id_popup_tbody').append(basic_add_new_html);
+        table_sort_filter('id_popup_table');
+    }
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        on_page_load_dropdown();
+        $("#error_msg_id").css("display", "none")
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html(" ");
+        });
+        new_row_data();   // Add a new row in popup
+    }
+
+    // onchange function(filtering wf_schema)
+    function GetUnusedWf(company_code){
+        var company_val = company_code.value;
+        var company = $(company_code).closest('tr').find('.form-control').eq(0);
+        var wrksch_types_dropdown_onload = $(company_code).closest('tr').find('.form-control').eq(1);
+
+        var wf_schema = main_table_data[company_val];
+        if(!wf_schema){
+            wrksch_types_dropdown_onload.empty();
+            $.each(dropdown_db_values, function(i, item) {
+                wrksch_types_dropdown_onload.append('<option value ="' + item.field_type_id + '" >' + item.field_type_id + '</option>')
+            });
+
+            approvar_types_dropdown = '';
+            $.each(rendered_approvartype_data, function(i, item){
+                approvar_types_dropdown += '<option value="' + item.app_types + '">' + item.app_types + '</option>';
+            })
+        } else {
+            wrksch_types_dropdown_onload.empty();
+            var options = [];
+            dropdown_db_values.forEach(item => {
+                var found = wf_schema.some(wf_value => wf_value.workflow_schema === item.field_type_id);
+                if (found) {
+                    wf_schema.push(item.field_type_id)
+                } else {
+                    options.push('<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>');
+                }
+            })
+            wrksch_types_dropdown_onload.append(options.join(''));
+
+            approvar_types_dropdown = '';
+            $.each(rendered_approvartype_data, function(i, item){
+                approvar_types_dropdown += '<option value="' + item.app_types + '">' + item.app_types + '</option>';
+            })
+        }
+    }
+
+    // on click copy icon display the selected checkbox data
+    function onclick_copy_button() {
+        GLOBAL_ACTION = "COPY"
+        display_button();
+        onclick_copy_update_button("copy")
+        document.getElementById("id_del_add_button").style.display = "block";
+         $("#save_id").prop("hidden", false);
+    }
+
+    // on click update icon display the selected checkbox data to update
+    function onclick_update_button() {
+        GLOBAL_ACTION = "UPDATE"
+        display_button();
+        onclick_copy_update_button("update")
+        document.getElementById("id_del_add_button").style.display = "none";
+         $("#save_id").prop("hidden", false);
+    }
+
+
+    //**********************************************************
+    function onclick_copy_update_button(data) {
+        OpenLoaderPopup();
+        var data = {'table_name':'WorkflowSchema'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_company_data = response.upload_data_company
+                rendered_approvartype_data = response.upload_data_apptypes
+                dropdown_db_values = response.dropdown_db_values
+                workflow_dropdown()
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $('#id_popup_tbody').empty();
+                //Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var unique_input = '';
+                var dropdown_values = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        if(GLOBAL_ACTION == "UPDATE"){
+                            unique_input = '<select value="' + row.cells[1].innerHTML + '" class="form-control" disabled>' + company_id_dropdown + '</select>';
+                            edit_basic_data += '<tr><td hidden><input type="checkbox" required></td><td>'+unique_input+'</td>'+
+                            '<td><select class="form-control" disabled><option selected="true"">' + row.cells[2].innerHTML + '</option >' + wrksch_types_dropdown_onload + '</select></td>'+
+                            '<td><select value="' + row.cells[3].innerHTML + '" class="form-control" >'  + approvar_types_dropdown + '</select></td>'+
+                            '<td hidden>"><input type="text" value="' + row.cells[4].innerHTML + '"></td><td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
+                            $("#header_select").prop("hidden", true);
+                        }
+
+                        var wf_schema_value = row.cells[2].innerHTML;
+                        var company_value = row.cells[1].innerHTML;
+                        var appr_value = row.cells[3].innerHTML;
+                        dropdown_values.push([wf_schema_value, company_value, appr_value]);
+                    }
+                }
+                $('#id_popup_tbody').append(edit_basic_data);
+                var i =0;
+                $("#id_popup_table TBODY TR").each(function() {
+                    var row = $(this);
+                    var wf_schema_val = dropdown_values[i][0];
+                    var company_val = dropdown_values[i][1];
+                    var apr_val = dropdown_values[i][2];
+                    $(row.find("TD").eq(1).find("select option[value="+company_val+"]")).attr('selected','selected');
+                    $(row.find("TD").eq(3).find("select option[value="+apr_val+"]")).attr('selected','selected');
+                    $(row.find("TD").eq(2).find("select option[value="+wf_schema_val+"]")).attr('selected','selected');
+                    i++;
+                });
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                table_sort_filter('id_popup_table');
+                $('#Wfschema_Modal').modal('show');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //********************************
+    function delete_duplicate() {
+        $('#id_popup_table').DataTable().destroy();
+        var workflowsch_code_check = new Array
+        $("#id_popup_table TBODY TR").each(function () {
+            var row = $(this);
+            //*************** reading data from the pop-up ***************
+            workflow_schema = row.find("TD").eq(2).find("select option:selected").val().toUpperCase();
+            company_id = row.find("TD").eq(1).find("select option:selected").val().toUpperCase();
+            app_types = row.find("TD").eq(3).find("select option:selected").val().toUpperCase();
+            checked_box = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked')
+            if (workflowsch_code_check.includes(workflowsch_code)) {
+                $(row).remove();
+            }
+            workflowsch_code_check.push(workflowsch_code);
+        })
+        table_sort_filter_popup_pagination('id_popup_table')
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, wfschema) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(wfschema, function (i, item) {
+            if ((item.company_id == null) || (item.workflow_schema == null) || (item.app_types== null)) {
+                $('#Wfschema_Modal').modal('show');
+                error_message = ui_messeges("JMSG002")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if(no_duplicate_value == 'Y'){
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                }
+                else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //*********************************************
+    function display_error_message(error_message) {
+        $('#error_message').text(error_message);
+        document.getElementById("error_message").style.color = "Red";
+        $("#error_msg_id").css("display", "block")
+        $('#id_save_confirm_popup').modal('hide');
+        $('#Wfschema_Modal').modal('show');
+    }
+
+    // Function to hide and display save related popups
+    $('#save_id').click(function () {
+        $('#Wfschema_Modal').modal('hide');
+        wfschema_data = read_popup_data();
+        $('#id_save_confirm_popup').modal('show');
+    });
+
+    //Read popup table data
+    function read_popup_data() {
+        $('#id_popup_table').DataTable().destroy();
+        wfschema_data = new Array();
+        validate_add_attributes = [];
+        duplicate_entry = [];
+        $("#id_popup_table TBODY TR").each(function () {
+           var row = $(this);
+           wfschema = {};
+           wfschema.del_ind = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked');
+           wfschema.company_id = row.find("TD").eq(1).find('select').val();
+           wfschema.workflow_schema  = row.find("TD").eq(2).find('select').val();
+           wfschema.app_types = row.find("TD").eq(3).find('select').val();
+           wfschema.workflow_schema_guid  = row.find("TD").eq(4).find('input').val();
+           if (wfschema == undefined){
+            wfschema.workflow_schema = row.find("TD").eq(2).find('select').val();
+            }
+            if (wfschema.workflow_schema_guid == undefined){
+                wfschema.workflow_schema_guid ='';
+            }
+            var wfschema_compare = wfschema.workflow_schema +'-'+ wfschema.company_id
+            validate_add_attributes.push(wfschema_compare);
+            wfschema_data.push(wfschema);
+       });
+       table_sort_filter('id_popup_table');
+       return wfschema_data;
+    }
+
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var workflw_schm_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            workflw_schm_dic = {}
+            workflw_schm_dic.workflow_schema = row.find("TD").eq(2).find('select[type="text"]').val();
+            workflw_schm_dic.company_id = row.find("TD").eq(1).find('select').val();
+            var compare = workflw_schm_dic.workflow_schema +'-'+ workflw_schm_dic.company_id
+            workflw_schm_check.push(compare);
+            jQuery.grep(workflw_schm_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+
+    // storing company_code associated data from main table
+    function display_tb_data() {
+        main_table_data = {};
+        $('#display_basic_table').DataTable().destroy();
+        $("#display_basic_table TBODY TR").each(function() {
+            var row = $(this);
+            var main_attribute = {};
+            main_attribute.company_id = row.find("TD").eq(1).html();
+            main_attribute.workflow_schema = row.find("TD").eq(2).html();
+            main_attribute.app_types = row.find("TD").eq(3).html();
+            main_attribute.workflow_schema_guid = row.find("TD").eq(4).html();
+            if (!main_table_data.hasOwnProperty(main_attribute.company_id)) {
+                main_table_data[main_attribute.company_id] = [];
+            }
+            main_table_data[main_attribute.company_id].push({
+                workflow_schema: main_attribute.workflow_schema,
+                app_types: main_attribute.app_types
+            });
+        });
+        table_sort_filter('display_basic_table');
+    }
+
+    //Get message for check data function
+    function get_msg_desc_check_data(msg){
+        var msg_type ;
+        msg_type = message_config_details(msg);
+        $("#error_msg_id").prop("hidden", false);
+        return msg_type.messages_id_desc;
+    }
+</script>
+{% endblock %}

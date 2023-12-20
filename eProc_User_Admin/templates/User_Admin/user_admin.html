@@ -1,0 +1,503 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} User Adminstartion {% endblock %}
+{% block maincontent %}
+<!-- <link rel="stylesheet" href="{% static 'styles/user_admin.css' %}"> -->
+
+<style>
+
+div.hg_details_popup{
+    width: 500px;
+    height: 400px;
+    overflow: scroll;
+}
+
+.hg_open-button1 {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+.hg_form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+.hg_form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+.hg_form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.hg_form-container input[type=text], .hg_form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.hg_form-container input[type=text]:focus, .hg_form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.hg_form-container .hg_btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.hg_form-container .hg_cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.hg_form-container .hg_btn:hover, .hg_open-button:hover {
+  opacity: 1;
+}
+
+.datatableBtn.col .dt-buttons{
+       float: right;
+    }
+.datatableBtn.col .dataTables_filter{
+    float: right;
+}
+</style>
+
+<body class="hg_reports_bgcolor">
+{% include 'root/loader.html' %}
+
+<div >
+    <div class="container-fluid" >
+        <div class="hg_wrapper">
+            <div>
+                <div class="hg_head1">User Administration</div>
+                <hr class="hg_heading_hrborder">
+            </div>
+
+            <form method="post" action="{% url 'eProc_User_Admin:get_user_supplier_list' %}" >
+                {% csrf_token %}
+                <div>
+                    <br>
+                    <div>
+                        {% csrf_token %}
+                        {{ user_list_form.non_field_errors }}
+                        {% for field in user_list_form %}
+                        {% if forloop.counter > 1 %}
+                        <div id="{{field.name}}" class="hg_sfield hg_pb10" title="{{ field.label }}" style="width:28%;float:left; margin-right:40px;">
+                            {{ field.errors }}
+                            <div class="hg_searchLbl hg_pb10" >{{ field.label_tag }}<br>{{ field }}</div>
+                            <br>
+                        </div>
+                        {% else %}
+                        <div id="{{ field.name }}" class="hg_sfield hg_pb10" title="{{ field.label }}" style="height:80px;">
+                            {{ field.errors }}
+                            <div class="hg_searchLbl hg_pb10" >{{ field.label_tag }}<br>{{ field }}</div>
+                            <br>
+                        </div>
+
+                        {% endif %}
+                        {% endfor %}
+                        <br><br><br>
+                        <div style="float:right; margin-right: 4%; margin:20px 30px 20px 0px;">
+                            <button class="btn btn-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i> &nbsp;reset</button>
+                            <button class="btn btn-primary" type="submit" title="Please click to get the search details!"><i class="fas fa-search"></i> &nbsp;search</button>
+                        </div><br>
+
+
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="card" style="margin-bottom:30px; margin-top:100px;width:98%;background-color:#EAEAEA;overflow: AUTO;">
+                {% if t_count > 0 %}
+                <div class="card-body" ><h6 class="card-title" style=" float: right; ">Total number of results found :{{t_count}}</h6></div>
+                {% endif %}
+                {% if t_count == 0 %}
+                <div class="card-body" ><h6 class="card-title" style=" float: right; "> No Results Found</h6></div>
+                {% endif %}
+            </div>
+            <div id="create_supplier_button">
+                <input class="btn btn-primary" type="button" onclick="window.open(href = '{% url 'eProc_Suppliers:supplier_registration' %}')" value="create supplier"/>
+                <input  class="btn btn-primary" type="button"  onclick="window.open(href = '{% url 'eProc_Users:register_page' %}')" value="create user"/>
+                <button class="btn btn-primary" id="basic_save_upld_redirect" onclick="basic_save_upld_redirect(this);"
+                        type="button"><i class="fas fa-cloud-upload-alt"></i> data upload </button>
+            </div>
+        </div>
+
+        <div class="hg_wrapper">
+            <!-- user_list -->
+            <div id="user_list_table"  style="width:98%;">
+
+                {% if inp_user_type == 'USER' %}
+                {% if  user_list %}
+                <!--Display User Details-->
+                <table id="user_tab" class="table table-striped table_sort_filter_export_excel">
+                    <thead>
+                    <tr>
+                        <th scope="col"> USERNAME </th>
+                        <th scope="col"> FIRST NAME </th>
+                        <th scope="col"> LAST NAME </th>
+                        <th scope="col"> EMAIL </th>
+                        <th scope="col"> ACTIVE</th>
+                        <th scope="col"> SUPER USER</th>
+                        <th scope="col"> EMPLOYEE ID</th>
+                        <th scope="col"> USER TYPE</th>
+                        <th scope="col"> LOGIN ATTEMPTS</th>
+                        <th scope="col"> USER LOCKED</th>
+                        <th scope="col"> PASSWORD LOCKED</th>
+                        <th scope="col"> TIMEZONE</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for user in user_list %}
+                    <tr id="tr_{{user.email}}">
+
+                        <td><a href="{% url 'eProc_Admin_Tool:user_details_page' user.email %}" id="{{user.username}}" class="deletepop" style="text-decoration: underline;" target="_blank">{{user.username}}</a></td>
+                        <td scope="row">{{user.first_name}}</td>
+                        <td scope="row">{{user.last_name}}</td>
+                        <td scope="row">{{user.email}}</td>
+                        <td scope="row">{{user.is_active}}</td>
+                        <td scope="row">{{user.is_superuser}}</td>
+                        <td scope="row">{{user.employee_id}}</td>
+                        <td scope="row">{{user.user_type}}</td>
+                        <td scope="row">{{user.login_attempts}}</td>
+                        <td scope="row">{{user.user_locked}}</td>
+                        <td scope="row">{{user.pwd_locked}}</td>
+                        <td scope="row">{{user.time_zone}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                {% endif %}
+
+                {% else %}
+                {% if  user_list %}
+                <!--Display Supplier Details-->
+                <table id="sup_tab" class="table table-striped table_sort_filter_export_excel">
+                    <thead>
+                    <tr>
+                        <th scope="col"> SUPPLIER ID  </th>
+                        <th scope="col"> SUPPLIER TYPE </th>
+                        <th scope="col"> NAME </th>
+                        <th scope="col"> CITY </th>
+                        <th scope="col"> EMAIL</th>
+                        <th scope="col"> ACTIVE</th>
+                        <th scope="col"> COUNTRY</th>
+                        <th scope="col"> CURRENCY</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sup in user_list %}
+                    <tr id="tr_{{sup.supplier_id}}">
+                        <td><a href="{% url 'eProc_Admin_Tool:sup_details_page' sup.supplier_id %}" id="{{sup.supplier_id}}" class="deletepop" style="text-decoration: underline;" target="_blank">{{sup.supplier_id}}</a></td>
+                        <td scope="row">{{sup.supp_type}}</td>
+                        <td scope="row">{{sup.name1}}</td>
+                        <td scope="row">{{sup.city}}</td>
+                        <td scope="row">{{sup.email}}</td>
+                        <td scope="row">{{sup.is_active}}</td>
+                        <td scope="row">{{sup.country_code}}</td>
+                        <td scope="row">{{sup.currency_id}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Script to generate sort and filter feature for tables
+$(document).ready( function() {
+    nav_bar_admin();
+    table_sort_filter_export_excel();
+});
+
+ var attr_id = "";
+ var default_value = "";
+
+// Function to store the data into the session
+window.onbeforeunload = function() {
+     sessionStorage.setItem("USER_TYPE", $('#id_select_type').val());
+}
+
+// Function to retrieve data from session storage
+window.onload = function () {
+    default_value = sessionStorage.getItem("USER_TYPE");
+    if (default_value !== null)
+        $('#id_select_type').val(default_value).attr('selected', 'selected');
+}
+
+
+// At the load of the page this script is executed to remove the Supplier related search fields and
+// only show the User related search fields
+
+        let lastname_field = document.getElementById("id_last_name")
+         lastname_parent =    lastname_field.parentElement.parentElement.style.marginRight="30%"
+
+        default_value = sessionStorage.getItem("USER_TYPE");
+
+        if (default_value == 'USER' || default_value == "" || default_value == null ){
+
+            document.getElementById("supplier_id").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#supplier_id').hide();
+
+            document.getElementById("search_term1").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#search_term1').hide();
+
+            document.getElementById("search_term2").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#search_term2').hide();
+
+            document.getElementById("country").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#country').hide();
+
+            document.getElementById("city").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#city').hide();
+
+            document.getElementById("purch_org").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#purch_org').hide();
+
+            document.getElementById("purch_org_id").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#purch_org_id').hide();
+
+            document.getElementById("purch_block").value="";
+            $('select option[value="USER"]').attr("selected",true);
+            $('#purch_block').hide();
+        }
+        else {
+            // Show only the SUPPLIER related search fields
+
+            document.getElementById("supplier_id").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#supplier_id').show();
+
+             document.getElementById("search_term1").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#search_term1').show();
+
+            document.getElementById("search_term2").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#search_term2').show();
+
+            document.getElementById("country").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#country').show();
+
+            document.getElementById("city").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#city').show();
+
+            document.getElementById("purch_org").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#purch_org').show();
+
+            document.getElementById("purch_org_id").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#purch_org_id').show();
+
+            document.getElementById("purch_block").style.display="block";
+            $('select option[value="SUPPLIER"]').attr("selected",true);
+            $('#purch_block').show();
+
+            // Hide the USER related search fields
+            $('#id_select_type').val(default_value).attr('selected', 'selected');
+
+            document.getElementById("employee_id").value="";
+            document.getElementById("employee_id").style.display="none";
+           // $('#employee_id').hide();
+
+            document.getElementById("username").value="";
+            $('#username').hide();
+
+            document.getElementById("emp_user_type").value="";
+            $('#emp_user_type').hide();
+
+            document.getElementById("user_locked").value="";
+            $('#user_locked').hide();
+
+            document.getElementById("password_locked").value="";
+            $('#password_locked').hide();
+
+            document.getElementById("active").value="";
+            $('#active').hide();
+        }
+
+
+// On changing the user type from USER to SUPPLIER hide or show the fields
+    function userTypeChanged(value){
+        default_value = value
+
+        if (default_value == 'USER'){
+
+            let last_name_wid = document.getElementById("id_last_name")
+            last_name_wid.parentElement.parentElement.style.marginRight = '30%'
+
+
+            // hide the supplier table
+            $('#sup_tab').hide();
+
+            // clear the value in firstname and last name input text box as they are common for USER and SUPPLIER search
+            document.getElementById("id_first_name").value = "";
+            document.getElementById("id_last_name").value = "";
+
+            // hide the supplier search fields
+            document.getElementById("supplier_id").value="";
+            $('#supplier_id').hide();
+
+            document.getElementById("search_term1").value="";
+            $('#search_term1').hide();
+
+            document.getElementById("search_term2").value="";
+            $('#search_term2').hide();
+
+            document.getElementById("country").value="";
+            $('#country').hide();
+
+            document.getElementById("city").value="";
+            $('#city').hide();
+
+            document.getElementById("purch_org").value="";
+            $('#purch_org').hide();
+
+            document.getElementById("purch_org_id").value="";
+            $('#purch_org_id').hide();
+
+            document.getElementById("purch_block").value="";
+            $('#purch_block').hide();
+
+
+            // Show the user fields
+            document.getElementById("employee_id").style.display="block";
+            $('#employee_id').show();
+
+            document.getElementById("username").style.display="block";
+            $('#username').show();
+
+            document.getElementById("emp_user_type").style.display="block";
+            $('#emp_user_type').show();
+
+            document.getElementById("user_locked").style.display="block";
+            $('#user_locked').show();
+
+            document.getElementById("password_locked").style.display="block";
+            $('#password_locked').show();
+
+            document.getElementById("active").style.display="block";
+            $('#active').show();
+
+        }
+        else{
+             let last_name_wid = document.getElementById("id_last_name")
+            last_name_wid.parentElement.parentElement.style.marginRight = '40px'
+
+
+            // It is Supplier option
+            // hide the user table
+            $('#user_tab').hide();
+
+            // hide the User fields
+            document.getElementById("id_employee_id").value="";
+            $('#employee_id').hide();
+
+            document.getElementById("id_username").value="";
+            $('#username').hide();
+
+            document.getElementById("id_emp_user_type").value="";
+            $('#emp_user_type').hide();
+
+            document.getElementById("id_user_locked").value="";
+            $('#user_locked').hide();
+
+            document.getElementById("id_password_locked").value="";
+            $('#password_locked').hide();
+
+            document.getElementById("id_active").value="";
+            $('#active').hide();
+
+            document.getElementById("id_first_name").value = "";
+
+            document.getElementById("id_last_name").value = "";
+
+
+            // Show the supplier fields
+            document.getElementById("supplier_id").style.display="block";
+            $('#supplier_id').show();
+
+            document.getElementById("search_term1").style.display="block";
+            $('#search_term1').show();
+
+            document.getElementById("search_term2").style.display="block";
+            $('#search_term2').show();
+
+            document.getElementById("country").style.display="block";
+            $('#country').show();
+
+            document.getElementById("city").style.display="block";
+            $('#city').show();
+
+            document.getElementById("purch_org").style.display="block";
+            $('#purch_org').show();
+
+            document.getElementById("purch_org_id").style.display="block";
+            $('#purch_org_id').show();
+
+            document.getElementById("purch_block").style.display="block";
+            $('#purch_block').show();
+
+        }
+    }
+
+
+ // end
+
+
+
+
+</script>
+
+</body>
+</html>
+{% endblock %}

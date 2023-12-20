@@ -1,0 +1,1540 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Product and Service Details {% endblock %}
+
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+<style>
+    .card {
+        box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+        -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+        -moz-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+    }
+</style>
+
+<div class="container-fluid">
+    <form method="POST" id="product_detail_form_id">
+
+        {% csrf_token %}
+        <div class="mep-form_wrapper">
+
+            <div>
+                <div class="elements-space-between">
+                    <h3>Add Products and Services</h3>
+                    <div>
+                        <button class="btn btn-primary add-products-button-hide" id="save_product_details" type="submit" title="Save">
+                            <i class="fas fa-check"></i> Save
+                        </button>
+                        <button class="btn btn-primary" id="edit_product_details" type="button" onclick="location.href='{% url 'eProc_Manage_Content:get_product_details' encrypt_new_product_id %}'" hidden>
+                            Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="alert alert-success display-none" id="product_details_success" role="alert"></div>
+
+            <div class="mb-4">
+                <span class="product-id-label">Internal Product no: </span><span class="product-id-text" id="prd_prd_id">{{new_product_id}}</span>
+            </div>
+
+            <ul class="sub-tabs">
+                <li data-tab-target="#product_basic_information" class="sub-tab active">
+                    <div class="sub-tab-link">
+                        <i class="fas fa-info-circle"></i><span> Basic Information</span>
+                    </div>
+                </li>
+                <li data-tab-target="#product_variant" class="sub-tab">
+                    <div class="sub-tab-link">
+                        <i class="fas fa-chevron-circle-down"></i><span> Product Variant</span>
+                    </div>
+                </li>
+                <li data-tab-target="#product_specification" class="sub-tab">
+                    <div class="sub-tab-link">
+                        <i class="fas fa-clipboard-list"></i><span> Product Specification</span>
+                    </div>
+                </li>
+                <li data-tab-target="#product_discounts" class="sub-tab">
+                    <div class="sub-tab-link">
+                        <i class="fas fa-tags"></i><span> Discounts</span>
+                    </div>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="product_basic_information" data-tab-content class="active">
+                    <!-- BASIC PRODUCT INFORMATION -->
+                    <div class="mt-3">
+                        <div class="row no-gutters">
+                            <div class="col-md-8 pt-2 pr-2">
+                                <div class="card">
+                                    <div class="card-body">
+
+                                        <div class="elements-space-between">
+                                            <h5 class="card-title">Basic Product Information</h5>
+                                            <div>
+                                                <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="product_name">Product Name</label> <span class="hg_required"></span>
+                                            <input type="text" class="form-control input-disable-class check_special_char" id="prd_desc" placeholder="Eg. Notebook PC" required maxlength="225">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="product_name">Product Description</label> <span class="hg_required"></span>
+                                            <textarea rows="4" id = "prd_lng_txt" class="form-control input-disable-class check_special_char" required maxlength="1000"></textarea>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="product_price">Price</label> <span class="hg_required"></span>
+                                                <input type="number" class="form-control input-disable-class" id="prd_prc" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="product_currency">Currency</label> <span class="hg_required"></span>
+                                                <select class="form-control input-disable-class  selectpicker" data-live-search="true" id="pfm_currency_list" name="currencies" required>
+                                                    <option value="">Please select Currency</option>
+                                                    {% for currency in currency_desc %}
+                                                    <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
+                                                <select name="units_l" class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_units_list" required>
+                                                    <option value="">Please select unit of measure</option>
+                                                    {% for unit in unit_desc %}
+                                                    <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_prs_unit">Price Unit</label> <span class="hg_required"></span>
+                                                <input type="number" id="prd_prs_unit" class="form-control input-disable-class" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="pfm_unspsc_list">Product Category(UNSPSC)</label> <span class="hg_required"></span>
+                                                <input type="text" placeholder="Click to select product category" class="form-control input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
+                                                <input type="number" id="prd_lead" class="form-control input-disable-class" required>
+                                                <small id="leadtimelHelp" class="form-text text-muted">In number of days</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_mini_qnt">Minimum Order Quantity</label> <span class="hg_required"></span>
+                                                <input type="number" id="prd_mini_qnt" class="form-control input-disable-class" required>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_mini_value">Minimum Order Value</label> <span class="hg_required"></span>
+                                                <input type="number" id="prd_mini_value" class="form-control input-disable-class" required>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_max_qnt">Maximum Order Quantity</label> <span class="hg_required"></span>
+                                                <input type="number" id="prd_max_qnt" class="form-control input-disable-class" required>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <div>
+                                            <h5 class="card-title">Additional Product Information</h5>
+                                            <div>
+                                                <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_search1">Search Term 1</label>
+                                                <input type="text" id="prd_search1" class="form-control input-disable-class check_special_char" >
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_search2"> Search Term 2</label>
+                                                <input type="text" id="prd_search2" class="form-control input-disable-class check_special_char" >
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_brnd">Brand</label>
+                                                <input type="text" id="prd_brnd" class="form-control input-disable-class check_special_char" >
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_off_key">Offer Key</label>
+                                                <input type="text" id="prd_off_key" class="form-control input-disable-class check_special_char" >
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_mnf">Manufacturer</label> <span class="hg_required"></span>
+                                                <input type="text" id="prd_mnf" class="form-control input-disable-class check_special_char" required>
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_mnf_no"> Manufacturer Part Number</label>
+                                                <input type="text" id="prd_mnf_no" class="form-control input-disable-class check_special_char">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_manu_code_no"> Manufacturer Code Number</label>
+                                                <input type="text" id="prd_manu_code_no" class="form-control input-disable-class check_special_char">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_contract_number">Contract Name</label>
+                                                <input type="text" id="prd_contract_name" class=" form-control input-disable-class check_special_char" max_length="50">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_contract_number">Contract Number</label>
+                                                <input type="text" id="prd_contract_number" class=" form-control input-disable-class check_special_char" max_length="50">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="prd_contract_item_number">Contract Item Number</label>
+                                                <input type="text" id="prd_contract_item_number" class=" form-control input-disable-class check_special_char" max_length="50">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_prd_cate">Custom Product Category</label>
+                                                <input type="text" id="prd_prd_cate" class=" form-control input-disable-class check_special_char" >
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="prd_source_system">Product Source system</label> <span class="hg_required"></span>
+                                                <select class="form-control input-disable-class " id="prd_source_system" name="prd_source_system" >
+                                                    <option value="ERP1">ERP1</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Product Multimedia Information</h5>
+                                        <div>
+                                            <br>
+                                            <h6>Upload Product Images</h6>
+
+                                            <div class="alert alert-danger display-none" id="image-upload-errors" role="alert"> </div>
+                                            <div class="upload-prod-img-wrapper">
+                                                <div id="prod_image1" class="prod-image-container bg-upload-img1" onclick="triggerFileUpload('imgupload1');">
+                                                    <input type="file" id="imgupload1" style="display:none" onchange="loadFile1(event)"/>
+                                                    <img id="image-preview1" class="upload-img-style">
+                                                    <span>Default Image</span>
+                                                </div>
+                                                <div id="prod_image2" class="prod-image-container bg-upload-img2" onclick="triggerFileUpload('imgupload2');">
+                                                    <input type="file" id="imgupload2" style="display:none" onchange="loadFile2(event)"/>
+                                                    <img id="image-preview2" class="upload-img-style">
+                                                </div>
+                                                <div id="prod_image3" class="prod-image-container bg-upload-img3" onclick="triggerFileUpload('imgupload3');">
+                                                    <input type="file" id="imgupload3" style="display:none" onchange="loadFile3(event)"/>
+                                                    <img id="image-preview3" class="upload-img-style">
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-muted"> Application help text - supported image type</small>
+                                        </div>
+                                    </div>
+
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <div class="mt-2">
+                                                <h6>Link To Product Webpage</h6>
+                                                <div class="form-group">
+                                                    <label for="pfm_product_webpage_link">Provide link to product's official webpage</label>
+                                                    <input type="text" class="form-control input-disable-class" id="pfm_product_webpage_link" >
+                                                    <small class="form-text text-muted"> Application help text - link to product's official webpage</small>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 pt-2 pl-2">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Extended Product Information</h5>
+
+                                        <div class="form-group">
+                                            <label for="pro_type"> Product type</label> <span class="hg_required"></span>
+                                            <select class="form-control input-disable-class" id="pro_type" name="prod_types" required>
+                                                <option value="01"> 01 Product</option>
+                                                <option value="02"> 02 Service</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="prd_qnt"> Quantity Available</label>
+                                            <input type="text" id="prd_qnt" class="form-control input-disable-class check_number" >
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
+                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_country_list" name="countries_l" required>
+                                                <option value="">Please select Country of Origin</option>
+                                                {% for country in country_desc %}
+                                                <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
+                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_language_list" name="Language_l" required>
+                                                <option value="">Please select Product Language</option>
+                                                {% for language in language_desc %}
+                                                <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <div class="mt-2">
+                                                <h6>Price on Request</h6>
+                                                <div class="form-check">
+                                                    <input type="checkbox" id="prd_prc_req" class="form-check-input input-disable-class" >
+                                                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="card-body">
+
+                                        <h5 class="card-title">Supplier Information</h5>
+
+                                        <div class="form-group">
+                                            <label for="pfm_supplier_list">Supplier Details</label> <span class="hg_required"></span>
+                                            <input name="suppliers" type="text" placeholder="Please select supplier" class="form-control input-disable-class" id="pfm_supplier_list" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="pfm_supplier_prod_num">Supplier Product Number</label><span class="hg_required"></span>
+                                            <input type="text" id="pfm_supplier_prod_num" class="form-control input-disable-class check_special_char" required>
+                                            <small class="form-text text-muted help-text-alpha-numeric"> Valid characters are  A-Z a-z 0-9 </small>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="product_variant" data-tab-content>
+                    <!--  PRODUCT VARIANT INFORMATION -->
+                    <div class="mt-3">
+                        <div class="row no-gutters justify-content-center">
+                            <div class="col-8 pt-2">
+                                <!-- Add Product variants -->
+                                <div class="card" id="eform_details">
+                                    <div class="card-body">
+                                        <div class="elements-space-between">
+                                            <h5 class="card-title">Product Variants</h5>
+                                            <button type="button" id="create_new_fields" class="btn btn-outline-primary add-products-button-hide" onclick="create_new_field_popup()" >
+                                                <i class="fas fa-plus"></i> Add Variants
+                                            </button>
+                                        </div>
+                                        <p>Add variants if this products comes in multiple versions, like differnt size or color etc.</p>
+                                        <div class="alert alert-danger display-none" role="alert" id="remove_error_div"> </div>
+
+                                        <div id="variant_table_section">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="product_specification" data-tab-content>
+                    <!-- PRODUCT SPECIFICATION DATA -->
+                    <div class="mt-3">
+                        <div class="row no-gutters justify-content-center">
+                            <div class="col-8 pt-2">
+                                <!-- Add product specification in tables -->
+                                <div class="card" id="prod_spec_div_id">
+                                    <div class="card-body">
+                                        <div class="elements-space-between">
+                                            <h5 class="card-title">Product Specifications</h5>
+                                            <button type="button" id="create_product_spec" class="btn btn-outline-primary add-products-button-hide" onclick="create_new_specification_popup()" >
+                                                <i class="fas fa-plus"></i> Add Product Specifications
+                                            </button>
+                                        </div>
+                                        <p>Add product specifications for displaying a detailed information on the product.</p>
+                                        <div class="alert alert-danger display-none" role="alert" id="remove_error_div"> </div>
+
+                                        <div class="row" id="prod_spec_div_body">
+                                            <table class="table table-bordered mt-2" id="prod_spec_main_table" >
+                                                <thead>
+                                                <tr>
+                                                    <th>Specification type</th>
+                                                    <th>Specification description</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="product_spec_main_tbody">
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="product_discounts" data-tab-content>
+                    <div class="mt-3">
+                        <div class="row no-gutters justify-content-center">
+                            <div class="col-8 pt-2">
+                                <div class="card" id="prod_spec_div_id">
+                                    <div class="card-body">
+                                        <div class="elements-space-between">
+                                            <h5 class="card-title">Add Discounts</h5>
+                                            <button type="button" id="create_product_discounts" class="btn btn-outline-primary add-products-button-hide" onclick="create_product_discount_popup()" >
+                                                <i class="fas fa-plus"></i> Add Product Discounts
+                                            </button>
+                                        </div>
+                                        <p>Add discount to the product if purchased in certain quantity.</p>
+
+                                        <div id="prod_discount_table_section">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="hg_spacer2"> &nbsp; </div>
+<div class="hg_ftr">© 2021 Hiranya-Garbha Consultancy. All rights reserved.</div>
+
+<!-- Start Create New Variant field Popup -->
+<div class="modal fade" id="create_new_fields_popup" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add Variants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="create_error_div"  class="alert alert-danger display-none" role="alert"></div>
+                <div class="form-group">
+                    <label for="field_name">Variant name <span class="hg_required"></span></label>
+                    <input class="form-control dynamic_field" type="text" id="field_name" onkeypress="return /[0-9a-zA-Z_ ]/i.test(event.key)">
+                    <small class="form-text text-muted">  Valid characters are  A-Z a-z 0-9 </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="field_name">Select variant type <span class="hg_required"></span></label>
+                    <div class="select-radio-wrapper" style="display: flex; flex-direction: row; justify-content: space-evenly;">
+                        <div class="variant-select-card">
+                            <div class="variant-select-card__wrapper">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="VARIANT_WITHOUT_PRICING" name="variant_type" class="custom-control-input">
+                                    <label class="custom-control-label" for="VARIANT_WITHOUT_PRICING">Variant without impact on base price</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="variant-select-card">
+                            <div class="variant-select-card__wrapper variant-card-vwibp">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="VARIANT_BASE_PRICING" name="variant_type" class="custom-control-input">
+                                    <label class="custom-control-label" for="VARIANT_BASE_PRICING">Variant with impact on base price</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="variant-select-card">
+                            <div class="variant-select-card__wrapper variant-card-vwiapbp">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="VARIANT_ADDITIONAL_PRICING" name="variant_type" class="custom-control-input">
+                                    <label class="custom-control-label" for="VARIANT_ADDITIONAL_PRICING">Variant with additional pricing on base price</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Variant without impact on base price -->
+                <div id="table_vo_wo_iobp" style="display: none;">
+                    <br>
+                    <div class="new-option-row-button-wrapper">
+                        <span>Add options to be created</span>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_vo_wo_iobp();"><i class="fa fa-plus"></i> Add another option</button>
+                    </div>
+                    <table class="table" id="table_id_vo_wo_iobp">
+                        <thead>
+                        <tr>
+                            <th>Default</th>
+                            <th>Variant options</th>
+                            <th></th>
+                        </tr>
+
+                        </thead>
+                        <tbody id="tbody_vo_wo_iobp"></tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Variant without impact on base price -->
+                <div id="table_vo_wi_iobp" style="display: none;">
+                    <br>
+                    <div class="new-option-row-button-wrapper">
+                        <span>Add options to be created</span>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_vo_wi_iobp();"><i class="fa fa-plus"></i> Add another option</button>
+                    </div>
+                    <table class="table" id="table_id_vo_wi_iobp">
+                        <thead>
+                        <tr>
+                            <th>Default</th>
+                            <th>Variant options</th>
+                            <th>Price</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+
+                        </thead>
+                        <tbody id="tbody_vo_wi_iobp"></tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Variant with additional pricing on base price -->
+                <div id="table_vo_wi_apbp" style="display: none;">
+                    <br>
+                    <div class="new-option-row-button-wrapper">
+                        <span>Add options to be created</span>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_vo_wi_apbp();"><i class="fa fa-plus"></i> Add another option</button>
+                    </div>
+                    <table class="table" id="table_id_vo_wi_apbp">
+                        <thead>
+                        <tr>
+                            <th>Default</th>
+                            <th>Variant options</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="tbody_vo_wi_apbp"></tbody>
+                    </table>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button type="button" class="btn btn-primary" onclick="create_fields()"><i class="fas fa-plus"></i> Add Field</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Create New Variant field Popup -->
+
+<!-- Start Create New specification field Popup -->
+<div class="modal fade" id="create_product_spec_popup" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="define_spec">Define Your Product Specification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="id_del_add_button" class="mb-2">
+                    <button class="btn btn-outline-primary" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>
+                    <button class="btn btn-outline-primary" onclick="product_spec_popup_delete('product_spec_table')"><i class="fa fa-trash"></i> delete</button>
+                </div>
+                <table class="class_popup_table table table-bordered mt-2" id="product_spec_table" >
+                    <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Specification Type</th>
+                        <th>Specification Description</th>
+                    </tr>
+                    </thead>
+                    <tbody id="product_spec_tbody">
+
+                    </tbody>
+                </table>
+
+                <span class="badge generic-help-text-badge"></span>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button type="button" class="btn btn-primary" onclick="create_product_specification()"><i class="fas fa-plus"></i> Add Specification</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End New specification field Popup -->
+
+<!-- Add discount pop up -->
+<div class="modal fade" id="create_product_discount_popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="exampleModalLabel">Add Product Discount</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="create_prod_discount_error_div"  class="alert alert-danger display-none" role="alert"></div>
+                <div class="form-group">
+                    <label for="discount_field_name"> Discount Label <span class="hg_required"></span></label>
+                    <input class="form-control dynamic_field" type="text" id="discount_field_name">
+                </div>
+                <!-- Variant with additional pricing on base price -->
+                <div id="table_product_discount">
+                    <br>
+                    <div class="new-option-row-button-wrapper">
+                        <span>Add Products Discount</span>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_discount();"><i class="fa fa-plus"></i> Add new discount</button>
+                    </div>
+                    <table class="table" id="table_id_product_discount">
+                        <thead>
+                        <tr>
+                            <th>Minimum quantity of items</th>
+                            <th>Discount value</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody_product_discount">
+                        <tr>
+                            <td><input type="number" class="form-control" placeholder="Quantity"></td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" placeholder="Discount value">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" class="btn btn-primary" onclick="create_fields_product_discount()"><i class="fas fa-plus"></i> Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- End of Add discount pop up -->
+
+<!--Select Product category popup -->
+{% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
+<!-- end Select Product category popup-->
+
+<!-- Select supplier popup -->
+{% include 'Shopping_Cart/select_supplier_modal/select_supplier.html' %}
+<!-- End of Select supplier popup -->
+
+<script>
+
+$(document).ready(function(){
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "3.7rem");
+    $('[data-toggle="tooltip"]').tooltip();
+    NavigateTabs(); // Custom function to switch tabs
+});
+
+var GLOBAL_PRODUCT_ID = '{{new_product_id|safe}}'
+function triggerFileUpload(id) {
+    $('#image-upload-errors').html('');
+    $('#image-upload-errors').hide();
+    var image1_length = document.getElementById('imgupload1');
+    var length1 = image1_length.files.length
+
+    var image2_length = document.getElementById('imgupload2');
+    var length2 = image2_length.files.length
+
+    console.log(length);
+    if(id=='imgupload2') {
+        if(length1 == 0) {
+            $('#image-upload-errors').html('Please upload the Default Image first');
+            $('#image-upload-errors').show();
+        } else {
+            document.getElementById(id).click();
+        }
+    }
+    else if(id=='imgupload3') {
+        if(length1 == 0 || length2 == 0) {
+            $('#image-upload-errors').html('Please upload the Default Image and Image 2 before uploading Image 3');
+            $('#image-upload-errors').show();
+        } else {
+            document.getElementById(id).click();
+        }
+    }
+    else {
+        document.getElementById(id).click();
+    }
+
+}
+
+function loadFile1(event) {
+    $('#image-upload-errors').html('');
+    $('#image-upload-errors').hide();
+    var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+    var reader = new FileReader();
+
+    reader.onload = function(){
+        const uploadfile = document.getElementById('imgupload1');
+        if (uploadfile.files.length > 0) {
+            const filedata = uploadfile.files[0];
+            const fsize = filedata.size;
+            const file_extension = ((filedata.name).split(".")[1]).toUpperCase();
+            console.log("file extentio  "+file_extension)
+            console.log("file size is  "+fsize)
+
+            if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+
+                if (fsize >= 200000){
+                    $('#image-upload-errors').html('Please upload an image with size less than 200KB');
+                    $('#image-upload-errors').show() ;
+                } else {
+                    var output = document.getElementById('image-preview1');
+                    output.src = reader.result;
+                }
+
+            } else {
+                $('#image-upload-errors').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif')
+                $('#image-upload-errors').show()
+            }
+        }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+
+
+function loadFile2(event) {
+    $('#image-upload-errors').html('');
+    $('#image-upload-errors').hide();
+    var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+    var reader = new FileReader();
+
+    reader.onload = function(){
+        const uploadfile = document.getElementById('imgupload2');
+        if (uploadfile.files.length > 0) {
+            const filedata = uploadfile.files[0];
+            const fsize = filedata.size;
+            const file_extension = ((filedata.name).split(".")[1]).toUpperCase();
+            console.log("file extentio  "+file_extension)
+            console.log("file size is  "+fsize)
+
+            if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+
+                if (fsize >= 200000){
+                    $('#image-upload-errors').html('Please upload an image with size less than 200KB');
+                    $('#image-upload-errors').show();
+                } else {
+                    var output = document.getElementById('image-preview2');
+                    output.src = reader.result;
+                }
+
+            } else {
+                $('#image-upload-errors').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif');
+                $('#image-upload-errors').show();
+            }
+        }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+
+function loadFile3(event) {
+    $('#image-upload-errors').html('');
+    $('#image-upload-errors').hide();
+    var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+    var reader = new FileReader();
+
+    reader.onload = function(){
+        const uploadfile = document.getElementById('imgupload3');
+        if (uploadfile.files.length > 0) {
+            const filedata = uploadfile.files[0];
+            const fsize = filedata.size;
+            const file_extension = ((filedata.name).split(".")[1]).toUpperCase();
+            console.log("file extentio  "+file_extension)
+            console.log("file size is  "+fsize)
+
+            if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+
+                if (fsize >= 200000){
+                    $('#image-upload-errors').html('Please upload an image with size less than 200KB');
+                    $('#image-upload-errors').show();
+                } else {
+                    var output = document.getElementById('image-preview3');
+                    output.src = reader.result;
+                }
+
+            } else {
+                $('#image-upload-errors').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif');
+                $('#image-upload-errors').show();
+            }
+        }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+
+// Function to open and initiate data-table for Product category table
+$('#pfm_unspsc_list').click(function(){
+    $('#select_prod_cat_modal').modal('show');
+    setTimeout(function() {
+        $('.prod_cat_datatable').DataTable( {
+            "scrollY": "300px",
+            "scrollCollapse": true,
+        } );
+    }, 500);
+})
+
+
+// Function to update Product category value
+$('#select_product_category').click(function(){
+    var prod_cat_value = ''
+    $('#product_category_table TBODY TR').each(function(){
+        var row = $(this);
+        var check = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+        if (check){
+            prod_cat_id = row.find("TD").eq(1).text();
+            prod_cat_desc = row.find("TD").eq(2).text();
+            prod_cat_value = prod_cat_id.concat(' - ', prod_cat_desc);
+
+            document.getElementById('pfm_unspsc_list').value = prod_cat_value;
+            $('#select_prod_cat_modal').modal('hide');
+        }
+    });
+    $('.prod_cat_datatable').DataTable().destroy()
+});
+
+
+// Function to open and initiate data-table for supplier table
+$('#pfm_supplier_list').click(function(){
+    setTimeout(function() {
+        $('.select_supplier_datatable').DataTable( {
+            "scrollY": "300px",
+            "scrollCollapse": true,
+        } );
+    }, 500);
+    $('#select_supplier_modal').modal('show');
+})
+
+// Function to update supplier value
+supplier_id = ''
+
+$('#select_supplier').click(function(){
+    $('#supplier_table TBODY TR').each(function(){
+        var row = $(this);
+        var check = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+
+        if (check){
+            supplier_desc = row.find("TD").eq(1).text();
+            supplier_id = row.find("TD").eq(2).text();
+            supplier_info = supplier_id.concat(' - ', supplier_desc);
+            document.getElementById('pfm_supplier_list').value = supplier_info;
+            $('#select_supplier_modal').modal('hide');
+        }
+    });
+});
+
+
+// ================================================================================================================//
+// ============================== START EFORM CONFIGURATION ========================================================//
+// ================================================================================================================//
+
+//############################## START Function to display create pop based on conditions ##########################
+
+const create_new_field_popup = () => {
+    if (eform_data_new.length == 10) {
+        $('#save_error_div').html('You have entered maximum number of fields')
+        $('#save_error_div').show()
+        scroll_top()
+        return
+    } else {
+        $('#save_error_div').hide()
+        $('#create_error_div').hide()
+        variant_fields_clear();
+        $('#create_new_fields_popup').modal('show')
+    }
+
+    if(eform_data_new.some(variant_option_data => variant_option_data.field_type == 'VARIANT_BASE_PRICING')) {
+        console.log('Exists');
+        $('.variant-card-vwibp').addClass("vo-select-card-disable");
+        $('.variant-card-vwiapbp').removeClass("vo-select-card-disable");
+
+    } else {
+        $('.variant-card-vwibp').removeClass("vo-select-card-disable");
+        $('.variant-card-vwiapbp').addClass("vo-select-card-disable");
+    }
+
+}
+
+function variant_fields_clear () {
+    $('#field_name').val('')
+    $('input[name="variant_type"]').prop('checked', false);
+    $(".select-radio-wrapper").find(".selected").removeClass("selected");
+    $("#table_vo_wo_iobp").hide();
+    $('#tbody_vo_wo_iobp').empty();
+    $("#table_vo_wi_iobp").hide();
+    $('#tbody_vo_wi_iobp').empty();
+    $("#table_vo_wi_apbp").hide();
+    $('#tbody_vo_wi_apbp').empty();
+}
+//############################ END Function to display create pop based on conditions #######################
+
+var eform_data_new = new Array();
+
+const create_fields = () => {
+    var variant_type_selected_id = $('input:radio[name="variant_type"]:checked').attr('id');
+
+    validations = create_popup_validations(variant_type_selected_id)
+    if (validations != '') {
+        $('#create_error_div').html(validations);
+        $('#create_error_div').show();
+        return
+    } else $('#create_error_div').hide()
+
+    var variant_option_data = {};
+    var table_data = new Array();
+    variant_option_data.field_name = $('#field_name').val();
+    variant_option_data.field_type = variant_type_selected_id;
+
+    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+        var error_flag = false;
+        
+        $("#table_id_vo_wo_iobp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
+
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+
+            if (vo_table_data.option_value == '') {
+                error_flag = true;
+            }
+            
+            table_data.push(vo_table_data);
+        });
+
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
+            $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
+        }
+        
+
+    } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
+        var error_flag = false;
+
+        $("#table_id_vo_wi_iobp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
+
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+            vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
+
+            if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '' ) {
+                error_flag = true;
+            }
+
+            table_data.push(vo_table_data);
+        });
+
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
+            $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
+        }
+
+    } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+        var error_flag = false;
+
+        $("#table_id_vo_wi_apbp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
+
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+
+            if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
+                error_flag = true;
+            }
+
+            table_data.push(vo_table_data);
+        });
+
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
+            $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
+        }
+    }
+
+
+}
+
+
+function create_prod_variant_table(eform_data_new) {
+
+    $('#variant_table_section').empty();
+    $('#prod_discount_table_section').empty();
+
+    $.each(eform_data_new, function(index, variant_option_data){
+
+        var variant_table_headers = []
+        var tbody_content = ''
+        var variant_type_badge = ''
+        // Condtiton to check variant type is VARIANT_WITHOUT_PRICING or VARIANT_BASE_PRICING or VARIANT_ADDITIONAL_PRICING
+        // update the global variable variant_table_headers, tbody_content
+
+        if(variant_option_data.field_type == "VARIANT_WITHOUT_PRICING") {
+            variant_table_headers.push("Default", "Options");
+            var variant_table_data = variant_option_data.variant_data;
+            var variant_type_badge = '<span class="badge badge-pill badge_status_save">Variant without impact</span>'
+            $.each(variant_table_data, function(index, option_value){
+                default_radio_button = '';
+                let variant_label_name = variant_option_data.field_name.replace(/\s/g,'');
+                if(option_value.default_option == true) {
+                    default_radio_button = '<input type="radio" name="default_value-'+ variant_label_name +'" disabled checked>'
+                } else {
+                    default_radio_button = '<input type="radio" name="default_value" disabled>'
+                }
+                tbody_content += '<tr> <td>'+ default_radio_button +'</td><td>'+ option_value.option_value +'</td> </tr>'
+            })
+        }
+        else if(variant_option_data.field_type == "VARIANT_BASE_PRICING") {
+            variant_table_headers.push("Default", "Options", "Price", "Description");
+            var variant_table_data = variant_option_data.variant_data;
+            var variant_type_badge = '<span class="badge badge-pill badge_status_await_approval">Variant with impact</span>'
+
+            $.each(variant_table_data, function(index, option_value){
+                default_radio_button = '';
+                let variant_label_name = variant_option_data.field_name.replace(/\s/g,'');
+                if(option_value.default_option == true) {
+                    default_radio_button = '<input type="radio" name="default_value-'+ variant_label_name +'" disabled checked>'
+                } else {
+                    default_radio_button = '<input type="radio" name="default_value" disabled>'
+                }
+                tbody_content += '<tr> <td>'+ default_radio_button +'</td><td>'+ option_value.option_value +'</td><td>'+ option_value.option_price +'</td><td>'+ option_value.option_description +'</td> </tr>'
+            })
+        }
+        else if(variant_option_data.field_type == "VARIANT_ADDITIONAL_PRICING") {
+            variant_table_headers.push("Default", "Options", "Price");
+            var variant_table_data = variant_option_data.variant_data;
+            var variant_type_badge = '<span class="badge badge-pill badge_status_purch_wrkl">Variant with additional pricing</span>'
+
+            $.each(variant_table_data, function(index, option_value){
+                default_radio_button = '';
+                let variant_label_name = variant_option_data.field_name.replace(/\s/g,'');
+                if(option_value.default_option == true) {
+                    default_radio_button = '<input type="radio" name="default_value-'+variant_label_name +'" disabled checked>'
+                } else {
+                    default_radio_button = '<input type="radio" name="default_value" disabled>'
+                }
+                tbody_content += '<tr> <td>'+ default_radio_button +'</td><td>'+ option_value.option_value +'</td><td>'+ option_value.option_price +'</td> </tr>'
+            })
+        }
+        else if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            variant_table_headers.push("Minimum Qunatity", "Discount");
+            var variant_table_data = variant_option_data.variant_data;
+
+            $.each(variant_table_data, function(index, option_value){
+                tbody_content += '<tr> <td>'+ option_value.discount_min_quantity +'</td><td>'+ option_value.discount_percentage_value +'%</td> </tr>'
+            });
+        }
+
+
+
+        // Get the section id where the variant option tables are going to append
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            var table_section = document.getElementById("prod_discount_table_section");
+        } else {
+            var table_section = document.getElementById("variant_table_section");
+        }
+
+
+        // Create a div to enclose all the elements of a particular variant option
+        var variant_option_section = document.createElement("div");
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            variant_option_section.id = "product_discount_section-"+index;
+        } else {
+            variant_option_section.id = "variant_option_section-"+index;
+        }
+
+        // var line_seperator = document.createElement("hr")
+        // variant_option_section.append(line_seperator);
+
+        // Create a div to display variant option name and functional button group
+        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" onclick="variant_option_delete(this)"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
+
+        // Create <table> element
+        var create_tbl = document.createElement("table");
+        create_tbl.className = 'table table-bordered';
+
+        // Create <thead> element
+        var create_tblHead = document.createElement("thead");
+        create_tblHead.className = 'createTableHead';
+
+        // Create <thead> corrensponding <tr> element
+        var create_tblHeaderRow = document.createElement("tr");
+        create_tblHeaderRow.className = 'createTableHeadRow';
+
+        // Add the variant_table_headers to the <th> element
+        variant_table_headers.forEach(header => {
+            let variantHeader = document.createElement("th");
+            variantHeader.innerText = header;
+            create_tblHeaderRow.append(variantHeader);
+        })
+
+        create_tblHead.append(create_tblHeaderRow); // Append <tr>, <th> element to <thead>
+        create_tbl.append(create_tblHead); // Append <thead>, <tr>, <th> to <table>
+
+        // Create <tbody> element
+        var create_tblBody = document.createElement("tbody");
+        create_tblBody.className = 'createTableBody'
+        var variant_label_name = variant_option_data.field_name.replace(/\s/g,'');
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            create_tblBody.id = 'product_discount_tbody-'+ variant_label_name;
+        } else {
+            create_tblBody.id = 'variant_options_tbody-'+ variant_label_name;
+        }
+
+
+        // Append <tbody> to <table>
+        create_tbl.append(create_tblBody);
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            $('#prod_discount_table_section').append(table_heading_section);
+        } else {
+            $('#variant_table_section').append(table_heading_section);
+        }
+
+        variant_option_section.append(create_tbl);
+        table_section.append(variant_option_section);
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+            $('#product_discount_tbody-'+ variant_label_name).append(tbody_content)
+        } else {
+            $('#variant_options_tbody-'+ variant_label_name).append(tbody_content)
+        }
+
+    })
+    $('#create_new_fields_popup').modal('hide');
+    $('#create_product_discount_popup').modal('hide');
+    $("html, body").animate({ scrollTop: document.body.scrollHeight }, "slow");
+
+}
+
+//###################### end Function to create form fields and appends it to array ######################
+//########################## START of create_popup_validations ######################################
+label_name_array=[];
+const create_popup_validations = (variant_type_selected_id) => {
+    var get_label_name = $('#field_name').val().toLowerCase().replace(/\s/g,'');
+
+    for(i=0; i < eform_data_new.length; i++) {
+        var new_label_name = eform_data_new[i].field_name.toLowerCase().replace(/\s/g,'');
+        label_name_array.push(new_label_name);
+    }
+
+    var error_message = '';
+    if (document.getElementById('field_name').value == '') {
+        error_message = 'Please enter the Variant name';
+        return error_message;
+    } else if (label_name_array.includes(get_label_name)) {
+        error_message = ' Variant name already exists';
+        return error_message;
+    }
+
+    var radioName = '';
+    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+        radioName = 'vo_wo_iobp';
+
+    }  else if (variant_type_selected_id == 'VARIANT_BASE_PRICING') {
+        radioName = 'vo_wi_iobp';
+    } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+        radioName = 'vo_wi_apbp';
+    }
+
+    if ($('input[name='+ radioName +']:checked').length) {
+        // at least one of the radio buttons was checked
+        // allow whatever action would normally happen to continue
+    }
+    else {
+        // no radio button was checked
+        error_message = ' Please select default';
+        return error_message;
+    }
+
+    return error_message;
+}
+
+//########################## end of create_popup_validations ######################################
+// ===============================================================================================================//
+// ============================== END EFORM CONFIGURATION ========================================================//
+// ===============================================================================================================//
+
+// ===============================================================================================================//
+// ============================== START PRODUCT SPECIFICATION ========================================================//
+// ===============================================================================================================//
+
+//############################### START OF NEW PRODUCT SPECIFICATION POPUP ##########################
+var product_specification_data = [];
+function create_new_specification_popup(){
+    var spec_add_new_html
+    $('#product_spec_tbody').empty();
+    if (product_specification_data.length != 0){
+        $.each(product_specification_data, function (i, item) {
+            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+        });
+    }
+    else{
+        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+    }
+    $('#product_spec_tbody').append(spec_add_new_html);
+    $('#create_product_spec_popup').modal('show')
+}
+//############################### END OF NEW PRODUCT SPECIFICATION POPUP ##########################
+
+//##################################### START ADD NEW LINE IN SPEC POPUP ###########################
+ function add_popup_row() {
+    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
+    $('#product_spec_tbody').append(spec_add_new_html);
+ }
+  //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
+
+//delete lines in product specification popup
+function product_spec_popup_delete(myTable){
+    var table = document.getElementById(myTable);
+    var rowCount = table.rows.length;
+    for (var i = 0; i < rowCount; i++) {
+        var row = table.rows[i];
+        var chkbox = row.cells[0].childNodes[0];
+        if (null != chkbox && true == chkbox.checked) {
+            table.deleteRow(i);
+            rowCount--;
+            i--;
+        }
+    }
+}
+   //##################################### START CREATE MAIN TABLE DATA  ###########################
+
+function create_product_specification() {
+    product_specification_data = new Array();
+    $("#product_spec_table TBODY TR").each(function () {
+            var row = $(this);
+            var product_specification={};
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
+            product_specification_data.push(product_specification);
+    });
+    update_product_specification_main_table();
+    $('#create_product_spec_popup').modal('hide');
+
+}
+
+function update_product_specification_main_table(){
+    $('#product_spec_main_tbody').empty();
+    var prod_spec_main_html = ''
+     $.each(product_specification_data, function (i, item) {
+        prod_spec_main_html += '<tr ><td>' + item.product_info_key + '</td><td>' + item.product_info_value + '</td></tr>';
+    });
+    $('#product_spec_main_tbody').append(prod_spec_main_html);
+    document.getElementById('prod_spec_div_id').style.display = 'block';
+}
+  //##################################### END CREATE MAIN TABLE DATA ###########################
+// ============================== END PRODUCT SPECIFICATION ======================================================//
+
+
+// ============================== START SAVE CANCEL EDIT BUTTON ======================================================//
+//######################## start of on click of save ###################################################
+// on click of save, save edited data into db
+$('#product_detail_form_id').on('submit', function(e){
+    e.preventDefault();
+    attachment_data_array = new Array();
+    data = new FormData();
+    var image1 = $('#imgupload1')[0].files[0]
+
+    data.append(GLOBAL_PRODUCT_ID+'-1', $('#imgupload1')[0].files[0]);
+    data.append(GLOBAL_PRODUCT_ID+'-2', $('#imgupload2')[0].files[0]);
+    data.append(GLOBAL_PRODUCT_ID+'-3', $('#imgupload3')[0].files[0]);
+    var product_details_data = {}
+    product_details_data.product_id= GLOBAL_PRODUCT_ID
+    product_details_data.short_desc= document.getElementById("prd_desc").value
+    product_details_data.supplier_id= (document.getElementById("pfm_supplier_list").value).split(' - ')[0]
+    product_details_data.prod_cat_id= document.getElementById("prd_prd_cate").value
+    product_details_data.long_desc= document.getElementById("prd_lng_txt").value
+    product_details_data.lead_time= document.getElementById("prd_lead").value
+    product_details_data.unit= document.getElementById("pfm_units_list").value
+    product_details_data.price= document.getElementById("prd_prc").value
+    product_details_data.price_on_request= document.getElementById("prd_prc_req").value
+    product_details_data.price_unit= document.getElementById("prd_prs_unit").value
+    product_details_data.manufacturer= document.getElementById("prd_mnf").value
+    product_details_data.manu_prod= document.getElementById("prd_mnf_no").value
+    product_details_data.brand= document.getElementById("prd_brnd").value
+    product_details_data.quantity_avail= document.getElementById("prd_qnt").value
+    product_details_data.quantity_min= document.getElementById("prd_mini_qnt").value
+    product_details_data.offer_key= document.getElementById("prd_off_key").value
+    product_details_data.country_of_origin= document.getElementById("pfm_country_list").value
+    product_details_data.currency= document.getElementById("pfm_currency_list").value
+    product_details_data.language= document.getElementById("pfm_language_list").value
+    product_details_data.unspsc= (document.getElementById("pfm_unspsc_list").value).split(' - ')[0]
+    product_details_data.search_term1= document.getElementById("prd_search1").value
+    product_details_data.search_term2= document.getElementById("prd_search2").value
+    product_details_data.product_type= document.getElementById("pro_type").value
+    product_details_data.supplier_product_number= document.getElementById("pfm_supplier_prod_num").value
+    product_details_data.product_webpage_link= document.getElementById("pfm_product_webpage_link").value
+    product_details_data.product_contract_num= document.getElementById("prd_contract_number").value
+    product_details_data.product_source_system= document.getElementById("prd_source_system").value
+    product_details_data.product_contract_name= document.getElementById("prd_contract_name").value
+    product_details_data.prd_manu_code_no= document.getElementById("prd_manu_code_no").value
+    product_details_data.quantity_max = document.getElementById("prd_max_qnt").value
+    product_details_data.value_min= document.getElementById("prd_mini_value").value
+    product_details_data.ctr_item_num= document.getElementById("prd_contract_item_number").value
+
+
+    console.log(eform_data_new)
+    data.append('eform_configured', JSON.stringify(eform_data_new))
+    data.append('product_specification_data', JSON.stringify(product_specification_data))
+    console.log(product_specification_data)
+    data.append('update', JSON.stringify(product_details_data))
+    data.append('product_existence_flag', JSON.stringify('False'))
+    data.append('create_flag',JSON.stringify(true))
+    data.append('edit_variant_flag',JSON.stringify(false))
+    console.log(data)
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Manage_Content:save_product_details_spec_images_eform' %}",
+        data: data,
+        success: function (Response) {
+            view_edit_product_details();
+            //eform_configured = Response
+            //update_eform_details(Response)
+            document.getElementById('product_details_success').innerHTML = "Saved Product details successfully";
+            $('#product_details_success').show();
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            encrypted_id = '{{encrypt_new_product_id|safe}}'
+            var url = '/manage-content/product_details/' + encrypted_id + '';
+            location.href = url
+            //window.location.href = "{% url 'eProc_Manage_Content:get_product_details' encrypt_new_product_id %}"
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
+        error: function(data){
+
+         }
+    });
+    console.log(attachment_data_array);
+
+});
+//######################## end of on click of save ###################################################
+
+function view_edit_product_details(){
+    // on click of cancel button display only edit
+    $('.add-products-button-hide').hide()
+    $('#edit_product_details').prop('hidden', false)
+    // disable all the input field
+    $(".input-disable-class").prop('disabled', true);
+    $('.selectpicker').selectpicker('refresh');
+}
+
+$('input:radio[name="variant_type"]').change(function() {
+    if ($(this).is(':checked')) {
+        $(".select-radio-wrapper").find(".selected").removeClass("selected");
+        $(this).closest(".variant-select-card__wrapper").addClass("selected");
+        var id = this.id;
+
+        if(id == "VARIANT_WITHOUT_PRICING") {
+            $("#table_vo_wo_iobp").show();
+            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_apbp").hide();
+            AddNewRow_vo_wo_iobp();
+        } else if (id == "VARIANT_BASE_PRICING") {
+            $("#table_vo_wo_iobp").hide();
+            $("#table_vo_wi_iobp").show(); 
+            $("#table_vo_wi_apbp").hide();
+            AddNewRow_vo_wi_iobp();
+        } else if (id == "VARIANT_ADDITIONAL_PRICING") {
+            $("#table_vo_wo_iobp").hide();
+            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_apbp").show();
+            AddNewRow_vo_wi_apbp();
+        }
+    }
+});
+
+function AddNewRow_vo_wo_iobp() {
+    var add_new_row = "";
+    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wo_iobp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>'
+    $('#tbody_vo_wo_iobp').append(add_new_row);
+}
+
+function AddNewRow_vo_wi_iobp() {
+    var add_new_row = "";
+    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_iobp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><input type="number" class="form-control" placeholder="Price"></td> <td><input type="text" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+    $('#tbody_vo_wi_iobp').append(add_new_row);
+}
+
+function AddNewRow_vo_wi_apbp() {
+    var add_new_row = "";
+    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_apbp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><input type="number" class="form-control" placeholder="Price"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+    $('#tbody_vo_wi_apbp').append(add_new_row);
+}
+
+function AddNewRow_product_discount() {
+    var add_new_row = "";
+    add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+    $('#tbody_product_discount').append(add_new_row);
+}
+
+$("#table_id_vo_wo_iobp").on('click','.row-delete-btn',function(){
+    $(this).closest('tr').remove();
+});
+
+$("#table_id_vo_wi_iobp").on('click','.row-delete-btn',function(){
+    $(this).closest('tr').remove();
+});
+
+$("#table_id_vo_wi_apbp").on('click','.row-delete-btn',function(){
+    $(this).closest('tr').remove();
+});
+
+$("#table_id_product_discount").on('click','.row-delete-btn',function(){
+    $(this).closest('tr').remove();
+});
+
+
+function variant_option_delete(obj) {
+    var id = obj.id;
+    var get_index = id.split('-')[1];
+    eform_data_new.splice(get_index, 1)
+    create_prod_variant_table(eform_data_new);
+}
+
+function create_product_discount_popup(){
+    $('#create_product_discount_popup').modal('show')
+}
+
+function create_fields_product_discount() {
+
+    validations = create_product_discounts_validations();
+    if (validations != '') {
+        $('#create_prod_discount_error_div').html(validations)
+        $('#create_prod_discount_error_div').show()
+        return
+    } else $('#create_prod_discount_error_div').hide()
+
+    var variant_option_data = {};
+    var table_data = new Array(); 
+    variant_option_data.field_name = $('#discount_field_name').val();
+    variant_option_data.field_type = "QUANTITY_BASED_DISCOUNT";
+
+    $("#table_id_product_discount TBODY TR").each(function() {
+        var row = $(this);
+        var vo_table_data = {};
+
+        vo_table_data.discount_min_quantity = row.find("TD").eq(0).find('input[type="number"]').val();
+        vo_table_data.discount_percentage_value = row.find("TD").eq(1).find('input[type="number"]').val();
+        table_data.push(vo_table_data);
+        
+    });
+
+    variant_option_data.variant_data = table_data;
+    eform_data_new.push(variant_option_data);
+    create_prod_variant_table(eform_data_new);
+
+}
+
+discount_label_name_array=[];
+const create_product_discounts_validations = () => {
+    var get_label_name = $('#discount_field_name').val().toLowerCase().replace(/\s/g,'');
+
+    for(i=0; i < eform_data_new.length; i++) {
+        var new_label_name = eform_data_new[i].field_name.toLowerCase().replace(/\s/g,'');
+        discount_label_name_array.push(new_label_name);
+    }
+
+    var error_message = '';
+    if (document.getElementById('discount_field_name').value == '') {
+        error_message = 'Please enter the Product Discount label'
+        return error_message;
+    } else if (discount_label_name_array.includes(get_label_name)) {
+        error_message = 'Product Discount label already exists'
+        return error_message
+    }
+
+    return error_message;
+}
+
+</script>
+{% endblock %}

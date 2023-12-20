@@ -1,0 +1,74 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Upload data {% endblock %}
+
+{% block maincontent %}
+<form>
+	<div style="margin-top:110px; margin-left:35%;">
+		<div class="login_block" >
+			<div class="reg_content">
+				<div class="hg_headBg">Upload Data <div class="hg_clsbtn_outr"><input type="button" class="hg_cls_btn" id="close" onclick="window.close()"  /></div></div>
+				<div class="hg_login-field hg_txtbx" >
+
+					<p class="m-auto p-2"> <b>Basic Settings:</b> </p>
+					<p class="m-auto p-2">Upload Timezone data: <input type="button" value="Upload Timezone" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'TimeZone' %}';" target="_blank" title = "Timezone_Upload" /></p>
+					<p class="m-auto p-2">Upload Country data: <input type="button" value="Upload Country" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'Country' %}';" target="_blank" title = "Country_Upload" /></p>
+					<p class="m-auto p-2">Upload Unit of Measure: <input type="button" value="Upload Unit of Measure" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'UnitOfMeasures' %}';" target="_blank" title = "UOM_Upload" /></p>
+					<p class="m-auto p-2">Upload Currency: <input type="button" value="Upload Currency" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'Currency' %}';" target="_blank" title = "Currency_Upload" /></p>
+					<p class="m-auto p-2">Upload Languages: <input type="button" value="Upload Languages" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'Languages' %}';" target="_blank" title = "Language_Upload" /></p>
+					<p class="m-auto p-2">Upload Product Category: <input type="button" value="Upload Prod Category" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'UnspscCategories' %}';" target="_blank" title = "Product_catg_Upload" /></p>
+
+					<p class="m-auto p-2"> <b>Application Settings :</b> </p>
+					<p class="m-auto p-2">Upload Clients: <input type="button" value="Upload Clients" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Basic' 'OrgClients' %}';" target="_blank" title = "Clients_Upload" /></p>
+					<p class="m-auto p-2">Upload Document Type: <input type="button" value="Upload Document Type" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Basic' 'DocumentType' %}';" target="_blank" title = "Doctype_Upload" /></p>
+					<p class="m-auto p-2">Upload Account Assign Catg: <input type="button" value="Upload Account Assign Catg" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Basic' 'AccountAssignmentCategory' %}';" target="_blank" title = "AccountAssignmentCategory_Upload" /></p>
+					<p class="m-auto p-2">Upload Notif Settings: <input type="button" value="Upload Notif Settings" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_notifsettings' %}';" target="_blank" title = "NotifSettings_Upload" /></p>
+					<p class="m-auto p-2">Upload Notif Keywords: <input type="button" value="Upload Notif Keywords" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_notifkeywords' %}';" target="_blank" title = "NotifKeywords_Upload" /></p>
+					<p class="m-auto p-2">Upload System Settings: <input type="button" value="Upload System Settings" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_systemsettings' %}';" target="_blank" title = "Systemsettings_Upload" /></p>
+
+
+					<p class="m-auto p-2"> <b>Master Data Settings:</b> </p>
+					<p class="m-auto p-2">Upload User Information: <input type="button" value="Upload User Info" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_user' %}';" target="_blank" title = "User_Upload" /></p>
+					<p class="m-auto p-2">Upload Supplier Master: <input type="button" value="Upload Supplier Master" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_suppliermaster' %}';" target="_blank" title = "Supplier_Upload" /></p>
+    				<p class="m-auto p-2">Upload OrgCompanies: <input type="button" value="Upload OrgCompanies" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'OrgCompanies' %}';" target="_blank" title = "OrgCompanies_Upload" /></p>
+					<p class="m-auto p-2">Upload Purchase Org: <input type="button" value="Upload Purchase Org" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'OrgPorg' %}';" target="_blank" title = "PurchaseOrg_Upload" /></p>
+					<p class="m-auto p-2">Upload Purchase Group: <input type="button" value="Upload Purchase Group" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'OrgPGroup' %}';" target="_blank" title = "PurchaseGrp_Upload" /></p>
+					<p class="m-auto p-2">Upload Product Cust Category: <input type="button" value="Upload Prod Cust Category" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_productcustcatg' %}';" target="_blank" title = "Product_cust_catg_Upload" /></p>
+					<p class="m-auto p-2">Upload Address: <input type="button" value="Upload Address" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_address' %}';" target="_blank" title = "Address_Upload" /></p>
+					<p class="m-auto p-2">Upload Address Map: <input type="button" value="Upload Address Map" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_addressmap' %}';" target="_blank" title = "Addressmap_Upload" /></p>
+					<p class="m-auto p-2">Upload AccountingData: <input type="button" value="Upload Accounting Data" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'AccountingData' %}';" target="_blank" title = "AccountingData_Upload" /></p>
+					<p class="m-auto p-2">Upload AccountingDataDesc: <input type="button" value="Upload Accounting Data Desc" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'AccountingDataDesc' %}';" target="_blank" title = "AccountingDataDesc_Upload" /></p>
+					<p class="m-auto p-2">Upload GL Account Detail : <input type="button" value="Upload GL Account Details" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_detglacc' %}';" target="_blank" title = "DetGLAccount_Upload" /></p>
+					<p class="m-auto p-2">Upload Approver Types : <input type="button" value="Upload Approver Types " class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_apptypes' %}';" target="_blank" title = "ApproverTypes_Upload" /></p>
+					<p class="m-auto p-2">Upload Spend Limit : <input type="button" value="Upload Spend Limit " class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'SpendLimitId' %}';" target="_blank" title = "Spendlimit_Upload" /></p>
+					<p class="m-auto p-2">Upload Spend Limit Description : <input type="button" value="Upload Spend Limit Description" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'SpendLimitValue' %}';" target="_blank" title = "SpendLimitDesc_Upload" /></p>
+					<p class="m-auto p-2">Upload Approver Limit : <input type="button" value="Upload Approver Limit" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'ApproverLimit' %}';" target="_blank" title = "Approverlimit_Upload" /></p>
+					<p class="m-auto p-2">Upload Approver Limit Description : <input type="button" value="Upload Approver Limit Description" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'ApproverLimitValue' %}';" target="_blank" title = "Approverlimdesc_Upload" /></p>
+
+					<p class="m-auto p-2"> <b>Transaction Data Settings:</b> </p>
+					<p class="m-auto p-2">Upload Shopping cart data: &nbsp;&nbsp;<input type="button" value="Upload SC" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_sc' %}';" target="_blank" title = "SC_Upload" /></p>
+					<p class="m-auto p-2">Upload Purchase order data: <input type="button" value="Upload PO" class="hg_daup_btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_po' %}';" target="_blank" title = "PO_Upload" /></p>
+					<p class="m-auto p-2">Upload other attachments: &nbsp;<a href="{% static 'DocumentAttachment.pdf' %}" target="_blank"><input type="button" value="Upload Attachments" class="hg_daup_btn" title = "Upload Attachments" /></a></p>
+
+					<p class="m-auto p-2"> <b>Org Model Settings:</b> </p>
+					<p class="m-auto p-2">Upload OrgModel: <input type="button" value="Upload OrgModel" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_orgmodel' %}';" target="_blank" title = "OrgModel_Upload" /></p>
+					<p class="m-auto p-2">Upload OrgNodetypes: <input type="button" value="Upload OrgNodetypes" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Configuration' 'OrgNodeTypes' %}';" target="_blank" title = "Orgnodetypes_Upload" /></p>
+					<p class="m-auto p-2">Upload OrgAttributes: <input type="button" value="Upload OrgAttributes" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'OrgAttributes' %}';" target="_blank" title = "OrgAttributes_Upload" /></p>
+					<p class="m-auto p-2">Upload Roles: <input type="button" value="Upload OrgAttributes" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'UserRoles' %}';" target="_blank" title = "UserRoles_Upload" /></p>
+					<p class="m-auto p-2">Upload AuthorizationObj: <input type="button" value="Upload OrgAttributes" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_pk_table' 'eProc_Configuration' 'AuthorizationObject' %}';" target="_blank" title = "AuthorizationObject_Upload" /></p>
+					<p class="m-auto p-2">Upload AuthorizationGrp: <input type="button" value="Upload OrgAttributes" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Role_authorization' 'AuthorizationGroup' %}';" target="_blank" title = "AuthorizationGrp_Upload" /></p>
+					<p class="m-auto p-2">Upload Authorization: <input type="button" value="Upload Authorization" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:upload_table' 'eProc_Role_authorization' 'Authorization' %}';" target="_blank" title = "Authorization_Upload" /></p>
+					<p class="m-auto p-2"> <b>Content Management Settings:</b> </p>
+					<p class="m-auto p-2">Upload ProdServices: <input type="button" value="Upload ProdServices" class="hg_daup-btn" onclick="window.location.href = '{% url 'eProc_Upload:UploadData' %}';" target="_blank" title = "Upload" /></p>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<br />
+</form>
+<div class="hg_spacer2"> &nbsp; </div>
+
+{% endblock %}

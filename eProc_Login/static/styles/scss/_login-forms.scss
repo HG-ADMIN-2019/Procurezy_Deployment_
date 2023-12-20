@@ -1,0 +1,115 @@
+.majjaka-login-screen{
+    &.row {
+        background: white;
+    }
+
+    &__frame-left .login-screen-image-container {
+        width: 100%;
+        height: 100vh;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+        position: relative;
+        background-image: url(/static/images/login_left_frame_bgimg.png);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        #majjaka-brand-logo {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            padding: 0 1rem;
+        }
+    }
+
+    &__frame-right {
+        padding: 0 5rem !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .login_page_content {
+            margin-top: 20%;
+        }
+
+        .login_page_logo {
+            text-align: center; 
+            margin-bottom: 3rem;
+        }
+
+        .login-page-form {
+
+            .login-page-form-heading{
+                margin-bottom: 9%;
+               
+            }
+
+            .login-messages{
+                margin-bottom: 3%;
+            }
+            
+        }
+    }
+    
+}
+
+.font-weight-500 {
+    font-weight: 500;
+}
+
+.font-size-smaller {
+    font-size: smaller;
+}
+
+
+// Admin login page loader screen css
+.admin-loader-screen-container {
+    display: none;
+    position: fixed;
+    background-color: rgba(240, 248, 255, 0.6);
+    background-repeat: no-repeat;
+    z-index: 9999;
+    width: 33.33%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.admin-loader-screen {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.admin-loader-animation {
+    height: 75px;
+    width: 75px;
+    border: 10px solid rgb(192, 192, 192);
+    border-top-color: #1168ff;
+    border-radius: 50%;
+    animation: spin 1.5s infinite linear;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.admin-loader-message {
+    color: black;
+    font-size: 24px;
+    font-weight: 400;
+}
+#admin-loader_screen_container.show {
+    display: block;
+}
+
+.majjaka-login-screen__frame-right.loader-show {
+    height: 100vh;
+    overflow-y: hidden;
+} 

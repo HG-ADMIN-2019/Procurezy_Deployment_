@@ -1,0 +1,359 @@
+{% load static %}
+
+<head>
+    <style>
+        .hg_required::before {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hg_main hg_application_main" style="display: none;" id="content_define_prd_ser">
+        <div>
+            <h1 style="vertical-align: middle;">List of products in catalogs</h1>
+            <hr class="hg_heading_hrborder">
+        </div>
+        <button class="btn btn-primary" onclick=" document.getElementById('prod_service').style.display = 'block'">add
+            product/service </button>
+
+        <div id="prod_service" style="display: none;" class="hg_modal">
+            <div class="hg_modal_content"   style="width:500px; height:400px;padding: 10px; margin-top: 5%; overflow-y: scroll; padding-left: 20px;">
+                <div>
+                    <h1 style="vertical-align: middle;">Add Product/Service</h1>
+                    <hr class="hg_heading_hrborder">
+                </div>
+                <div>
+                    <p id="err_prd_ser"></p>
+                    <div class="hg_pb10">
+                        <div>
+                            Product Id:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <input type="text" id = "prd_prd_id" class="hg_inputTxt hg_check_filled hg_get_feilds"></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Description:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <input type="text" id="prd_desc" class="hg_inputTxt hg_check_filled hg_get_feilds"></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> Long text:<br> </div>
+                        <div>
+                            <textarea rows="4" id = "prd_lng_txt" cols="65" class="hg_inputTxt hg_get_feilds"></textarea>
+                        </div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Supplier Id:<span class="hg_required"></span><br>
+                        </div>
+                        <div>
+                            <select name="suppliers" class="hg_choiceField hg_get_feilds" id="pfm_supplier_list">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Product Category:<span class="hg_required"></span><br>
+                        </div>
+                        <div><input type="text" id="prd_prd_cate" class="hg_inputTxt hg_check_filled hg_get_feilds"></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Select Catalog:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <select name="catalogs" class="hg_choiceField hg_get_feilds hg_check_filled"
+                                id="pfm_catalog_list"></select></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> Product type:<br></div>
+                        <div>
+                            <select class="hg_choiceField hg_get_feilds" name="prod_types">
+                                <option value="01"> 01 Product</option>
+                                <option value="02"> 02 Service</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> Price on Request:<br></div>
+                        <div> <input type="checkbox" id="prd_prc_req" class="hg_get_feilds"></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Unit:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <select name="units_l" class="hg_choiceField hg_get_feilds" id="pfm_units_list"></select></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> Price Unit:<br></div>
+                        <div> <input type="text" id="prd_prs_unit" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Currency:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <select class="hg_choiceField hg_get_feilds" id="pfm_currency_list" name="currencies"></select>
+                        </div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div>
+                            Price:<span class="hg_required"></span><br>
+                        </div>
+                        <div> <input type="text" id = "prd_prc" class="hg_inputTxt hg_check_filled hg_get_feilds "></div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> Manufacturer:<br></div>
+                        <div> <input type="text" id ="prd_mnf" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Manufacturer Product No:<br></div>
+                        <div> <input type="text" id="prd_mnf_no" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Brand:<br> </div>
+                        <div> <input type="text" id="prd_brnd" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div>Lead Time:<span class="hg_required"></span><br></div>
+                        <div> <input type="text" id="prd_lead" class="hg_inputTxt hg_check_filled hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Quantity Available: </div>
+                        <div> <input type="text" id="prd_qnt" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div>Minimum Quantity:<span class="hg_required"></span><br> </div>
+                        <div> <input type="text" id="prd_mini_qnt" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Offer Key:<br></div>
+                        <div> <input type="text" id="prd_off_key" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Country:<br></div>
+                        <div> <select class="hg_choiceField hg_get_feilds"  id="pfm_country_list" name="countries_l"></select>
+                        </div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Language:<br></div>
+                        <div> <select class="hg_choiceField hg_get_feilds" id="pfm_language_list" name="Language_l"></select>
+                        </div>
+                    </div>
+                    <div class="hg_pb10">
+                        <div> UNSPSC:<br></div>
+                        <div> <select class="hg_choiceField hg_get_feilds" id="pfm_unspsc_list" name="unspsc_l"></select>
+                        </div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Search Term 1:<br> </div>
+                        <div> <input type="text" id="prd_search1" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <div class="hg_pb10">
+                        <div> Search Term 2:<br> </div>
+                        <div> <input type="text" id="prd_search2" class="hg_inputTxt hg_get_feilds"></div>
+                    </div>
+
+                    <!--<div class="hg_pb10">-->
+                        <!--<div> Add Image1:<br></div>-->
+                        <!--<div class="hg_modal_feild"> </div>-->
+                    <!--</div>-->
+
+                    <!--<div class="hg_pb10">-->
+                        <!--<div> Add Image2:<br></div>-->
+                        <!--<div> </div>-->
+                    <!--</div>-->
+
+                    <!--<div class="hg_pb10">-->
+                        <!--<div> Add Image3:<br></div>-->
+                        <!--<div> </div>-->
+                    <!--</div>-->
+
+                </div>
+                <div style="float: right;">
+                    <button class="btn btn-primary"
+                        onclick="document.getElementById('prod_service').style.display = 'none'"><i
+                            class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" onclick="validation_check()"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+
+        <table id="list_of_prods" style=" border: none;">
+
+        </table>
+    </div>
+
+
+    <script>
+
+        let validations_to_add = ""
+
+        function new_product_save() {
+            let new_prd_inp = {}
+            let get_texts = document.getElementsByClassName("hg_get_feilds")
+            new_prd_inp.product_id = get_texts[0].value
+            new_prd_inp.description = get_texts[1].value
+            new_prd_inp.long_text = get_texts[2].value
+            new_prd_inp.supplier_id = $('select[name=' + get_texts[3].name + '] option').filter(':selected').val()
+            new_prd_inp.prod_cat_id = get_texts[4].value
+            new_prd_inp.catalog_id = $('select[name=' + get_texts[5].name + '] option').filter(':selected').val()
+            new_prd_inp.product_type = $('select[name=' + get_texts[6].name + '] option').filter(':selected').val()
+            new_prd_inp.price_on_request = get_texts[7].checked
+            new_prd_inp.unit = $('select[name=' + get_texts[8].name + '] option').filter(':selected').val()
+            new_prd_inp.price_unit = get_texts[9].value
+            new_prd_inp.currency = $('select[name=' + get_texts[10].name + '] option').filter(':selected').val()
+            new_prd_inp.price = get_texts[11].value
+            new_prd_inp.manufacturer = get_texts[12].value
+            new_prd_inp.manu_prod = get_texts[13].value
+            new_prd_inp.brand = get_texts[14].value
+            new_prd_inp.lead_time = get_texts[15].value
+            new_prd_inp.quantity = get_texts[16].value
+            new_prd_inp.quantity_min = get_texts[17].value
+            new_prd_inp.offer_key = get_texts[18].value
+            new_prd_inp.country_of_origin = $('select[name=' + get_texts[19].name + '] option').filter(':selected').val()
+            new_prd_inp.language = $('select[name=' + get_texts[20].name + '] option').filter(':selected').val()
+            new_prd_inp.unspsc = $('select[name=' + get_texts[21].name + '] option').filter(':selected').val()
+            new_prd_inp.search_term1 = get_texts[22].value
+            new_prd_inp.search_term2 = get_texts[23].value
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(new_prd_inp),
+                url: "{% url 'eProc_Catalog:add_product' %}",
+                success: function (response) {
+                    let get_products_tr = '<tr><td>' + response[0].fields.product_id + '</td><td>' + response[0].fields.description + '</td><td>' + response[0].fields.supplier_id + '</td><td>' + response[0].fields.lead_time + '</td><td>' + response[0].fields.unit + '</td><td>' + response[0].fields.price + '</td><td>' + response[0].fields.currency + '</td></tr>';
+                    $("#list_of_prods").append(get_products_tr)
+                    document.getElementById('prod_service').style.display = 'none'
+                }
+            });
+
+        }
+
+
+        function validation_check() {
+            $("#err_prd_ser").empty()
+            let check_data = document.getElementsByClassName("hg_check_filled")
+            for (let i = 0; i < check_data.length; i++) {
+                if (check_data[i].value === undefined || check_data[i].value === "") {
+                 
+                    var msg = "JMSG020";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                        var display1 = msg_type.messages_id_desc;
+                    document.getElementById("err_prd_ser").innerHTML = display1;
+
+                    document.getElementById("err_prd_ser").style.color = "red"
+                    validations_to_add = "X"
+                    break;
+                }
+            }
+            if (validations_to_add == "") {
+                new_product_save()
+            }
+        }
+
+
+        function define_product_services() {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Catalog:product_service_list' %}",
+                success: function (response) {
+
+                    $("#list_of_prods").empty();
+
+                    var tr_hdr = '<tr><th>Product Id</th><th>Description</th><th>Supplier Id</th><th>Lead Time</th><th>Unit</th><th>Price</th><th>Currency</th></tr>'
+                    $("#list_of_prods").append(tr_hdr)
+
+                    var get_products_tr = ""
+                    $.each(response.get_products, function (i, item) {
+                        get_products_tr += '<tr><td>' + item[0] + '</td><td>' + item[1] + '</td><td>' + item[2] + '</td><td>' + item[3] + '</td><td>' + item[4] + '</td><td>' + item[5] + '</td><td>' + item[6] + '</td></tr>';
+                    });
+                    $("#list_of_prods").append(get_products_tr)
+
+                    var supplier_options = ""
+                    $.each(response.supp_list, function (i, item) {
+                        supplier_options += '<option value="' + item[0] + '">' + item[0] + "--" + item[1] + '</option>';
+                    });
+                    $("#pfm_supplier_list").append(supplier_options)
+
+                    var unspsc_options = ""
+                    $.each(response.unspsc_list, function (i, item) {
+                        unspsc_options += '<option value="' + item[0] + '">' + item[0] +"--"+ item[1] + '</option>';
+                    });
+                    $("#pfm_unspsc_list").append(unspsc_options)
+
+                    var catalog_options = ""
+                    $.each(response.catalog_list, function (i, item) {
+                        catalog_options += '<option value="' + item[0] + '">' + item[1] + '</option>';
+                    });
+                    $("#pfm_catalog_list").append(catalog_options)
+
+                    var currency_options = ""
+                    $.each(response.currencies, function (i, item) {
+                        currency_options += '<option value="' + item[0] + '">' + item[0] + "--" + item[1] + '</option>';
+                    });
+                    $("#pfm_currency_list").append(currency_options)
+
+                    var units_options = ""
+                    $.each(response.units_of_measure, function (i, item) {
+                        units_options += '<option value="' + item[0] + '">' + item[1] + '</option>';
+                    });
+                    $("#pfm_units_list").append(units_options)
+
+                    var country_options = ""
+                    $.each(response.country_list, function (i, item) {
+                        country_options += '<option value="' + item[0] + '">' + item[1] + '</option>';
+                    });
+                    $("#pfm_country_list").append(country_options)
+
+                    var lang_options = ""
+                    $.each(response.lang_list, function (i, item) {
+                        lang_options += '<option value="' + item[0] + '">' + item[1] + '</option>';
+                    });
+                    $("#pfm_language_list").append(lang_options)
+                    hide_content_divs()
+                    document.getElementById("content_define_prd_ser").style.display = "block";
+                }
+            });
+
+        }
+
+        function upload_product_services()
+        {
+
+        }
+
+
+    </script>
+
+</body>
+
+</html>

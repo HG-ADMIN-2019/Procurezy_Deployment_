@@ -1,0 +1,209 @@
+    <div class="modal fade" id="myModalEmail">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="email-support-title"> Email Support</h5>
+<button type="button" class="btn btn-outline-secondary remove_upload_data" data-dismiss="modal"><i
+                            class="fas fa-times"></i> close</button>
+                </div>
+                <div class="modal-body scrollbox">
+                    <div class="alert alert-success " id="org_support_email_success" role="alert" hidden> <span id="success_msg_id"></span></div>
+                    <div id="id_check_error_messages_mail" class="alert alert-danger check_error_messages" hidden></div>
+                    <div >
+                        <p id="id_error_msg_mail" class="alert alert-danger" hidden></p>
+                    </div>
+                    <table class="class_popup_table table table-bordered mt-2" id="id_popup_table_email" >
+                        <thead>
+                        <tr>
+                            <th id="select_email" hidden>Select</th>
+                            <th>Support Email</th>
+                            <th id="id_del_ind_checkbox_email" hidden>Del Indicator</th>
+                            <th hidden></th>
+                        </tr>
+                        </thead>
+                        <tbody id=id_popup_tbody_email>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary display-none" id="edit_id_email" onclick="onclick_edit_email()"><i class="fas fa-save"></i> edit</button>
+                    <div id="save_cancel_btn_email" class="display-none">
+                        <button class="btn btn-primary " id="save_id_email" onclick="save_email_support_data()"><i class="fas fa-save"></i> save</button>
+                        <button type="button" class="btn btn-primary" onclick="cancel_support_details_email()"><i class="fas fa-times"></i> cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // on click add icon display the row in to add the new entries for email
+    function add_popup_row_email() {
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table_email').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+        basic_add_new_html = '<tr>' +
+            '<td><input class="input form-control" type="text" id="email" name="email" required></td>' +
+            '<td hidden><input type="text" id="org_support_guid"></td></tr>';
+        $('#id_popup_tbody_email').append(basic_add_new_html);
+        table_sort_filter_popup_pagination('id_popup_table_email');
+    }
+
+    //onclick of delete,delete the row for Email
+    function application_settings_delete_Row_email(myTable) {
+        $('#id_popup_table_email').DataTable().destroy();
+        try {
+            var table = document.getElementById(myTable);
+            var rowCount = table.rows.length;
+            for (var i = 0; i < rowCount; i++) {
+                table.deleteRow(i);
+                rowCount--;
+                i--;
+            }
+            // Uncomment below lines if you need to hide specific elements
+            // $("#id_delete_country").hide();
+            // $("#id_copy_country").hide();
+            // $("#id_update_country").hide();
+            table_sort_filter_popup_pagination('id_popup_table_email');
+            return rowCount;
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    //**********************************
+    function cancel_support_details_email() {
+        $(".hg_edit_display_mode").prop("disabled", true);
+        document.getElementById('save_cancel_btn_email').style.display = 'none';
+        document.getElementById('edit_id_email').style.display = 'block';
+        $("#org_support_email_success").prop("hidden", true);
+        // Close the modal
+        $('#myModalEmail').modal('hide');
+    }
+
+
+    //**************************
+    function onclick_edit_email() {
+        $(".hg_edit_display_mode").prop("disabled", false);
+        document.getElementById('save_cancel_btn_email').style.display = 'block';
+        document.getElementById('edit_id_email').style.display = 'none';
+    }
+
+    //**************************
+    function email_delete_check(check) {
+        if ($(check).is(':checked')) {
+           $("#email_delete_btn").prop( "hidden", false );
+        } else {
+         $("#email_delete_btn").prop( "hidden", true );
+        }
+    }
+
+
+//onclick of add button display myModal popup and set GLOBAL_ACTION button value for email
+    function onclick_add_button_email(button) {
+        $('#myModalEmail').modal('show');
+        GLOBAL_ACTION = button.value;
+        $("#id_popup_tbody_email").empty();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Org_Support:get_support_data' %}",
+            data: {
+               // calender_id: GLOBAL_CALENDER_ID
+            },
+            success: function (response) {
+                if (response['email_support_data_array'].length == 0) {
+                    document.getElementById('save_cancel_btn_email').style.display = 'block';
+                    document.getElementById('edit_id_email').style.display = 'none';
+                    basic_add_new_html = '<tr><td><input class="input form-control"  type="text" id="email"  name="email" required></td>' +
+                                         '<td hidden><input type="text" id="org_support_guid"></td></tr>';
+                    $('#id_popup_tbody_email').append(basic_add_new_html);
+                    $('#id_popup_table_email tbody').html(basic_add_new_html);
+                } else {
+                    document.getElementById('edit_id_email').style.display = 'block';
+                    document.getElementById('save_cancel_btn_email').style.display = 'none';
+                    var i;
+                    content = '';
+                    console.log(response['email_support_data_array'].length);
+                    for (i = 0; i < response['email_support_data_array'].length; i++) {
+                        content += '<tr>';
+                        content += '<td><input class="input form-control hg_edit_display_mode" id="email" required type="text" name="email" value="' + response['email_support_data_array'][i] + '" disabled /></td>'
+                        content += '<td hidden><input class="input" type="text" name="org_support_guid" value="' + response['email_support_guid_array'][i] + '" /></td>';
+                        content += '</tr>';
+                        $('#id_popup_table_email tbody').html(content);
+                        $('#myModalEmail').modal('show');
+                    }
+                }
+            },
+            error: function (error) {
+               // error_msg.innerHTML = error.responseText
+            }
+        });
+        // table_sort_filter('display_basic_table');
+        $("#id_del_ind_checkbox_email").prop("hidden", true);
+        // document.getElementById("id_del_add_button").style.display = "block";
+        // $("#save_id_email").prop("hidden", false);
+    }
+
+    //**************************
+function save_email_support_data() {
+    var form_data = [];
+    var isValid = true; // Initialize isValid as true
+    $("#id_popup_table_email TBODY TR").each(function () {
+        var row = $(this);
+        var support_data = {};
+        support_data.support_type = 'EMAIL';
+        support_data.support_email = row.find("TD").eq(0).find('input[type="text"]').val();
+        support_data.support_number = '';
+        support_data.username = '';
+        support_data.org_support_guid = row.find("TD").eq(1).find('input[type="text"]').val();
+        isValid = email(support_data.support_email);
+        if (isValid) {
+            // Check for additional condition: presence of "." after "@" in the email
+            isValid = support_data.support_email.indexOf('@') !== -1 && support_data.support_email.indexOf('.', support_data.support_email.indexOf('@')) !== -1;
+        }
+        if (!isValid) {
+            console.log("Invalid email:", support_data.support_email);
+            $('#org_support_email_success').text("Invalid email: " + support_data.support_email);
+            $('#org_support_email_success').prop('hidden', false);
+        } else {
+            form_data.push(support_data);
+        }
+    });
+    if (!isValid) {
+        // If any email is invalid, don't proceed to save
+        return;
+    }
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:org_support_save' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+            document.getElementById('org_support_email_success').innerHTML = response.message;
+            $('#org_support_email_success').prop('hidden', false);
+            $("#org_support_guid").val(response.updated_guid);
+
+            // Hide the "Save" and "Cancel" buttons
+            $("#save_cancel_btn_email").hide();
+
+            // Show the "Edit" button
+            $("#edit_id_email").show();
+            $(".hg_edit_display_mode").prop("disabled", true);
+            // Close the modal after a delay
+            setTimeout(function() {
+                $('#org_support_email_success').prop('hidden', true);
+                $('#myModalEmail').modal('hide');
+            }, 5000); // Close after 5 seconds (adjust the delay as needed)
+        }
+    });
+}
+
+
+    // Email validation function
+    function email(inputtxt) {
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/; // Modified the regex pattern
+        return inputtxt.match(mailformat);
+    }
+</script>

@@ -1,0 +1,21 @@
+#accounting_tab thead{
+    font-weight:bold;
+}
+
+#doc_list thead{
+    font-weight:bold;
+}
+
+#accounting_report_table_wrapper, #sup_tab_wrapper, #user_report_table_wrapper, #approval_report_table_wrapper, #doc_list_wrapper, #user_tab_wrapper {
+    .row:nth-child(1) {
+        margin-right: 1px;
+        margin-left: 1px;
+        margin-top: 15px;
+    }
+    
+    .row:nth-child(3) {
+        margin-right: 1px;
+        margin-left: 1px;
+        margin-bottom: 15px;
+    }
+}

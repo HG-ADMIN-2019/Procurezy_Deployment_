@@ -1,0 +1,795 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Approval Limits (Master Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Approval Limits</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Template" onclick="location.href='{% url 'eProc_Master_Settings:extract_approverlimit_data_template' %}'"type="button">
+                    <i class="fas fa-download"></i> template
+                </button>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Master_Settings:extract_approverlimit_data'%} '"type="button">
+                    <i class="fas fa-download"></i> extract data
+                </button>
+                <button class="btn btn-outline-primary modal_upload" title="Upload" id="id_upload_redirect_data" value="approval_limit_upload" onclick="onclick_upload_button()" type="button">
+                    <i class="fas fa-cloud-upload-alt"></i> upload data
+                </button>
+
+                <button class="btn btn-primary" title="Add Approval Limit" type="button" id="id_add_data" value="ADD" data-toggle="modal" data-target="#App_limt_Modal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> Add Approval Limit
+                </button>
+                  <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button()">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" title="Delete" id="id_delete_data" value="approval_limit_delete" style="display:none;" data-toggle="modal" data-target="#id_delete_confirm_popup">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;" value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel" id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_approval_limit_table table table-bordered custom-table">
+                    <thead id="id_approval_limit_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox"  hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th>Company Number</th>
+                            <th>User Name</th>
+                            <th>Approver Limit Code</th>
+                            <th hidden>guid</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_approval_limit_tbody">
+                        {% for applimit in approval_limit %}
+                            <tr>
+                                <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                                <td>{{applimit.company_id}}</td>
+                                <td>{{ applimit.approver_username}}</td>
+                                <td>{{applimit.app_code_id}}</td>
+                                <td hidden>{{applimit.app_guid}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--end of display basic approval_limit table-->
+    <!--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="App_limt_Modal">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Approval Limit</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> Add New Row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_approval_limit_code"></p>
+                            <p id="id_error_msg_approval_limit_name"></p>
+                            <p id="id_error_msg_approval_limit_length"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                            <tr>
+                                <th id="header_select">Select</th>
+                                <th>Company Number</th>
+                                <th>User Name</th>
+                                <th>Approver Limit Code</th>
+                                <th hidden>guid</th>
+                                <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" title="Delete" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button id="id_check_data" title="Check" style="display:none;" class="btn btn-primary" type="button" onclick="check_data()"><i class="fas fa-check"></i> check</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>  
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %} {% endfor %} {% endif %}
+    </div>
+</div>
+<script>
+    var rendered_approval_limit_data = {{approval_limit|safe}};
+    var messages_list = {{messages_list|safe}};
+    var rendered_user_data = {{user_details|safe}};
+    var rendered_company_data = {{upload_data_company|safe}};
+    var rendered_app_code_id_data = {{upload_data_app_code_id|safe}};
+    var approval_limit_data_array = {}
+    var main_table_approval_limit_value = [];
+    var approval_limit = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_APPROVAL_LIMIT"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_APPROVAL_LIMIT"]
+    var company_list = [] ; var arrDistinct = [];
+    var unique_user_name= [];
+    var unique_app_code = [];
+    var app_code_id_dropdown;
+    var approval_limit;
+    var app_limit_array = [];
+    var company_array = [];
+    var unique_app_limit = [];
+
+    //*********************************************
+    var user_name_dropdown ="";
+    var company_id_dropdown="";
+    var app_code_id_dropdown = "";
+    
+    //******************************
+    function applim_dropdown() {
+        approval_limit = [];
+        user_name_dropdown = "";
+        $.each(rendered_user_data, function(i, item){
+            user_name_dropdown += '<option value="' + item.username + '">' + item.username + '</option>'
+        });
+        company_id_dropdown = "";
+        $.each(rendered_company_data, function(i, item){
+            company_id_dropdown += '<option  value="' + item.company_id + '">' + item.company_id + '</option>'
+        });
+        app_code_id_dropdown = "";
+        $.each(rendered_app_code_id_data, function(i, item){
+            app_code_id_dropdown += '<option value="' + item.app_code_id + '">' + item.app_code_id + '</option>';
+            app_limit_dict = {};
+            app_limit_dict.company_id = item.company_id;
+            app_limit_dict.app_code_id = item.app_code_id;
+            approval_limit.push(app_limit_dict);
+            app_limit_array.push(item.app_code_id);
+        });
+        company_id_dropdown = "";
+        var unique_comp = [];
+        var unique_app = [];
+        // Filter rendered_approval_limit_data based on app_code_id and company_id in rendered_app_code_id_data
+        var filtered_approval_limit_data = rendered_app_code_id_data.filter(function(item) {
+            return app_limit_array.includes(item.app_code_id) &&
+                rendered_app_code_id_data.some(function(app_item) {
+                    return app_item.app_code_id === item.app_code_id && app_item.company_id === item.company_id;
+                });
+        });
+        $.each(filtered_approval_limit_data, function(i, item) {
+            company_id_dropdown += '<option value="' + item.company_id + '">' + item.company_id + '</option>';
+            company_dict = {};
+            company_dict.app_code_id = item.app_code_id;
+            company_dict.company_id = item.company_id;
+            company_list.push(company_dict);
+            company_array.push(item.company_id);
+            unique_comp.push(item.company_id);
+            unique_app_limit.push(item.app_code_id);
+        });
+        $(unique_comp).each(function(index, item) {
+            if ($.inArray(item, arrDistinct) == -1) {
+                arrDistinct.push(item);
+            }
+        });
+        company_id_dropdown = '';
+        $(arrDistinct).each(function(index, item) {
+            company_id_dropdown += '<option value="' + item + '">' + item + '</option>'
+        });
+    }
+
+    //onclick of data Upload copy data to modal pop-up
+    function onclick_display_csv_data() {
+        $("#valid_upload").modal('hide');
+        $("#id_check_success_messages").empty();
+        $("#id_check_error_messages").empty();
+        $("#id_check_success_messages").prop("hidden", true);
+        $("#id_check_error_messages").prop("hidden", true);
+        $("#id_check_special_character_messages").prop("hidden", true);
+        $("#error_msg_id").css("display", "none")
+        $('#id_popup_table').DataTable().destroy();
+        formdata = new FormData();
+        attached_file = $('#id_file_data_upload').prop('files')[0]
+         if(attached_file == undefined){
+           display_file_select_error(); // Display error message if no file is selected
+        }
+        else {
+            file_extension = (attached_file.name).split(".")[1]
+            file_extension = file_extension.toUpperCase();
+            if(file_extension == 'CSV') {
+                formdata.append("file_attach", attached_file);
+                formdata.append("Tablename",Tablename);
+                formdata.append("appname",appname);
+                $('#id_data_upload').modal('hide');
+                $('#id_popup_tbody').empty();
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Basic_Settings:data_upload' %}",
+                    data: formdata,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(response) {
+                        if(response.error_message){
+                            $("#id_error_msg_upload").prop("hidden",false)
+                            document.getElementById("id_error_msg_upload").innerHTML = response.error_message;
+                            document.getElementById("id_error_msg_upload").style.color = "Red";
+                            $('#id_data_upload').modal('show');
+                        } else {
+                            approval_limit_data_array = response.valid_data_list;
+                            var edit_basic_data = '';
+                            var dropdown_values = [];
+                            var del_ind = '';
+                            $("#id_popup_tbody").empty();
+                            $.each(response.valid_data_list, function(i, value) {
+                                del_ind = '<td>' + value.del_ind + '</td>'
+                                if (value.del_ind == 1) {
+                                    del_ind = ' <input type="checkbox" value="' + value.del_ind + '" checked>'
+                                } else {
+                                    del_ind = '<input type="checkbox" value="' + value.del_ind + '" required>'
+                                }
+                                var user_drwn = value.username
+                                var company_type_value = value.company_id
+                                var app_code_id_value = value.app_code_id
+                                dropdown_values.push([user_drwn, company_type_value, app_code_id_value])
+
+                                var user = '';
+                                var user_list = '';
+                                var user_id_list = '';
+                                $.each(rendered_user_data, function(i, item){
+                                    if( value.approver_username == item.username){
+                                        user = '<option value="' + item.username + '">' + item.username + '</option>';
+                                    }else{
+                                        user_list += '<option value="' + item.username + '">' + item.username + '</option>';
+                                    }
+                                    user_id_list = user + user_list
+                                });
+
+                                var company = '';
+                                var company_list = '';
+                                var company_id_list = '';
+                                $.each(rendered_company_data, function(i, item){
+                                    if( value.company_id == item.company_id){
+                                        company = '<option value="' + item.company_id + '">' + item.company_id + '</option>';
+                                    }else{
+                                        company_list += '<option value="' + item.company_id + '">' + item.company_id + '</option>';
+                                    }
+                                    company_id_list = company + company_list
+                                });
+
+                                var appid = '';
+                                var appid_list = '';
+                                var appid_id_list = '';
+                                $.each(rendered_app_code_id_data, function(i, item) {
+                                    if( value.app_code_id == item.app_code_id) {
+                                        appid = '<option value="' + item.app_code_id + '">' + item.app_code_id + '</option>';
+                                    }else{
+                                        appid_list += '<option value="' + item.app_code_id + '">' + item.app_code_id + '</option>';
+                                    }
+                                    appid_id_list = appid + appid_list
+                                });
+                                edit_basic_data += '<tr><td><input type="checkbox" required></td>'+
+                                '<td><select class="form-control" type = "text"><option value ="' + value.company_id + '"'+company_id_list+'>'+value.company_id+'</option></select></td>'+
+                                '<td><select type="text" class="form-control"><option value ="' + value.approver_username + '"'+user_id_list+'>'+value.approver_username+'</option></select></td>'+
+                                '<td><select class="form-control" type = "text"><option value ="' + value.app_code_id + '"'+appid_id_list+'>'+value.app_code_id+'</option></select></td>'+
+                                '<td hidden><input type="text" value=""></td><td>' + del_ind + '</td></tr>';
+                            });
+
+                            var i =0;
+                            $("#id_popup_table TBODY TR").each(function() {
+                                var row = $(this);
+                                var user_id_list = dropdown_values[i][0]
+                                var appid_id_list = dropdown_values[i][1]
+                                var company_id_list = dropdown_values[i][2]
+                                company_num = row.find("TD").eq(1).find("select option:selected").val();
+                                var assign_val = approval_limit_find(company_num)
+                                $(row.find("TD").eq(2).find("select option[value="+user_id_list+"]")).attr('selected','selected');
+                                $(row.find("TD").eq(1).find("select option[value="+company_id_list+"]")).attr('selected','selected');
+                                $(row.find("TD").eq(3).find("select option[value="+appid_id_list+"]")).attr('selected','selected');
+                                $(row.find("TD").eq(1).find("select")).change(function() {
+                                    row.find("TD").eq(3).find("select").empty()
+                                    row.find("TD").eq(4).find("select").empty()
+                                    company_num = row.find("TD").eq(1).find("select option:selected").val();
+                                    var assign_val = approval_limit_find(company_num)
+                                    row.find("TD").eq(2).find("select").append(assign_val.user_name_dropdown)
+                                    row.find("TD").eq(3).find("select").append(assign_val.app_code_id_dropdown)
+                                    row.find("TD").eq(7).html("1")
+                                })
+                                i++;
+                            });
+                            $('#id_popup_tbody').append(edit_basic_data);
+                            $("#id_del_ind_checkbox").prop("hidden", false);
+                            $( "#header_select").prop( "hidden", false );
+                            $(".class_del_checkbox").prop("hidden", false);
+                            $('#App_limt_Modal').modal('show');
+                            $('#id_data_upload').modal('hide');
+                            document.getElementById("id_check_data").style.display = "block";
+                            document.getElementById("id_del_add_button").style.display = "block";
+                            $("#id_check_data").prop("hidden", false);
+                            $("#save_id").prop("hidden", true);
+                            table_sort_filter_popup_pagination('id_popup_table')
+                        }
+                        CloseLoaderPopup();
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+
+                });
+            }
+            else{
+                 display_file_select_error(); // Display error message for file selection except .csv
+            }
+        }
+    }
+    
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        var error_message = '';
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes,approval_limit_data )
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                // compare main table and pop up for duplicate values
+               [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+               if(no_duplicate_entries == 'N'){
+                    $('#App_limt_Modal').modal('show');
+               }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var approval_limit_data_array = approval_limit_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':approval_limit_data,'table_name':'ApproverLimit','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_approval_limit_data = Response[0];
+                        rendered_user_data = Response[2].user_details
+                        rendered_company_data = Response[2].upload_data_company
+                        rendered_app_code_id_data = Response[2].upload_data_app_code_id
+                        display_basic_db_data();
+                        $('#App_limt_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message) {
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+  
+    //delete the selected row in db................
+    var main_table_approval_limit_checked = [];
+    function main_table_delete() {
+    $('#success_msg_id').empty()
+    GLOBAL_ACTION = 'DELETE'
+    main_table_approval_limit_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_approval_limit_checked,'table_name':'ApproverLimit','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                rendered_approval_limit_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //check function restricting special char and diaplay the data count of csv file
+    function check_data() {
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_check_success_messages").empty()
+        $("#id_check_error_messages").empty()
+        $("#id_check_success_messages").prop("hidden", true)
+        $("#id_check_error_messages").prop("hidden", true)
+        $("#id_check_special_character_messages").prop("hidden", true)
+        document.getElementById("id_error_msg_approval_limit_code").innerHTML = "";
+        document.getElementById("id_error_msg_approval_limit_name").innerHTML = "";
+        document.getElementById("id_error_msg_approval_limit_length").innerHTML = "";
+        count = 0;
+        flag = 0;
+        var approval_limit_array = new Array
+        var DB_array = new Array
+        var approval_limit_list = new Array
+        var approval_limit_code_check = new Array
+        var approval_limit_compare = '';
+        var Duplicate_count = 0;
+        del_ind = ''
+        $("#id_popup_table TBODY TR").each(function() {
+         $('#id_popup_table').DataTable().destroy();
+            var row = $(this);
+              approv_limit_dic = {}
+            //*************** reading data from the pop-up ***************
+            approv_limit_dic.approver_username = row.find("TD").eq(2).find("select option:selected").val();
+            approv_limit_dic.company_id = row.find("TD").eq(1).find("select option:selected").val();
+            approv_limit_dic.app_code_id = row.find("TD").eq(3).find("select option:selected").val();
+            approv_limit_dic.app_guid = row.find("TD").eq(4).find('input[type="text"]').val()
+            approval_limit_compare = approv_limit_dic.approver_username +'-'+ approv_limit_dic.company_id +'-'+ approv_limit_dic.app_code_id
+            checked_box = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked')
+            if (checked_box) {
+                approv_limit_dic.del_ind = '1'
+            } else {
+                approv_limit_dic.del_ind = '0'
+            }
+            approval_limit_list.push(approv_limit_dic)
+            get_main_table_data();
+            var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+         if(approv_limit_dic.del_ind == '0'){
+             //*************** checking for empty records for product id name (max length = 2) ***************
+            if(approv_limit_dic.app_code_id.length == 0){
+                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                row_color_highlight_empty(row);
+                $("#id_error_msg_prod_cat_desc").prop("hidden",false);
+                error_message = ui_messeges("JMSG002")// Get message details
+                var display8 = error_message;
+                document.getElementById("id_error_msg_prod_cat_desc").innerHTML = display8+ "approver ";
+                $("#id_check_special_character_messages").prop("hidden",false);
+                count = count +1;
+            }
+            else if(approval_limit_code_check.includes(approval_limit_compare)){
+                 $(row).css("border", "#f8d7da");
+                 row_color_highlight(row);
+                 $("#id_check_error_messages").prop("hidden",false);
+                 var display7 = ui_messeges("JMSG001");
+                 document.getElementById("id_check_error_messages").innerHTML = display7;
+                 $("#save_id").prop("hidden", true);
+                 $("#id_delete_duplicate").show()
+                 $("#id_check_data").prop("hidden", false);
+                 count = count +1;
+                  flag = flag + 1;
+            }
+            else if(main_table_low_value.includes(approval_limit_compare)){
+                 $(row).css("border", "#f8d7da");
+                 row_color_highlight(row);
+                 $("#id_check_error_messages").prop("hidden",false);
+                 var display7 = ui_messeges("JMSG001");
+                 document.getElementById("id_check_error_messages").innerHTML = display7;
+                 $("#save_id").prop("hidden", true);
+                 $("#id_delete_duplicate").show()
+                 $("#id_check_data").prop("hidden", false);
+                 count = count +1;
+                  flag = flag + 1;
+            }
+            else{
+                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+                $("#id_delete_duplicate").hide()
+            }
+            approval_limit_code_check.push(approval_limit_compare)
+            main_table_low_value.push(approval_limit_compare)
+            table_sort_filter_popup_pagination('id_popup_table');
+         }
+
+            if(flag == 0){
+                $("#id_delete_duplicate").hide()
+            }
+            else{
+                $("#id_delete_duplicate").show()
+            }
+            if(count == 0){
+                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "none");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+            }
+
+        });
+
+        //*************** shows save button if there are no errors(special characters and max length) ***************
+         if(count == 0){
+            $('#id_popup_table').DataTable().destroy();
+            $("#id_popup_table").find("input,button,textarea,select").attr("disabled", "disabled");
+            document.getElementById("id_del_add_button").style.display = "none";
+            $("#save_id").prop("hidden", false);
+            $("#id_check_data").prop("hidden", true);
+            if (approval_limit_list == 0) {
+                $("#save_id").prop("hidden", true);
+            }
+            popup_data_dict ={'data_list' : approval_limit_list}
+            OpenLoaderPopup();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration_Check:check_approv_limit' %}",
+                data: JSON.stringify(popup_data_dict),
+                success: function(response) {
+                    table_sort_filter_popup_pagination('id_popup_table')
+                     $("#id_check_special_character_messages").prop("hidden", false);
+                     if (count == 0) {
+                            $("#id_check_special_character_messages").prop("hidden", true);
+                     }
+                    var message = ''
+                    update_check_message(response.messages[1])
+                     $("#id_delete_duplicate").hide()
+                    CloseLoaderPopup();
+                }
+            });
+         }
+    }
+
+
+    //onclick of add button display App_limt_Modal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        OpenLoaderPopup();
+        var data = {'table_name':'ApproverLimit'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_user_data = response.user_details
+                rendered_company_data = response.upload_data_company
+                rendered_app_code_id_data = response.upload_data_app_code_id
+                applim_dropdown()
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop( "hidden", false );
+                GLOBAL_ACTION = button.value
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#App_limt_Modal').modal('show');
+                new_row_data();   // Add a new row in popup
+                var account_assign = '';
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    row.find("TD").eq(3).find("select").empty()
+                    company_num = row.find("TD").eq(1).find("select option:selected").val();
+                    var assign_val = approval_limit_find(company_num)
+                    row.find("TD").eq(3).find("select").append(assign_val.app_code_id_dropdown)
+                    $(row.find("TD").eq(1).find("select")).change(function () {
+                        company_dropdwn_change(row);
+                    })
+                })
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        applim_dropdown()
+        $("#error_msg_id").css("display", "none");
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function() {
+            $("#id_error_msg").html("");
+        });
+        if (GLOBAL_ACTION == "approval_limit_upload") {
+            basic_add_new_html = '<tr><td><input type="checkbox" required></td><td><select class="form-control" name="company_dropdown" type="text">'+company_id_dropdown+'</select></td><td><select class="form-control" type="text">'+user_name_dropdown+'</select></td><td><select class="form-control" type="text">'+app_code_id_dropdown+'</select></td><td hidden><input type="text" value=""></td><td class="class_del_checkbox" ><input type="checkbox" required></td></tr>';
+            var table = $('#id_popup_table').DataTable();
+            table.row.add($(basic_add_new_html)).draw();
+            $(".class_del_checkbox").prop("hidden", false);
+            $("#id_del_ind_checkbox").prop("hidden", false);
+            table_sort_filter('id_popup_table');
+        }
+        else {
+              new_row_data();   // Add a new row in popup
+        }
+
+
+        var company_num = '';
+        $("#id_popup_table").on("change", "select[name='company_dropdown']", function() {
+            var row = $(this).closest("tr");
+            company_dropdwn_change(row);
+        });
+        $("#id_popup_table").on("draw.dt", function () {
+            $("#id_popup_table TBODY TR").each(function () {
+                var row = $(this);
+                row.find("TD").eq(3).find("select").empty();
+                company_num = row.find("TD").eq(1).find("select option:selected").val();
+                var assign_val = approval_limit_find(company_num);
+                row.find("TD").eq(3).find("select").append(assign_val.app_code_id_dropdown);
+            });
+        });
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, approval_limit) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(approval_limit, function (i, item) {
+            if((item.company_id == null) || (item.approver_username == null) || (item.app_code_id == null)) {
+                $('#App_limt_Modal').modal('show');
+                error_message = ui_messeges("JMSG002")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if(no_duplicate_value == 'Y'){
+            $.each(validate_add_attributes, function(index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                } else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //******************************************
+    function update_check_message(messages){
+        $.each(messages, function (i, message) {
+            $("#id_check_success_messages").append('<p>' + message + '</p>')
+        });
+        $("#id_check_success_messages").prop("hidden",false)
+    }
+
+    //***************************************
+    function onclick_copy_update_button() {
+        OpenLoaderPopup();
+        var data = {'table_name':'ApproverLimit'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_user_data = response.user_details
+                rendered_company_data = response.upload_data_company
+                rendered_app_code_id_data = response.upload_data_app_code_id
+                applim_dropdown()
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                //Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var guid = '';
+                var dropdown_values = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        if(GLOBAL_ACTION == "COPY") {
+                            guid = 'GUID';
+                            edit_basic_data += '<tr><td><input type="checkbox" required></td><td><select class="form-control" disabled>'+company_id_dropdown+'</select></td><td><select class="form-control">'+user_name_dropdown+'</select></td><td><select class="form-control">'+app_code_id_dropdown+'</select></td><td hidden><input type="text" value="'+guid+'"></td><td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
+                            $("#header_select").prop("hidden", false);
+                        } else {
+                            guid = row.cells[4].innerHTML;
+                            edit_basic_data += '<tr><td hidden><input type="checkbox" required></td><td><select class="form-control" disabled>'+company_id_dropdown+'</select></td><td><select class="form-control"disabled>'+user_name_dropdown+'</select></td><td><select class="form-control">'+app_code_id_dropdown+'</select></td><td hidden><input type="text" value="'+guid+'"></td><td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
+                            $("#header_select").prop("hidden", true);
+                        }
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        var approver_username_value = row.cells[2].innerHTML
+                        var company_type_value = row.cells[1].innerHTML
+                        var app_code_id_value = row.cells[3].innerHTML
+                        dropdown_values.push([company_type_value, approver_username_value, app_code_id_value])
+                    }
+                }
+                $('#id_popup_table').append(edit_basic_data);
+                var i =0;
+                $("#id_popup_table TBODY TR").each(function() {
+                    var row = $(this);
+                    var approver_username_value = dropdown_values[i][1]
+                    console.log(approver_username_value)
+                    var company_type_value = dropdown_values[i][0]
+                    var app_code_id_value = dropdown_values[i][2]
+                    $(row.find("TD").eq(2).find("select option[value="+approver_username_value+"]")).attr('selected','selected');
+                    $(row.find("TD").eq(1).find("select option[value="+company_type_value+"]")).attr('selected','selected');
+                    $(row.find("TD").eq(3).find("select option[value="+app_code_id_value+"]")).attr('selected','selected');
+                    i++;
+                });
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#App_limt_Modal').modal('show');
+                table_sort_filter('id_popup_table');
+                $('#App_limt_Modal').modal('show');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var approv_limit_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            approv_limit_dic = {}
+            approv_limit_dic.approver_username = row.find("TD").eq(2).find("select option:selected").val();
+            approv_limit_dic.company_id = row.find("TD").eq(1).find("select option:selected").val();
+            approv_limit_dic.app_code_id = row.find("TD").eq(3).find("select option:selected").val();
+            var compare = approv_limit_dic.approver_username +'-'+ approv_limit_dic.company_id +'-'+ approv_limit_dic.app_code_id
+            approv_limit_check.push(compare);
+            jQuery.grep(approv_limit_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+        });
+    }
+
+</script>
+<script src="{% static 'scripts/approval_data/approval_limit.js' %}"></script>
+{% endblock %}

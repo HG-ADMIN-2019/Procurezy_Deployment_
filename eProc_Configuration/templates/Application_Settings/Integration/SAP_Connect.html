@@ -1,0 +1,216 @@
+
+<style>
+    .hg_button {
+        float: left;
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+    .hg_table,
+    th,
+    td {
+        border: none;
+        border-collapse: collapse;
+
+    }
+</style>
+
+<div id="define_connection_div" style="display: none" class="hg_main hg_application_main">
+    <div>
+        <h1 style="vertical-align: middle;">Available connection</h1>
+        <hr class="hg_heading_hrborder">
+    </div>
+    <button class="btn btn-primary hg_button_margin" onclick="edit_connections()" id="edit_con"
+            style="margin-right: 10px;display: block;">
+        <i class="fas fa-edit" id="edit" title="Edit"></i> Edit </button>
+    <button class="btn btn-primary hg_connection_edit_mode hg_button_margin" onclick="open_popup()"
+            style="margin-right: 10px;display: none;"> <i class="fa fa-plus" aria-hidden="true" id="add_line"
+                                                          title="Add Line"></i> &nbsp;Add </button>
+
+    <button class="btn btn-primary hg_connection_edit_mode hg_button_margin" onclick="delete_connections()"
+            style="margin-right: 10px;display:none;margin-top:20px;"> <i class="fa fa-trash" aria-hidden="true"
+                                                        title="Delete Line"></i>Delete</button>
+
+    <div id="add_connection"  class="modal"  style="display: none;padding: 30px; margin-top: 10%;">
+        <!-- Modal content -->
+        <div class="modal-content" style="width:500px; height:420px;padding: 10px;margin:auto;overflow-y: scroll;">
+            <div class="modal-header">
+                <h1 class="modal-title">Add new connection</h1>
+<!--                <hr class="hg_heading_hrborder">-->
+            </div>
+
+            <div class="form-group">
+                <p>System Name:<br>
+                    <input type="text" class="form-control" id="sys_name" name="sys_name"></p>
+                <p>System ID : <br>
+                    <input type="number" class="form-control" id="sys_id"></p>
+                <p>Ashost :<br>
+                    <input type="text" class="form-control" id="ashost" name="ashost"></p>
+                <p>Sysnr:<br>
+                    <input type="text" class="form-control" id="sysnr" name="sysnr"></p>
+
+                <p>User ID:<br>
+                    <input type="text" class="form-control" id="user" name="user"></p>
+                <p>Password:<br>
+                    <input type="text" class="form-control" id="passwd" name="passwd"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary hg_button_margin"
+                        onclick="document.getElementById('add_connection').style.display='none'"> <i
+                        class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-primary" onclick="add_connection()"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hg_table_app_align">
+        <table id="connection_list" class="table table-striped">
+        </table>
+
+    </div>
+    <div  >
+        <button type="button" class="btn btn-primary hg_connection_edit_mode  hg_cancel_save_button_align" onclick="Save_connection_changes()"><i
+                class="fas fa-times"></i> cancel</button>
+        <button class="btn btn-primary hg_connection_edit_mode hg_button_margin hg_cancel_save_button_align" onclick="add_connection()" style="display: none;"><i
+            class="fas fa-save"></i> Save </button>
+
+    </div>
+</div>
+<script>
+    var edit_connection_save_ind = ""
+    var edit_connection_tr = ""
+    function Save_connection_changes() {
+        get_items = document.getElementsByClassName("hg_connection_edit_mode")
+        document.getElementById("edit_con").style.display = "none"
+        for (let i = 0; i < get_items.length; i++) {
+            get_items[i].style.display = "none"
+        }
+        document.getElementById("edit_con").style.display = "block"
+    }
+    function open_popup() {
+        document.getElementById('add_connection').style.display = 'block'
+        $('#add_connection').find('input:text').val('');
+        // $('#add_connection').find('input:number').val('');
+        document.getElementById("sys_id").innerHTML = "";
+    }
+    function edit_connections() {
+        let get_elements = document.getElementsByClassName("hg_connection_edit_mode")
+        document.getElementById("edit_con").style.display = "none"
+        for (let i = 0; i < get_elements.length; i++) {
+            get_elements[i].style.display = "block"
+        }
+    }
+    function delete_connections() {
+        let data_checks = document.getElementsByClassName("hg_delete")
+        connection_to_delete = [];
+        for (let i = 0; i < data_checks.length; i++) {
+            if (data_checks[i].checked == true) {
+                let get_connection_id = data_checks[i].parentElement.parentElement.id
+                connection_to_delete.push(get_connection_id)
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_SAP_Connector:delete_connections' %}",
+                    data: {
+                        delete_item: get_connection_id
+                    },
+                    success: function (response) {
+                        $("#" + get_connection_id).empty()
+                        $("#" + get_connection_id).remove()
+                    }
+                });
+            }
+        }
+    }
+
+    var connection_deleteable_list = [];
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_SAP_Connector:Connections' %}",
+        success: function (response) {
+            connection_deleteable_list = response
+        }
+    });
+
+    function define_connection(instance) {
+        let ele_display = document.getElementsByClassName("hg_connection_edit_mode")
+        for (let i = 0; i < ele_display.length; i++) {
+            ele_display[i].style.display = "none"
+        }
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_SAP_Connector:get_connection' %}",
+            success: function (response) {
+                $("#connection_list").empty();
+                let hrd = '<tr> <th class= "connection_edit_mode" style="display: none;border:none;">Select</th><th>System ID</th> <th>System Name</th><th>Ashost</th><th>sysnr</th><th>User ID</th><th>Password</th> <th class= "connection_edit_mode" style="display: none;border:none;">Action</th></tr>'
+                $("#connection_list").append(hrd)
+                let item = response
+                let edit_icon = "&nbsp;&nbsp;<i class='fas fa-edit 'style='color:orange' title='Edit' onclick= 'edit_connection_save(this)'></i>"
+                $.each(response, function (i, item) {
+                    let child = ""
+                    if (connection_deleteable_list.includes(item.pk)) {
+                    child = '<tr id = ' + item.pk + '><td class= "connection_edit_mode" style="display:none;border:none "> <input type= "checkbox" class="hg_delete"></td><td>' + item.pk + '</td><td>' + item.fields.sys_name + '</td><td>' + item.fields.ashost + '</td><td>' + item.fields.sysnr + '</td><td>' + item.fields.user + '</td><td>' + item.fields.passwd + '</td><td class= "connection_edit_mode" style="display:none;border:none">' + edit_icon + '</td></tr>'
+                    }
+                    else {
+                    child = '<tr id = ' + item.pk + '><td class= "connection_edit_mode" style="display:none;border:none"> <input type= "checkbox"  style="color:grey"></td><td>' + item.pk + '</td><td>' + item.fields.sys_name + '</td><td>' + item.fields.ashost + '</td><td>' + item.fields.sysnr + '</td><td>' + item.fields.user + '</td><td>' + item.fields.passwd + '</td><td class= "connection_edit_mode" style="display:none;border:none">' + edit_icon + '</td></tr>'
+                    }
+                    $("#connection_list").append(child)
+                })
+                hide_content_divs()
+                document.getElementById("define_connection_div").style.display = "block";
+            }
+        });
+    }
+    function add_connection() {
+        let sys_name = document.getElementById("sys_name").value;
+        let sys_id = document.getElementById("sys_id").value;
+        let ashost = document.getElementById("ashost").value;
+        let sysnr = document.getElementById("sysnr").value;
+<!--        let client = document.getElementById("client").value;-->
+        let user = document.getElementById("user").value;
+        let passwd = document.getElementById("passwd").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_SAP_Connector:create_connection' %}",
+            data: {
+                "sys_name": sys_name,
+                "sys_id": sys_id,
+                "ashost": ashost,
+                "sysnr": sysnr,
+<!--                "client": client,-->
+                "user": user,
+                "passwd": passwd
+            },
+            success: function (response) {
+                if (edit_connection_save_ind == 'X') {
+                    $("#" + edit_connection_tr).remove()
+                }
+                let edit_icon = "&nbsp;&nbsp;<i class='fas fa-edit 'style='color:orange' title='Edit' onclick= 'edit_connection_save(this)'></i>"
+                $.each(response, function (i, item) {
+                    let child = '<tr id = ' + item.pk + '><td class= "connection_edit_mode" style="display:block;border:none; "> <input type= "checkbox" class="hg_delete"></td><td>' + item.pk + '</td><td>' + item.fields.sys_name + '</td><td>' + item.fields.ashost + '</td><td>' + item.fields.sysnr + '</td><td>' + item.fields.user + '</td><td>' + item.fields.passwd + '</td><td class= "connection_edit_mode" style="display:block;border:none;">' + edit_icon + '</td></tr>'
+                    $("#connection_list").append(child)
+                })
+                document.getElementById("add_connection").style.display = "none";
+                $('#add_connection').find('input:text').val('');
+
+            }
+        });
+    }
+
+    function edit_connection_save(instance) {
+        let get_tr = instance.parentElement.parentElement
+        edit_connection_tr = get_tr.id
+        let get_cells = get_tr.cells
+        document.getElementById("sys_id").value = get_cells[1].innerText
+        document.getElementById("sys_id").readOnly = true;
+        document.getElementById("sys_id").style.backgroundColor = "#ececec"
+        document.getElementById("sys_name").value = get_cells[2].innerText
+        document.getElementById("ashost").value = get_cells[3].innerText
+        document.getElementById("sysnr").value = get_cells[4].innerText
+        document.getElementById("user").value = get_cells[5].innerText
+        document.getElementById("passwd").value = get_cells[6].innerText
+        document.getElementById("add_connection").style.display = "block"
+        edit_connection_save_ind = "X"
+    }
+</script>
+
+

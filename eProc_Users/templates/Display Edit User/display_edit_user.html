@@ -1,0 +1,530 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %}  Employee Details (Employee Management) {% endblock %}
+
+{% block maincontent %}
+
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between">
+            <h3>Employee Details</h3>
+            <div></div>
+        </div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#user_basic_data_tab" class="sub-tab active">
+                <div class="sub-tab-link">
+                    <i class="fas fa-info-circle"></i><span> Basic Data</span>
+                </div>
+            </li>
+
+        </ul>
+
+        <div class="tab-content">
+            <div id="user_basic_data_tab" data-tab-content class="active">
+                <div class="mt-3">
+                    <div id="save_error_div" class="alert alert-danger display-none" role="alert" ></div>
+                     <div>
+                        {% if messages %}
+                        <div>
+                            {% for message in messages %}
+                            {% if message.tags == 'error'%}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-success msg-display-class">{{ message }}</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <form method="POST" id="user_registration_form">
+                        {% csrf_token %}
+                        {{ reg_form.non_field_errors }}
+                        <div class="alert alert-success msg-display-class display-none" id="user_basic_update_success" role="alert"></div>
+
+                        <div class="d-flex justify-content-end">
+                            <div id="save_user_info_btn">
+                                <button id="" type="button" class="btn btn-primary" onclick="save_user_basic_info();"><i class="fas fa-save"></i> save</button>
+                            </div>
+                            <div id="cancel_button" hidden style="padding-left: 5px;">
+                                <button type="button" class="btn btn-primary" onclick="cancel_user_basic_info()"><i class="fas fa-times"></i> cancel</button>
+                            </div>
+                            
+                            <div id="edit_user_info_btn" hidden>
+                                <button type="button" class="btn btn-primary" onclick="edit_user_basic_info()"><i class="fas fa-pencil-alt"></i> edit</button>
+                            </div>
+                        </div>
+
+                        <!--    Basic Data      -->
+                        <div class="card card-shadow-1 mt-3">
+                            <h5 class="card-header">Account Information</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>User Name</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="16" class="form-control mandatory_fields check_special_char_nospace" id="username" value="{{user_info.username|upper}}" disabled>
+                                        <span id="err_username" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Employee Number</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="15" class="form-control mandatory_fields check_special_char_nospace" id="employee_id" value="{{user_info.employee_id}}" disabled>
+                                        <span id="err_employee_id" class="error_message" hidden></span>
+                                    </div>
+                                    
+                                    <div class="form-group col-md">
+                                        <label>User Type</label><span class="hg_required"></span><br>
+                                        <select type="text" class="form-control mandatory_fields" id="user_type" name="user_type" disabled>
+                                            {% for usertype in dropdown_usertype_values %}
+                                                <option value="{{usertype}}">{{usertype}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_user_type" class="error_message" hidden></span>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>First Name</label><span class="hg_required"></span><br>
+                                        <input type="text" style="text-transform: capitalize;" maxlength="30" class="form-control hg_edit_display_mode mandatory_fields check_special_char_nospace" id="first_name" name="first_name" value="{{user_info.first_name}}" disabled>
+                                        <span id="err_first_name" class="error_message" hidden></span>
+                                    </div>
+                                    
+                                    <div class="form-group col-md">
+                                        <label>Last Name</label><br>
+                                        <input type="text" style="text-transform: capitalize;" maxlength="30" class="form-control hg_edit_display_mode check_special_character" id="last_name" value="{{user_info.last_name}}" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+
+                                        <label> Currency</label><span class="hg_required"></span><br>
+                                         <select name="" id="id_currency_id" class="form-control hg_edit_display_mode mandatory_fields" disabled>
+                                             <option value="">Select</option>
+                                                {% for items in currency_id %}
+                                                    <option value="{{items.currency_id}}" {% if user_info.currency_id == items.currency_id %}selected{% endif %}>{{items.currency_id}}-{{items.description}}</option>
+                                                {% endfor %}
+                                        </select>
+                                        <span id="err_currency_id" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Language</label><span class="hg_required"></span><br>
+                                        <select name="" id="id_language_id" class="form-control hg_edit_display_mode "  disabled>
+                                            <option value="" selected>Select</option>
+                                            {% for items in language_list %}
+                                                <option value="{{items.language_id}}">{{items.language_id}}-{{items.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_language_id" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Time Zone</label><span class="hg_required"></span><br>
+                                        <select name="time_zone" id="id_time_zone" class="form-control hg_edit_display_mode mandatory_fields" disabled>
+                                            <option value="" selected>Select</option>
+                                            {% for items in time_zones %}
+                                                <option value="{{items.time_zone}}">{{items.time_zone}}-{{items.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_time_zone" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <!--   contact information   -->
+                        <div class="card card-shadow-1 mt-3">
+                            <h5 class="card-header">Contact Information</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>E-mail</label><span class="hg_required"></span><br>
+                                        <input type="text" style="text-transform: lowercase;" class="form-control mandatory_fields" id="email" name="email" value="{{user_info.email}}" disabled>
+                                         <span id="err_email" class="error_message" hidden></span>
+                                    </div>
+                                    
+                                    <div class="form-group col-md">
+                                        <label>Mobile</label><span class="hg_required"></span><br>
+                                        <input type="text"  maxlength="10" class="form-control hg_edit_display_mode  check_phone_number" id="phone_num" name="phone_num" value="{{user_info.phone_num}}" disabled>
+                                        <span id="err_phone_num" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <!--   Addtional information   -->
+                        <div class="card card-shadow-1 mt-3">
+                            <h5 class="card-header">Extended Information</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <label>Date Format</label><span class="hg_required"></span><br>
+                                        <select name="date_format" id="date_format" class="form-control hg_edit_display_mode mandatory_fields" disabled>
+                                          {% for items in date_format_list %}
+                                                <option value="{{items}}">{{items}}</option>
+                                          {% endfor %}
+                                        </select>
+                                        <span id="err_date_format" class="error_message" hidden></span>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-2">
+                                        <label>Decimal Notation</label><span class="hg_required"></span><br>
+                                        <select name="decimal_notation" id="decimal_notation" class="form-control hg_edit_display_mode mandatory_fields" disabled>
+                                           {% for items in decimal_list %}
+                                                <option value="{{items}}">{{items}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_decimal_notation" class="error_message" hidden></span>
+                                    </div>
+                                    
+<!--                                    <div class="form-group col-md-2">-->
+<!--                                        <label>Login Attempts</label><br>-->
+<!--                                        <input type="text" class="form-control" id="login_attempts" value="{{user_info.login_attempts}}" disabled><br>-->
+<!--                                    </div>-->
+                                    <div class="form-group col-md hg-mt-2rem" >
+                                        <label>Super User</label>&nbsp;
+                                        {% if user_info.is_superuser %}
+                                        <input type="checkbox" id="is_superuser" name="is_superuser" value="1" class="hg_edit_display_mode" checked disabled>
+                                        {% else %}
+                                        <input type="checkbox" id="is_superuser" name="is_superuser" value="0" class="hg_edit_display_mode" disabled>
+                                        {% endif %}
+                                    </div>
+
+                                    <div id="status_id" class="form-group col-md hg-mt-2rem display-none">
+                                        <label>User Status</label>&nbsp;
+                                        {% if user_info.is_active %}
+                                        <input type="checkbox" id="user_status" name="user_status" value="1" class="hg_edit_display_mode" checked disabled>
+                                        {% else %}
+                                        <input type="checkbox" id="user_status" name="user_status" value="0" class="hg_edit_display_mode" disabled>
+                                        {% endif %}
+                                    </div>
+
+                                    <div id="locked_id" class="form-group col-md hg-mt-2rem display-none" >
+                                        <label>User Lock Status</label>&nbsp;
+                                        {% if user_info.user_locked %}
+                                        <input type="checkbox" id="user_locked" name="user_locked" value="" class="hg_edit_display_mode"
+                                            checked disabled>
+                                        {% else %}
+                                        <input type="checkbox" id="user_locked" name="user_locked" value="" class="hg_edit_display_mode"
+                                            disabled>
+                                        {% endif %}
+                                    </div>
+
+                                    <div id="pwd_id" class="form-group col-md hg-mt-2rem display-none">
+                                        <label>User Password Status</label>&nbsp;
+                                        {% if user_info.pwd_locked %}
+                                        <input type="checkbox" id="pwd_locked" name="" value="" class="hg_edit_display_mode"
+                                            checked disabled>
+                                        {% else %}
+                                        <input type="checkbox" id="pwd_locked" name="" value="" class="hg_edit_display_mode"
+                                            disabled>
+                                        {% endif %}
+                                    </div>
+                                </div>    
+                            </div> 
+                            
+                        </div>
+                        
+                    </form>
+
+                </div>
+            </div>
+
+            <div id="user_org_data_tab" data-tab-content>
+                <div class="mt-3">
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <h3>Organizational data</h3>
+                            <p>Organizational data.</p>   
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <div id="user_buisness_doc_tab" data-tab-content>
+                <div class="mt-3">
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <h3>Business Document</h3>
+                            <p>Business Document.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<div class="hg_spacer2"> &nbsp; </div>
+
+<script>
+var is_valid = true;
+var user_info = '{{user_info| safe}}';
+var decimal_notation = "{{user_info.decimal_notation}}";
+var date_format = "{{user_info.date_format}}";
+var time_zone = '{{user_info.time_zone | safe}}';
+var curr_id = '{{user_info.currency_id | safe}}';
+var lang_id = '{{user_info.language_id | safe}}';
+var msg_display_interval = {{msg_display_time_value|safe}};
+
+    $(document).ready(function(){
+        GLOBAL_ACTION = '{{user_action}}';
+        $(".error_message").prop("hidden", true);
+        dropdown_values();
+        if(GLOBAL_ACTION == 'CREATE'){
+            $(".hg_edit_display_mode").prop("disabled", false);
+            $('#username').prop("disabled", false);
+            $('#employee_id').prop("disabled", false);
+            $('#user_type').prop("disabled", false);
+            $('#email').prop("disabled", false);
+            $("#save_user_info_btn").prop("hidden", false);
+        }
+        else{
+            $("#edit_user_info_btn").prop("hidden", false);
+            $("#save_user_info_btn").prop("hidden", true);
+            $("#id_currency_id").val(curr_id).attr('selected', 'selected');
+            $("#id_language_id").val(lang_id).attr('selected', 'selected');
+            $("#id_time_zone").val(time_zone).attr('selected', 'selected');
+            $("#decimal_notation").val(decimal_notation).attr('selected', 'selected');
+            $("#date_format").val(date_format).attr('selected', 'selected');
+            document.getElementById("status_id").style.display = "block";
+            document.getElementById("pwd_id").style.display = "block";
+            document.getElementById("locked_id").style.display = "block";
+            dropdown_values();
+            set_value();
+        }
+        $("#supplier_form_reset").click(function(){
+            $('#configform')[0].reset();
+            $('#myModal').modal('hide');
+        });
+        $('#nav_menu_items').remove();
+        $("body").css("padding-top", "4rem");
+    });
+
+    function dropdown_values(){
+        var currency_list = {{ currency_id| safe}}
+        var currency_opt = ''
+        $.each(currency_list, function (i, value) {
+            currency_opt += '<option> ' + currency_list[i] + ' </option>'
+        });
+        var language_list = {{ language_list| safe}}
+        var language_opt = ''
+        $.each(language_list, function (i, value) {
+            language_opt += '<option> ' + language_list[i] + ' </option>'
+        });
+        var timezone_list = {{ time_zones| safe}}
+        var timezone_opt = ''
+        $.each(timezone_list, function (i, value) {
+            timezone_opt += '<option> ' + timezone_list[i] + ' </option>'
+        });
+        decimal_list = {{ decimal_list | safe }}
+        decimal_opt = ''
+        $.each(decimal_list, function (i, value) {
+            decimal_opt += '<option> ' + decimal_list[i] + ' </option>'
+        });
+        date_format_list = {{ date_format_list | safe }}
+        date_format_opt = ''
+        $.each(date_format_list, function (i, value) {
+            date_format_opt += '<option> ' + date_format_list[i] + ' </option>'
+        })
+    }
+
+    function ajax_update_user_basic_data(data) {
+        urlLink = "{% url 'eProc_Users:update_user_basic_details' %}";
+        var response = AjaxCallAPIBasic(urlLink, data)
+        return response
+    }
+
+    $("body").on("keypress keyup blur change", ".mandatory_fields", function (event) {
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(temp[i].nodeName == "INPUT"){
+                if((event.currentTarget.value == "") || (event.currentTarget.value.indexOf("  ") >= 0)) {
+                    $('#event.currentTarget.nextElementSibling.id').prop('hidden', true);
+                    document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+                     var display_id = event.currentTarget.nextElementSibling.id;
+                     $('#'+display_id).prop('hidden', false);
+                    event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+                }
+                else if(event.currentTarget.value.length < 3 ){
+                    $('#event.currentTarget.nextElementSibling.id').prop('hidden', true);
+                    document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+                     var display_id = event.currentTarget.nextElementSibling.id;
+                     $('#'+display_id).prop('hidden', false);
+                    event.currentTarget.nextElementSibling.innerHTML = "Please enter min 3 chars";
+                }
+                else if(event.currentTarget.value.length >= 3 ){
+                    document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+                }
+                else{
+                    $(".error_message").prop("hidden", false);
+                    document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+                }
+            }
+        }
+    });
+
+    $('#email').on('blur',function (event) {
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+         if (!(event.currentTarget.value).match(mailformat)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+                 $(".error_message").prop("hidden", false);
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', false);
+                document.getElementById(display_id).style.display = "block";
+                event.currentTarget.nextElementSibling.innerHTML = display1 + " for Email Id";
+               is_valid = false;
+         }
+    });
+    $('#phone_num').on('keyup change blur',function (event) {
+         if ((event.currentTarget.value.length != 10 ) || (event.currentTarget.value.indexOf(" ") >= 0)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+                 $(".error_message").prop("hidden", false);
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', false);
+                document.getElementById(display_id).style.display = "block";
+                event.currentTarget.nextElementSibling.innerHTML ="Enter 10 numbers for Mobile Number";
+               is_valid = false;
+         }
+         else if((event.currentTarget.value.length > 0) && (event.currentTarget.value.length < 10)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+                 $(".error_message").prop("hidden", false);
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', false);
+                document.getElementById(display_id).style.display = "block";
+                event.currentTarget.nextElementSibling.innerHTML ="Please Check Mobile Number";
+               is_valid = false;
+         }
+         else if(event.currentTarget.value.length == 10 ){
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+    }
+    else{
+        $(".error_message").prop("hidden", false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+    }
+    });
+
+    $('form').on('submit',function (e) {
+        var valid = save_user_form_validation();
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            set_value();
+            get_values();
+            e.preventDefault();
+        }
+        else{
+            save_user_basic_info();
+         $(".hg_edit_display_mode").prop("disabled", false);
+
+        }
+    });
+
+     // Funtion to save basic detail data
+    function save_user_basic_info() {
+     setTimeout(function() {
+                       OpenLoaderPopup();
+         }, 500);
+        var name1_val= $('#first_name').val();
+        var phone_num_val = $('#phone_num').val();
+        var email_val = $('#email').val();
+        var err_flag, super_user_val = 0, user_locked_val = 0, pwd_locked_val = 0, is_active_val = 0 ;
+        set_value();
+        is_save_form_valid = save_user_form_validation()
+        if (is_save_form_valid) {
+            var user_data_dict = {}
+            user_data_dict.username = $('#username').val();
+            user_data_dict.first_name = $('#first_name').val();
+            user_data_dict.last_name= $('#last_name').val();
+            user_data_dict.employee_id= $('#employee_id').val();
+            user_data_dict.user_type= $('#user_type').val();
+            user_data_dict.language_id= $('#id_language_id').val();
+            user_data_dict.currency_id=$('#id_currency_id').val();
+            user_data_dict.time_zone= $('#id_time_zone').val();
+            user_data_dict.email= $('#email').val();
+            user_data_dict.phone_num= $('#phone_num').val();
+            user_data_dict.date_format= $('#date_format').val();
+            user_data_dict.decimal_notation= $('#decimal_notation').val();
+            user_data_dict.login_attempts= 0;
+            if($("#is_superuser").is(":checked")){
+                super_user_val = 1;
+            }
+            user_data_dict.is_superuser= super_user_val;
+            if($("#user_locked").is(":checked")){
+                user_locked_val = 1;
+            }
+            user_data_dict.user_locked= user_locked_val;
+            if($("#pwd_locked").is(":checked")){
+                pwd_locked_val = 1;
+            }
+            user_data_dict.pwd_locked= pwd_locked_val;
+             if($("#user_status").is(":checked")){
+                is_active_val = 1;
+            }
+            user_data_dict.is_active= is_active_val;
+            user_data_dict.status = GLOBAL_ACTION ;
+            var response = ajax_update_user_basic_data(user_data_dict)
+            message = response.message
+            msg_type = response.msg_type
+            encrypted_user = response.encrypted_user
+            if(msg_type.type=='success'){
+                document.getElementById('user_basic_update_success').innerHTML = message;
+                $('#save_error_div').hide();
+                $('#user_basic_update_success').show();
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                check();
+                if(GLOBAL_ACTION == 'CREATE'){
+                    $(".hg_edit_display_mode").prop("disabled", false);
+                    document.getElementById("save_user_info_btn").style.display = "block";
+                    $("#user_registration_form")[0].reset();
+                    localStorage.clear();
+                }
+                setTimeout(function() {
+                           CloseLoaderPopup();
+                }, 500);
+                setTimeout(function() {
+                           $('#user_basic_update_success').hide();
+                }, 3000);
+                localStorage.setItem("error_flag", 0);
+            }
+            if(msg_type.type=='error'){
+                document.getElementById('save_error_div').innerHTML = message;
+                setTimeout(function() {
+                       CloseLoaderPopup();
+                 }, 500);
+                $('#save_error_div').show();
+                $('#user_basic_update_success').hide();
+                localStorage.setItem("error_flag", 1);
+                setTimeout(function() {
+                   $('#save_error_div').hide();
+            }, msg_display_interval*2000);
+                return false;
+            }
+        }
+        else{
+            $('#language_id').val(localStorage.getItem("language_id"));
+            setTimeout(function() {
+                       CloseLoaderPopup();
+            }, 500);
+            get_values();
+        }
+    }
+</script>
+
+<script src="{% static 'scripts/display-edit-users.js'%}"></script>
+
+{% endblock %}

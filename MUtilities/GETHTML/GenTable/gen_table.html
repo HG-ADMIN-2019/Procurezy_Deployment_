@@ -1,0 +1,114 @@
+{% load static %}
+
+{% load custom_tags %}
+
+{% load custom_tags %}
+<!--New Paginator Code-->
+{% if data_list.has_other_pages %}
+<!--New UI-->
+    {% for row in data_list %}
+        <div style="float:left; width:100%;">
+            <div class="order_summary order_details_cart_data_container" style="width:40%; float:left;" >
+                {% for column in column_list %}<!--Load static files-->
+
+                      {% if column.0 == "doc_number" %}
+                        <img src="{% static 'img/cartimg.png'%}" style="width:30px; height:30px; float:left; margin-top:15px; padding:10px 6px 6px 6px;  ">
+                        <br>
+                        <div style="background-image:linear-gradient(#ffdb97, #fdca6b); height:30px; padding:5px 5px 5px 5px; margin:0px;">
+                            <p class="margin_0" style="width:25%; float:left; padding-top:5px;">&nbsp;{{ tbl_model|get_verbose:column.0 }}:</p>
+                            <h4 class="order_placed_on margin_0" style="width:45%; float:left; padding-top:5px; text-align:left; color:black;" >{{ row|get_row_data:column }}</h4>
+                        </div>
+                        <br>
+                      {% elif column.0 == "total_value" %}
+                            <div style="width:100%; float:left; font-size: 12.667px; font-family:verdana;"> &nbsp;&nbsp;&nbsp;
+                            <div style="float:left; width:150px; margin-left:10%;">{{ tbl_model|get_verbose:column.0 }} </div>
+                            &nbsp;&nbsp;&nbsp;<div align="center" style="float:left; ">:</div> &nbsp;&nbsp;
+                                <span style="font-weight:bold;">{{ row|get_row_data:column }}</span></div>
+                            <br>
+                      {% elif column.0 == "status" %}
+                            <div></div>
+                      {% else %}
+                        <div style="width:100%;
+                                    float:left;
+                                    font-size: 12.667px;
+                                    font-family: verdana;"> &nbsp;&nbsp;&nbsp;
+                            <div style="float:left; width:150px; margin-left:10%;">{{ tbl_model|get_verbose:column.0 }} </div>
+                            &nbsp;&nbsp;&nbsp;<div align="center" style="float:left; ">:</div> &nbsp;&nbsp;
+                            {{ row|get_row_data:column }}
+                        </div>
+                            <br>
+                      {% endif %}
+
+                {% endfor %}
+            </div>
+            <div style=" width :58%; float:left;">
+             <br>
+             {% for column in column_list %}
+                      {% if column.0 == "status" %}
+                        <div style="font-size:medium; background-image:linear-gradient(#ffdb97, #fdca6b); height:30px; padding:5px; " >
+                             <p class="margin_0" style="width:10%; float:left; padding-top:5px;">{{ tbl_model|get_verbose:column.0 }}:</p>
+                            {% if row|get_row_data:column  == "APPROVED" %}
+                                 <h4 class="order_placed_on margin_0" style="color:black; width:45%; float:left; padding-top:5px;" > {{ row|get_row_data:column }}</h4>
+                            {% else %}
+                                 <h4 class="order_placed_on margin_0"style="color:orange;" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ row|get_row_data:column }}</h4>
+                            {% endif %}
+                        </div>
+                      {% elif column.0 == "created_by" %}
+                        <div style="width:152px; float:left; overflow:auto; margin-top:17px; text-align:center;"><img src="{% static 'img/approverIcon.png'%}" style=" width:54px; height:50px; text-align:center;"><br />
+                        <div style="float:left; color:#000000; clear:both; font-size:12px; font-weight:bold; width:150px; text-align:center;">{{ row|get_row_data:column }}</div>
+                        </div>
+                      {% else %}
+                        <div></div>
+                      {% endif %}
+              {% endfor %}
+            </div>
+        </div>
+
+    {% endfor %}
+
+<!--End Of New UI-->
+
+<!--New Paginator Code-->
+
+
+
+<div style="height:85px; float:left; width:100%; background-color:#F2F2F2;margin-top:15px; ">
+<br>
+    <table align="center" id="pageNums" cellspacing="3" cellpadding="3">
+    <tr class="pagination" >
+
+    {% if data_list.has_previous %}
+        <td ><a href="?page={{ data_list.previous_page_number }}"></a></td>
+    {% else %}
+        <td ></td>
+    {% endif %}
+
+    {% if data_list.number|add:'-4' > 1 %}
+        <td><a href="?page={{ data_list.number|add:'-5' }}"> PREVIOUS  </a></td>
+    {% endif %}
+
+    {% for i in data_list.paginator.page_range %}
+        {% if data_list.number == i %}
+        <td><div class="currentPage">{{ i }}</div></td>
+        {% elif i > data_list.number|add:'-5' and i < data_list.number|add:'5' %}
+            <td><a href="?page={{ i }}">{{ i }}</a></td>
+        {% endif %}
+    {% endfor %}
+
+    {% if data_list.paginator.num_pages > data_list.number|add:'4' %}
+        <td><a href="?page={{ data_list.number|add:'5' }}">  NEXT  </a></td>
+    {% endif %}
+
+    {% if data_list.has_next %}
+        <td><a href="?page={{ data_list.next_page_number }}"><i class="fa fa-chevron-right" aria-hidden="true"></i></a></td>
+    {% else %}
+        <td ><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></td>
+    {% endif %}
+
+    </tr>
+    </table>
+</div>
+
+{% endif %}
+
+

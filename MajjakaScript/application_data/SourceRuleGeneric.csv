@@ -1,0 +1,3 @@
+prod_cat_id_from,prod_cat_id_to,company_id,call_off,rule_type,sourcing_flag,del_ind
+10000001,10000001,1000,01,SRC,1,0
+10000000,10000000,4000,03,SRC,1,0

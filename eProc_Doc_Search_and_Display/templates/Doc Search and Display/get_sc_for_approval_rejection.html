@@ -1,0 +1,246 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} My Approvals {% endblock %}
+
+{% block maincontent %}
+
+<!-- Home page start (SC-HP-US01: Upon successful logging in, user should be able to see the home page of the application) -->
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between mb-3">
+            <h3>My Approvals</h3>
+        </div>
+
+        <div class="card card-shadow-1">
+            <div class="card-body">
+
+                <!--Search form goes here--> 
+                <form method="POST" action="" id="approval_form">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md">
+                            <label>Select Document Type </label>
+                            {{ search_approval.document_type }}
+
+                        </div>
+                        <div class="col-md">
+                            <label>Document Number</label>
+                            {{ search_approval.document_number }}
+                            <span id="err_doc_num" class="error_message" hidden></span>
+                        </div>
+                        <div class="col-md">
+                            <label>Select Time Frame</label>
+                            {{ search_approval.time_frame }}
+                        </div>
+                        <div class="col-md">
+                            <label>Cart Name</label>
+                            {{ search_approval.cart_name }}
+                            <span id="err_cartname" class="error_message" hidden></span>
+                        </div>
+                        <div class="col-md search_docs">
+                            <label>Status</label>
+                            <select name="status" id="status" class="multiple_select form-control" multiple data-selected-text-format="count" data-actions-box="true" title="Select..">
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="AWAITING_APPROVAL">Awaiting Approval</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="elements-space-between">
+                        <div>
+                            <button class="btn btn-outline-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i> &nbsp;Clear Filter</button>
+                            <button class="btn btn-primary" type="submit" title="Please click to get the search details!" onclick="set_values()" id="search_button_id"><i class="fas fa-search"></i> &nbsp;search </button>
+                        </div>
+                        <div>
+                            <span class="badge help-text-badge help-text-star-search"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {{count}}
+        <div class="d-flex justify-content-end mt-3 mb-3">
+            {% if count > 0 %}
+                <h6 class="text-muted">Total number of results found: {{ count }}</h6>
+            {% else %}
+                <h6 class="text-muted">No results found.</h6>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="row">
+                {% for header_app in sc_header_app_detail %}
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow manager-approval-card">
+                        <div class="card-body"> 
+                            
+                            <div class="manager-approval-card__header">
+                                <span class="text-muted">Shopping Cart Number </span><span class="h4"><a href="{% url 'eProc_Doc_Details:my_order_document_detail' header_app.9 'MY_APPROVALS' %}" class="approval-cart-number" target="_blank">{{header_app.3}}</a></span>
+                            </div>
+                            <hr>
+                            <!-- cart name -->
+                            <div class="manager-approval-card__desc-sections">
+                                <span class="text-muted">Cart Name</span>
+                                <span class="h6">{{header_app.2}}</span>
+                            </div>
+
+                            <!-- Created On -->
+                            <div class="manager-approval-card__desc-sections">
+                                <span class="text-muted">Created On</span>
+                                <span class="h6">{{header_app.1}}</span>
+                            </div>
+
+                            <!-- Created By -->
+                            <div class="manager-approval-card__desc-sections">
+                                <span class="text-muted">Created By</span>
+                                <span class="h6">{{header_app.7}}</span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="flex-row">
+                                <span class="text-muted">Status</span>
+                                {% if header_app.6 == 'AWAITING_APPROVAL' %}
+                                <span class="badge badge-pill badge_status_await_approval">Awaiting Approval</span>
+                                {% elif header_app.6 == 'APPROVED' %}
+                                <span class="badge badge-pill badge_status_await_approval">Approved</span>
+                                {% elif header_app.6 == 'REJECTED' %}
+                                <span class="badge badge-pill badge_status_await_approval">REJECTED</span>
+                                {% endif %}
+                            </div>                             
+                            <br>
+                            <div>
+                                <button type="button" style="border: none;" class="badge badge-pill badge-secondary" onclick="approver_note(this.id);" id="approver_note-{{header_app.0}}"><i class="far fa-sticky-note"></i> note </button>
+                                <button type="button" style="border: none;" class="badge badge-pill badge-secondary" onclick=" window.open('{% url 'eProc_Chat:room' 'initiate' 'INQUIRED' header_app.3 request.user.client %}','_blank')" ><i class="fas fa-info"></i> inquire </button>
+                            </div>
+                            
+                            <div  class="total-value-section">
+                                <div>
+                                    <span class="text-muted">Total Value </span><span class="h4">{{header_app.5}} {{header_app.4}} </span>
+                                </div>
+                            </div>
+
+                            <!-- if status AWAITING_APPROVAL only display approval action button group -->
+                            {% if header_app.6 == 'AWAITING_APPROVAL' %}
+                            <hr>
+                            <div class="row no-gutters">
+                                <div class="col ar-col-section ft-btn1" style=" padding: 0px 2px;">
+                                    <button type="button" onclick="approve_status(this);" class="btn btn-outline-danger btn-lg btn-block reject-btn" id="APPROVER_REJECTED-{{header_app.0}}-{{header_app.3}}"><i class="fas fa-times"></i> Reject</button>
+
+                                </div>
+                                <div class="col ar-col-section ft-btn1" style=" padding: 0px 2px;">
+                                    <button type="button" onclick="approve_status(this);" class="btn btn-outline-success btn-lg btn-block approve-btn " id="APPROVER_APPROVED-{{header_app.0}}-{{header_app.3}}" ><i class="fas fa-check"></i> Approve</button>
+                                </div>   
+                            </div>
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+    
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="modal fade" id="approver_note_modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Approver Note</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="approval_note">
+
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Home page end -->
+
+
+<script src="{% static 'scripts/sc_approval_rejection.js' %}"></script>
+<script>
+
+    const ajax_approval_button_url = "{% url 'eProc_Workflow:save_appr_status' %}"
+    var form_method = '{{form_method|safe}}';
+
+    function ajax_get_approver_note(data) {
+        urlLink = "{% url 'eProc_Doc_Search_and_Display:get_sc_for_approval' %}";
+        let status = AjaxCallAPIBasic(urlLink, data);
+        return status;
+    }
+    $("body").on("keypress keyup blur change", ".mandatory_fields", function (event) {
+        var temp = document.getElementsByClassName('mandatory_fields');
+        var get_value = event.currentTarget.value;
+        var count = get_value.split('**').length - 1;
+        for (var i = 0; i<temp.length; i++) {
+            if((count>=1)|| (get_value == '*'))
+            {
+            var display_id = event.currentTarget.nextElementSibling.id;
+            $('#'+display_id).prop('hidden', false);
+            document.getElementById(display_id).style.display = "block";
+            event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+            }
+            else {
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', true);
+                document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+            }
+        }
+    });
+    $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(!(temp[i].value == '') || !(temp[i].value == null)){
+                data = temp[i].value;
+                var count = data.split('**').length - 1;
+                if((count >= 1) || (data == '*')){
+                    var display_id = temp[i].nextElementSibling.id;
+                    $('#'+display_id).prop('hidden', false);
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = "Please enter valid value";
+                    valid = false;
+                }
+            }
+        }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
+    });
+    $('form').on('reset',function (e) {
+        e.preventDefault();
+        localStorage.clear();
+        $(".error_message").prop("hidden", true);
+        document.getElementById("id_time_frame").value = "Today";
+        $("#status").val(['APPROVED','REJECTED','AWAITING_APPROVAL']);
+        $('#approval_form')[0].submit();
+    });
+
+
+</script>
+
+{% endblock %}

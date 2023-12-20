@@ -1,0 +1,47 @@
+<!--Load static files-->
+{% load static %}
+
+<title> {% block title %} Admin Tool {% endblock %} </title>
+<style>
+    .hg_link_item {
+        padding: 5px 10px 5px 10px;
+        float: left;
+        min-width: 30px;
+        cursor: pointer;
+    }
+
+    .hg_activa1 {
+        background-image: linear-gradient(#fabd4c, #efb64d);
+        padding: 5px 12px 5px 12px;
+        color: white;
+        border:solid 0px #fabd4c;
+        border-top-right-radius: 2px;
+        border-top-left-radius: 2px;
+    }
+
+</style>
+
+<div class="hg_tab_outer" id="myDIVA"></div>
+<div class="hg_navbarAt" >
+    {% url 'eProc_Manage_Content:upload_cust_prod_cat' as url21 %}
+    <div class="hg_link_item1a" id="homeBtn-atv" style="margin-right:5px; border:solid 0px #ccc; height:25px;"><a href="{{ url21 }}" {% if request.path == url21 %}  class="hg_activa1"{% endif %} style="padding:5px 10px 5px 10px;">E-mail Notifications</a></div>
+
+    {% url 'eProc_Reports:doc_search_report' as url22 %}
+    <div class="hg_link_item1a" id="limitOrderBtn-actv" style="margin-right:5px; border:solid 0px #ccc; height:25px;"><a href="{{ url22 }}" {% if request.path == url22 %} class="hg_activa1" {% endif %} style="padding:5px 10px 5px 10px;">Reports</a></div>
+
+    {% url 'eProc_User_Admin:get_user_supplier_list' as url23 %}
+    <div class="hg_link_item1a" id="useradminBtn-actv" style="margin-right:5px; border:solid 0px #ccc; height:25px;"><a href="{{ url23 }}" {% if request.path == url23 %} class="hg_activa1" {% endif %} style="padding:5px 10px 5px 10px;">User Administration</a></div>
+
+    <div class="hg_link_item1a" id="freeTextBtn" style="margin-right:5px; border:solid 0px #ccc; height:25px;"><a href="#" style="padding:5px 10px 5px 10px;">Substitution</a></div>
+
+</div>
+
+
+<script>
+
+    function tab1() {
+        openTab(event,'Notif_email')
+        document.getElementByID("t1").style.class="hg_btn activa";
+
+    }
+</script>

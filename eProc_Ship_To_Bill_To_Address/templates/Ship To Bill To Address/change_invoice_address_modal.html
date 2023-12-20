@@ -1,0 +1,61 @@
+<!--start of change shipping address pop-up-->
+<div class="modal fade" id="ChngInvcAddr">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Invoice Address</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="mydatatable1 table-change-address" id="invoice_address_table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for address in invoice_addr_desc %}
+                        <tr>
+                            <td style="width:69%;">
+                                <span id="addr_num-{{forloop.counter}}">{{ address.address_number }}</span> - <span id="street-{{forloop.counter}}">{{ address.street }}</span><br>
+                                <span id="area-{{forloop.counter}}">{{ address.area }}</span><br>
+                                <span id="landmark-{{forloop.counter}}">{{ address.landmark }}</span><br>
+                                <span id="city-{{forloop.counter}}">{{ address.city }}</span> - <span id="postal_code-{{forloop.counter}}">{{ address.postal_code }}</span><br>
+                                <span id="region-{{forloop.counter}}">{{ address.region }}</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" id="select_invoice_address-{{forloop.counter}}"
+                                        onclick="select_invoice_address(this.id);"><i class="fa fa-truck" aria-hidden="true"></i>  Ship to this address</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> CLOSE</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--end of change shipping address pop-up-->
+
+<script>
+   // datatable plugin for change Invoice address pop-up
+$(document).ready( function () {
+    $('.mydatatable1').DataTable({
+        "ordering": false,
+        "scrollY": "320px",
+        "scrollCollapse": true,
+    });
+} );
+
+</script>

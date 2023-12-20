@@ -1,0 +1,287 @@
+<!-- system settings template-->
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+
+<body class="hg_reports_bgcolor">
+    <div class="container-fluid" style="margin-left:45px; width:97%; margin-top:20px; ">
+    <div class="jumbotron bg-white hg_ua_border">
+        <!--    System settings form-->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div id="Notif_email" style="padding:40px 0px 0px 0px; overflow:auto; margin-top:20px;">
+                <div class="hg_head1" style="padding-left:5%;">System Settings</div>
+                <br>
+                {% if edit_flag == False %}
+                <div style="overflow:auto; margin:auto; width:90%;">
+                    <!--                Assigns from attribute fields to left block-->
+                    <div style="width:45%; display: inline-block; float:left; border-right:solid 1px #ccc; padding-right:4%;">
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.pwd_policy.label_tag}}
+                                <br>
+                                {{sys_setting_form.pwd_policy}}
+                            </fieldset>
+                        </div>
+
+
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.login_attempts.label_tag}}
+                                <br>
+                                {{sys_setting_form.login_attempts}}
+                            </fieldset>
+                        </div>
+
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.session_timeout.label_tag}}
+                                <br>
+                                {{sys_setting_form.session_timeout}}
+                            </fieldset>
+                        </div>
+
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.msg_display.label_tag}}
+                                <br>
+                                {{sys_setting_form.msg_display}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.theme_color.label_tag}}
+                                <br>
+                                {{sys_setting_form.theme_color}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.pagination_count.label_tag}}
+                                <br>
+                                {{sys_setting_form.pagination_count}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attachment_size.label_tag}}
+                                <br>
+                                {{sys_setting_form.attachment_size}}
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <!--                <div style="margin:auto; width:1px; background-color:red; "></div>-->
+
+                    <!--                Assigns some attribute fields to right block-->
+                    <div style="width:46%; display: inline-block; float:left; padding-left:4%; ">
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attachment_extension.label_tag}}
+                                <br>
+                                {{sys_setting_form.attachment_extension}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_09.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_09}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_10.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_10}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_11.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_11}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_12.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_12}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_13.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_13}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_14.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_14}}
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div style="text-align:right; padding:0px 150px 20px 0px;">
+                    <input type="submit" value="Edit" name="edit" class="btn btn-primary hg_mb20 hg_btnPd"></div>
+                {% endif %}
+                {% if edit_flag == True %}
+                <div style="overflow:auto;">
+
+                    <!--                Assigns from attribute fields to left block-->
+                    <div style="width:48%; display: inline-block; float:left; padding-right:60px; border-right:solid 1px #ccc;">
+                        <div>
+                            Password Policy:<br>
+                            <select name="pwd_policy" class="form-control hg_mb10">
+                                {% for data in pwd_policy %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            Login attempts:<br>
+                            <select name="login_attempts" class="form-control hg_mb10">
+                                {% for data in login_attempts %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+                        <div>
+                            Session Timeout:<br>
+                            <select name="session_timeout" class="form-control hg_mb10">
+                                {% for data in session_timeout %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            Message Display:<br>
+                            <select name="msg_display" class="form-control hg_mb10">
+                                {% for data in msg_display %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            Theme Colour:<br>
+                            <select name="theme_color" class="form-control hg_mb10">
+                                {% for data in theme_color %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            Pagination Count:<br>
+                            <select name="pagination_count" class="form-control hg_mb10">
+                                {% for data in pagination_count %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            Size of an Attachment:<br>
+                            <select name="attachment_size" class="form-control hg_mb10">
+                                {% for data in attachment_size %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!--                Assigns some attribute fields to right block-->
+                    <div style="width:46%; display: inline-block; float:right; margin-right:10px;">
+                        <div>
+                            Attachment Extension:<br>
+                            <select name="attachment_extension" class="form-control hg_mb10">
+                                {% for data in attachment_extension %}
+                                <option value="{{ data }}">{{ data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_09.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_09}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_10.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_10}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_11.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_11}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_12.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_12}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_13.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_13}}
+                            </fieldset>
+                        </div>
+                        <div>
+                            <fieldset disabled>
+                                {{sys_setting_form.attribute_14.label_tag}}
+                                <br>
+                                {{sys_setting_form.attribute_14}}
+                            </fieldset>
+                        </div>
+                    </div>
+
+                </div>
+                <br>
+                {% if attribute == None %}
+                <div style="text-align:right; padding-bottom:20px;">
+                    <button class="btn btn-primary" type="reset" value="Reset">Cancel</button>
+                    <button class="btn btn-primary" name="save" type="Reset">Save</button>
+                </div>
+                {% else %}
+                <div style="text-align:right; padding-bottom:20px;">
+                    <button class="btn btn-primary" type="reset" value="Reset">Cancel</button>&nbsp;&nbsp;
+                    <button class="btn btn-primary" name="save" type="submit">Save</button>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+
+
+        </form>
+    </div>
+</div>
+</body>
+
+
+
+
+<script>
+    // display admin role submenu
+    nav_bar_admin()
+</script>
+
+{% if inc_footer %}
+{% include 'root/footer.html' %}
+{% endif %}
+{% endblock %}
+

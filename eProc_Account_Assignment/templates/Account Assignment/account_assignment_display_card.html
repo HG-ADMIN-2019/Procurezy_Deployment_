@@ -1,0 +1,103 @@
+<div class="card account-assignment-card card-shadow-1" style="height:100%;">
+
+    <div class="card-body">
+        <h5 class="card-title">Account Assignment</h5>
+
+        {% if is_document_detail %}
+        <!-- Account assignment doc detail data -->
+        <div class="elements-space-between">
+            <div>
+                {% for header_acc in header_acc_detail %}
+                <div class="mb-2">
+                    <span class="h6"> Account Assignment Category :</span><span id="ScAccounting-acc_cat-{{header_acc.guid}}">{{header_acc.acc_desc}}</span>
+
+                    <span class="badge badge-pill badge_primary_acc">Primary</span>
+                </div>
+                <div class="mb-2">
+                        <span id="id_acc_title" class="h6">Value :
+                        </span>
+                    <span id="ScAccounting-acc_val-{{header_acc.guid}}">{{header_acc.acc_value_desc}}</span>
+                </div>
+                <div id="secondary_accounting_data_header"></div>
+                <div class="mb-2">
+                    <span class="h6">Distribution Percentage: </span>
+                    <span id="distribution_percentage_header">{{header_acc.dist_perc}}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="h6">General Ledger Account:</span>
+                    <span id="gl_account_header">
+                            {% if header_level_gl_acc %}
+                                {{ header_level_gl_acc }}
+                            {%else%}
+                                Multiple
+                            {% endif %}
+                        </span>
+                </div>
+
+            </div>
+            <div>
+            {% if acct_assignment_category == '1' %}
+                <button type="button" class="hg_button_edit editable_mode" data-toggle="modal" id="change_accounting_data-header-{{header_acc.guid}}" onclick="changeAccCat(this.id);">change account assignment</button>
+            {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <!-- End of doc deatil for account assignment -->
+        {% else %}
+        <!-- Account assignment data for second step -->
+        <div class="elements-space-between">
+            <div>
+                <div class="mb-3">
+                    <span class="h6"> Account Assignment Category :</span>
+                    <span id="change_acc_type">{% if acc_default %}{{ acc_default }}{% endif %}</span><br>
+                    <span class="h6"> Value :</span><span id="change_acc_value">{% if acc_default %}{{ acc_value.0 }}{% endif %}</span> <span class="badge badge-pill badge_primary_acc">Primary</span>
+                    <div id="secondary_acc_ass_cat_section"> </div>
+                    <div id="item_secondary_acc_assign_category"></div>
+                </div>
+                <div>
+                    <span class="h6"> GL Account Number:</span>
+                    <span id="gl_acc_val_header">
+                                {% if acc_default %}
+                                {{ header_level_gl_acc }}
+                                {% endif %}
+                            </span>
+                </div>
+            </div>
+            <div>
+
+                <button type="button" class="hg_button_edit hg_display" id="header_level_acc-header" data-toggle="modal" onclick="changeAccCat(this.id);">change account assignment</button>
+            </div>
+        </div>
+
+        <div class="alert alert-warning header-card-alert mt-2" role="alert" id="cost_objects_info" style="display: none;">
+            <div class="header-card-alert__body">
+                <span class="material-icons">error_outline </span><span>Multiple cost objects maintained </span>
+            </div>
+        </div>
+
+
+        {% endif %}
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+       
+                    var msg = "JMSG027";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                  var display = msg_type.messages_id_desc;
+
+        //$('#acct_assgnment_id').html(display);
+    });
+</script>

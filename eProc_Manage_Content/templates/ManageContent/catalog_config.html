@@ -1,0 +1,754 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Catalog Configuration {% endblock %}
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+<style>
+.toggle {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  height: auto;
+  width: 7.5rem;
+  margin: auto;
+  cursor: pointer;
+}
+.toggle-input {
+  display: none;
+  margin: 0;
+}
+.toggle-off,
+.toggle-on {
+  height: 1.8125rem;
+  width: 1.8125rem;
+  color: rgba(46, 45, 44, 0.1);
+  vertical-align: top;
+  text-align: center;
+  line-height: 1.8125rem !important;
+}
+.toggle-input:checked + .toggle-controller.default-success {
+  border: 0.125rem solid rgba(108, 211, 61, 0.75);
+  background: rgba(108, 211, 61, 0.375);
+}
+.toggle-input:checked + .toggle-controller.default-success:after {
+  left: 1.5625rem;
+}
+.toggle-controller.default-success {
+  position: relative;
+  display: inline-block;
+  height: 1.5625rem;
+  width: 3.125rem;
+  border: 0.125rem solid rgba(46, 45, 44, 0.05);
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  -moz-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  background: rgba(46, 45, 44, 0.025);
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-controller.default-success:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+  display: block;
+  height: 1.5625rem;
+  width: 1.5625rem;
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  -moz-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  background: white;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-off.active {color:red;}
+.toggle-on.active {color:blue;}
+
+</style>
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="d-flex justify-content-between">
+             <h3>Catalog Configuration And Mapping</h3>
+
+            <div>
+                <button class="btn btn-primary" id="NONE-CREATE" onclick="update_catalog(this.id);"><i class="fas fa-user-plus"></i> add new catalog</button>
+            </div>
+        </div>
+
+            <hr>
+            <div class="card card-shadow-1">
+                 <div class="card-body">
+                    <div>
+                        <form method="POST" >
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md">
+                                    <label for="">Catalog ID</label>
+                                    <input type="text" class="form-control check_for_search" id="catalog_id" name="catalog_id">
+                                </div>
+                                <div class="col-md">
+                                    <label for="">Catalog Description</label>
+                                    <input type="text" class="form-control check_for_search" id="catalog_desc" name="catalog_desc">
+                                </div>
+                                <div class="col-md">
+                                    <label for="">Catalog Name</label>
+                                    <input type="text" class="form-control check_for_search" id="catalog_name" name="catalog_name">
+                                </div>
+                                <div class="col-md">
+                                    <label for="">Product type</label>
+                                    <input type="text" class="form-control check_for_search" id='product_type' name='product_type'>
+                                </div>
+                                <div class="col-md">
+                                    <label for="">Search Count</label>
+                                    <input name="search_count" type = "number" value="10" id="search_count"  class="form-control">
+                                </div>
+
+
+                            </div>
+
+                        <div class="elements-space-between mt-4">
+                            <div>
+                                <input type="reset" value="Clear filters" class="btn btn-link">
+                                <button class="btn btn-primary" type="button"
+                                        title="Please click to get the search details!" id="submit_catalog"><i class="fas fa-search"></i> search
+                                </button>
+                            </div>
+                            <div>
+                                <span class="badge help-text-badge help-text-star-search"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+           </div>
+        </div>
+
+        {% if catalog_query.count > 0 %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">Total number of results found
+                    :{{catalog_query.count}}</h6>
+            </div>
+        </div>
+        {% elif catalog_query.count == 0  %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">No Results Found</h6>
+            </div>
+        </div>
+        {% endif %}
+    
+    {% if catalog_query %}
+    <div class="card mt-5">
+
+        <div>
+            <table id="catalog_main_table_id" class="table myclass">
+                <thead class="thead-light">
+                <tr>
+                    
+                    <th >Catalog Id</th>
+                    <th >Catalog Description</th>
+                    <th >Catalog Name</th>
+                    <th >Product Type</th>
+                    <th >Update Catalog</th>
+                    <th >Assign Products</th>
+                    <th >Unassign Products</th>
+                    <th >View Assigned Products</th>
+                    <th> Activate</th>
+                </tr>
+                </thead>
+
+                <tbody id="catalog_tbody">
+                {% for catalog_detail in catalog_query %}
+                <tr id="{{catalog_detail.catalog_guid}}">
+                    <td>{{catalog_detail.catalog_id}}</td>
+                    <td>{{catalog_detail.description}}</td>
+                    <td>{{catalog_detail.name}}</td>
+                    <td>{{catalog_detail.prod_type}}</td>
+                    <td><span class="badge badge-pill badge-button-purple"> <a id="{{catalog_detail.catalog_guid}}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>
+                    <td><span class="badge badge-pill badge-button-green"><a id="{{catalog_detail.catalog_id}}-ASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)"   href="#">Assign <i class="fas fa-link"></i></a> </span> </td>
+                    <td><span class="badge badge-pill badge-button-red"><a id="{{catalog_detail.catalog_id}}-UNASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Unassign <i class="fas fa-unlink"></i></a> </span> </td>
+                    <td><span class="badge badge-pill badge-button-blue"><a id="{{catalog_detail.catalog_id}}-VIEW" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">View <i class="fa fa-eye" aria-hidden="true"></i></a></span>  </td>
+                    <td>
+                        <label class="switch">
+                            <label class="toggle">
+                                {% if catalog_detail.is_active_flag %}
+                                <input type="checkbox" id="{{catalog_detail.catalog_id}}-ACTIVATE" class="toggle-input" checked>
+                                {% else %}
+                                <input type="checkbox" id="{{catalog_detail.catalog_id}}-DEACTIVATE" class="toggle-input">
+                                {% endif %}
+                                <div class="toggle-controller default-success"></div>
+                            </label>
+                        </label>
+                    </td>
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    </div>
+</div>
+
+<!--modal popup for Add,copy,update and upload-->
+<!-- <div class="modal fade" id="add_update_modal">
+    <div class="modal-dialog modal-dialog-centered modal-xl" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Update Catalog</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body scrollbox">
+
+
+                <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden> </div>
+                <div>
+                    <p id="id_error_msg" class="alert alert-danger" hidden></p>
+                </div>
+
+                <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Catalog ID</th>
+                        <th>Catalog Description</th>
+                        <th>Catalog Name</th>
+                        <th >Product Type</th>
+                        <th hidden>GUID</th>
+                    </tr>
+                    </thead>
+                    <tbody id=catalog_add_update_tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="id_delete_duplicate" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fas fa-check"></i> Delete Duplicates</button>
+                <button class="btn btn-primary" id="id_check_data" style="display:none;" type="button" onclick="check_data()"><i class="fas fa-check"></i> Check</button>
+                <button class="btn btn-primary" onclick="save_catalog()" ><i class="fas fa-save"></i> SAVE</button>
+                <button class="btn btn-primary" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- ######################################################## -->
+<div class="modal fade" id="add_update_modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add_update_modal_title"> Update Catalog</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body scrollbox">
+
+                <div class="alert alert-danger" role="alert" id="save_catlog_error"style="display:none">
+                   please fill all mandatory fields
+                </div>
+                <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden> </div>
+                <div>
+                    <p id="id_error_msg" class="alert alert-danger" hidden></p>
+                </div>
+
+                <div>
+                    <span>Catalog ID: </span><span class="h5" id="add_update_catalog_id"></span>
+                    <span id="add_update_catalog_guid" hidden></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="add_update_catalog_description">Catalog Description</label><span class="hg_required"></span>
+                    <input type="text" class="form-control check_special_char" id="add_update_catalog_description" maxlength="256"  placeholder="Description of Catalog" required>
+                    <small class="form-text text-muted help-text-alpha-numeric"></small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="add_update_catalog_name">Catalog Name</label><span class="hg_required"></span>
+                        <input type="text" class="form-control check_special_char" id="add_update_catalog_name" maxlength="16" placeholder="Name of Catalog" required>
+                        <small class="form-text text-muted help-text-alpha-numeric"></small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="add_update_catalog_prodtype">Product Type</label><span class="hg_required"></span>
+                        <select id="add_update_catalog_prodtype" class="form-control">
+                            <option value="" disabled selected>Select product type</option>
+                            <option value="Products">Products</option>
+                            <option value="Service">Services</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button class="btn btn-outline-primary" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                            <button class="btn btn-primary" onclick="save_catalog()" ><i class="fas fa-save"></i> save</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ######################################################## -->
+
+
+<!-- The Modal -->
+<div class="modal fade" id="product_list_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="catalog_mapping_title"> Product List for catalog </h5>
+                <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body scrollbox">
+                <ul class="sub-tabs">
+                    <li data-tab-target="#prod_detail_table_div" class="sub-tab active">
+                        <div class="sub-tab-link">
+                            <span> Product</span>
+                        </div>
+                    </li>
+                    <li data-tab-target="#freetext_table_div" class="sub-tab">
+                        <div class="sub-tab-link">
+                            <span> FreeText </span>
+                        </div>
+                    </li>
+                </ul>
+             
+                <div id="id_check_success_messages_product" class="alert alert-success check_success_message" hidden></div>
+                <div id="id_check_error_messages_product" class="alert alert-danger check_error_messages" hidden></div>
+                <div id="id_check_special_character_messages_product" class="alert alert-danger check_special_character_messages" hidden>
+                    <p id="id_error_msg_country_code" ></p>
+                    <p id="id_error_msg_country_name" ></p>
+                    <p id="id_error_msg_country_length" ></p>
+                </div>
+                <div >
+                    <p id="id_error_msg_product" class="alert alert-danger" hidden></p>
+                </div>
+
+                <div class="tab-content">    
+                    <div id="prod_detail_table_div"data-tab-content class="active mt-4 pl-3 pr-3" >
+                        <h4>Product Details</h4>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_product_list_popup_table" >
+                            <thead>
+                            <tr>
+                                <th id="select_th" hidden><input id="select_all" type="checkbox" name="hg_checkbox"></th>
+                                <th>Product ID</th>
+                                <th>Product Description ID</th>
+                                <th>Supplier ID</th>
+                                <th>Product Category</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_product_list_popup_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="freetext_table_div" data-tab-content class="mt-4 pl-3 pr-3" >
+                        <h4 class="mb-2">FreeText</h4>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_freetext_popup_table" >
+                            <thead>
+                            <tr>
+                                <th id="select_th_freetext" hidden><input id="select_all_freetext" type="checkbox" name="hg_checkbox"></th>
+                                <th>FreeText ID</th>
+                                <th>FreeText Description</th>
+                                <th>Supplier ID</th>
+                                <th>Product Category</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_freetext_popup_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-primary dummy_assign_unassign_button" id="assign_button_id" onclick="assign_unassign_products_in_db()"><i class="fas fa-save"></i> assign</button>
+                    <button class="btn btn-outline-secondary dummy_assign_unassign_button" id="unassign_button_id" onclick="assign_unassign_products_in_db()"><i class="fas fa-save"></i> un assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end of modal popup for Add,copy,update and upload-->
+
+<script>
+nav_bar_content_management()
+var GLOBAL_CATALOG_GUID = '';
+var GLOBAL_ACTION = '';
+var GLOBAL_CATALOG_ID = '';
+table_sort_filter('catalog_main_table_id');
+
+var update_catalog = function(catalog_id) {
+    $('#add_update_modal_title').html('')
+    document.getElementById('add_update_catalog_id').innerHTML = '';
+    document.getElementById('add_update_catalog_guid').value = '';
+    document.getElementById('add_update_catalog_description').value = '';
+    document.getElementById('add_update_catalog_name').value = '';
+    document.getElementById('add_update_catalog_prodtype').value = '';
+
+    var button_catalog_id = catalog_id.split('-')
+    var catalog_guid = button_catalog_id[0]
+    GLOBAL_ACTION = button_catalog_id[1]
+    if(GLOBAL_ACTION == 'UPDATE'){
+        $('#add_update_modal_title').html('Update Catalog')
+        GLOBAL_CATALOG_GUID = catalog_guid;
+        var catalog_id = $('#'+catalog_guid).find("TD").eq(0).text();
+        var catalog_desc = $('#'+catalog_guid).find("TD").eq(1).text();
+        var catalog_name = $('#'+catalog_guid).find("TD").eq(2).text();
+        var product_type = $('#'+catalog_guid).find("TD").eq(3).text().trim();
+        var option = ''
+
+        document.getElementById('add_update_catalog_id').innerHTML = catalog_id;
+        document.getElementById('add_update_catalog_guid').innerHTML = catalog_guid;
+        document.getElementById('add_update_catalog_description').value = catalog_desc;
+        document.getElementById('add_update_catalog_name').value = catalog_name;
+        document.getElementById('add_update_catalog_prodtype').value = product_type;
+
+    }
+    else{
+        data = {}
+        urlLink = "{% url 'eProc_Manage_Content:generate_guid' %}"
+        var guid_generator = AjaxCallAPI(urlLink, data)
+        $('#add_update_modal_title').html('Add New Catalog')
+            document.getElementById('add_update_catalog_id').innerHTML = guid_generator.catalog_id;
+    }
+    $("#add_update_modal").modal("show");
+
+};
+
+function save_catalog(){
+    $("#save_catlog_error").css("display", "none")
+    var catalog_data_description = document.getElementById('add_update_catalog_description').value;
+    var catalog_data_name=document.getElementById('add_update_catalog_name').value;
+    var catalog_data_product_type=document.getElementById('add_update_catalog_prodtype').value;
+    if((catalog_data_description==''||catalog_data_description==null) || (catalog_data_name==''||catalog_data_name==null) || (catalog_data_product_type==''||catalog_data_product_type==null))
+          {
+            $("#save_catlog_error").css("display", "block")
+          }
+          else{
+    var catalog_data = new Array();
+    var get_catalog_data = {};
+    get_catalog_data.catalog_id= document.getElementById('add_update_catalog_id').innerHTML;
+    get_catalog_data.description = document.getElementById('add_update_catalog_description').value;
+    get_catalog_data.name = document.getElementById('add_update_catalog_name').value;
+    get_catalog_data.product_type = document.getElementById('add_update_catalog_prodtype').value;
+    catalog_data.push(get_catalog_data);
+    var catalog_info = {};
+       
+
+    catalog_info['catalog_data'] = catalog_data
+    catalog_info['catalog_action'] = GLOBAL_ACTION
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Manage_Content:save_catalog_db' %}",
+        data: JSON.stringify(catalog_info),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            if(GLOBAL_ACTION == 'UPDATE'){
+                update_main_table(Response)
+                $("#add_update_modal").modal("hide");
+            }
+            else{
+                $("#add_update_modal").modal("hide");
+                window.location.reload();
+            }
+        }
+    });
+  }
+}
+
+
+$('#submit_catalog').click(function(e){
+    e.preventDefault();
+    OpenLoaderPopup();
+    var catalog_data = {};
+    catalog_data.catalog_id = $('#catalog_id').val();
+    catalog_data.catalog_desc = $('#catalog_desc').val();
+    catalog_data.catalog_name = $('#catalog_name').val();
+    catalog_data.product_type = $('#product_type').val();
+    catalog_data.search_count = $('#search_count').val();
+    var urlLink = "{% url 'eProc_Manage_Content:catalog_config' %}";
+    jQuery.ajax({
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(catalog_data),
+       success: function(result){
+            var active_flag = ''
+           response = result;
+           $('#catalog_main_table_id').DataTable().destroy();
+           $('#catalog_tbody').empty();
+            var catalog_html = '';
+            $.each(result, function (i, catalog_detail) {
+                if (catalog_detail.is_active_flag){
+                    active_flag = `<input type="checkbox" id="${catalog_detail.catalog_id}-ACTIVATE" class="toggle-input" checked>`
+                }else{
+                    active_flag =  `<input type="checkbox" id="${catalog_detail.catalog_id}-DEACTIVATE" class="toggle-input">`
+                }
+                catalog_html += `<tr id="${catalog_detail.catalog_guid}">
+                    <td>${catalog_detail.catalog_id}</td>
+                    <td>${catalog_detail.description}</td>
+                    <td>${catalog_detail.name}</td>
+                    <td>${catalog_detail.prod_type}</td>
+                    <td><span class="badge badge-pill badge-button-purple"><a id="${catalog_detail.catalog_guid}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a> </span></td>
+                    <td><span class="badge badge-pill badge-button-green"><a id="${catalog_detail.catalog_id}-ASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Assign <i class="fas fa-link"></i></a> </span></td>
+                    <td><span class="badge badge-pill badge-button-red"><a id="${catalog_detail.catalog_id}-UNASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Unassign <i class="fas fa-unlink"></i></a> </span> </td>
+                    <td><span class="badge badge-pill badge-button-blue"><a id="${catalog_detail.catalog_id}-VIEW" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">View  <i class="fa fa-eye" aria-hidden="true"></i></a></span> </td>
+                    <td>
+                        <label class="switch">
+                            <label class="toggle">
+                                        ${active_flag}
+                                <div class="toggle-controller default-success"></div>
+                            </label>
+                        </label>
+                    </td>
+                    </tr>`;
+
+            });
+            $('#catalog_tbody').append(catalog_html);
+            table_sort_filter('catalog_main_table_id');
+            CloseLoaderPopup();
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+
+
+});
+function update_main_table(data){
+    if(data.length!==0){
+        $('#'+GLOBAL_CATALOG_GUID6).find("TD").eq(0).text(data[0].catalog_id);
+        $('#'+GLOBAL_CATALOG_GUID).find("TD").eq(1).text(data[0].description);
+        $('#'+GLOBAL_CATALOG_GUID).find("TD").eq(2).text(data[0].name);
+        $('#'+GLOBAL_CATALOG_GUID).find("TD").eq(3).text(data[0].product_type);
+    }
+}
+
+
+function get_assign_unassign_products(assign_unassign_id){
+    assign_unassign = assign_unassign_id.id
+    var assign_unassign = assign_unassign.split('-')
+    GLOBAL_CATALOG_ID = assign_unassign[0];
+    GLOBAL_ACTION = assign_unassign[1];
+    assign_unassign_product = {};
+    assign_unassign_product.action =GLOBAL_ACTION;
+    assign_unassign_product.catalog_id = GLOBAL_CATALOG_ID;
+    var urlLink = "{% url 'eProc_Manage_Content:get_assign_unassign_product' %}";
+    jQuery.ajax({
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(assign_unassign_product),
+       success: function(result) {
+            product_details = result.product_id_list
+            freetext_details = result.freetext_id_list
+            $("#catalog_mapping_title").empty();
+            $(".dummy_assign_unassign_button").hide();
+            update_product_details_table(product_details)
+            update_freetext_details_table(freetext_details)
+            if(GLOBAL_ACTION == "ASSIGN"){
+                $(".class_product_checkbox").prop("hidden", false);
+                $("#select_th").prop("hidden", false);
+                $("#select_th_freetext").prop("hidden", false);
+
+                var html_title = 'Assign Product for Catalog ID '+ GLOBAL_CATALOG_ID +' ';
+                $("#assign_button_id").show();
+            }
+            else if(GLOBAL_ACTION == "UNASSIGN"){
+                $(".class_product_checkbox").prop("hidden", false);
+                $("#select_th").prop("hidden", false);
+                $("#select_th_freetext").prop("hidden", false);
+                var html_title = 'Un Assign Product for Catalog ID '+ GLOBAL_CATALOG_ID +'';
+                $("#unassign_button_id").show();
+            }
+            else{
+                $(".class_product_checkbox").prop("hidden", true);
+                var html_title = 'Assigned Products in Catalog ID '+ GLOBAL_CATALOG_ID +'';
+                $("#select_th").prop("hidden", true);
+                $("#select_th_freetext").prop("hidden", true);
+            }
+            $("#catalog_mapping_title").text(html_title);
+
+            console.log(result)
+            table_sort_filter('id_product_list_popup_table');
+            table_sort_filter('id_freetext_popup_table');
+            $("#product_list_popup").modal("show");
+        },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+}
+
+$('#select_all').click(function(){
+            if($(this).prop("checked")) {
+                $(".check_box_input_id").prop("checked", true);
+            } else {
+                $(".check_box_input_id").prop("checked", false);
+            }
+        });
+
+$('#select_all_freetext').click(function(){
+            if($(this).prop("checked")) {
+                $(".check_box_input_freetext_id").prop("checked", true);
+            } else {
+                $(".check_box_input_freetext_id").prop("checked", false);
+            }
+        });
+
+
+function assign_unassign_products_in_db(type){
+    var product_id_list = [];
+    var freetext_id_list = [];
+    $(".check_box_input_id").each(function () {
+        if ($(this).prop('checked')) {
+            var sc_id = $(this).attr("id");
+            product_id_list.push(sc_id)
+        }
+     });
+     $(".check_box_input_freetext_id").each(function () {
+        if ($(this).prop('checked')) {
+            var freetext_id = $(this).attr("id");
+            freetext_id_list.push(freetext_id)
+        }
+     });
+     var catalog_mapping_info = {}
+     catalog_mapping_info.product_id_list = product_id_list;
+     catalog_mapping_info.freetext_id_list = freetext_id_list;
+     catalog_mapping_info.action = GLOBAL_ACTION;
+     catalog_mapping_info.catalog_id = GLOBAL_CATALOG_ID;
+     var urlLink = "{% url 'eProc_Manage_Content:assign_unassign_product_data' %}";
+     jQuery.ajax({
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(catalog_mapping_info),
+       success: function(result){
+        $("#product_list_popup").modal("hide");
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+}
+$(document).ready(function() {
+    NavigateTabs();
+    
+    $('.toggle-input').change(function() {
+
+     var data = {}
+        if($(this).is(':checked')) {
+            console.log('This is firing');
+            $('.toggle-off').removeClass('active');
+            $('.toggle-on').addClass('active');
+            data.flag = true
+        } else {
+            $('.toggle-off').addClass('active');
+            $('.toggle-on').removeClass('active');
+            data.flag = false
+        }
+        var id = this.id
+        data.catalog_id = id.split('-')[0]
+        jQuery.ajax({
+       type: 'POST',
+       url: "{% url 'eProc_Manage_Content:activate_deactivate_catalog' %}",
+       dataType :'json',
+       data: JSON.stringify(data),
+       success: function(result){
+
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+    });
+});
+
+$('input:radio[name="catalog_mapping"]').change(function() {
+        if ($(this).is(':checked')) {
+            $(".dp-prd-opt-wrapper").find(".selected").removeClass("selected");
+            $(this).closest(".dp-prd-badge").addClass("selected");
+            if($(this).attr("id") == 'freetext_mapping'){
+                $('#freetext_table_div').prop('hidden', false)
+                $('#prod_detail_table_div').prop('hidden', true)
+            }
+            else{
+                $('#freetext_table_div').prop('hidden', true)
+                $('#prod_detail_table_div').prop('hidden', false)
+            }
+
+        }
+    });
+
+function update_product_details_table(product_details){
+    var product_html = '';
+    $('#id_product_list_popup_table').DataTable().destroy();
+    $("#id_product_list_popup_tbody").empty();
+    $.each(product_details, function (i, item) {
+        product_html += '<tr><td class="class_product_checkbox"><input class="check_box_input_id" id="'+ item.product_id +'" type="checkbox" required></td>'+
+        '<td class="dummy_td_class">'+ item.product_id +'</td>'+
+        '<td class="dummy_td_class">'+ item.short_desc +'</td>'+
+        '<td class="dummy_td_class">'+ item.supplier_id +' </td>'+
+        '<td class="dummy_td_class">'+ item.prod_cat_id_id +' </td></tr>'
+    });
+    $("#id_product_list_popup_tbody").append(product_html);
+}
+
+function update_freetext_details_table(freetext_details){
+    var freetext_html = '';
+    $('#id_freetext_popup_table').DataTable().destroy();
+    $("#id_freetext_popup_tbody").empty();
+
+
+    $.each(freetext_details, function (i, item) {
+        freetext_html += '<tr><td class="class_product_checkbox"><input class="check_box_input_freetext_id" id="'+ item.freetext_id +'" type="checkbox" required></td>'+
+        '<td class="dummy_td_class">'+ item.freetext_id +'</td>'+
+        '<td class="dummy_td_class">'+ item.description +'</td>'+
+        '<td class="dummy_td_class">'+ item.supplier_id +' </td>'+
+        '<td class="dummy_td_class">'+ item.prod_cat_id +' </td></tr>'
+    });
+    $("#id_freetext_popup_tbody").append(freetext_html);
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,629 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Project Management {% endblock %}
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+<style>
+.toggle {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  height: auto;
+  width: 7.5rem;
+  margin: auto;
+  cursor: pointer;
+}
+.toggle-input {
+  display: none;
+  margin: 0;
+}
+.toggle-off,
+.toggle-on {
+  height: 1.8125rem;
+  width: 1.8125rem;
+  color: rgba(46, 45, 44, 0.1);
+  vertical-align: top;
+  text-align: center;
+  line-height: 1.8125rem !important;
+}
+.toggle-input:checked + .toggle-controller.default-success {
+  border: 0.125rem solid rgba(108, 211, 61, 0.75);
+  background: rgba(108, 211, 61, 0.375);
+}
+.toggle-input:checked + .toggle-controller.default-success:after {
+  left: 1.5625rem;
+}
+.toggle-controller.default-success {
+  position: relative;
+  display: inline-block;
+  height: 1.5625rem;
+  width: 3.125rem;
+  border: 0.125rem solid rgba(46, 45, 44, 0.05);
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  -moz-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  background: rgba(46, 45, 44, 0.025);
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-controller.default-success:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+  display: block;
+  height: 1.5625rem;
+  width: 1.5625rem;
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  -moz-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  background: white;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-off.active {color:red;}
+.toggle-on.active {color:blue;}
+
+#alert-message {
+    color: red;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid red;
+}
+
+</style>
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="d-flex justify-content-between">
+            <h3>Project Management</h3>
+
+            <div>
+                <button class="btn btn-primary" id="NONE-CREATE" onclick="update_project(this.id);"><i class="fas fa-user-plus"></i> Create Project</button>
+            </div>
+        </div>
+
+            <hr>
+            <div class="card card-shadow-1">
+                <div class="card-body">
+                    <form method="POST" >
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md">
+                                <label for="">Project ID</label>
+                                <input type="text" class="form-control check_for_search" id="project_id" name="project_id">
+                            </div>
+                            <div class="col-md">
+                                <label for="">Project Name</label>
+                                <input type="text" class="form-control check_for_search" id="project_name" name="project_name">
+                            </div>
+                            <div class="col-md">
+                                <label for="">Project Description</label>
+                                <input type="text" class="form-control check_for_search" id="project_desc" name="project_desc">
+                            </div>
+                                    <div class="col-md">
+                                        <label for="">Search Count</label>
+                                        <input name="search_count" type = "number" value="10" id="search_count"  class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="elements-space-between mt-4">
+                                    <div>
+                                        <input type="reset" value="Clear filters" class="btn btn-link">
+                                        <button class="btn btn-primary" type="button"
+                                                title="Please click to get the search details!" id="project_catalog"><i class="fas fa-search"></i> search
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span class="badge help-text-badge help-text-star-search"></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% if project_query.count > 0 %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">Total number of results found
+                    :{{project_query.count}}</h6>
+            </div>
+        </div>
+        {% elif project_query.count == 0  %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">No Results Found</h6>
+            </div>
+        </div>
+
+        {% endif %}
+
+
+    {% if project_id %}
+    <div class="card mt-5">
+        <div>
+            <button class="btn btn-primary  btn-sm mt-2 ml-2"  title="Delete" id="id_delete_proj" value="project_delete" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;" >
+                <i class="fa fa-trash"></i> delete
+            </button>
+
+            <div>
+                <table id="project_main_table_id" class="table myclass">
+                    <thead class="thead-light">
+                    <tr>
+                        <th >Project Id</th>
+                        <th >Project Name</th>
+                        <th >Project Description</th>
+                        <th >Start Date </th>
+                        <th >End Date</th>
+                        <th> Update Project</th>
+                        <th> Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="project_tbody">
+                    {% for project_details in project_id %}
+                    <tr id="{{project_details.project_detail_guid}}">
+                        <td>{{project_details.project_id}}</td>
+                        <td>{{project_details.project_name}}</td>
+                        <td>{{project_details.project_desc}}</td>
+                        <td>{{project_details.start_date}}</td>
+                        <td>{{project_details.end_date}}</td>
+                        <td><span class="badge badge-pill badge-button-purple"> <a id="{{project_details.project_detail_guid}}-UPDATE" onclick="update_project(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>
+                        <td><i class="fas fa-trash-alt hg-icon-blue-primary" title="Delete Project" id="{{project_details.project_id}}" onclick="get_user_detail_to_delete(this.id);" ></i></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+<div class="modal fade" id="add_update_modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add_update_modal_title"> Update project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body scrollbox">
+                <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span id="success_msg_id"></span></div>
+                <div class="alert alert-danger" role="alert"  id="save_project_error" style="display:none">
+                    please fill all mandatory fields
+                </div>
+                <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden> </div>
+                <div>
+                    <p id="id_error_msg" class="alert alert-danger" hidden></p>
+                </div>
+
+                <div id="error_msg_div" class="alert alert-danger" hidden><span id="error_msg_id"></span></div>
+
+
+                <div id="alert-message" style="display:none"></div>
+
+                <div>
+                    <span>Project ID: </span><span class="h5" id="add_update_project_id"></span>
+                    <span id="add_update_project_detail_guid" hidden></span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="add_update_project_name">Project Name</label><span class="hg_required"></span>
+                    <input type="text" class="form-control check_special_char" id="add_update_project_name" maxlength="256"  placeholder="Name of Project" required>
+                    <small class="form-text text-muted help-text-alpha-numeric"></small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="add_update_project_description">Project Description</label><span class="hg_required"></span>
+                        <input type="text" class="form-control check_special_char" id="add_update_project_description" maxlength="266" placeholder="Description of Project" required><br>
+                        <small class="form-text text-muted help-text-alpha-numeric"></small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="add_update_project_start_date">Start Date</label><span class="hg_required"></span>
+                            <input type="date" class="form-control check" id="add_update_project_start_date"  pattern="yyyy-MM-dd" placeholder="Enter Start Date" required><br>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="add_update_project_end_date">End Date</label><span class="hg_required"></span>
+                                <input type="date" class="form-control check" id="add_update_project_end_date" style="width : 155px;" pattern="YYYY/dd/MM" placeholder="Enter End Date" required><br>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-primary" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                        <button class="btn btn-primary" onclick="save_project()" ><i class="fas fa-save"></i> save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--modal popup for user delete-->
+<div class="modal fade" id="confirm_delete_pop_up" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                You are about to delete  "<span id="form_id_del"></span>". Are you sure?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="delete_project()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="id_delete_confirm_popup">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h5 class="modal-title">Please Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete?.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" onclick="main_table_delete()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!--end of delete confirmation popup-->
+
+<script>
+var messages_list = {{messages_list|safe}};
+var GLOBAL_project_detail_guid = '';
+var GLOBAL_ACTION = '';
+var GLOBAL_PROJECT_ID = '';
+var data_delete = '';
+table_sort_filter('project_main_table_id');
+var project_data_array = {}
+
+
+
+var update_project = function(project_id) {
+    $('#add_update_modal_title').html('')
+    document.getElementById('add_update_project_id').innerHTML = '';
+    document.getElementById('add_update_project_description').value = '';
+    document.getElementById('add_update_project_name').value = '';
+    document.getElementById('add_update_project_detail_guid').value = '';
+    document.getElementById('add_update_project_start_date').value = '';
+    document.getElementById('add_update_project_end_date').value = '';
+
+    var button_project_id = project_id.split('-')
+    var project_detail_guid = button_project_id[0]
+    GLOBAL_ACTION = button_project_id[1]
+    if(GLOBAL_ACTION == 'UPDATE'){
+        $('#add_update_modal_title').html('Update Project')
+        GLOBAL_project_detail_guid = project_detail_guid;
+        var project_id = $('#'+project_detail_guid).find("TD").eq(0).text();
+        var project_desc = $('#'+project_detail_guid).find("TD").eq(2).text();
+        var project_name = $('#'+project_detail_guid).find("TD").eq(1).text();
+        var project_data_start_date =  new Date($('#'+project_detail_guid).find("TD").eq(3).text());
+        var project_data_end_date = new Date($('#'+project_detail_guid).find("TD").eq(4).text());
+
+        var option = ''
+
+        document.getElementById('add_update_project_id').innerHTML = project_id;
+        document.getElementById('add_update_project_detail_guid').innerHTML = project_detail_guid;
+        document.getElementById('add_update_project_description').value = project_desc;
+        document.getElementById('add_update_project_name').value = project_name;
+        document.getElementById('add_update_project_start_date').valueAsDate = project_data_start_date;
+        document.getElementById('add_update_project_end_date').valueAsDate = project_data_end_date;
+
+    }
+    else{
+        data = {}
+        urlLink = "{% url 'eProc_Projects:generate_guid' %}"
+        var guid_generator = AjaxCallAPI(urlLink, data)
+        $('#add_update_modal_title').html('Add New Project')
+        document.getElementById('add_update_project_id').innerHTML = guid_generator.project_id;
+    }
+    $("#add_update_modal").modal("show");
+<!--    setTimeout(function(){location.reload()},5000);-->
+};
+
+
+
+
+
+function save_project(){
+    $("#save_project_error").css("display", "none")
+    var project_data_name = document.getElementById('add_update_project_name').value;
+    var project_data_description = document.getElementById('add_update_project_description').value;
+    var project_data_start_date=document.getElementById('add_update_project_start_date').value;
+    var project_data_end_date = document.getElementById('add_update_project_end_date').value;;
+    if((project_data_name==''||project_data_name==null) || (project_data_description==''||project_data_description==null) || (project_data_start_date==''||project_data_start_date==null) || (project_data_end_date==''||project_data_end_date==null))
+          {
+            $("#save_project_error").css("display", "block")
+          }
+          else{
+    var project_data = new Array();
+    var get_project_data = {};
+    get_project_data.project_id= document.getElementById('add_update_project_id').innerHTML;
+    get_project_data.project_name = document.getElementById('add_update_project_name').value;
+    get_project_data.project_description = document.getElementById('add_update_project_description').value;
+    get_project_data.start_date = document.getElementById('add_update_project_start_date').value;
+    get_project_data.end_date = document.getElementById('add_update_project_end_date').value,
+    project_info = {'project_data':get_project_data,'project_action':GLOBAL_ACTION};
+
+    document.querySelector("form")
+
+        var start_date = new Date(document.querySelector("#add_update_project_start_date").value);
+        var end_date = new Date(document.querySelector("#add_update_project_end_date").value);
+         var error_message = '';
+        if (start_date > end_date) {
+        var error_message = ui_messeges("JMSG111")// Get message details
+        document.getElementById("error_msg_div").innerHTML = error_message;
+<!--        document.getElementById("alert-message").style.display = "block";-->
+        $("#error_msg_div").prop("hidden",false)
+        return error_message ;
+    }
+
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Projects:save_project_db' %}",
+        data: JSON.stringify(project_info),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            if(GLOBAL_ACTION == 'UPDATE'){
+                update_main_table(Response)
+                $("#add_update_modal").modal("hide");
+            }
+            else{
+                var error_message = ui_messeges("JMSG039")// Get message details
+        document.getElementById("err_msg_app_settings_t").innerHTML = error_message;
+<!--        document.getElementById("alert-message").style.display = "block";-->
+        $("#err_msg_app_settings_t").prop("hidden",false)
+        return error_message ;
+                $("#add_update_modal").modal("hide");
+<!--                window.location.reload();//reload the page-->
+            }
+        }
+    });
+  }
+}
+
+// Function to fetch ui messages from backend
+function ui_messeges(messages_id){
+     $.each(messages_list, function (i, item){
+        if (item.messages_id == messages_id){
+            error_message = item.messages_id_desc
+            return error_message
+        }
+     });
+       return error_message
+}
+
+
+<!--$('#project_catalog').click(function(e){-->
+<!--    e.preventDefault();-->
+<!--    OpenLoaderPopup();-->
+<!--    var project_data = {};-->
+<!--    project_data.project_id = $('#project_id').val();-->
+<!--    project_data.project_name = $('#project_name').val();-->
+<!--    project_data.project_desc = $('#project_desc').val();-->
+<!--    project_data.start_date = $('#start_date').val();-->
+<!--    project_data.end_date = $('#end_date').val();-->
+<!--    project_data.search_count = $('#search_count').val();-->
+<!--    var urlLink = "{% url 'eProc_Projects:project_config' %}";-->
+<!--    jQuery.ajax({-->
+<!--       type: 'POST',-->
+<!--       url: urlLink,-->
+<!--       dataType :'json',-->
+<!--       data: JSON.stringify(project_data),-->
+<!--       success: function(result){-->
+<!--           response = result;-->
+<!--           $('#project_main_table_id').DataTable().destroy();-->
+<!--           $('#project_tbody').empty();-->
+<!--            var project_html = '';-->
+<!--            $.each(result, function (i, project_details) {-->
+<!--                project_html += `<tr id="${project_details.project_detail_guid}">-->
+<!--                    <td>${project_details.project_id}</td>-->
+<!--                    <td>${project_details.project_name}</td>-->
+<!--                    <td>${project_details.project_desc}</td>-->
+<!--                    <td>${project_details.start_date}</td>-->
+<!--                    <td>${project_details.end_date}</td>-->
+<!--                    <td><span class="badge badge-pill badge-button-purple"><a id="${project_details.project_detail_guid}-UPDATE" onclick="update_project(this.id);" href="#">Update <i class="fas fa-edit"></i></a> </span></td>-->
+<!--                        <td><i class="fas fa-trash-alt hg-icon-blue-primary" title="Delete Project" id="{{project_details.project_id}}" onclick="get_user_detail_to_delete(this.id);" ></i></td>-->
+<!--                    </tr>`;-->
+<!--            });-->
+<!--            $('#project_tbody').append(project_html);-->
+<!--            table_sort_filter('project_main_table_id');-->
+<!--            CloseLoaderPopup();-->
+<!--       },-->
+<!--       error: function(xhr, resp, text) {-->
+<!--       },-->
+<!--       cache: false,-->
+<!--       processData: false,-->
+<!--       contentType: false,-->
+<!--   });-->
+<!--});-->
+
+function update_main_table(data){
+    if(data.length!==0){
+        $('#'+GLOBAL_project_detail_guid).find("TD").eq(0).text(data[0].project_id);
+        $('#'+GLOBAL_project_detail_guid).find("TD").eq(1).text(data[0].project_name);
+        $('#'+GLOBAL_project_detail_guid).find("TD").eq(2).text(data[0].project_desc);
+        $('#'+GLOBAL_project_detail_guid).find("TD").eq(3).text(data[0].start_date);
+        $('#'+GLOBAL_project_detail_guid).find("TD").eq(3).text(data[0].end_date);
+    }
+}
+
+
+// Function to delete Project
+function delete_project() {
+        var project_info = [];
+        project_info.push(data_delete);
+        $('#confirm_delete_pop_up').modal('hide');
+        data = {'data': project_info}
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Projects:delete_project' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            display_project_data(Response.project_id);
+            $('#success_msg_id').text(Response.success_message)
+           // document.getElementById("success_msg_id").text = Response.success_message;
+            $("#error_msg_div").prop("hidden",false)
+<!--            setTimeout(function(){$("#error_msg_div").prop("hidden",true);},5000)-->
+            message_display_time();
+<!--            location.reload();-->
+        }
+    });
+
+}
+
+function get_user_detail_to_delete(element) {
+        data_delete = element;
+        document.getElementById("form_id_del").innerHTML = data_delete;
+        $('#confirm_delete_pop_up').modal('show')
+    }
+
+
+var data = {};
+ $('.toggle-input').change(function() {
+    console.log(this.id);
+    data = (this.id).split('-')[0];
+    document.getElementById("form_id_del").innerHTML = data;
+        $('#id_confirm_popup').modal('show')
+        if($(this).is(':checked')) {
+            console.log('This is firing');
+            $('.toggle-off').removeClass('active');
+            $('.toggle-on').addClass('active');
+            data.flag = true
+        } else {
+            $('.toggle-off').addClass('active');
+            $('.toggle-on').removeClass('active');
+            data.flag = false
+        }
+        var id = this.id;
+        data.project_id = id;
+  });
+
+
+function display_project_data(project_data){
+    var project_detail_html = '';
+    $('#project_main_table_id').DataTable().destroy();
+    $("#project_tbody").empty();
+    $.each(project_data, function (i, project) {
+<!--        if(emp.employee_id){-->
+<!--            checkbox_input = '<input type="checkbox" class="emp_checkbox" onclick="valueChanged()" disabled >'-->
+<!--        }-->
+<!--        else{-->
+<!--            checkbox_input = '<input type="checkbox" class="emp_checkbox" onclick="valueChanged()" >'-->
+<!--        }-->
+<!--        emp_detail_html += '<tr id="'+emp.employee_id+'"><td>'+checkbox_input+'</td> '+-->
+<!--        '<td><a href="#" id="'+ emp.employee_id +'" class="deletepop" target="_blank">'+ emp.employee_id +'</a></td>'+-->
+         '<td>'+ project.project_id +'</td>'+
+         '<td>'+ project.project_name +'</td>'+
+         '<td>'+ project.project_desc +'</td>'+
+         '<td>'+ project.start_date +'</td>'+
+         '<td>' + project.end_date + '</td>'+
+<!--         '<td>' + emp.user_locked + '</td>'+-->
+<!--         '<td>' + emp.pwd_locked + '</td>'+-->
+         '<td><i class="fas fa-trash-alt hg-icon-blue-primary" title="Delete project" id="'+ project.project_id +'" onclick="get_user_detail_to_delete(this.id)" ></i></td></tr>';
+            });
+    $("#project_tbody").append(project_detail_html);
+    table_sort_filter('project_main_table_id');
+}
+
+$('#project_catalog').click(function(e){
+    e.preventDefault();
+    OpenLoaderPopup();
+    var project_data = {};
+    project_data.project_id = $('#project_id').val();
+    project_data.project_name = $('#project_name').val();
+    project_data.project_desc = $('#project_desc').val();
+    project_data.start_date = $('#start_date').val();
+    project_data.end_date = $('#end_date').val();
+    project_data.search_count = $('#search_count').val();
+    var urlLink = "{% url 'eProc_Projects:project_config' %}";
+    $.ajax({
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(project_data),
+       success: function(result){
+           response = result;
+           updateTable();
+           CloseLoaderPopup();
+<!--           setTimeout(function(){location.reload()},10000);-->
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+});
+
+function updateTable(){
+    var table = $('#project_main_table_id').DataTable();
+    var project_html = '';
+    $.each(response, function (i, project_details) {
+        project_html += `<tr id="${project_details.project_detail_guid}">
+            <td>${project_details.project_id}</td>
+            <td>${project_details.project_name}</td>
+            <td>${project_details.project_desc}</td>
+            <td>${project_details.start_date}</td>
+            <td>${project_details.end_date}</td>
+            <td><span class="badge badge-pill badge-button-purple"><a id="${project_details.project_detail_guid}-UPDATE" onclick="update_project(this.id);" href="#">Update <i class="fas fa-edit"></i></a> </span></td>
+                <td><i class="fas fa-trash-alt hg-icon-blue-primary" title="Delete Project" id="${project_details.project_id}" onclick="get_user_detail_to_delete(this.id);" ></i></td>
+            </tr>`;
+    });
+    table.clear().draw();
+    table.rows.add($(project_html)).draw();
+}
+
+
+</script>
+
+<script src="{% static 'scripts/project_search.js'%}"></script>
+
+{% endblock %}

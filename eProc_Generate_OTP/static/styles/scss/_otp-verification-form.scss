@@ -1,0 +1,19 @@
+.otp-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.otp-input-section {
+    display: flex;
+
+    input:not(:last-child) {
+        margin-right: 10px;
+    }
+
+    input {
+        width: 25%;
+        text-align: center;
+        font-weight: 500;
+    }
+}
+ 

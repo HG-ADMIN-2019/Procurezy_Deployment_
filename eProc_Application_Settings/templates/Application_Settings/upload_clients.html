@@ -1,0 +1,280 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Clients (Application Settings) {% endblock %}
+{% block maincontent %} 
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Clients</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Basic_Settings:extract_client_data' %}'" type="button">
+                    <i class="fas fa-download"></i> extract
+                </button>
+                <button type="button" id="id_add_data" title="Add Client" value="ADD" class="btn btn-primary" data-toggle="modal" data-target="#upload_client_Modal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> Add Client
+                </button>
+                  <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button();">
+                        <i class="far fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm"  title="Delete" id="id_delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm " title="Copy" id="id_copy_data" style="display:none;" value="COPY" type="button" onclick="onclick_copy_button()">
+                        <i class="fa fa-copy"></i> Copy
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;"  value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel"  id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <!--   display basic client table-->
+                <table id="display_basic_table" class="class_basic_client_table table table-bordered custom-table">
+                    <thead id="id_client_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox" hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th>Client</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_client_tbody">
+                        {% for client in upload_clients %}
+                        <tr>
+                            <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                            <td>{{client.client}}</td>
+                            <td>{{client.description}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!--end of display basic client table-->
+            </div>
+        </div>
+    </div>
+    <!--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="upload_client_Modal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Client</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body scrollbox">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> Add New Row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash"></i> delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_client"></p>
+                            <p id="id_error_msg_description"></p>
+                            <p id="id_error_msg_client_length"></p>
+                        </div>
+                        <div>
+                            <p id="id_error_msg" class="alert alert-danger" hidden></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                                <tr>
+                                    <th id="header_select">Select</th>
+                                    <th>Client</th>
+                                    <th>Description</th>
+                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <!--end of delete confirmation popup-->
+        <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %} {% endfor %} {% endif %}
+        </div>
+    </div>
+<script>
+    var basic_settings = '{{basic_settings|safe}}';
+    var rendered_client_data = {{upload_clients|safe}};
+    var messages_list = {{messages_list|safe}};
+    var main_table_client_value = [];
+    var client = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var messages_list = {{messages_list|safe}};
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        var error_message = '';
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        get_main_table_data();  //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, clients_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                // compare main table and pop up for duplicate values
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#upload_client_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':clients_data,'table_name':'OrgClients','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_client_data = Response[0];
+                        display_basic_db_data();
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message){
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    //delete the selected row in db................
+    var main_table_client_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_client_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_client_checked,'table_name':'OrgClients','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                rendered_client_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, client) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(client, function (i, item) {
+            if ((item.client.length == 0) || (item.description.length == 0)) {
+                error_message = ui_messeges("JMSG002"); // Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if (no_duplicate_value == 'Y') {
+            $.each(validate_add_attributes, function(index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                } else {
+                    if ($.inArray(value, common) == -1) {
+                         common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001"); // Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var client_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            client_dic = {}
+            client_dic.client = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase();
+            var compare =  client_dic.client
+            client_check.push(compare);
+            jQuery.grep(client_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+        });
+    }
+</script>
+<script src="{% static 'scripts/upload_clients.js' %}"></script>
+{% endblock %}

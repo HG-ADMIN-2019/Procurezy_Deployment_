@@ -1,0 +1,973 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Organizational Announcements (Admin Tool) {% endblock %}
+{% block maincontent %}
+<style>
+    /* Increase the width and height of the modal */
+    .modal-dialog {
+        max-width: 800px; /* Adjust the width as needed */
+        max-height: 600px; /* Adjust the height as needed */
+    }
+    .modal-dialog.modal-sm {
+        max-width: 500px; /* Adjust the width as needed */
+    }
+</style>
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="d-flex justify-content-between">
+            <h3>Organizational Announcements</h3>
+            <div>
+                <button class="btn btn-primary" id="id_add_data" type="button" value="ADD" title="add_new_announcement" onclick="add_new_org_announcement(this);">
+                    <i class="fas fa-user-plus"></i> Add New Announcement
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="card card-shadow-1">
+            <div class="card-body">
+                <form method="POST" id="search_form" name="search_form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md">
+                            <label for="input_announcement_subject">Title/Description</label>
+                            <input type="text" class="form-control check_for_search mandatory_fields" id="input_announcement_subject" name="announcement_subject">
+                            <span id="err_empnum" class="error_message" hidden></span>
+                            <small class="form-text text-muted">Use * as a wild card search criteria (eg. Apple - App*, *ple, *ppl*)</small>
+                        </div>
+                        <div class="col-md">
+                            <label for="select_announcement_status">Status</label>
+                            <select class="form-control" id="select_announcement_status" name="status">
+                                <option value="Active" selected>Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="select_priority">Priority</label>
+                            <select class="form-control" id="select_priority" name="priority">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-auto my-1">
+                            <button class="button-search-users btn btn-primary" type="submit" title="Please click to get the search details!" onclick="saveDataToLocalStorage();">
+                                <i class="fas fa-search"></i> search
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="reset" value="Clear filters" class="ip-form-clear-filters btn btn-link" onclick="clearFilters()">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+{% if announcement_result1 %}
+    <div class="search_result_count_card card">
+        <div class="card-body">
+            <h6 class="card-title">Total number of results found: {{ announcement_result1|length }}</h6>
+        </div>
+    </div>
+{% elif announcement_result1|length == 0 %}
+    <div class="search_result_count_card card">
+        <div class="card-body">
+            <h6 class="card-title">No Results Found</h6>
+        </div>
+    </div>
+{% endif %}
+
+
+        <div style="margin-top:25px" id="error_msg_div" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+        {% if announcement_result1 %}
+        <div class="card mt-3">
+            <div>
+                <button class="btn btn-primary  btn-sm mt-2 ml-2" title="Delete" id="id_delete_annsmt" value="annsmt_delete" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                    <i class="fa fa-trash"></i> delete
+                </button>
+                <div>
+                    <table id="sup_tab" class="table qwsqwsqws">
+                        <thead class="thead-light">
+                            <tr>
+                                <th id="hg_select_checkbox" scope="col">
+                                    <div id="id_check_all">
+                                        <input type="checkbox" id="selectAll" onclick="checkAll(this)">
+                                    </div>
+                                </th>
+                                <th hidden> GUID </th>
+                                <th> Announcement Number </th>
+                                <th> Title </th>
+                                <th> Description </th>
+                                <th> Status </th>
+                                <th> Priority </th>
+                                <th> From Date</th>
+                                <th> To Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sup_tab_body">
+                            {% for results in announcement_result1 %}
+                            <tr id="tr_{{results.announcement_subject}}">
+                                <td class="class_select_checkbox">
+                                    <input type="checkbox" class="annsmt_checkbox" onclick="valueChanged();">
+                                </td>
+                                <td hidden>{{results.unique_announcement_id}}</td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#saveConfirmationModal" onclick="view_org_announcement_data(this);">
+                                        {{ results.announcement_id }}
+                                    </a>
+                                </td>
+                                <td>{{results.announcement_subject}}</td>
+                                <td>{{results.announcement_description}}</td>
+                                <td>
+                                    <label class="switch">
+                                        <label class="toggle-control">
+                                            {% if results.status == 'Active' %}
+                                            <input type="checkbox" id="{{results.announcement_id}}-Active" class="toggle-block" checked>
+                                            <span class="control"></span>
+                                            {% else %}
+                                            <input type="checkbox" id="{{results.announcement_id}}-Inactive" class="toggle-block">
+                                            <span class="control"></span>
+                                            {% endif %}
+                                        </label>
+                                    </label>
+                                </td>
+
+                                <td>{{results.priority}}</td>
+                                <td data-date="{{results.announcement_from_date|date:'Y-m-d'}}">{{results.announcement_from_date|date:'d-m-Y'}}</td>
+                                <td data-date="{{results.announcement_to_date|date:'Y-m-d'}}">{{results.announcement_to_date|date:'d-m-Y'}}</td>
+                                <td class="item-action-icon-section">
+                                    <span title="Edit"  onclick="edit_org_announcement_data(this);">
+                                        <i class="far fa-edit item-action-icons">edit</i>
+                                    </span>
+                                    <span title="Delete Announcement" onclick="get_annsmt_detail_to_delete(this.id)" id="{{results.unique_announcement_id}}">
+                                        <i class="material-icons item-action-icons">delete_outline</i>
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div>
+    <!-- Custom Modal Popup for Save Confirmation -->
+    <form id="address_clear">
+        <div class="modal fade" id="saveConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="saveConfirmationModalLabel">Organizational Announcement</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card card-shadow-1">
+                            <div class="card-body">
+                                <div class="alert alert-success display-none" id="org_announcement_update_success" role="alert"> </div>
+                                <div class="alert alert-danger display-none" id="save_error_msg"></div>
+                                <div class="row">
+                                    <input value="{{announcement_details.unique_announcement_id}}" id="announcement_guid" hidden>
+                                    <input type="text" id="announcement_id" value="{{announcement_details.announcement_id}}" hidden>
+                                    <div class="form-group col-md">
+                                        <label> Title</label><span class="hg_required"></span><br>
+                                        <input type="text" class="form-control hg_edit_display_mode check_special_char" id="modal_announcement_subject" value="{{announcement_details.announcement_subject}}" required maxlength="33">
+                                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9</small>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Description</label><span class="hg_required"></span><br>
+                                        <input type="text" name="announcement_desc" id="announcement_desc" class="form-control hg_edit_display_mode check_special_char" value="{{announcement_details.announcement_description}}" required maxlength="90">
+                                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Status</label><br>
+                                        <select type="text" class="form-control" id="announcement_status_" name="status">
+                                            {% for status in status_dropdown_values %}
+                                            <option value="{{ status }}">{{ status }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Priority</label><br>
+                                        <select type="text" class="form-control" id="priority_" name='priority'>
+                                            {% for priority in priority_dropdown_values %}
+                                            <option value="{{ priority }}">{{ priority }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> From Date</label><span class="hg_required"></span><br>
+                                        <input type="date" class="form-control hg_edit_display_mode" name="from_date" id="from_date" value="{{from_date}}" required>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> To Date</label><span class="hg_required"></span><br>
+                                        <input type="date" class="form-control hg_edit_display_mode" name="to_date" id="to_date" value="{{to_date}}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div id="save_button">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" type="button" title="Click here to Register" onclick="save_announcement_data();">
+                                <i class="fas fa-check"></i> Save
+                            </button>
+                        </div>
+                        <div id="edit_button" class="display-none">
+                            <button type="button" class="btn btn-primary" onclick="edit_org_announcement_data();">
+                                <i class="far fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div>
+    <!--modal popup for announcement delete-->
+    <div class="modal fade" id="confirm_delete_pop_up" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this announcement?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="delete_announcement()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--change confirmation popup-->
+    <div class="modal fade" id="id_confirm_popup" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are You Sure You Want To Change?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="toggle()"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" onclick="lock_active_change()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of delete confirmation popup-->
+
+    <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" onclick="main_table_delete()" class="btn btn-primary">
+                        <i class="fas fa-check"></i> yes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--end of delete confirmation popup-->
+
+<script>
+    var GLOBAL_ACTION = '';
+
+    //******************************
+    $(document).ready(function () {
+        nav_bar_admin();
+        console.log(document.getElementById("input_announcement_subject").value);
+<!--        document.getElementById("input_announcement_subject").value = "";-->
+        table_sort_filter_basic("qwsqwsqws")
+    });
+
+function saveDataToLocalStorage() {
+    // Check if the search button was clicked
+    if (event && event.type === 'submit') {
+        localStorage.setItem("announcement_subject", document.getElementById("input_announcement_subject").value);
+        localStorage.setItem("announcement_status", document.getElementById("select_announcement_status").value);
+        localStorage.setItem("priority", document.getElementById("select_priority").value);
+    } else {
+        // Clear localStorage values if the search button was not clicked
+        localStorage.removeItem("announcement_subject");
+        localStorage.removeItem("announcement_status");
+        localStorage.removeItem("priority");
+    }
+}
+
+
+    //Function to set input fields from localStorage
+    function setFieldsFromLocalStorage() {
+        document.getElementById("input_announcement_subject").value = localStorage.getItem("announcement_subject");
+        // Set default value for Status if not available in localStorage
+        const statusElement = document.getElementById("select_announcement_status");
+        const savedStatus = localStorage.getItem("announcement_status");
+        if (savedStatus) {
+            statusElement.value = savedStatus;
+        } else {
+            statusElement.value = "Active"; // Set default value
+        }
+
+        //Set default value for Priority if not available in localStorage
+        const priorityElement = document.getElementById("select_priority");
+        const savedPriority = localStorage.getItem("priority");
+        if (savedPriority) {
+            priorityElement.value = savedPriority;
+        } else {
+            priorityElement.value = "High"; // Set default value
+        }
+    }
+
+
+    // Call the function to set input fields from localStorage when the page loads.
+    window.onload = function() {
+        setFieldsFromLocalStorage();
+    };
+
+    function reload() {
+        setFieldsFromLocalStorage();
+        OpenLoaderPopup();
+    }
+
+    // Function to clear filters and clear localStorage data
+    function clearFilters() {
+        $(".error_message").prop("hidden", true); // Hide any error messages
+        // Clear form fields except for Title/Description
+        var form = document.getElementById("search_form");
+        // Reset the form to its initial state
+        form.reset();
+        // Set default values for the form elements
+        document.getElementById("input_announcement_subject").value = "";
+        document.getElementById("select_announcement_status").value = "Active";
+        document.getElementById("select_priority").value = "High";
+        localStorage.removeItem("announcement_subject");
+        localStorage.removeItem("announcement_status");
+        localStorage.removeItem("priority");
+        $("input[type=text]").val('');
+        // Set select options to their default values
+        $("#select_announcement_status").val("Active");
+        $("#select_priority").val("High");
+        // Remove the status and priority from the form data
+        $('#search_form').find('select[name="status"]').remove();
+        $('#search_form').find('select[name="priority"]').remove();
+        // Submit the form
+        $('#search_form').submit();
+    }
+
+    //***********************************************
+    function get_annsmt_detail_to_delete(element) {
+        data_delete = element;
+<!--        document.getElementById("form_id_del").innerHTML = data_delete;-->
+        $('#confirm_delete_pop_up').modal('show')
+    }
+
+    // Function to delete announcement
+    function delete_announcement() {
+        var annsmt_info = [];
+        annsmt_info.push(data_delete);
+        $('#confirm_delete_pop_up').modal('hide');
+        data = annsmt_info;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Admin_Tool:delete_org_announcement' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                display_annsmt_data(Response.announcement_result1);
+                $('#success_msg_id').text(Response.success_message);
+                $("#error_msg_div").prop("hidden", false);
+                message_display_time();
+                window.location.reload(5000);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // Onclick of edit button
+    function edit_org_announcement_data(clickedElement) {
+        $('#save_button').show();
+        $('#edit_button').hide();
+        // Get the row that contains the clicked element (Edit button)
+        const row = $(clickedElement).closest('tr');
+        // Get the announcement details
+        const announcementDetails = {
+            announcement_id: row.find('td:nth-child(3)').text(),
+            announcement_subject: row.find('td:nth-child(4)').text(),
+            announcement_description: row.find('td:nth-child(5)').text(),
+            status: row.find('.toggle-block').prop('checked') ? 'Active' : 'Inactive',
+            priority: row.find('td:nth-child(7)').text(),
+            announcement_from_date: parseFormattedDate(row.find('td:nth-child(8)').text()),
+            announcement_to_date: parseFormattedDate(row.find('td:nth-child(9)').text()),
+            announcement_guid: row.find('td:nth-child(2)').text(),
+        };
+        // Update the modal content with the announcement details
+        $("#announcement_id").val(announcementDetails.announcement_id);
+        $("#modal_announcement_subject").val(announcementDetails.announcement_subject);
+        $("#announcement_desc").val(announcementDetails.announcement_description);
+        $("#announcement_status_").val(announcementDetails.status);
+        $("#priority_").val(announcementDetails.priority);
+        $("#from_date").val(formatDateForInput(announcementDetails.announcement_from_date));
+        $("#to_date").val(formatDateForInput(announcementDetails.announcement_to_date));
+        $("#announcement_guid").val(announcementDetails.announcement_guid);
+        // Enable specific fields for editing
+        $("#modal_announcement_subject, #announcement_desc, #announcement_status_, #priority_, #from_date, #to_date").prop("disabled", false);
+        // Show the modal
+        $("#saveConfirmationModal").modal("show");
+        $("#org_announcement_update_success").css("display", "none");
+        $('#save_error_msg').addClass('display-none');
+    }
+
+    //*************************************
+    function parseFormattedDate(dateString) {
+        const parts = dateString.split("-");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    //*************************************
+    function formatDateForInput(date) {
+        const year = date.getFullYear();
+        const month = ("0" + (date.getMonth() + 1)).slice(-2);
+        const day = ("0" + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    }
+
+    //*************************************
+    function view_org_announcement_data(clickedElement) {
+        $('#save_button').hide();
+        $('#edit_button').hide();
+        $('#save_error_msg').addClass('display-none');
+        // Get the row that contains the clicked element (Edit button)
+        const row = $(clickedElement).closest('tr');
+        var announcementDetails = {
+            announcement_id: row.find('td:nth-child(3)').text(),
+            announcement_subject: row.find('td:nth-child(4)').text(),
+            announcement_description: row.find('td:nth-child(5)').text(),
+            status: row.find('.toggle-block').prop('checked') ? 'Active' : 'Inactive',
+            priority: row.find('td:nth-child(7)').text(),
+            announcement_from_date: row.find('td:nth-child(8)').data('date'),
+            announcement_to_date: row.find('td:nth-child(9)').data('date'),
+            announcement_guid: row.find('td:nth-child(2)').text(),
+        };
+        // Update the modal content with the announcement details
+        $("#announcement_id").val(announcementDetails.announcement_id);
+        $("#modal_announcement_subject").val(announcementDetails.announcement_subject);
+        $("#announcement_desc").val(announcementDetails.announcement_description);
+        $("#announcement_status_").val(announcementDetails.status);
+        $("#priority_").val(announcementDetails.priority);
+        $("#from_date").val(announcementDetails.announcement_from_date);
+        $("#to_date").val(announcementDetails.announcement_to_date);
+        $("#announcement_guid").val(announcementDetails.announcement_guid);
+        // Enable specific fields for editing
+        $("#modal_announcement_subject").prop("disabled", true);
+        $("#announcement_desc").prop("disabled", true);
+        $("#announcement_status_").prop("disabled", true);
+        $("#priority_").prop("disabled", true);
+        $("#from_date").prop("disabled", true);
+        $("#to_date").prop("disabled", true);
+        // Show the modal
+        $("#saveConfirmationModal").modal("show");
+    }
+
+    //*************************************
+    function display_annsmt_data(announcement_result1) {
+        var org_annsmt_html = '';
+        var lock_id = '';
+        $('#sup_tab').DataTable().destroy();
+        $("#sup_tab_body").empty();
+        $.each(announcement_result1, function (i, annsmt) {
+            if (annsmt.announcement_id) {
+                checkbox_input = '<input type="checkbox" class="annsmt_checkbox" onclick="valueChanged()"  >';
+            } else {
+                checkbox_input = '<input type="checkbox" class="annsmt_checkbox" onclick="valueChanged()" >';
+            }
+            if (annsmt.status.toLowerCase() === 'active') {
+                console.log('Status is true (active)');
+                lock_id = '<input type="checkbox" id="'+annsmt.announcement_id.concat("-Active")+'" class="toggle-block" checked><span class="control"></span>';
+                }
+            else {
+                console.log('Status is false (inactive)');
+                lock_id = '<input type="checkbox" id="'+annsmt.announcement_id.concat("-Inactive")+'" class="toggle-block"> <span class="control"></span>';
+            }
+            const date1 = new Date(annsmt.announcement_from_date);
+            const date2 = new Date(annsmt.announcement_to_date);
+            // get the date as a string in the format dd-mm-yyyy
+            const from_date = ("0" + date1.getDate()).slice(-2) + "-" + ("0" + (date1.getMonth() + 1)).slice(-2) + "-" + date1.getFullYear();
+            const to_date = ("0" + date2.getDate()).slice(-2) + "-" + ("0" + (date2.getMonth() + 1)).slice(-2) + "-" + date2.getFullYear();
+            org_annsmt_html += '<tr id="' + annsmt.announcement_id + '"> ' +
+                '<td class="class_select_checkbox">' + checkbox_input + '</td>' +
+                '<td hidden>' + annsmt.unique_announcement_id + '</td>' +
+                '<td>' +
+                '<a href="#" data-toggle="modal" data-target="#saveConfirmationModal" onclick="view_org_announcement_data(this);">' +
+                annsmt.announcement_id +
+                '</a>' +
+                '</td>' +
+                '<td>' + annsmt.announcement_subject + '</td>' +
+                '<td>' + annsmt.announcement_description + '</td>' +
+                    '<td><label class="switch"><label class="toggle-control">' + lock_id + '</label></label></td>'+
+                    '<td>' + annsmt.priority + '</td>' +
+                    '<td>' + from_date + '</td>' +
+                    '<td>' + to_date + '</td>' +
+                    '<td class="item-action-icon-section">' +
+                    '<span title="Edit" onclick="edit_org_announcement_data(this);" data-id="' + annsmt.announcement_id + '">' +
+                    '<i class="far fa-edit item-action-icons">edit</i>' +
+                    '</span>' +
+                    '<span title="Delete Announcement" onclick="get_annsmt_detail_to_delete(this.id)" id="' + annsmt.announcement_id + '">' +
+                    '<i class="material-icons item-action-icons">delete_outline</i>' +
+                    '</span>' +
+                    '</td>' +
+                    '</tr>';
+
+        });
+        $("#sup_tab_body").append(org_annsmt_html);
+        table_sort_filter('sup_tab');
+    }
+
+    //**************************
+    function main_table_delete() {
+        main_table_annsmt_checked = [];
+        $("#sup_tab TBODY TR").each(function () {
+            var row = $(this);
+            var abc = row.find("TD").eq(1).html();;
+            console.log(abc);
+            var country_arr_obj = {};
+            var check_status = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+            if (check_status) {
+                main_table_annsmt_checked.push(abc);
+            }
+        });
+        $('#id_delete_confirm_popup').modal('hide');
+        console.log(main_table_annsmt_checked);
+        data = main_table_annsmt_checked
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Admin_Tool:delete_org_announcement' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                display_annsmt_data(Response.announcement_result1);
+                    $('#success_msg_id').text(Response.success_message)
+<!--                $("#id_delete_annsmt").hide();-->
+                $("#error_msg_div").prop("hidden", false)
+<!--                setTimeout(function () { $("#error_msg_div").prop("hidden", true); }, 5000)-->
+                message_display_time();
+                CloseLoaderPopup();
+                window.location.reload(5000);
+            }
+        });
+    }
+
+
+    //**********************
+    function valueChanged() {
+        if ($('.annsmt_checkbox').is(":checked")) {
+            $("#id_delete_annsmt").show();
+        } else {
+            $("#id_delete_annsmt").hide();
+        }
+    }
+
+    //onclick of select all checkbox
+    function checkAll(ele) {
+        if (ele.checked) {
+            $('.annsmt_checkbox').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = true;
+                    $("#id_delete_annsmt").show();
+                }
+            });
+        }
+        else{
+            $('.annsmt_checkbox').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = false;
+                    $("#id_delete_annsmt").hide();
+                }
+            });
+        }
+    }
+
+    <!--Check All -->
+    <!-- ----------------------------------------------------   -->
+    var table = $('#sup_tab').DataTable();
+    var rows_selected = [];
+    //onclick of select all checkbox
+    $('#sup_tab tbody').on('click', 'input[class="annsmt_checkbox"]', function(e){
+        var $row = $(this).closest('tr');
+        // Get row data
+        var data = table.row($row).data();
+        // Get row ID
+        var rowId = data[0];
+        // Determine whether row ID is in the list of selected row IDs
+        var index = $.inArray(rowId, rows_selected);
+        // If checkbox is checked and row ID is not in list of selected row IDs
+        if(this.checked && index === -1){
+            rows_selected.push(rowId);
+        // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
+        } else if (!this.checked && index !== -1){
+            rows_selected.splice(index, 1);
+        }
+        if(this.checked){
+            $row.addClass('selected');
+        } else {
+            $row.removeClass('selected');
+        }
+        // Update state of "Select all" control
+    //      updateDataTableSelectAllCtrl(table);
+        // Prevent click event from propagating to parent
+        e.stopPropagation();
+    });
+
+    // Handle click on "Select all" control
+    $('thead input[id="selectAll"]', table.table().container()).on('click', function(e) {
+    if (this.checked) {
+        $('#sup_tab tbody input[class="annsmt_checkbox"]:not(:checked)').trigger('click');
+        $(".annsmt_checkbox").prop("checked", true);
+    } else {
+        $('#sup_tab tbody input[class="annsmt_checkbox"]:checked').trigger('click');
+        $(".annsmt_checkbox").prop("checked", false);
+    }
+    // Prevent click event from propagating to parent
+    e.stopPropagation();
+    });
+    // Handle table draw event
+    table.on('draw', function() {
+       // Update state of "Select all" control
+       updateDataTableSelectAllCtrl(table);
+       valueChanged();
+       // e.stopPropagation();
+    });
+
+
+    //*****************************************
+    function updateDataTableSelectAllCtrl(table) {
+       var $table = table.table().node();
+       var $chkbox_all = $('tbody input[class="annsmt_checkbox"]', $table);
+       var $chkbox_checked = $('tbody input[class="annsmt_checkbox"]:checked', $table);
+       var chkbox_select_all = $('thead input[id="selectAll"]', $table).get(0);
+       // If none of the checkboxes are checked
+       if ($chkbox_checked.length === 0) {
+          chkbox_select_all.checked = false;
+          if ('indeterminate' in chkbox_select_all) {
+             chkbox_select_all.indeterminate = false;
+          }
+       // If all of the checkboxes are checked
+       } else if ($chkbox_checked.length === $chkbox_all.length) {
+          chkbox_select_all.checked = true;
+          if ('indeterminate' in chkbox_select_all) {
+             chkbox_select_all.indeterminate = false;
+          }
+       } else {
+          chkbox_select_all.checked = true;
+          if ('indeterminate' in chkbox_select_all) {
+             chkbox_select_all.indeterminate = true;
+          }
+       }
+    }
+
+    //***************************
+function save_announcement_data() {
+    var sub_val = $('#modal_announcement_subject').val();
+    var desc_val = $('#announcement_desc').val();
+    var from_date_val = $('#from_date').val();
+    var to_date_val = $('#to_date').val();
+
+    // Check if From Date is greater than To Date
+    if (from_date_val > to_date_val) {
+        // Display an error message and prevent further processing
+        $('#save_error_msg').removeClass('display-none').addClass('alert-danger');
+        $('#save_error_msg').html("From Date cannot be greater than To Date.");
+        return;
+    }
+
+    // Validate that required fields are not empty
+    if (!hasValue(sub_val) || !hasValue(desc_val) || !hasValue(from_date_val) || !hasValue(to_date_val)) {
+        $('#save_error_msg').removeClass('display-none').addClass('alert-danger');
+        $('#save_error_msg').html("Please enter valid values for all required fields.");
+        return;
+    }
+
+    // Add spaces to the description if needed
+    var formattedDesc = addSpacesToDescription(desc_val);
+
+    // Validate the rest of the form
+    is_save_form_valid = save_announcement_form_validation(sub_val, formattedDesc, from_date_val, to_date_val);
+    if (action === "ADD" || action === "edit") {
+        if (is_save_form_valid != '') {
+            $('#save_error_div').html(is_save_form_valid);
+            $('#save_error_div').show();
+            scroll_top();
+            return;
+        }
+    }
+
+    // Continue with saving the announcement data using AJAX
+    var form_data = {
+        announcement_id: document.getElementById('announcement_id').value,
+        announcement_subject: document.getElementById('modal_announcement_subject').value,
+        announcement_description: formattedDesc,
+        status: document.getElementById('announcement_status_').value,
+        priority: document.getElementById('priority_').value,
+        announcement_from_date: document.getElementById('from_date').value,
+        announcement_to_date: document.getElementById('to_date').value,
+        announcement_guid: document.getElementById('announcement_guid').value,
+    };
+
+    OpenLoaderPopup();
+    $('#save_button').hide();
+    $('#edit_button').hide();
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:org_announcement_save' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+            display_annsmt_data(response.announcement_result1);
+            document.getElementById('org_announcement_update_success').innerHTML = response.message;
+            $('#save_error_msg').removeClass('alert-danger').addClass('alert-success');
+            $('#save_error_msg').html(response.message);
+            $('#save_error_msg').show();
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            document.getElementById('announcement_guid').value = response.updated_guid;
+            setTimeout(function() {
+                $('#saveConfirmationModal').modal('hide');
+            }, 5000); // Delay the modal closing for 5 seconds (adjust as needed)
+            CloseLoaderPopup();
+            location.reload();
+        }
+    });
+}
+
+function addSpacesToDescription(description) {
+    // Check if the description already contains proper spacing
+    if (description.includes(" ")) {
+        return description; // If spacing is already present, don't interfere
+    }
+
+    // Insert a line break after every 30 characters
+    var spacedDescription = description.replace(/(.{30})/g, "$1\n");
+    return spacedDescription.trim(); // Remove trailing line break, if any
+}
+
+
+
+    //******************************
+    function hasValue(value) {
+        return value.replace(/\s/g, '').length > 0;
+    }
+
+    //Validation function
+    const save_announcement_form_validation = (sub, desc, from_date, to_date) => {
+        var is_valid = true;
+        var save_form_errors = '';
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        if (sub == '') {
+            is_valid = false;
+            save_form_errors += messageConstants["JMSG007"] + "Announcement Subject";
+        }
+        else if (desc == '') {
+            is_valid = false;
+            save_form_errors += messageConstants["JMSG007"] + "Announcement Description";
+        }
+        else if (from_date == '') {
+            if ((Date.parse(to_date) < Date.parse(from_date)) == false) {
+                is_valid = false;
+                save_form_errors += messageConstants["JMSG007"] + "Announcement From Date";
+            }
+        }
+        else if (to_date == '') {
+            is_valid = false;
+            save_form_errors += messageConstants["JMSG007"] + "Announcement To Date";
+        }
+
+        return is_valid, save_form_errors;
+    }
+
+    //***********************************
+    function add_new_org_announcement(button) {
+        $('#save_button').show();
+        $('#edit_button').hide();
+        // Clear the modal content
+        $("#announcement_id").val("");
+        $("#modal_announcement_subject").val("");
+        $("#announcement_desc").val("");
+        $("#announcement_status_").val("");
+        $("#priority_").val("");
+        $("#from_date").val("");
+        $("#to_date").val("");
+        $("#announcement_guid").val("");
+        // Reset any disabled fields
+        $("#modal_announcement_subject").prop("disabled", false);
+        $("#announcement_desc").prop("disabled", false);
+        $("#announcement_status_").prop("disabled", false);
+        $("#priority_").prop("disabled", false);
+        $("#from_date").prop("disabled", false);
+        $("#to_date").prop("disabled", false);
+        // Trigger form reset and hide error messages
+        $("#address_clear").trigger('reset');
+        $("#error_msg_id").css("display", "none");
+        // Set the global action and enable specific fields
+        GLOBAL_ACTION = button.value;
+        $("#id_add_addresses_address_number").prop("disabled", false);
+        // Hide the success message
+        $("#org_announcement_update_success").css("display", "none");
+        // Show the modal for adding a new announcement
+        $('#saveConfirmationModal').modal('show');
+        $('#save_error_msg').addClass('display-none');
+    }
+
+    // Add an event listener for the Title and Description input fields
+    $('#modal_announcement_subject, #announcement_desc').on('input', function() {
+        var inputValue = $(this).val();
+
+        // Replace consecutive spaces with a single space
+        inputValue = inputValue.replace(/\s+/g, ' ');
+
+        // Update the input value
+        $(this).val(inputValue);
+    });
+
+    $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(!(temp[i].value == '') || !(temp[i].value == null)){
+                data = temp[i].value;
+                var count = data.split('**').length - 1;
+                if((count >= 1) || (data == '*')){
+                    var display_id = temp[i].nextElementSibling.id;
+                    $('#'+display_id).prop('hidden', false);
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = "Please enter valid value";
+                    valid = false;
+                }
+            }
+        }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            $("#err_username").prop("hidden", false);
+                setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
+    });
+
+    $("body").on("keypress blur change", ".mandatory_fields", function (event) {
+         var get_value = event.currentTarget.value;
+            var count = get_value.split('**').length - 1;
+            if((count>=1)|| (get_value == '*'))
+            {
+            var display_id = event.currentTarget.nextElementSibling.id;
+            $('#'+display_id).prop('hidden', false);
+            document.getElementById(display_id).style.display = "block";
+            event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+            }
+            else{
+                $(".error_message").prop("hidden", true);
+                document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "true";
+            }
+    });
+
+    //******************************
+    var previous_state;
+    function lock_active_change(){
+        OpenLoaderPopup();
+        jQuery.ajax({
+       type: 'POST',
+       url: "{% url 'eProc_Org_Support:active_inactive_org' %}",
+       dataType :'json',
+       data: JSON.stringify(data),
+       success: function(result){
+             $('#id_confirm_popup').modal('hide');
+             $('#success_msg_id').text("Changed Successfully");
+            previous_state = data.flag;
+            $("#error_msg_div").prop("hidden",false)
+            message_display_time();
+            CloseLoaderPopup();
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+        });
+    }
+
+    //*************
+   function toggle(){
+        var abc = $('#'+block_id)
+        if($('#'+block_id).is(':checked')) {
+            $('#'+block_id).prop("checked", false);
+        }
+        else{
+            $('#'+block_id).prop("checked", true);
+        }
+    }
+
+    //********
+    var data = {};
+    var block_id = '';
+    $('.toggle-block').change(function() {
+        $('#id_confirm_popup').modal('show')
+        if($(this).is(':checked')) {
+            $('.toggle-off').removeClass('active');
+            $('.toggle-on').addClass('active');
+            data.flag = true
+        } else {
+            $('.toggle-off').addClass('active');
+            $('.toggle-on').removeClass('active');
+            data.flag = false
+        }
+        var id = this.id;
+        data.announcement_id = id;
+        var id = this.id
+        block_id = id
+<!--        data.announcement_id = id.split('-')[0]-->
+  });
+</script>
+
+{% endblock %}

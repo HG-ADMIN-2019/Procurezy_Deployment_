@@ -1,0 +1,21 @@
+<style>
+    #search_result li:nth-child(even) {
+        background-color: #e9e9e9;
+    }
+</style>
+<script>
+
+
+    // onclick of searched node name,get node details and create tree structure and details
+    function get_node_tree_structure(element, node_object_id) {
+        $("#org_search_modal").modal('toggle');
+        var node_name = element.innerText
+        data = { "object_id": node_object_id }
+        org_model_details = org_model_node_details_ajax_call(data)
+        GLOBAL_INDEX_VALUE_ORG_MODEL = 0;
+        org_model_detail = org_model_details.org_model_detail
+        requested_parent_index = org_model_detail.length - 2
+        var requested_parent_object_id = org_model_detail[requested_parent_index].object_id
+        create_org_tree_structure(org_model_details.root_node_name, org_model_details.root_node_object_id, requested_parent_object_id, node_name)
+    }
+</script>

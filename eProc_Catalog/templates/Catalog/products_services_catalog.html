@@ -1,0 +1,829 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Products and Services (Shop) {% endblock %}
+{% block maincontent %}
+
+{% load custom_template_tags %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<style>
+.autocomplete {
+  list-style: none outside none;
+  border: 1px solid #123456;
+  cursor: pointer;
+  padding: 5px;
+  margin: 0px;
+  z-index:10000 !important;
+}
+.ui-autocomplete { z-index:2147483647; }
+ input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+    margin-right: 1rem;
+}
+
+</style>
+
+<!-- Start of Search Modal -->
+<!-- <div class="modal fade prod_service_search_modal" id="prod_service_search" tabindex="-1"
+     role="dialog" aria-labelledby="prod_service_search_title" aria-hidden="true" data-backdrop="false">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light"> -->
+                    <!-- <div id="hg_filter_select"></div> -->
+
+                    <!-- <div class="input-group"> -->
+                        <!-- <input type="text" id="hg_cat_search_txt" name="hg_cat_search_txt" class="form-control" placeholder="Search"> -->
+                        <!-- <div class="input-group-append">
+                            <button class="btn btn-primary" id="catalog-search-submit" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+
+                    <button class="d-none" id="hg_org_search_btn" onclick="search_node()">search</button>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="hg_org_search_patterns">
+                        <p> I'm looking for </p>
+                        <div class="row"  id="button_action" style="display:none">
+                            <button type="button" id="search_product_btn" value="PRODUCTS" class="btn btn-light ml-3"
+                                    onclick="search_type(this)">products
+                            </button>
+                            <button type="button" id="search_freetext_btn" value="FREETEXT" class="btn btn-light ml-3"
+                                    onclick="search_type(this)">freetext
+                            </button>
+                            <button type="button" id="search_category_btn" value="CATEGORIES" class="btn btn-light ml-3"
+                                    onclick="search_type(this)">categories
+                            </button>
+                            <button type="button" id="search_supplier_btn" value="SUPPLIERS" class="btn btn-light ml-3"
+                                    onclick="search_type(this)">suppliers
+                            </button>
+
+                        </div>
+                        <div class="row mt-2">
+
+                        </div>
+                    </div>
+                    <div class="hg_org_search_result_list">
+                        <ul class="list-group" id="hg_org_search_result"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer br-none">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> -->
+<!-- End of Search Modal -->
+
+
+<div class="products-catalog">
+     {% if document_number != 'create' %}
+    <div class="alert alert-warning" role="alert" id="edit_message">
+
+        You are currently adding item to cart : {{document_number}} <a href="#" onclick="go_back_to_sc_search('{{encrypt_doc_num}}')">Go back to shopping cart</a>
+
+    </div>
+    {% endif %}
+    <div class="products-catalog-header"> 
+        <div class="products-catalog-header__section">
+            <h3 class="products-catalog-header__text">Search For Products & Services</h3>
+
+            <div class="products-catalog-header__search-section">
+                <form method="post" >
+                    {% csrf_token %}
+                    <div class="products-catalog-header__search-input-group">
+                        <div id="catalog_filter_select"></div>
+                        <div class="input-group">
+                            <input type="text" id="hg_cat_search_txt" name="hg_cat_search_txt" class="form-control check_for_search" placeholder="Search for products and services">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary sfps-button" type="submit" id="button-addon2" ><i class="material-icons-outlined">search</i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="catalog_filter_selection_btn_group">
+                        <br>
+                        <div class="row d-flex justify-content-center">
+                            <button type="button" id="search_product_btn" value="PRODUCTS" class="btn btn-outline-primary ml-3"
+                                    onclick="search_type(this)">products
+                            </button>
+                            <button type="button" id="search_freetext_btn" value="FREETEXT" class="btn btn-outline-primary ml-3"
+                                    onclick="search_type(this)">freetext
+                            </button>
+                            <button type="button" id="search_category_btn" value="CATEGORIES" class="btn btn-outline-primary ml-3"
+                                    onclick="search_type(this)">categories
+                            </button>
+                            <button type="button" id="search_supplier_btn" value="SUPPLIERS" class="btn btn-outline-primary ml-3"
+                                    onclick="search_type(this)">suppliers
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <!-- Start of default screen of shop landing page -->
+        {% if display_products_result %}
+        <div id="search_criteria_div" class="display-none">
+            <div class="row products-catalog__selection-tab">
+                <div class="col-9">
+                    <div>
+                        {% else %}
+                        <div id="search_criteria_div">
+                            <div class="row products-catalog__selection-tab">
+                                <div class="col-sm-9">
+                                    <div>
+                                        {% endif %}
+                                        <!-- Tabs for Search -->
+                                        <div class="hg_tab">
+                                            <button class="hg_tablinks active" onclick="openTab(event, 'Supplier_list')" id="defaultOpen"><i class="material-icons">local_shipping</i><span class="btn-text">suppliers</span></button>
+                                            <button class="hg_tablinks" onclick="openTab(event, 'Prd_cat_list')"><i class="material-icons">category</i> <span class="btn-text">product categories</span></button>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <!-- Supplier list tab -->
+                                            <div id="Supplier_list" class="product-selection-tabcontent" style="display:block;">
+                                                <div class="row">
+                                                    {% for suppliers in supp_info %}
+                                                    <div class="col-md-3">
+                                                        <div class="card mb-4 box-shadow product-selection-card">
+                                                            <div class="embed-responsive embed-responsive-1by1">
+                                                                <a onclick="generate_url('{{selected_catalog}}', 'supplier', '{{suppliers.supplier_id}}')">
+                                                                    <img class="embed-responsive-item card-img-top product-selection-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{suppliers.image_url}}">
+                                                                </a>
+                                                            </div>
+                                                            <div class="card-body text-center">
+                                                                <a onclick="generate_url('{{selected_catalog}}', 'supplier', '{{suppliers.supplier_id}}')">
+                                                                    <h5>
+                                                                        {{suppliers.supplier}}
+                                                                        ({{ suppliers.supp_count}})
+                                                                    </h5>
+                                                                </a>
+                                                                {% if forloop.counter|divisibleby:5 %}
+                                                                <div class="w-100"></div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Product Category list -->
+                                            <div id="Prd_cat_list"class="product-selection-tabcontent display-none" >
+                                                <div class="row">
+                                                    {% for prd in prod_cat_info %}
+                                                    <div class="col-md-3">
+                                                        <div class="card mb-4 product-selection-card">
+                                                            <div class="embed-responsive embed-responsive-1by1">
+                                                                <a onclick="generate_url('{{selected_catalog}}', 'prod_category', '{{prd.prod_cat_id}}')">
+                                                                    <img class="embed-responsive-item card-img-top product-selection-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{prd.image_url}}">
+                                                                </a>
+
+                                                            </div>
+                                                            <div class="card-body text-center">
+                                                                <a onclick="generate_url('{{selected_catalog}}', 'prod_category', '{{prd.prod_cat_id}}')">
+                                                                    <h5>
+                                                                        {{prd.prod_cat}}
+                                                                        ({{prd.prod_cat_count}})
+                                                                    </h5>
+                                                                </a>
+                                                                {% if forloop.counter|divisibleby:5 %}
+                                                                <div class="w-100"></div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 quick_links_catalog" id="quick_links_catalog">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="elements-space-between" data-toggle="collapse" href="#collapse_quick_links">
+                                                <div>
+                                                    <h5>Quick Links</h5>
+                                                </div>
+                                                <div>
+                                                    <i class="fas fa-chevron-up"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="collapse show" id="collapse_quick_links">
+                                            <ul class="list-group list-group-flush">
+                                                <!-- <li class="list-group-item h5"> <a onclick="get_sobo_users();">Shop on Behalf</a> </li>
+                                                <li class="list-group-item h5"> <a href="#">Cross Company</a> </li> -->
+<!--                                                <li class="list-group-item h6" > <a href="{% url 'eProc_Add_Item:limit_form' %}" >Limit Order</a> </li>-->
+                                                <li class="list-group-item h6" > <a>Limit Order</a> </li>
+                                                {% if sub_menu.REQUISITION %}
+                                                <li class="list-group-item h6" id="requisition_btn"><a href="#" onclick="purchase_requisition_url()">Requisition Item</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of default screen of shop landing page -->
+
+                        <!-- Start of result set -->
+                        {% if catalog_array or Free_Texts_list %}
+
+                        {% if display_products_result %}
+                        <div id="catalogs_data" class="product-results-catalog__section">
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="card sticky-top product-results-catalog__fliter-card">
+                                        <div class="card-body product-results-catalog__card-header">
+                                            <h5 class="card-title">Classification</h5>
+                                        </div>
+                                    
+                                        <div class="card-body product-results-catalog__card-header">
+                                            <ul>
+                                                <li class="list-header-text">
+                                                    Product Categories ({{total_prod_count}})
+                                                </li>
+                                                
+                                                {% for prd in prod_cat_info %}
+
+                                                <li class="list-body-text">
+                                                    <div>
+                                                        <a onclick="generate_url('{{selected_catalog}}', 'prod_category', '{{prd.prod_cat_id}}')" id="classification-prod_category-{{prd.prod_cat_id}}" class="prod-classification-select-link">
+                                                            <span id="text-{{prd.prod_cat_id}}" class="prod-classification-select-link-text">{{prd.prod_cat}}</span>
+                                                            ({{prd.prod_cat_count}})
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                                
+                                            </ul>
+                                        </div>
+                                        <div class="card-body product-results-catalog__card-header">
+                                            <ul>
+                                                <li class="list-header-text">
+                                                    Suppliers ({{total_supp}})
+                                                </li>
+                                                
+                                                {% for suppliers in supp_info %}
+                                                <li class="list-body-text">
+                                                    <div>
+                                                        <a onclick="generate_url('{{selected_catalog}}', 'supplier', '{{suppliers.supplier_id}}')" id="classification-supplier-{{suppliers.supplier_id}}" class="prod-classification-select-link">
+                                                            <span id="text-{{suppliers.supplier_id}}" class="prod-classification-select-link-text">{{suppliers.supplier}}</span>
+                                                            ({{ suppliers.supp_count}})
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-8">
+                                    <div class="card product-results-catalog__results-card">
+                                        <div class="card-body product-results-catalog__card-header" style="padding-bottom: 0.5rem;">
+                                            <h6 class="card-title">Showing {{total_result_count}} Results for <span id="results-text"></span></h6>
+                                            
+                                        </div>
+                                        <ul class="sub-tabs">
+                                            {% if catalog_array %}
+                                            <li data-tab-target="#regular_products_content" class="sub-tab active">
+                                                <div class="sub-tab-link sm">
+                                                    <span> Products</span>
+                                                </div>
+                                            </li>
+                                            {% endif %}
+                                            {% if Free_Texts_list %}
+                                            <li data-tab-target="#freetext_products_content" class="sub-tab">
+                                                <div class="sub-tab-link sm">
+                                                    <span> Freetext items</span>
+                                                </div>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+
+                                        <div class="tab-content">
+                                            {% if catalog_array %}
+                                            <div id="regular_products_content" data-tab-content class="active">
+                                                <table class="catalog-table-results-list">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for i in catalog_array %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="card-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-2">
+                                                                            <a href="{% url 'eProc_Add_Item:get_product_service_product_details' i.encrypted_product_id %}" target="_blank" >
+                                                                                <div class="product-results-catalog__img-container">
+                                                                                    <img class="product-results-catalog__img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{i.image_url}}">
+                                                                                </div>
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="col-md-7">
+                                                                            <div class="product-results-details-section">
+
+                                                                                <a id="product_click" href="{% url 'eProc_Add_Item:get_product_service_product_details' i.encrypted_product_id %}" target="_blank" onclick="add_recently_viewed({{i.product_id}}, {{i.prod_cat_id_id}})">
+                                                                                    <span class="h5 product-results-catalog__desc">{{ i.short_desc }}</span>
+                                                                                </a>
+                                                                                <div class="product-results-catalog__supplier">
+                                                                                    <span class="hg_subtext_color">
+                                                                                    {{i.supplier_desc}}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span class="h6 product-results-catalog__leadtime">Lead Time: {{i.lead_time}} days</span>
+                                                                                </div>
+                                                                                <div class="product-results-catalog__price" style="display: flex; gap: 2rem;">
+                                                                                    <div> 
+                                                                                        <span class="h5 product-price">{{i.currency_id }} {{ i.price }}</span> <span class="product-unit hg_subtext_color">{{i.unit_desc }}</span>
+                                                                                    </div>
+
+                                                                                    {% if i.eform_id %}
+                                                                                    <span class="badge badge_custom_pill_primary" style="display: flex; align-items: center;">
+                                                                                        <i class="material-icons-outlined" style="font-size: 18px; margin-right: 5px;"> info </i> Product/Service Contains Variant
+                                                                                    </span>
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="row">
+                                                                                <div class="col-12 product-results-catalog__quantity">
+                                                                                    <span class="h5">Quantity </span> <input type = "number" value="1" id="Q{{i.product_id}}" onkeypress="return event.charCode >= 49" onchange="check_quantity(this)"  class="quanity-input-field">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-12 product-results-catalog__add-button">
+                                                                                    <button onclick="add_catalog('{{ i.product_id}}','{{ i.encrypted_product_id}}','{{i.variant_id}}')" class="btn btn-primary" title="">add to cart <i class="fas fa-shopping-cart" ></i></button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            
+                                            </div>
+                                            {% endif %}
+
+                                            {% if Free_Texts_list %}
+                                            <div id="freetext_products_content" data-tab-content>
+                                                <table class="catalog-table-results-list">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for i in Free_Texts_list %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="card-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-2">
+                                                                            <div class="product-results-freetext__img-container">
+                                                                                <img class="product-results-freetext__img" src="/static/img/FreeText.png">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-7">
+                
+                                                                            <div class="product-results-details-section">
+                                                                                <div> <span class="h5">{{ i.description }}</span> </div>
+                                                                                <div><span class="hg_subtext_color"> Free text item by - {{i.supplier_id}}</span></div>
+                                                                                <div>
+                                                                                    <span class="hg_subtext_color" > Product Category - {{i.prod_cat_id}}
+                                                                                        {% for x in suppliers_name %}
+                                                                                        {% if x.supplier_id == i.supplier_id %}
+                                                                                            {{ x.name1 }}
+                                                                                        {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div><span class="h6">Lead Time: {{i.lead_time}} days</span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3 product-results-freetext__button">
+                                                                            <a onclick="freetext_url('{{i.encrypted_freetext_id}}')">
+                                                                                <button class="btn btn-primary">add to cart <i class="fas fa-shopping-cart" ></i></button>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-body">
+                                            Unable To Find Your Product/Service ? Create A <a href="#" onclick="purchase_requisition_url()">Requisition Item</a>
+                                        </div>
+                                    </div>
+
+                                    <!-- {% if Free_Texts_list %}
+
+                                    <div class="card product-results-freetext__card">
+                                        <div class="card-body product-results-catalog__card-header">
+                                            <h5 class="card-title">Free Text Items</h5>
+                                        </div>
+
+                                        <div>
+
+                                            {% for i in Free_Texts_list %}
+
+                                            <div class="card-body">
+                                                <div class="row" >
+                                                    <div class="col-md-2">
+                                                        <div class="product-results-freetext__img-container">
+                                                            <img class="product-results-freetext__img" src="/static/img/FreeText.png">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-7">
+
+                                                        <div class="product-results-details-section">
+                                                            <div> <span class="h5">{{ i.description }}</span> </div>
+                                                            <div><span class="hg_subtext_color"> Free text item by - {{i.supplier_id}}</span></div>
+                                                            <div>
+                                                <span class="hg_subtext_color" > Product Category - {{i.prod_cat_id}}
+                                                    {% for x in suppliers_name %}
+                                                    {% if x.supplier_id == i.supplier_id %}
+                                                        {{ x.name1 }}
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                                            </div>
+                                                            <div><span class="h6">Lead Time: {{i.lead_time}} days</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 product-results-freetext__button">
+                                                        <a onclick="freetext_url('{{i.encrypted_freetext_id}}')">
+                                                            <button class="btn btn-primary">add to cart <i class="fas fa-shopping-cart" ></i></button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% endif %} -->
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                {% include 'Doc_Details/add_item_confirmation_popup.html' %}
+                {% include 'ProductDetailPopup/product_complete_detail_popup.html' %}
+                {% include 'FreeTextProductDetailPopup/freetext_product_detail_popup.html' %}
+                <!-- start of Goods/Services Recipient popup -->
+                <div class="modal fade" id="sobo_user_popup">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Select Username</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="input-group">
+                                            <select name="" id="sobo_users">
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary"  data-dismiss="modal"><i class="fa fa-check" aria-hidden="true"></i> select</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- end of Goods/Services Recipient popup -->
+
+                <script src="{% static 'scripts/catalog.js' %}"></script>
+                <script>
+
+//################################### START AUTO COMPLETION SEARCH #####################################################
+var selected_catalog = '{{selected_catalog|safe}}';
+var GLOBAL_PROD_SEARCH_TYPE = 'ALL';
+var GLOBAL_SEARCH_TYPE = '{{search_type}}';
+var GLOBAL_SEARCH_ID = '{{search_id}}';
+var GLOBAL_SEARCH_TYPE_DATA = ''
+
+$(document).ready(function() {
+    NavigateTabs(); // Custom function to switch tabs
+
+    $('.catalog-table-results-list').DataTable({
+        "searching": false,
+        "ordering":  false,
+        "info":     false,
+        pageLength : 10,
+    // lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'Todos']]
+        "dom": 'rtip'
+    });
+
+    if(is_edit){
+        no_slide_menu_style()
+        $('#edit_message').html('You are currently adding item to cart: ' + '{{document_number}}' + ' <a href="#" onclick="go_back_to_sc()">Go back to shopping cart</a>')
+        $('#edit_message').show()
+    }
+
+    // catalog search autocomplete
+    $("#hg_cat_search_txt").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url  : "{% url 'eProc_Catalog:auto_completion_search' %}",
+                dataType: "json",
+                data: {
+                    term : request.term,
+                    selected_catalog:selected_catalog,
+                    prod_search_type : GLOBAL_PROD_SEARCH_TYPE,
+                    search_type: '{{search_type}}',
+                    search_id : '{{search_id}}'
+                },
+                success: function(data) {
+                    response(data);
+                }
+            });
+        },
+        min_length: 3,
+        delay: 300
+    });
+
+    $("#catalog-search-submit").click(function(){
+        $("#prod_service_search").modal('hide');
+        $('#hg_loader').modal('show');
+    });
+
+    GLOBAL_SEARCH_TYPE_DATA = '{{search_id}}';
+
+    if(GLOBAL_SEARCH_TYPE_DATA == 'FREETEXT') {
+        var freetexttab = document.querySelector("#freetext_products_content");
+        freetexttab.classList.add('active');
+        var freetexttabContent = document.getElementById("freetext_products_content");
+        freetexttabContent.classList.add('active');
+
+    }
+
+});
+
+
+
+$("#id_quantity").on("change", function() {
+    var range = 0
+    var min  = 0
+    var range_flag = false
+    var quantity_range = 0
+    var price_percentage = 0
+    if(GLOBAL_QUANTITY.length != 0){
+        quantity_range = get_price_range(this.value)
+    }
+    //var without_discount = GLOBAL_BASE_PRICE
+    console.log(without_discount)
+    if(GLOBAL_QUANTITY.length != 0){
+        price_percentage = get_percentage_by_quantity(quantity_range)
+    }
+    $('.dummy_eform_class').each(function() {
+            var select_value = this.value
+            var select_value_split = select_value.split('|')
+            if (select_value_split[1]=='VARIANT_BASE_PRICING'){
+                GLOBAL_BASE_PRICE = select_value_split[2]
+            }
+       });
+       var without_discount = GLOBAL_BASE_PRICE
+    if(quantity_range !== 0)
+    {
+        GLOBAL_BASE_PRICE = GLOBAL_BASE_PRICE*(100 - parseFloat(price_percentage))/100
+    }
+    var item_price = GLOBAL_BASE_PRICE
+    console.log(item_price)
+        $('.dummy_eform_class').each(function() {
+            var select_value = this.value
+            var select_value_split = select_value.split('|')
+            if (select_value_split[1]=='VARIANT_ADDITIONAL_PRICING'){
+                item_price = calculate_item_value_based_on_operator(select_value_split[2],select_value_split[4],item_price)
+                without_discount = calculate_item_value_based_on_operator(select_value_split[2],select_value_split[4],without_discount)
+
+            }
+       });
+       var item_total_price = item_price*parseInt(this.value)
+       var without_discount_total_price = without_discount*parseInt(this.value)
+       var save = parseFloat(without_discount_total_price) - parseFloat(item_total_price);
+       $("#id_discount").empty();
+       if (price_percentage == 0){
+            $("#id_discount").empty();
+       }
+       else{
+        var text = '<span  class="hg_subtext_color"><del>'+ without_discount_total_price +'</del>('+ price_percentage +'%) Save '+ save +'</span>';
+            $("#id_discount").append(text);
+       }
+
+       console.log(item_price)
+        $("#id_price").text(item_total_price);
+
+
+
+});
+var quantity_range = '';
+function get_price_range(quantity){
+    var range = 0
+    var min  = 0
+    var range_flag = false
+    var max_flag = false
+    var max_quantity =0
+    var price_percentage =0
+    $.each(GLOBAL_QUANTITY.variant_data, function (i, item) {
+        if((GLOBAL_QUANTITY.variant_data.length)==(i)){
+            max_quantity = parseFloat(9999999999999999999999999)
+            max_flag = true
+        }
+        else{
+            max_quantity = item.discount_min_quantity
+        }
+
+        range_flag = inRange(parseFloat(quantity),min,parseFloat(max_quantity)-1)
+        if(range_flag){
+
+            var range = min
+            console.log("retutn 1")
+            quantity_range = min
+            return quantity_range
+        }
+        else{
+             if((GLOBAL_QUANTITY.variant_data.length-1)==(i))
+            {
+                if(parseFloat(quantity) >= parseFloat(max_quantity))
+                {
+                console.log("retutn 2")
+                quantity_range = max_quantity
+                price_percentage = item.discount_percentage_value
+                    return quantity_range
+                }
+            }
+            else{
+                min =item.discount_min_quantity
+            }
+        }
+    });
+    return quantity_range
+ }
+
+
+function get_percentage_by_quantity(quantity_range){
+    if(GLOBAL_QUANTITY.length != 0){
+         for(var i=0; i<GLOBAL_QUANTITY.variant_data.length; i++ ){
+            if (quantity_range == GLOBAL_QUANTITY.variant_data[i].discount_min_quantity){
+                return GLOBAL_QUANTITY.variant_data[i].discount_percentage_value;
+            }
+        }
+    }
+    return 0
+}
+function inRange(x, min, max) {
+    return ((x-min)*(x-max) <= 0);
+}
+//###################################################### END VIEW CATALOG DETAIL POPUP ############################################
+var GLOBAL_PRODUCT_ID = '';
+
+// ajax Function to add catalog product 
+function ajax_catalog_product(data) {
+    urlLink = "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}";
+    let result = AjaxCallAPI(urlLink, data);
+    return result;
+}
+
+function ajax_add_catalog_item (urlLink, data) {
+    let result = AjaxCallAPI(urlLink, data);
+    return result;
+}
+
+// funtion to get SOBO users
+const get_sobo_users = () => {
+    urlLink = "{% url 'eProc_SOBO:get_sobo_users' %}";
+    let get_sobo_users_response = AjaxCallAPIBasic(urlLink);
+
+    if (get_sobo_users_response) {
+        username_list = response.username_list
+        sobo_options = ''
+        $('#sobo_users').empty()
+        for(i=0; i<username_list.length; i++){
+            sobo_options += '<option>' + username_list[i] + '</option>'
+        }
+        $('#sobo_users').append(sobo_options)
+        $('#sobo_user_popup').modal('show')
+    }
+}
+
+// General Function to ADD TO CART
+function add_catalog(prd_id,encrypted_product_id, eform_id) {
+    var document_number_data = '{{document_number|safe}}';
+    if(eform_id){
+        if(document_number_data == 'create'){
+            var url = "{% url 'eProc_Add_Item:get_product_service_product_details' 123 %}";
+            var href_link = url.replace('123', encrypted_product_id);
+            window.open(href_link,'_blank');
+        }
+        else{
+            view_detail(prd_id, '');
+        }
+    }
+    else{
+        let catalog_item = {};
+        catalog_item["prod_id"] = prd_id
+        catalog_item['call_off'] = '01'
+        catalog_item["quantity"] = document.getElementById("Q"+prd_id).value
+        catalog_item["document_number"] = document_number
+        catalog_url = '/add_item/update_or_create_item/' + document_number
+
+        var add_catalog_response = ajax_add_catalog_item(catalog_url, catalog_item)
+
+        if(add_catalog_response) {
+            if (!is_edit && (document_number_data=='create' || document_number_data=='')) {
+                if(response.cart_count){
+                    
+                    // counter = document.getElementById('cart_counter').innerHTML;
+                    // $('#cart_counter').html(add_catalog_response.cart_count);
+                    CartCounterView(add_catalog_response.cart_count);
+                    item_added_to_cart_success_popup();
+                } else if(response.error) {
+                    alert( response.error)
+                }
+            } else {
+                $('#confirm_add_item').modal('show')
+            }
+            $('document').find('input:number').val('');
+        }
+    }
+}
+
+const open_close_documents_detail = (type) => {
+    encrypt_doc_num  = '{{encrypt_doc_num|safe}}'
+    if(type == 'YES'){
+        $('#confirm_add_item').modal('hide')
+    } else {
+        get_document_url = localStorage.getItem('opened_document-' + encrypt_doc_num)
+        location.href = get_document_url + '/edit'
+    }
+}
+function add_recently_viewed(product_id, prod_cat_id){
+    console.log(product_id, prod_cat_id);
+}
+
+function check_quantity(detail){
+    if(!detail.value){
+        $('#'+detail.id).val('1');
+    }
+}
+
+</script>
+
+{% endblock %}

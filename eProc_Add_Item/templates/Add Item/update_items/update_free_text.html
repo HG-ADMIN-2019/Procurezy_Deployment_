@@ -1,0 +1,320 @@
+
+
+<form method="post" id="update_free_text">
+    {% csrf_token %}
+    <input id="supplier_id" hidden>
+    <input type="text" name="" id="product_category_id_hidden" value="" hidden>
+    <!-- <span id="free_text_form_errors" class="hg_error"></span> -->
+    <div class="alert alert-danger display-none" id="free_text_form_errors" role="alert"></div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="product_name">Product/Service Name<span class="hg_required"></span></label>
+            <input type="text" max="40" id="product_name" value="" class="form-control" required>
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="free_text_desc">Product/Service Description<span class="hg_required"></span></label>
+            <input  type="text" max="255" id="free_text_desc" class="form-control" required>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="id_price">Estimated Price in (<span id="estimated_price_currency"></span>)<span class="hg_required"></span></label>
+            <input  type="text" id="id_price" min="1" class="form-control" required>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label for="price_per_unit">Price Per Unit<span class="hg_required"></span></label>
+            <input  type="text" id="price_per_unit" min="1" class="form-control" required>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label for="unit_of_measure">Unit of Measure<span class="hg_required"></span></label>
+            <div><select class="form-control selectpicker" id="unit_of_measure"  required data-live-search="true">
+                {% for uom in unit %}
+                <option id="{{uom.uom_id}}" value="{{uom.uom_id}}">{{uom.uom_id}} - {{uom.uom_description}}</option>
+                {% endfor %}
+            </select></div>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6" id='datetimepicker5'>
+            <label for="delivery_date">Delivery Date<span class="input-group date"></span></label>
+            <input id="delivery_date" type="date" class="form-control" min="{{date_today}}" required>
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="quantity">Quantity<span class="hg_required" ></span></label>
+            <input type="number" id="quantity" class="form-control" required>
+        </div>
+    </div>
+    
+    <br>
+    <div>
+        <span class="badge generic-help-text-badge"></span>
+    </div>
+    
+    <div id="eform_card_details" class="display-none">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+        <button type="button" onclick="update_free_text_data();" class="btn btn-primary"><i class="fas fa-save"></i> save</button>
+    </div>
+
+</form>
+{{ currency_list|json_script:"currency_list" }}
+{{ country_dropdown|json_script:"country_dropdown" }}
+
+<script>
+
+var country = JSON.parse(document.getElementById('country_dropdown').textContent)
+var currency = JSON.parse(document.getElementById('currency_list').textContent)
+
+var eform_configured = new Array();
+// Function to update freetext item
+function update_free_text_data(){
+    event.preventDefault();
+    OpenLoaderPopup();
+    item_name = document.getElementById("product_name").value
+    eform     = eform
+    prod_desc = document.getElementById("free_text_desc").value
+    price_unit     = document.getElementById("price_per_unit").value
+    price     = document.getElementById("id_price").value
+
+    unit      = document.getElementById("unit_of_measure").value
+    del_date  = document.getElementById("delivery_date").value
+    quantity  = document.getElementById("quantity").value
+    if (is_first_step == 'True') {
+        update_url = "{% url 'eProc_Shopping_Cart:update_ft_details' %}"
+    } else {
+        update_url = "{% url 'eProc_Doc_Details:update_saved_item' %}"
+    }
+    // Item name validation
+    if(item_name.length < 3){
+
+          
+                var msg = "JMSG028";
+                var msg_type ;
+              msg_type = message_config_details(msg);
+              $("#error_msg_id").prop("hidden", false)
+
+              if(msg_type.message_type == "ERROR"){
+                    display_message("error_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "WARNING"){
+                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "INFORMATION"){
+                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+              }
+              var display = msg_type.messages_id_desc;
+             document.getElementById("free_text_form_errors").innerHTML = display;
+
+         $('#free_text_form_errors').show();
+        $('#update_pop_up').scrollTop(0);
+        return false
+
+    }
+
+    // Item name validation
+    is_valid = check_for_special_char(item_name)
+    if(!is_valid){
+               var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+                var msg = "JMSG003";
+                var msg_type ;
+              msg_type = message_config_details(msg);
+              $("#error_msg_id").prop("hidden", false)
+
+              if(msg_type.message_type == "ERROR"){
+                    display_message("error_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "WARNING"){
+                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "INFORMATION"){
+                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+              }
+
+               var display5 = msg_type.messages_id_desc;
+              document.getElementById("free_text_form_errors").innerHTML = display5+ "Item Name" ;
+
+
+              $('#free_text_form_errors').show();
+
+        $('#update_pop_up').scrollTop(0);
+        return false;
+
+    }
+    var data = {};
+    cart_item_data = {
+            guid        : update_item_guid,
+            description   : item_name,
+            price       : price,
+            actual_price : price,
+            price_unit : price_unit,
+            unit        : unit,
+            item_del_date    : del_date,
+            quantity    : quantity,
+            long_desc :prod_desc
+        }
+     data.cart_item_data = cart_item_data
+     data.call_off = '02'
+    // If the item has eform data then get the field values
+    data.eform_data = get_eform_data(eform_configured)
+
+
+    if (is_first_step != 'True') {
+            let item_value_object = {};
+            index_of_item_guid = rendered_item_guid.indexOf(update_item_guid)
+            accounting_guid = rendered_acc_guid[index_of_item_guid]
+            data['account_assignment_category'] = (document.getElementById('ScAccounting-acc_cat-' + accounting_guid).innerHTML).split('-')[0].trim()
+            data['account_assignment_value'] = (document.getElementById('ScAccounting-acc_val-' + accounting_guid).innerHTML).split('-')[0].trim()
+            data['sc_header_guid'] = GLOBAL_HEADER_GUID
+            item_value_class = document.getElementsByClassName('hg_item_total_value')
+            for (let i=0; i<item_value_class.length; i++) {
+                let item_guid = item_value_class[i].id.split('-')[2]
+                let item_value = item_value_class[i].innerHTML
+                item_value_object[item_guid] = item_value
+            }
+            data['item_value_object'] = item_value_object
+        }
+
+    $.ajax({
+        type: 'POST',
+        dataType:'json',
+        url: update_url,
+        data: JSON.stringify(data),
+        success: function (response) {
+            if (is_first_step == 'True'){
+                update_freetext_at_first_step(response)
+                update_eform_item_detail(data.eform_data)
+            } else {
+                update_freetext_at_doc_detail(response)
+            }
+            eform = false;
+            $('#update_modal_popup').modal('hide');
+            CloseLoaderPopup();
+        },
+        error: function (response) {
+            CloseLoaderPopup();
+            $('#free_text_form_errors').html(response.responseJSON.error_message);
+            $('#free_text_form_errors').show();
+            document.getElementById('free_text_form_errors').scrollIntoView()
+        }
+    })
+}
+
+function update_eform_item_detail(eform_data){
+    $.each(eform_data, function (index, value) {
+        $('#EFORM-'+value.eform_transaction_guid).text(value.eform_data)
+    });
+}
+
+// get eform data from Freetext update popup
+function get_eform_data(eform_configured){
+     var eform_list = new Array();
+    $.each(eform_configured, function (index, value) {
+    var eform_dictionary = {}
+    eform_dictionary.eform_transaction_guid = value.eform_transaction_guid
+    guid = value.eform_transaction_guid
+    eform_dictionary.eform_data = $('#'+guid).val();
+    eform_list.push(eform_dictionary)
+    });
+    return eform_list
+}
+// Function to identify and prevent user from typing special chars in free text update form
+const restrict_special_char = e => {
+    var k;
+    document.all ? k = e.keyCode : k = e.which;
+    return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+}
+
+
+// Function to create dropdown options based on the dropdown value passed
+const get_options_from_string = string => {
+    var options = '<option value="" selected>Select</option>';
+
+    if(string.includes(',')){
+        values = string.split(',')
+        for(i = 0; i < values.length; i++) {
+            options += '<option value="'+ values[i] +'">' + values[i] + '</option>'
+        }
+    } 
+    else {
+        if(string == 'Country'){
+            for(i = 0; i < country.length; i++) {
+                options += '<option value="'+ country[i]['country_code'] +'">' + country[i]['country_code'] + ' - '+ country[i]['country_name'] + '</option>'
+            }
+        }
+        if(string == 'Currency'){
+            for(i = 0; i < currency.length; i++) {
+                options += '<option value="'+ currency[i] +'">' + currency[i] + '</option>'
+            }
+        }
+    }
+    return options;
+}
+
+// remove bootstrap alert classes on close
+$('#update_pop_up').on('hidden.bs.modal', function (e) {
+    $('#free_text_form_errors').hide();
+})
+
+const update_freetext_at_first_step = response => {
+    document.getElementById("free_text_form_errors").innerHTML = '';
+    document.getElementById("desc_"+update_item_guid).innerHTML        = item_name
+    document.getElementById("del_date-"+update_item_guid).innerHTML    = del_date
+    document.getElementById("unit_"+update_item_guid).innerHTML        = unit
+    document.getElementById("price_"+update_item_guid).innerHTML       = price + ' / '+ response.currency
+    document.getElementById("quantity_"+update_item_guid).innerHTML    = quantity
+    //document.getElementById("supp_"+update_item_guid).value            = supp_id
+    document.getElementById("item_value_"+update_item_guid).innerHTML  = response.item_value
+    document.getElementById("total_cart_value").innerHTML  = response.pricing_data.gross_price
+    document.getElementById("actual_price").innerHTML  = response.pricing_data.actual_price
+    document.getElementById("discount_value").innerHTML  = response.pricing_data.discount_value
+};
+
+update_eform_details = {};
+
+//const update_freetext_at_doc_detail = response => {
+//    item_details = response.item_details
+//    let eform_details = response.eform_details
+//    update_item_details[update_item_guid] = item_details
+//
+//    if(!jQuery.isEmptyObject(eform_details)) {
+//        update_eform_details[update_item_guid] = eform_details
+//    }
+//
+//    // Update highest item value guid and row
+//    GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(response.item_with_highest_value) + 1;
+//    highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+//    highest_item_change_acc_value = (document.getElementById('ScAccounting-acc_val-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+//
+//
+//    $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html(response.total_sc_value)
+//    check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value)
+//}
+const update_freetext_at_doc_detail = response => {
+    item_details = response.item_details
+    update_item_details[update_item_guid] = item_details
+
+    // Update highest item value guid and row
+    GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(response.item_with_highest_value) + 1;
+    highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    highest_item_change_acc_value = (document.getElementById('ScAccounting-acc_val-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+
+
+    $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html(response.total_sc_value)
+    $('#ScIem-value-' + update_item_guid).html(response.item_details.value)
+    $('#item_quantity-' + update_item_guid).html(item_details.quantity)
+    document.getElementById("ScIem-price-"+update_item_guid).innerHTML= item_details.price
+    document.getElementById("actual_price").innerHTML= response.price_details.actual_price
+    document.getElementById("discount_value").innerHTML= response.price_details.discount_value
+    check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value)
+}
+
+</script>

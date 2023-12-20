@@ -1,0 +1,5 @@
+company_code_id,call_off,prod_cat_id,purchase_ctrl_flag,del_ind
+1000,01,10000000,True,0
+3000,01,10000001,True,0
+1000,03,10000000,True,0
+3000,03,10000000,True,0

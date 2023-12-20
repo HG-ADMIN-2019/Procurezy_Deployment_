@@ -1,0 +1,54 @@
+// Item added to cart success pop up
+.item_added2cart_success{ 
+    .icon-box {
+        background-color: $green-success;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        color: $white-plain;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-footer {
+        border: none;
+    }
+
+    .modal-footer {
+        border: none;
+    }
+
+    .item-success-btn {
+        background-color: $green-success; 
+        color: white;
+        
+        &:hover {
+            color:white;
+        }
+    }
+    
+
+}
+
+// ajax loader pop up
+.majjaka-loader {
+
+    .modal-content {
+        position:fixed;
+        top:35%;
+        left:35%;
+        width:500px;
+        height:250px;
+    }
+
+    button {
+        position:relative;
+        top:40%;
+        left: 32%;
+        width:180px;
+        font-size:25px;
+    }
+}
+

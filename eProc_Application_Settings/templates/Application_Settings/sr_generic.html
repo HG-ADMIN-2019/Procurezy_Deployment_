@@ -1,0 +1,466 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Sourcing Rule Generic (Application Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Sourcing Rule Generic</h3>
+            <div>
+                <button class="btn btn-outline-primary" title="Extract"
+                        onclick="location.href='{% url 'eProc_Application_Settings:extract_source_rule_data' %}'"
+                        type="button">
+                    <i class="fas fa-download"></i> extract
+                </button>
+                <button type="button" id="id_add_data" value="ADD" class="btn btn-primary" title="Add Purchase Control" data-toggle="modal" data-target="#sr_generic_Modal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> add sr generic
+                </button>
+                <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close" onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"></div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button();">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" value="pur_cntrl_delete" title="Delete" style="display:none;" 
+                        data-toggle="modal" data-target="#id_delete_confirm_popup">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;" value="UPDATE"
+                            type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel" id="id_cancel_data" style="display:none;" type="button"
+                            onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_aac_table table table-bordered custom-table">
+                    <thead id="id_pc_table_header">
+                    <tr>
+                        <th id="hg_select_checkbox" hidden>
+                            <div id="id_check_all" style="display:none;">
+                                <input type="checkbox" id="selectAll" name="chk[]">
+                            </div>
+                        </th>
+                        <th>UNSPSC Code From</th>
+                        <th>UNSPSC Code To</th>
+                        <th>Company Code</th>
+                        <th>Call Off</th>
+                        <th>Rule Type</th>
+                        <th>Sourcing</th>
+                        <th hidden>Guid</th>
+                        <th hidden>del_ind</th>
+                    </tr>
+                    </thead>
+                    <tbody id="id_sr_tbody">
+                    {% for sr_generic in upload_sr_generic_cat %}
+                    <tr>
+                        <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                        <td>{{ sr_generic.prod_cat_id_from}}</td>
+                        <td>{{sr_generic.prod_cat_id_to}}</td>
+                        <td>{{sr_generic.company_id}}</td>
+                        <td>{{sr_generic.call_off}}</td>
+                        <td>{{sr_generic.rule_type}}</td>
+                        <td>
+                            {% if sr_generic.sourcing_flag %}
+                                Activate
+                                {% else %}
+                                Deactivate
+                            {% endif %}
+                        </td>
+                        <td hidden>{{sr_generic.sourcing_rule_guid}}</td>
+                        <td hidden>{{sr_generic.del_ind}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <!--end of display basic aac table-->
+            </div>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div class="modal fade" id="sr_generic_Modal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <!-- Modal Header -->s
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Sourcing Role Generic</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()"><i
+                                    class="fa fa-plus"></i> add new row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')"><i class="fa fa-trash"></i>
+                                delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages"
+                            class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_pc_code"></p>
+                            <p id="id_error_msg_pc_name"></p>
+                            <p id="id_error_msg_pc_length"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span
+                                id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                            <tr>
+                                <th id="header_select">Select</th>
+                                <th>UNSPSC Code From</th>
+                                <th>UNSPSC Code To</th>
+                                <th>Company Code</th>
+                                <th>Call Off</th>
+                                <th>Rule Type</th>
+                                <th>Sourcing</th>
+                                <th hidden>Guid</th>
+                                <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i
+                        class="fas fa-times"></i> cancel
+                    </button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b></div>
+        {% endif %} {% endfor %} {% endif %}
+    </div>
+</div>
+{{ upload_sr_generic_cat|json_script:"upload_sr_generic_cat" }}
+{{ rule_type|json_script:"rule_type" }}
+{{ dropdown_activate|json_script:"dropdown_activate" }}
+<script>
+    var rendered_sr_generic_data = JSON.parse(document.getElementById('upload_sr_generic_cat').textContent);
+    var rendered_pc_company_data = {{dropdown_company_code_id|safe}}
+    var rendered_prod_category = {{prod_catogories|safe}}
+    var rendered_call_off = uiConstants["CONST_PUR_CONTROL_CALLOFF_DATA"]
+    var rendered_rule_type = JSON.parse(document.getElementById('rule_type').textContent);
+    var rendered_activate = JSON.parse(document.getElementById('dropdown_activate').textContent);
+    var messages_list = {{messages_list|safe}};
+    var source_rule_data = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var appname = uiConstants["CONST_APPNAME01"]
+    var Tablename = uiConstants["CONST_TABLENAME_PURCHASE_CONTROL"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_PUR_CONTROL"]
+    var prod_cat_dropdown,pc_company_dropdown,call_off_dropdown,rule_type_dropdown,activate_dropdown;
+
+    // Dropdown values
+    function dropdown() {
+        prod_cat_dropdown = '';
+        $.each(rendered_prod_category, function (i, item) {
+            prod_cat_dropdown += '<option value="' + item.prod_cat_id + '">' + item.prod_cat_id + '</option>'
+        });
+
+        pc_company_dropdown = '';
+        $.each(rendered_pc_company_data, function (i, item) {
+            pc_company_dropdown += '<option value="' + item.company_id + '">' + item.company_id + '</option>'
+        });
+
+        call_off_dropdown = '';
+        $.each(rendered_call_off, function (i, item) {
+            call_off_dropdown += '<option value="' + item.value + '">' + item.desc + '</option>'
+        });
+
+        rule_type_dropdown = '';
+         $.each(rendered_rule_type, function(i, item){
+            rule_type_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+         });
+
+         activate_dropdown = '';
+         $.each(rendered_activate, function(i, item){
+            activate_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+         });
+    }
+
+    //onclick of add button display sr_generic_Modal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        OpenLoaderPopup();
+        var data = {'table_name':'SourcingRule'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_pc_company_data = response.upload_company_code
+                rendered_prod_category = response.prod_catogories
+                rendered_rule_type = response.rule_type
+                rendered_activate = response.dropdown_activate
+                dropdown();
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop("hidden", false);
+                GLOBAL_ACTION = button.value
+                basic_add_new_html = '';
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#sr_generic_Modal').modal('show');
+                new_row_data();   // Add a new row in popup
+                $("#header_select").prop("hidden", false);
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value, error_message] = compare_table_for_duplicate_entries(validate_add_attributes, sr_generic_data)
+        if (error_message){
+            display_error_message(error_message)
+            $('#sr_generic_Modal').modal('show');
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries, error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#sr_generic_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                $('#id_save_confirm_popup').modal('hide');
+                data = { 'data': sr_generic_data, 'table_name': 'SourcingRule', 'action': GLOBAL_ACTION }
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (Response) {
+                        rendered_sr_generic_data = Response[0];
+                        display_basic_db_data();
+                        $('#sr_generic_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message) {
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    //delete the selected row in db................
+    var main_table_sr_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_sr_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = { 'data': main_table_sr_checked, 'table_name': 'SourcingRule', 'action': GLOBAL_ACTION }
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_sr_generic_data = Response[0];
+                display_basic_db_data();
+                $('#sr_generic_Modal').modal('hide');
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();;
+            }
+        });
+    }
+
+    //*****************************************
+    function onclick_copy_update_button() {
+        OpenLoaderPopup();
+        var data = {'table_name':'SourcingRule'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_company_data = response.upload_company_code
+                rendered_prod_cat_data = response.prod_catogories
+                rendered_rule_type_data = response.rule_type
+                rendered_activate = response.dropdown_activate
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                dropdown();
+                //Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var guid = '';
+                var unique_input = '';
+                var dropdown_val = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        var Source_val = row.cells[6].innerHTML;
+                        dropdown_val.push([ Source_val ])
+                        if(GLOBAL_ACTION == "UPDATE"){
+                            edit_basic_data +=
+                            `<tr>
+                                <td hidden><input type="checkbox" required></td>
+                                <td><select class="form-control" type="text" disabled><option>${row.cells[1].innerHTML}</option></select></td>
+                                <td><select class="form-control" type="text" disabled><option>${row.cells[2].innerHTML}</option></select></td>
+                                <td><select class="form-control" type="text" disabled><option>${row.cells[3].innerHTML}</option></select></td>
+                                <td><select class="form-control" type="text" disabled><option>${row.cells[4].innerHTML}</option></select></td>
+                                <td><select class="form-control" type="text" disabled><option>${row.cells[5].innerHTML}</option></select></td>
+                                <td><select type="text" class="input form-control">${activate_dropdown}</select></td>
+                                <td hidden></td>
+                                <td class="class_del_checkbox" hidden><input type="checkbox" required></td>
+                            </tr>`;
+                            $("#header_select").prop("hidden", true);
+                        }
+                    }
+                }
+                $('#id_popup_table').append(edit_basic_data);
+                var i = 0;
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    var Sourcing = dropdown_val[i][0]
+                    $(row.find("TD").eq(6).find("select option[value=" + Sourcing + "]")).attr('selected', 'selected');
+                    i++;
+                });
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#sr_generic_Modal').modal('show');
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        dropdown();
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+        new_row_data();   // Add a new row in popup
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, source) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(source, function (i, item) {
+            if ((item.prod_cat_id_from == null) || (item.prod_cat_id_to == null) || (item.company_id == null) ||
+               (item.call_off == null) || (item.rule_type == null) || (item.sourcing_flag == null)) {
+                error_message = ui_messeges("JMSG002")// Get message detailss
+                no_duplicate_value = 'N'
+                return [no_duplicate_value, error_message]
+            }
+        });
+        if (no_duplicate_value == 'Y') {
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                } else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value, error_message]
+            }
+        }
+        return [no_duplicate_value, error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var sr_generic_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            sr_generic_dic = {}
+            sr_generic_dic.prod_cat_id_from = row.find("TD").eq(1).find('select option:selected').val();
+            sr_generic_dic.prod_cat_id_to = row.find("TD").eq(2).find('select option:selected').val();
+            sr_generic_dic.company_id = row.find("TD").eq(3).find('select option:selected').val();
+            sr_generic_dic.call_off = row.find("TD").eq(4).find('select option:selected').val();
+            sr_generic_dic.rule_type = row.find("TD").eq(5).find('select option:selected').val();
+            sr_generic_dic.sourcing_flag = row.find("TD").eq(6).find('select option:selected').val();
+            var data = '';
+            if (sr_generic_dic.sourcing_flag == 'Activate') {
+                data = true
+            } else {
+                data = false
+            }
+            sr_generic_dic.sourcing_flag = data;
+            var compare = sr_generic_dic.prod_cat_id_from + '-' + sr_generic_dic.prod_cat_id_to + '-' + sr_generic_dic.company_id + '-' +
+                          sr_generic_dic.call_off + '-' + sr_generic_dic.rule_type + '-' + sr_generic_dic.sourcing_flag
+            sr_generic_check.push(compare);
+            jQuery.grep(sr_generic_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+</script>
+<script src="{% static 'scripts/sr_generic.js' %}"></script>
+{% endblock %}

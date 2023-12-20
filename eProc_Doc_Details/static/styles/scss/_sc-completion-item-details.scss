@@ -1,0 +1,44 @@
+button.hide_in_display_mode, .sc-completion-item-delete-icon {
+    display: none;
+}
+
+.sc-completion-item-detail {
+    .item-detail-content-border {
+        border: 1px solid #dee2e6;
+    }
+    .hg_class_prod_desc {
+        border-bottom: 1px solid #ddd;
+    }
+    .prev-next-btn-group {
+        display: flex;
+        gap: 1rem;
+        width: 40%;
+
+        .btn-round {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            background:#F0F8FF;
+            color: #007bff;
+            padding: 0;
+            flex-shrink: 0;
+
+            &:hover {
+                background: #bee1ff;
+                color: #007bff;
+            }
+        }
+
+        .item-description {
+            font-weight: 600;
+            font-size: 18px;
+        }
+    }
+}
+
+.card-shadow-2 {
+    -webkit-box-shadow: 0px -11px 16px -15px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px -11px 16px -15px rgba(0,0,0,0.75);
+    box-shadow: 0px -11px 16px -15px rgba(0,0,0,0.75);
+
+}

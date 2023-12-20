@@ -1,0 +1,134 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Shopping Cart {% endblock %}
+{% block maincontent %}
+
+<style>
+
+    #update_forms button.btn.dropdown-toggle.btn-light {
+        background-color: white;
+        border: 1px solid #ced4da;
+    }
+
+</style>
+
+
+<div class="sc-status-header">
+    <div class="sc-status-page-title">
+        <h5>Your Shopping Cart</h5>
+        <p class="hg_subtext_color">Overview of your shopping cart</p>
+    </div>
+
+    {% if cart_counter == 0 %}
+    <div class="hg_empty_cart h5 hg_h1tag">Your shopping cart is empty</div>
+    <br>
+    <a href="{% url 'eProc_Shop_Home:shopping_cart_home' %}" class="badge badge-light hg_gb_btn">< Go Back</a>
+    {% endif %}
+
+    {% if cart_counter > 0 %}
+    <div class="sc-status-img-container">
+        <img src="{% static 'images/Status-bar1.png'%}" class="sc-status-img">
+    </div>
+    {% endif %}
+</div>
+
+<div class="container-fluid">
+
+    <div class="mt-4 mb-3">
+        {% if cart_counter > 0 %}
+        <!--  Defining table for displaying cart items in 1st step of shopping cart wizard  -->
+        <div class="card card-shadow-1">
+            <div class="card-body elements-space-between">
+                <h4>Cart Overview</h4>
+                <div>
+                    {% if add_favourites_flag == '1'  %}
+                        <button class="btn btn-outline-secondary" data-toggle="modal" onclick="onclick_fav_sc()" data-target="#favourite_sc_name_window" id="favourite_sc_button">
+                            <i class="material-icons">favorite_border</i>
+                            add to favourites
+                        </button>
+                    {% elif add_favourites_flag == '0' %}
+                        <button class="btn btn-outline-secondary"  id="favourite_sc_button" disabled>
+                            <i class="material-icons">favorite_border</i>
+                            add to favourites
+                        </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-primary" id="sc-proceed-checkout" onclick="location.href='{% url 'eProc_Shopping_Cart:review_sc' %}';"><i
+                            class="fa fa-check" aria-hidden="true"></i> proceed to checkout
+                    </button>
+        
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#sc-delete-all-item"><i
+                            class="fa fa-trash" aria-hidden="true"></i> empty shopping cart
+                    </button>
+                </div>
+            </div>
+            <div>
+                {% include 'Shopping_Cart/item_table_details/sc_first_step_item_details.html' %}
+            </div>
+            <div class="ml-3 mb-3">
+                <a href="javascript:history.back()" class="badge badge-light hg_gb_btn"><i class="fas fa-arrow-left"></i> Go Back</a>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+
+
+    <div class="modal fade" id="favourite_sc_name_window">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Favourite Shopping Cart Name</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <form method="POST" id="add_favourite_cart">
+                    {% csrf_token %}
+                    <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="alert alert-danger display-none" id="fav_name_error_message" role="alert"></div>
+                    <div class="alert alert-success display-none" id="fav_name_success_message" role="alert"></div>
+                    <div><input type="text" id="favourite_sc_name_input" value="" class="form-control check_product_name"></div>
+                    <small class="form-text text-muted">
+                        Help text here - Fav SC name help text
+                    </small>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="submit" id="add_favourite_cart" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> save </button>
+                </div>
+                </form>
+                
+
+            </div>
+        </div>
+    </div>
+
+{% include 'root/loader.html' %}
+</div>
+
+<script src="{% static 'scripts/sc_first_step.js' %}"></script>
+
+<script>
+
+    function ajax_add_favourite_cart(data) {
+        urlLink = "{% url 'eProc_Shop_Home:add_favourite_shopping_cart' %}";
+        let status = AjaxCallAPIBasic(urlLink, data);
+        return status;
+    }
+
+    // Function to get guid of the item and displays confirmation pop-up before deleting
+var delete_item_guid = '';
+function get_item(element){
+    id1 = document.getElementById(element.id)
+    $('#sc-delete-single-item').modal('show');
+    delete_item_guid = element.id ;
+}
+</script>
+
+{% endblock %}
+

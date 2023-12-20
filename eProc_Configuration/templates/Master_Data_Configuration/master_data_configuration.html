@@ -1,0 +1,778 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Master Settings {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div id="upload-configuration-data" class="upload-data-tab">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('customer-product-menu')">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper orange" >
+                            <i class="material-icons-outlined">
+                                inventory_2
+                            </i>
+                        </div>
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Customer UNSPSC Codes</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('org-data-menu')">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper pink">
+                            <i class="material-icons-outlined">
+                                business
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Organizational Objects</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('accounting-data-menu')">
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper blue" >
+                            <i class="material-icons-outlined">
+                                account_circle
+                            </i>
+                        </div>
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Account Assignments</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('flow-data-menu')">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper red" >
+                            <i class="material-icons-outlined">
+                                account_tree
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Workflow Schemas</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('approval-data-menu')">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper green" >
+                            <i class="material-icons-outlined">
+                                check_circle
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Approval Workflows</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('address-menu')">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper light-blue">
+                            <i class="material-icons-outlined">
+                                location_on
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Addresses</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="display_sub_menu('supplier-menu')">
+
+                    <div class="card-body text-center" >
+                        <div class="icon-wrapper purple">
+                            <i class="material-icons-outlined">
+                                sell
+                            </i>
+                        </div>
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Supplier Terms</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- sub menu for Accounting data -->
+<div class="container-fluid">
+    <div id="accounting-data-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('accounting-data-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper blue">
+                            <i class="material-icons-outlined big">
+                                account_circle
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Account Assignments</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+                <p></p>
+
+            </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:account_ass_values' %}', '_blank');">
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper blue" >
+                                        <i class="material-icons-outlined small">
+                                            content_paste
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Account Assignment Values</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:account_assignment' %}', '_blank');">
+
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper orange" >
+                                        <i class="material-icons-outlined small">
+                                            description
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Account Assignment Value Descriptions</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:det_gl_acc' %}', '_blank');">
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper blue" >
+                                        <i class="material-icons-outlined">
+                                            account_box
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">General Ledger Accounts</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- sub menu for product categories -->
+<div class="container-fluid">
+    <div id="customer-product-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('customer-product-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper orange">
+                            <i class="material-icons-outlined big">
+                                inventory_2
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Customer UNSPSC Codes </span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+                <p></p>
+
+            </div>
+             <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:upload_cust_prod_cat' %}', '_blank');">
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper blue" >
+                                    <i class="material-icons-outlined small">
+                                        category
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label">UNSPSC Codes</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:upload_cust_prod_cat_desc' %}', '_blank');">
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper blue" >
+                                    <i class="material-icons-outlined small">
+                                        description
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label">UNSPSC Code Descriptions</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div>
+</div>
+
+<!-- sub menu for approval data -->
+<div class="container-fluid">
+    <div id="approval-data-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('approval-data-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper green">
+                            <i class="material-icons-outlined big">
+                                check_circle
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Approval Workflows</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:spend_limit_value' %}', '_blank');">
+
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper orange" >
+                                    <i class="material-icons-outlined small">
+                                        payments
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label">Spend Limit Values</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:spend_limit_id' %}', '_blank');">
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper blue" >
+                                    <i class="material-icons-outlined small">
+                                        system_security_update_warning
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label">Spend Limits</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:approval_limit_value' %}', '_blank');">
+
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper green" >
+                                    <i class="material-icons-outlined small">
+                                        approval
+                                    </i>
+                                </div>
+
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label small-font" >Approval Limit Values</span>
+                                    </div>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:approval_limit' %}', '_blank');">
+
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper orange" >
+                                    <i class="material-icons-outlined small">
+                                        remove_done
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label">Approval Limits</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:work_flow_accounting' %}', '_blank');">
+
+                            <div class="card-body text-center">
+                                <div class="sub-menu-icon-wrapper orange" >
+                                    <i class="material-icons-outlined small">
+                                        account_box
+                                    </i>
+                                </div>
+                                <a onclick="">
+                                    <div class="mt-3">
+                                        <span class="upload-data-label small-font">Workflows</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- sub menu for spend limit data -->
+<div class="container-fluid">
+    <div id="spend-limit-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('spend-limit-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper yellow">
+                            <i class="material-icons-outlined big">
+                                production_quantity_limits
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Spend Limit</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- sub menu for work flow data -->
+<div class="container-fluid">
+    <div id="flow-data-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('flow-data-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper red">
+                            <i class="material-icons-outlined big">
+                                account_tree
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Workflow Schemas</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+                <p></p>
+
+            </div>
+             <div class="col-md-9">
+                <div class="row">
+                     <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:approval_type' %}', '_blank');">
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper blue" >
+                                        <i class="material-icons-outlined small">
+                                            playlist_add_check
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Approval Types</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:work_flow_schema' %}', '_blank');">
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper blue" >
+                                        <i class="material-icons-outlined small">
+                                            schema
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Work Flow Schema</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- sub menu for supplier -->
+<div class="container-fluid">
+    <div id="supplier-menu" class="upload-data-tab display-none" >
+        <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('supplier-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+        <div class="row mt-4">
+            <div class="col-md-3 sub-menu-main-border">
+                <div class="card config-card">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-main-icon-wrapper purple">
+                            <i class="material-icons-outlined big">
+                                sell
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label">Supplier Terms</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+                <p></p>
+
+            </div>
+             <div class="col-md-9">
+                <div class="row">
+                        <div class="col-md-3">
+                                <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:display_incoterms' %}', '_blank');">
+                                    <div class="card-body text-center">
+                                        <div class="sub-menu-icon-wrapper blue" >
+                                            <i class="material-icons-outlined small">
+                                                rule
+                                            </i>
+                                        </div>
+                                        <a onclick="">
+                                            <div class="mt-3">
+                                                <span class="upload-data-label">INCO Terms</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:payment_terms' %}', '_blank');">
+
+                                    <div class="card-body text-center">
+                                        <div class="sub-menu-icon-wrapper orange" >
+                                            <i class="material-icons-outlined small">
+                                                payment
+                                            </i>
+                                        </div>
+                                        <a onclick="">
+                                            <div class="mt-3">
+                                                <span class="upload-data-label">Payment Terms</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:payment_terms_desc' %}', '_blank');">
+
+                                    <div class="card-body text-center">
+                                        <div class="sub-menu-icon-wrapper green" >
+                                            <i class="material-icons-outlined small">
+                                                price_check
+                                            </i>
+                                        </div>
+                                        <a onclick="">
+                                            <div class="mt-3">
+                                                <span class="upload-data-label">Payment Term Descriptions</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                 </div>
+
+            <!--            <div class="col-md-2">-->
+            <!--                <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:upload_supplier' %}', '_blank');">-->
+            <!--                    -->
+            <!--                    <div class="card-body text-center">-->
+            <!--                        <div class="sub-menu-icon-wrapper yellow" >-->
+            <!--                            <i class="material-icons-outlined small">-->
+            <!--                                people_alt-->
+            <!--                            </i>-->
+            <!--                        </div>-->
+            <!--                        -->
+            <!--                        <a onclick="">-->
+            <!--                            <div class="mt-3">-->
+            <!--                                <span class="upload-data-label">Upload Suppliers</span>-->
+            <!--                            </div>-->
+            <!--                            -->
+            <!--                        </a>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <!--        </div>-->
+        </div>
+    </div>
+</div>
+
+    <!-- sub menu for address -->
+    <div class="container-fluid">
+        <div id="address-menu" class="upload-data-tab display-none" >
+            <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('address-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+            <div class="row mt-4">
+                <div class="col-md-3 sub-menu-main-border">
+                    <div class="card config-card">
+
+                        <div class="card-body text-center">
+                            <div class="sub-menu-main-icon-wrapper light-blue">
+                                <i class="material-icons-outlined big">
+                                    location_on
+                                </i>
+                            </div>
+
+                            <a onclick="">
+                                <div class="mt-3">
+                                    <span class="upload-data-label">Addresses</span>
+                                </div>
+
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+                 <div class="col-md-9">
+                <div class="row">
+                     <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:address' %}', '_blank');">
+
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper orange" >
+                                        <i class="material-icons-outlined small">
+                                            person_pin_circle
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Address Details</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card config-card pointer" onclick="window.open('{% url 'eProc_Master_Settings:address_type' %}', '_blank');">
+                                <div class="card-body text-center">
+                                    <div class="sub-menu-icon-wrapper blue" >
+                                        <i class="material-icons-outlined small">
+                                            dns
+                                        </i>
+                                    </div>
+                                    <a onclick="">
+                                        <div class="mt-3">
+                                            <span class="upload-data-label">Address Types</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- sub-menu for organisational data -->
+    <div class="container-fluid">
+        <div id="org-data-menu" class="upload-data-tab display-none" >
+            <a class="badge badge-light hg_gb_btn" onclick="display_sub_menu('org-data-menu')"><i class="fas fa-arrow-left"></i> Go Back</a>
+
+            <div class="row mt-4">
+                <div class="col-md-3 sub-menu-main-border" >
+                    <div class="card config-card">
+
+                        <div class="card-body text-center">
+                            <div class="sub-menu-main-icon-wrapper pink">
+                                <i class="material-icons-outlined big">
+                                    business
+                                </i>
+                            </div>
+
+                            <a onclick="">
+                                <div class="mt-3">
+                                    <span class="upload-data-label">Organizational Objects</span>
+                                </div>
+
+                            </a>
+                        </div>
+                    </div>
+                    <p></p>
+
+                </div>
+                <div class="col-md-2">
+                    <div class="card config-card pointer " onclick="window.open('{% url 'eProc_Master_Settings:org_companies' %}', '_blank');">
+
+                        <div class="card-body text-center">
+                            <div class="sub-menu-icon-wrapper green" >
+                                <i class="material-icons-outlined small">
+                                    business
+                                </i>
+                            </div>
+
+                            <a onclick="">
+                                <div class="mt-3">
+                                    <span class="upload-data-label">Companies</span>
+                                </div>
+
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card config-card pointer " onclick="window.open('{% url 'eProc_Master_Settings:purchasing_org' %}', '_blank');">
+
+                    <div class="card-body text-center">
+                        <div class="sub-menu-icon-wrapper yellow" >
+                            <i class="material-icons-outlined small">
+                                groups
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label small-font">Purchasing Organisations</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card config-card pointer " onclick="window.open('{% url 'eProc_Master_Settings:purchasing_grp' %}', '_blank');">
+                        <div class="card-body text-center">
+                            <div class="sub-menu-icon-wrapper red" >
+                                <i class="material-icons-outlined small">
+                                    people
+                                </i>
+                            </div>
+                            <a onclick="">
+                                <div class="mt-3">
+                                    <span class="upload-data-label">Purchasing Groups</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+$(document).ready(function(){
+    nav_bar_configuration()
+});
+
+</script>
+    {% endblock %}

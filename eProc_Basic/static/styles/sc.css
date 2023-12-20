@@ -1,0 +1,1245 @@
+
+/* General body class */
+
+/* wrapper class to be applied after container-fluid for white background*/
+
+.hg_ua_border{
+    border: solid 0.12em rgb(202, 198, 198);
+}
+
+
+/* For input fields */
+.hg_inputTxt {
+    width: 469px;
+    height:25px;
+    border: solid 1px #cac6c6;
+    border-radius: 2px;
+    color: #757575;
+}
+
+
+/* For drop down fields */
+.hg_choiceField {
+    width:476px;
+    height:31px;
+    border-radius:2px;
+    border: solid 1px #cac6c6;
+    color: #757575;
+}
+
+/* POP UP START */
+/* The Modal (background) */
+.hg_modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.hg_modal_content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 5px;
+  border: 1px solid #888;
+}
+
+.hg_model_header {
+    float:left;
+    width:85%;
+    padding:2px 0px 0px 5px;
+}
+
+/* POP UP END */
+
+/* General classes end */
+
+/* For Form fields in Update Form Shopping Cart */
+.hg_updateInputField{
+    width:102%;
+    height:25px;
+    border-radius:2px;
+}
+
+/* Update form fields end */
+
+.hg_button {
+        border: none;
+        color: white;
+        padding: 10px 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 5px 0px;
+        cursor: pointer;
+        background-image: linear-gradient(#fabd4c, #efb64d);
+        border-radius: 2px;
+    }
+
+
+[type="date"] {
+        background:#fff url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png)  97% 50% no-repeat ;
+    }
+[type="date"]::-webkit-inner-spin-button {
+        display: none;
+    }
+[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: 0;
+    }
+
+
+.hg_slno {
+    width: 30px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_item1 {
+    width: 100px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_item_descr {
+    width: auto;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_suppl_art_no {
+    width: 150px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_lead_time {
+    width: 120px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_lot_size {
+    width: 80px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_unit {
+    width: 60px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_price {
+    width: 150px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_total {
+    width: 120px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_qty {
+    width: 80px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_action {
+    width: 80px;
+    padding-bottom: 5px;
+    text-align: left;
+    border-bottom: 0.25pt solid rgb(206, 188, 188);
+}
+
+.hg_goback_btn {
+    padding: 10px 0px 0px 0px;
+    color: #fabd4c;
+    font-weight: none;
+    text-decoration:none;
+}
+.hg_goback_btn a:link {
+    padding: 10px 0px 0px 0px;
+    color: #fabd4c;
+    font-weight: none;
+    text-decoration: none;
+}
+.hg_goback_btn a:hover {
+    padding: 10px 0px 0px 0px;
+    color: #fabd4c;
+    font-weight: none;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.hg_spacer {
+    padding-right: 10px;
+}
+
+.hg_checkbx {
+    float: left;
+    padding: 15px 10px 5px 10px;
+    width: auto;
+}
+
+.hg_cartname {
+    padding: 0px 0px 20px 0px;
+    font-weight: bold;
+}
+
+
+.hg_add_left {
+    float:left;
+    width:49.5%;
+    height:auto;
+    min-height:20px;
+}
+
+.hg_addresshead_left {
+    overflow:hidden;
+    min-height:20px;
+    width:100%;
+    float: left;
+    min-height: 20px;
+    border-color:#D3D3D3;
+    border-width:1px 1px 0px 1px;
+    border-style:solid;
+}
+
+.hg_add_l1 {
+    width:60%;
+    padding:15px 0px 15px 10px;
+    float:left;
+    font-size: 19px;
+}
+
+.hg_add_l2 {
+    width:35%;
+    padding:15px 15px 15px 0px;
+    float:right;
+    text-align: right;
+}
+
+.hg_add_l3 {
+    border:solid 1px lightgray;
+    width:100%;
+    margin-bottom:20px;
+    display: block;
+    clear:both;
+}
+
+.hg_add_right {
+    float:right;
+    width:49%;
+    height:auto;
+    min-height:20px;
+}
+
+/* Select menu end */
+
+/* Tabs inside hidden div start */
+
+/* Style the tab */
+.hg_tab {
+    overflow: hidden;
+   /* border-bottom: 1px solid #ccc;*/
+  }
+
+  /* Style the buttons inside the tab */
+.hg_tab_btn {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: 0px;
+    cursor: pointer;
+    padding: 10PX 10PX 10PX 10PX;
+    transition: 0.3s;
+    font-size: 14px;
+    color: grey;
+  }
+
+
+  /* Change background color of buttons on hover */
+.hg_tab_btn:hover {
+    border-bottom: 1px solid rgb(140, 152, 167);
+  }
+
+  /* Style the tab content */
+/* .hg_tabcontent {
+    display: none;
+    padding: 1rem;
+    margin-bottom: 10px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+  } */
+
+  /* Fade in tabs */
+  @_webkit_keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+  @keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+
+.hg_spacer2 {
+    height: 30px;
+}
+
+.hg_link_item1a {
+    float: left;
+    background-color: #ccc;
+    margin-right:10px;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    width:100px auto;
+    height:20px;
+    padding-top:5px;
+}
+
+.hg_required {
+    color: red;
+}
+
+.error_message {
+    color: red;
+    font-size: 14px;
+}
+
+.wday_err_msg {
+    color: red;
+    font-size: 14px;
+}
+
+.hg_pb5 {
+    padding-bottom:5px;
+}
+
+.hg_pb10 {
+    padding-bottom:10px;
+}
+
+.hg_pb20 {
+    padding-bottom:20px;
+}
+
+.hg_pt20 {
+    padding-top: 20px;
+}
+
+.hg_pl20 {
+    padding-left:20px;
+}
+
+.hg_pl10 {
+    padding-left:10px;
+}
+
+.hg_pl5 {
+    padding-left:5px;
+}
+
+.hg_head1a {
+    font-size:18px;
+    font-weight: bold;
+    padding-left:13px;
+    color: #424242;
+}
+
+.hg_head2 {
+    font-size:18px;
+    font-weight: bold;
+    padding: 10px 0px 10px 0px;
+}
+
+.hg_cart_counter {
+  font-size:10px;
+  text-decoration: none;
+  padding-top:4px;
+}
+
+.hg_couterTxt {
+    color: #000000;
+    text-decoration: none;
+}
+
+.hg_counterBg {
+  margin-top:-5px;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: rgb(250, 189, 76);
+  text-align: center;
+  margin-left:10px;
+}
+
+
+
+/* Popup box BEGIN */
+.hg_ctnt_area7 {
+        width: 35%;
+        background-color: white;
+        border: solid 0.12em rgb(202, 198, 198);
+        min-height: 100px;
+        margin: auto;
+        /* margin-top: 20px; */
+        margin: 10% 30% 0px;
+        padding: 10px 20px 30px 20px;
+        border-radius:2px;
+    }
+.hg_ctnt_area7 div {
+        margin: 0px;
+    }
+
+.hg_sCart {
+    border:none;
+    width:15px;
+    height:15px;
+    padding-top:8px;
+}
+
+.hg_nvb1 {
+    margin-top:42px;
+    font-size:14px;
+    font-weight:bold;
+    padding:10px 0px 5px 15px;
+}
+
+.hg_fltDiv {
+    margin: 8% 35% 0px;
+}
+
+.hg_fltDiv2 {
+    left:35%;
+    top:50%;
+}
+
+.hg_wid85 {
+    width:85%;
+}
+
+.hg_wid40 {
+    width:40%;
+}
+
+.hg_clientDiv {
+    width:90%;
+    margin: 0 auto;
+}
+
+.hg_usrDiv {
+    width:90%; margin: 0 auto; padding-top:10px;
+}
+
+.hg_usrDiv1 {
+    width:98%; border-radius:2px; padding:5px;
+}
+
+.hg_submBtn {
+    width:90%; margin: 0 auto; padding-top:10px; text-align:center;
+}
+
+.hg_btnPadding {
+    padding:8px 30px 8px 30px;
+}
+
+.hg_headBar {
+    width:100%;
+    height:40px;
+}
+
+.hg_regOuter {
+    width:35%;
+    background: white;
+    border: solid 0.42em rgb(202, 198, 198);
+    border-radius:0px;
+    padding:10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.hg_headBg {
+    background-color:black;
+    padding:5px 15px 5px 15px;
+    margin:10px 10px 0px 10px;
+    width:88%;
+    color: white;
+    border-radius: 2px;
+}
+
+.hg_headBg1 {
+    background-color:black;
+    color: white;
+    padding:5px 15px 5px 15px;
+    margin: 30px 0px 0px 0px;
+    border-radius: 2px;
+}
+
+.hg_headBg2 {
+    background-color:black;
+    color:white;
+    border-radius: 2px;
+    padding:5px 15px 5px 15px;
+    margin:10px 0px 20px 0px;
+}
+
+.hg_headBg3 {
+    background-color:black;
+    color: white;
+    padding:5px 15px 5px 15px;
+    margin:10px 0px 0px 0px;
+    border-radius:2px;
+}
+
+.hg_update_title {
+    background-color:black;
+    color:white;
+    border-radius: 2px;
+    padding:5px 5px 5px 15px;
+    margin:10px 10px 20px 0px;
+    width:100%;
+}
+.hg_mrgTop {
+    margin-top:42px;
+}
+
+.hg_pss_resetD {
+    width:95%;
+    margin: 0 auto;
+}
+
+
+
+.hg_form_input {
+     width:78%;
+     height:25px;
+     border-radius:2px;
+}
+
+/* Hiding messages after 5 seconds */
+#hide_message {
+  animation: cssAnimation 5s 0s forwards;
+  visibility: visible;
+}
+
+@keyframes cssAnimation {
+  to   { visibility: hidden; }
+}
+
+.hg_conf_form_fields{
+    padding-bottom:10px;
+}
+
+/* Usersettings page Css */
+.hg_display_mode {
+    width:469px;;
+    height:25px;
+    border-radius:2px;
+    background-color: #f1f1f1;
+    color: #878a9b;
+}
+
+.hg_edit_mode {
+    width:25%;
+    height:25px;
+     border-radius:0px;
+     width:40%;
+
+}
+.hg_purchase_display_mode {
+    width:100%;
+    height:31px;
+    border-radius:2px;
+    background-color : #f1f1f1;
+    color: #878a9b;
+}
+
+.hg_frtxtSupp {
+    border-radius:2px;
+    height:30px;
+    padding:7px;
+}
+
+/* Style the buttons */
+.hg_btn {
+      border: none;
+      outline: none;
+      padding: 7px 16px;
+      background-color: #f1f1f1;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+
+    /* Style the active class, and buttons on mouse-over */
+.hg_btn.activa, .hg_btn:hover {
+      background-color: rgb(250, 189, 76);
+      color: #3B372B;
+    }
+
+.hg_btn.activa a:active {
+      background-color: rgb(250, 189, 76);
+      color: #3B372B;
+    }
+
+/* Notif settings css */
+.hg_notif_div {
+    border:solid 1px #cccccc;
+    border-radius:2px;
+    padding-left:20px;
+}
+
+.hg_notif_save {
+    padding:10px 25px 10px 25px;
+}
+
+.hg_tab_outer {
+    margin:0px;
+    height:30px;
+    border:none;
+    text-align:left;
+    background-color:none;
+}
+
+.hg_ctnt_areapop {
+    position:fixed;
+    top: 16%;
+    left: 35%;
+    width: 400px;
+    background-color: white;
+    border: solid 0.12em rgb(202, 198, 198);
+    height: 400px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 10px 40px 30px 20px;
+    overflow-y:scroll;
+}
+
+
+
+/* css for pop-up */
+
+/* Add padding and center-align text to the container */
+.hg_container {
+    padding: 16px;
+    text-align: left;
+}
+
+/* The Modal (background) */
+.hg_modal {
+    padding-left:0%;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    padding-top: 15%;
+    border-radius:3px;
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* Modal Content/Box */
+.hg_modal_content {
+    background-color: #fefefe;
+    margin: 0% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 450px; /* Could be more or less, depending on screen size */
+    border-radius:3px;
+}
+
+.hg_modal_content2 {
+    background-color: #fefefe;
+    margin: 0% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 540px; /* Could be more or less, depending on screen size */
+    border-radius:3px;
+}
+/* Style the horizontal ruler */
+hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+}
+
+
+
+/* Clear floats */
+.hg_clearfix::after {
+content: "";
+clear: both;
+display: table;
+}
+
+.hg_fieldWrapper {
+    width: 50%;
+    border:solid 1px indigo;
+}
+
+.hg_mb10 {
+    margin-bottom:10px;
+}
+
+.hg_mb20 {
+    margin-bottom:20px;
+}
+
+.hg_btnPd {
+    padding: 10px 26px 10px 26px;
+}
+
+.hg_fieldset {
+    padding-left:0px;
+    border: 0px;
+    padding-top: 0px;
+}
+
+.hg_check_box_inp {
+    width: 18px;
+    height:18px;
+    vertical-align: middle;
+}
+
+.hg_frgt_password {
+    color: black;
+    text-decoration:underline;
+}
+
+A {text-decoration: none;}
+a:visited { color : black;}
+
+.hg_active_admin {
+        color: white;
+        text-decoration: none;
+        background-color: rgb(250, 189, 76);
+        padding: 5px 10px 5px 10px;
+}
+
+/* end of styling admin tool app*/
+
+.hg_warning {
+    color:orange;
+}
+
+.hg_error {
+    color:red;
+}
+
+.hg_success {
+    color:green;
+}
+
+.hg_success, .hr_error {
+    -moz-animation: cssAnimation 0s ease-in 5s forwards;
+    /* Firefox */
+    -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+    /* Safari and Chrome */
+    -o-animation: cssAnimation 0s ease-in 5s forwards;
+    /* Opera */
+    animation: cssAnimation 0s ease-in 5s forwards;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+@keyframes cssAnimation {
+    to {
+        width:0;
+        height:0;
+        overflow:hidden;
+    }
+}
+@_webkit_keyframes cssAnimation {
+    to {
+        width:0;
+        height:0;
+        visibility:hidden;
+    }
+}
+
+.hg_display_limit_item{
+    display:none;
+    border:1px solid #D3D3D3;
+    width:95%;
+    padding:10px 10px 20px 10px;
+    overflow: auto;
+    margin-left:100px;
+}
+
+.hg_limit_item_left {
+    float:left;
+    width:45%;
+    clear:both;
+}
+
+.hg_limit_item_right{
+    float:right;
+    width: 45%;
+}
+
+.hg_empty_cart{
+    width: 100%;
+    background-color:#FABD4C;
+    height:53px;
+}
+
+.hg_limit_details_h1{
+    position:relative;
+    left:1%;
+}
+
+.hg_h1tag{
+    padding-top:15px;
+    padding-left:20px;
+    font-size:14px;
+    }
+
+
+.hg_rotated_image {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+
+.hg_un_rotated_image {
+  -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+}
+
+.hg_navbarAt {
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 10px 0px;
+        width: 620px;
+        /* background-color: rgb(250, 189, 76); */
+        height: 20px;
+        text-align:left;
+    }
+.hg_navbarAt div {
+        font-size: 16px;
+        /* color: rgb(255, 255, 255); */
+        color: black;
+    }
+.hg_navbarAt div a {
+        /* color:rgb(255, 255, 255); */
+        color: black;
+        text-decoration: none;
+    }
+.hg_navbarAt div :hover {
+        color: rgb(161, 146, 131);
+        text-decoration: none;
+
+    }
+
+/* created 27 -05-2020 */
+.hg_searchPgn {
+    color:black;
+    padding-right:10px;
+}
+
+.hg_searchLbl {
+    margin-bottom:0px;
+    height:20px;
+}
+
+.hg_searchHr {
+    border: 1px solid #FABD4C;
+    width:100%;
+    background-color: #FABD4C;
+}
+
+.hg_emailNotifbdr {
+    width:98%;
+    border:solid 1px #cccccc;
+    padding:20px 0px 0px 20px;
+    overflow: auto;
+}
+
+.hg_purSettingsBdr {
+    width:92%;
+    /* border:solid 1px #cccccc; */
+    padding:20px 0px 0px 20px;
+    overflow: auto;
+}
+
+
+.hg_UsEditBtn {
+    text-align:center;
+    padding-bottom:20px;
+}
+
+.hg_home_bg {
+    background-color:#D3D3D3;
+}
+
+.hg_valign_mid {
+     vertical-align: middle;
+}
+
+.hg_pl30 {
+    padding-left: 30px;
+}
+
+.hg_pl25 {
+    padding-left:25px;
+}
+
+.hg_aslnk {
+    cursor:pointer;
+}
+
+.hg_asnr_icns {
+    padding:0px 0px 10px 20px;
+    color:#efb64d;
+}
+
+.hg_asnr_tbl {
+    padding:10px;
+    width:168px;
+}
+
+
+
+.hg_scw_fst {
+    padding:10px;
+    width:40px;
+    font-size:12px;
+    border:none;
+    border-bottom:solid 0.1pt #e0e0e0;
+    text-align:left;
+}
+
+.hg_scw_fstd {
+    padding:10px;
+    max-width:200px;
+    font-size:12px;
+    border:none;
+    border-bottom:solid 0.1pt #e0e0e0;
+    text-align:left;
+}
+
+.hg_scw_pqa {
+    padding:10px;
+    font-size:12px;
+    border:none;
+    border-bottom:solid 0.1pt #e0e0e0;
+    text-align:left;
+}
+
+
+.hg_scw_tsid {
+    color:#efb64d;
+    font-size: medium;
+}
+
+.hg_scw_ta {
+    width:100px;
+    font-size:12px;
+    color: #F0B64D;
+    border:none;
+    border-bottom:solid 0.1pt #e0e0e0;
+    text-align:left;
+}
+
+.hg_scw2_ta {
+    padding: 0px 0px 20px 10px;
+}
+
+.hg_scw2_ef {
+    background-color:white;
+}
+
+.hg_scw2_add {
+    height:200px;
+}
+
+.hg_scw2_add2 {
+    float:right;
+    width:10%;
+    height:20px;
+    text-align:right;
+}
+
+.hg_error_field2 {
+    font-size:14px;
+}
+
+.hg_scw2_cne {
+    border:none;
+    background:white;
+    color: #F0B64D;
+}
+.hg_hme_scfz {
+    font-size:14px;
+    color: #78726e;
+}
+
+.hg_hme_slmn {
+    margin-bottom:15px;
+    cursor: pointer;
+}
+
+.hg_mb15 {
+    margin-bottom:15px;
+    }
+.hg-pd-top-40 {
+  padding-top: 40px;
+}
+
+.hg-desc {
+    width: 350px;
+    word-break: break-word !important;
+}
+
+.hg_txt_bld {
+    font-weight:bold;
+}
+
+.hg_scd_appr {
+    padding: 2px;
+    border-radius:3px;
+    background-color:#4caf50;
+    width:70px;
+    text-align:center;
+    font-size:10px;
+    color:#FFFFFF;
+}
+.hg_sc_ongoing {
+    padding: 2px;
+    border-radius:3px;
+    background-color:orange;
+    width:70px;
+    text-align:center;
+    font-size:10px;
+    color:#FFFFFF;
+}
+.hg_sc_reject {
+    padding: 2px;
+    border-radius:3px;
+    background-color:red;
+    width:70px;
+    text-align:center;
+    font-size:10px;
+    color:#FFFFFF;
+}
+
+.hg_scvz_tble {
+    background-color: #eee;
+}
+
+/* modal pop-up styles */
+.hg_modal_input_field {
+    width:500px;
+    height: 25px;
+    border:solid 1px lightgray;
+    border-radius:2px;
+}
+
+.hg_modal_select_field {
+    width:500px;
+    height: 30px;
+    border-radius:2px;
+}
+
+.hg_modal_header{
+    font-size: 20px;
+}
+
+.hg_action_header{
+    text-align:left;
+    padding:10px 10px 10px 10px;
+    font-size: 18px;
+}
+
+.hg_trapezoid {
+	border-bottom: 50px solid #555;
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	height: 0;
+	width: 125px;
+
+}
+.hg_doc_display_tabs {
+  display: flex;
+  flex-direction: row;
+
+
+}
+
+.hg_doc_display_tab {
+    height: 50px;
+    width: 200px;
+    border-bottom: 50px solid #fabd4c;
+    border-right: 20px solid transparent;
+    border-left: 20px solid transparent;
+    border-top-left-radius: 70px;
+    border-top-right-radius: 5px;
+    box-sizing: border-box;
+    display: block;
+
+}
+
+.hg_doc_display_tab:not(:first-child) {
+    margin-left: -10px;
+    z-index: 0;
+}
+
+.hg_doc_display_tab .hg_doc_display_label{
+  padding: 10px;
+  text-align: center;
+  color: #444444;
+  font-size: 13px;
+}
+
+.hg_doc_display_active {
+  border-bottom: 50px solid #000080;
+  z-index: 10;
+}
+
+.hg_doc_display_active .hg_label{
+  color: #ffffff;
+}
+.hg_doc_display_tab button:hover {
+  background-color: #ddd;
+}
+
+.hg_workflow_status_bar {
+    width:100%;
+    background-color: #EAEAEA;
+    padding:20px 0px 20px 20px;
+    border-radius: 5px;
+}
+
+.hg_status_WFA {
+    color:#DC453D;
+    font-weight: bold;
+}
+
+.hg_status_saved{
+    color:orange;
+    font-weight: bold;
+}
+
+.hg_status_auto_approved{
+    color: #47a83b;
+    font-weight: bold;
+}
+
+.hg_workflow_requester {
+    float:left;
+    width:100px;
+    padding-left:20px;
+    text-align:center;
+}
+
+.hg_workflow_next {
+    float:left;
+    width:100px;
+    text-align: center;
+}
+.hg_field_spacing {
+    float:left;
+    width:220px;
+    text-align: right;
+    margin-right:5px
+}
+.hg_field_acc {
+    float:left;
+    width:250px;
+    text-align: right;
+    margin-right:5px
+}
+
+.hg_workflow_managers {
+    float:left;
+    width:140px;
+    text-align:center;
+}
+
+.tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+    }
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #0069D9;
+}
+
+/* Total Search results count card  */
+.search_result_count_card.card{
+    background-color:#EAEAEA; 
+    border: none;
+}
+.search_result_count_card .card-title {
+    float: right; 
+    color: dimgray;
+}
+
+/*  */
+.errorlist{
+    color:red;
+    list-style-type: none;
+    padding:0px;
+}
+.hg_read {
+    color: blue;
+}
+.hg_unread {
+    color: red;
+}
+
+
+
+
+/* Workflow UI - Indicate active workflow agent with a halo background  */
+.workflow_active_bg {
+    background-color: #F5F5F5;
+    height: 5rem;
+    width: 5rem;
+    border-radius: 50%;
+    padding: 15px 0;
+    text-align: center;
+    margin: auto;
+    margin-top: -1rem;
+}

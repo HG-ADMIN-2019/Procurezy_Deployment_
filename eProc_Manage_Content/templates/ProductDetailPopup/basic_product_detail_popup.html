@@ -1,0 +1,303 @@
+{% load static %}
+
+<style>
+    .fav_sc_items_list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.fav_sc_items_list::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    background-color: rgba(184, 184, 184, 0.6);
+    border-radius: 10px;
+}
+</style>
+<!--Start product detail popup in Shopping cart 1st step-->
+<div class="modal fade" id="prod_detail_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content" >
+            <!-- Modal Header -->
+            <div>
+                <button type="button" class="close" data-dismiss="modal" style="padding-right: 1%">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" >
+                <div class="row">
+                    <div class="col-5" >
+
+                        <div class="product-image-section">
+                            <div class="product-image-section__showcase">
+                                <img id="image_featured" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image1" class="image-featured" >
+                            </div>
+                            <div class="product-image-section__select-img">
+                                <img id="img_1" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image1" class="image-thumbnail">
+                                <img id="img_2" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image2" class="image-thumbnail">
+                                <img id="img_3" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image3" class="image-thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="fav_sc_items_list" style="height:80vh; overflow-y:auto; padding: 0rem 1.5rem;">
+
+                            <div class="product-detail-section__header">
+                                <div>
+                                    <span class="product-header-text" id="id_desc"></span>
+                                </div>
+                                <div class="product-detail-section__header-bottom">
+                                    <div>
+                                        <span class="product-header-sub-text">By </span>
+                                        <span class="product-header-sub-text" id="id_supp"></span>
+                                    </div>
+
+                                    <div id="product_external_link">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__pricing mt-3 mb-4">
+                                <div class="product-pricing-text">
+                                    <span class="text-muted" id="id_currency"> </span><span id="prod_price"></span> <span id="id_unit" class="product-pricing-text__unit"></span>
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__product-description mt-3 mb-5">
+                                <h5 class="card-title">Product/Service Description</h5>
+                                <p id="id_prod_desc"></p>
+                            </div>
+
+                            <div class="product-detail-section__product-specification mt-3 mb-5" id="prod_spec_div_id" style="display:none">
+                                <h5 class="card-title">Product/Service Specification</h5>
+
+                                <table class="table table-bordered mt-1" id="prod_spec_main_table" >
+                                    <tbody id="product_spec_main_tbody"></tbody>
+                                </table>
+                            </div>
+
+                            <div  class="product-detail-section__product-specification mt-3 mb-5" id="prod_eform_div_id" style="display:none">
+                                <h5 class="card-title">User Selected Type</h5>
+
+                                <table class="table table-bordered mt-1" id="prod_eform_main_table" >
+                                    <tbody id="product_eform_main_tbody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="product-detail-section__product-add-data  mt-3 mb-4">
+                                <h5 class="card-title">More Information</h5>
+
+                                <div>
+                                    <div>
+                                        <span class="h6">Lead Time (days) </span> <span id="id_lead_time"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Price Unit </span><span id="id_lot_size"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Product Category </span><span id="id_unspsc_cat"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Available Quantity </span> <span id="id_available_qty"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Manufacturer </span> <span id="id_manufacturer"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Country of Origin </span> <span id="id_country_of_origin"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Brand </span> <span id="id_brand"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Contract Number </span> <span id="id_contract_num"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--End product detail popup-->
+<script>
+
+    //###############################start of view catalog images #########################################################
+    var image_thumbnail = document.getElementsByClassName('image-thumbnail');
+    var image_thumbnail_select = document.getElementsByClassName('prod-img-selected');
+
+    for(i=0; image_thumbnail.length > i; i++){ 
+
+        image_thumbnail[i].addEventListener('click', function(){
+
+            if(image_thumbnail_select.length > 0){
+                image_thumbnail_select[0].classList.remove('prod-img-selected');
+            }; 
+            this.classList.add('prod-img-selected'); 
+            var new_src = this.src;
+            document.getElementById('image_featured').src = new_src;
+        });
+
+    };
+
+
+    var GLOBAL_PRODUCT_ID = '';
+    var GLOBAL_ONCLICK_ITEM_GUID = '';
+    var GLOBAL_QUANTITY = '';
+
+    function view_detail(prd_detail,item_guid){
+        GLOBAL_PRODUCT_ID = prd_detail;
+        GLOBAL_ONCLICK_ITEM_GUID = item_guid;
+        product_cat_id={}
+        product_cat_id["prod_id"] = prd_detail;
+        product_cat_id["prod_item_guid"] = item_guid;
+        $.ajax({
+            type : 'POST',
+            url  : "{% url 'eProc_Catalog:get_prod_details' %}",
+            data: JSON.stringify(product_cat_id),
+            success: function (response) {
+                $("#prod_spec_div_id").css("display", "none");
+                $("#prod_eform_div_id").css("display", "none");
+                var prod_detail = response.prod_detail[0];
+                console.log(prod_detail);
+                var prod_img_detail = response.prod_img_detail;
+                var product_specification_data = response.product_specification;
+                var product_variant_data = response.variant_data;
+                // update popup fields
+                $("#id_currency").text(prod_detail.currency_id + ' ');
+                $("#id_prod_desc").text(prod_detail.long_desc);
+                $("#id_prod_desc").attr("disabled", "disabled");
+                $("#id_desc").text(prod_detail.short_desc + ' ');
+                $("#id_lead_time").text(prod_detail.lead_time);
+                $("#id_lot_size").text(prod_detail.price_unit);
+                $("#id_unspsc_cat").text(prod_detail.prod_cat_desc);
+                $("#prod_price").text(prod_detail.price);
+
+                $("#id_quantity").val($("#quantity_"+item_guid).html());
+                $("#id_unit").text(prod_detail.unit_desc);
+                $("#id_supp").text(prod_detail.supplier_desc);
+                $('#id_available_qty').text(prod_detail.quantity_avail);
+                $('#id_manufacturer').text(prod_detail.manufacturer);
+                $('#id_country_of_origin').text(prod_detail.country_desc);
+                $('#id_brand').text(prod_detail.brand);
+                $('#id_contract_num').text(prod_detail.ctr_num);
+                if(product_specification_data){
+                    update_product_specification_main_table(product_specification_data);
+                }
+
+                if(product_variant_data){
+                    update_product_variant_data(product_variant_data);
+                }
+
+                // Check id extrnal website link exists
+                var prod_external_link = prod_detail['external_link'];
+                
+                if(!prod_external_link){
+                    $('#product_external_link').empty();
+                }else {
+                    $('#product_external_link').empty();
+                    var external_link_badge = '<span class="badge badge-pill badge_custom_pill_primary"> <a href="https://'+ prod_external_link +'" target="_blank" style="color:#007bff; text-decoration: none;">Visit product website <i class="fas fa-external-link-alt"></i></a></span>'
+                    $('#product_external_link').append(external_link_badge);
+                }
+
+    
+                // image update
+                static_url = '/media/';
+                if (prod_img_detail[0]){
+                    $('#img_1').attr('src',static_url+ prod_img_detail[0].image_url);
+                    $('#image_featured').attr('src',static_url+ prod_img_detail[0].image_url);
+                }
+                else{
+                    $('#img_1').attr('src',"/static/images/no-image-cropped.png");
+                    $('#image_featured').attr('src',"/static/images/no-image-cropped.png");
+                }
+                if (prod_img_detail[1]){
+                    $('#img_2').attr('src',static_url+ prod_img_detail[1].image_url);
+                }
+                else{
+                    $('#img_2').attr('src',"/static/images/no-image-cropped.png");
+                }
+                if (prod_img_detail[2]){
+                    $('#img_3').attr('src',static_url+prod_img_detail[2].image_url);
+                }
+                else{
+                    $('#img_3').attr('src',"/static/images/no-image-cropped.png");
+                }
+
+                for(i=0; i < image_thumbnail.length; i++){
+                    image_thumbnail[0].classList.add('prod-img-selected');
+                };
+                image_visible_div = 0
+                show_image_div()
+                $('#prod_detail_popup').modal('show');
+            }
+        });
+    }
+    //###############################end of view catalog images #########################################################
+function show_image_div(){
+     $(".catalog_img").hide();
+     $(".catalog_img:eq(" + image_visible_div + ")").show();
+}
+
+
+function update_product_specification(product_specification){
+    $('#product_spec_main_tbody').empty();
+    var prod_spec_main_html = ''
+    $.each(product_specification, function (i, item) {
+        prod_spec_main_html += '<tr ><td class="text-muted">' + item.product_info_key + '</td><td>' + item.product_info_value + '</td></tr>';
+    });
+    $('#product_spec_main_tbody').append(prod_spec_main_html);
+    document.getElementById('prod_spec_div_id').style.display = 'block';
+}
+
+    function update_product_specification_main_table(product_specification_data){
+        $('#product_spec_main_tbody').empty();
+        var prod_spec_main_html = ''
+        $.each(product_specification_data, function (i, item) {
+            prod_spec_main_html += '<tr ><td class="text-muted">' + item.product_info_key + '</td><td>' + item.product_info_value + '</td></tr>';
+        });
+        $('#product_spec_main_tbody').append(prod_spec_main_html);
+        document.getElementById('prod_spec_div_id').style.display = 'block';
+    }
+
+
+    $("#prod_detail_popup").on("hidden.bs.modal", function () {
+        image_thumbnail_select[0].classList.remove('prod-img-selected');
+    });
+
+    function update_product_variant_data(product_variant_data) {
+        $('#product_eform_main_tbody').empty();
+        var product_variant_html_data = '';
+        $.each(product_variant_data, function(i, item){
+            product_variant_html_data += '<tr ><td class="text-muted">' + item.eform_field_name + '</td><td>' + item.eform_field_data + '</td></tr>';
+        })
+        $('#product_eform_main_tbody').append(product_variant_html_data);
+        document.getElementById('prod_eform_div_id').style.display = 'block';
+
+    }
+
+
+
+    // product_data = {'prod_detail': [{'catalog_item': '0A54BF95E46C45B886D8340C90A5B478', 'product_id': '87DFA666BFC343AC', 'short_desc': 'Salad - Farmers Garden', 'long_desc': 'Refreshing, crunchy and delicious, with organic roasted corn, crunchy green beans and a cool tarragon buttermilk dressing. This box lunch comes with a side of organic country potato salad and an organic chocolate chip cookie.', 'supp_prod_num': None, 'supplier_id': 'SUP001', 'search_term1': '', 'search_term2': '', 'manufacturer': 'Fazer', 'brand': '', 'offer_key': '', 'price_on_request': False, 'manu_prod': '', 'product_type': '01', 'lead_time': 1, 'quantity_avail': '10', 'price': Decimal('0.00'), 'price_unit': '1', 'cust_prod_cat_id': '', 'quantity_min': 1, 'created_at': datetime.date(2022, 1, 19), 'created_by': 'GIRISH', 'changed_at': datetime.date(2022, 1, 19), 'changed_by': 'GIRISH', 'ctr_num': '', 'ctr_item_num': None, 'product_status': None, 'price_1': None, 'quantity_1': None, 'price_2': None, 'quantity_2': None, 'price_3': None, 'quantity_3': None, 'external_link': '', 'supplier_product_info': '1', 'eform_id': '76288912', 'product_info_id': None, 'products_detail_source_system': 'ERP1', 'del_ind': False, 'client_id': '700', 'country_of_origin_id': 'IN', 'currency_id': 'INR', 'language_id': 'EN', 'unit_id': 'EA', 'prod_cat_id_id': '10000005'}], 
+    //                 'prod_img_detail': [], 
+    //                 'variant_data': [
+    //                     {'eform_field_data_guid': '359DAF53B0B24FCC806FA6C9A39F9900', 'cart_guid': '497636339E77450A9009836418965DAE', 'favourite_cart_guid': None, 'eform_id': '76288912', 'eform_type': 'CATALOG_ITEM_EFORM', 'eform_field_name': 'Charges', 'eform_field_data': 'Delivery', 'eform_field_count': 4, 'eform_field_data_created_at': None, 'eform_field_data_created_by': None, 'eform_field_data_changed_at': None, 'eform_field_data_changed_by': None, 'eform_field_data_source_system': '', 'eform_field_data_destination_system': '', 'del_ind': False, 'client_id': '700', 'item_guid_id': None, 'product_eform_pricing_guid_id': 'ED743ACA256C423E8FE9D4467EAEA333'},
+    //                     {'eform_field_data_guid': '36ACA5B01A424720BCEB236ABFC2013A', 'cart_guid': '497636339E77450A9009836418965DAE', 'favourite_cart_guid': None, 'eform_id': '76288912', 'eform_type': 'CATALOG_ITEM_EFORM', 'eform_field_name': 'Price', 'eform_field_data': 'Price', 'eform_field_count': 3, 'eform_field_data_created_at': None, 'eform_field_data_created_by': None, 'eform_field_data_changed_at': None, 'eform_field_data_changed_by': None, 'eform_field_data_source_system': '', 'eform_field_data_destination_system': '', 'del_ind': False, 'client_id': '700', 'item_guid_id': None, 'product_eform_pricing_guid_id': '437BC8C72F844F3C8C4A20C11D2E9824'},
+    //                     {'eform_field_data_guid': '89712546B64742738C39B37783C2FE21', 'cart_guid': '497636339E77450A9009836418965DAE', 'favourite_cart_guid': None, 'eform_id': '76288912', 'eform_type': 'CATALOG_ITEM_EFORM', 'eform_field_name': 'Delivery Location', 'eform_field_data': 'Room2', 'eform_field_count': 1, 'eform_field_data_created_at': None, 'eform_field_data_created_by': None, 'eform_field_data_changed_at': None, 'eform_field_data_changed_by': None, 'eform_field_data_source_system': '', 'eform_field_data_destination_system': '', 'del_ind': False, 'client_id': '700', 'item_guid_id': None, 'product_eform_pricing_guid_id': None},
+    //                     {'eform_field_data_guid': '97EACF1D94FC40F1B39193BADF2938C9', 'cart_guid': '497636339E77450A9009836418965DAE', 'favourite_cart_guid': None, 'eform_id': '76288912', 'eform_type': 'CATALOG_ITEM_EFORM', 'eform_field_name': 'Delivery Timw', 'eform_field_data': '12.00', 'eform_field_count': 2, 'eform_field_data_created_at': None, 'eform_field_data_created_by': None, 'eform_field_data_changed_at': None, 'eform_field_data_changed_by': None, 'eform_field_data_source_system': '', 'eform_field_data_destination_system': '', 'del_ind': False, 'client_id': '700', 'item_guid_id': None, 'product_eform_pricing_guid_id': None}
+    //                     ]
+    //                 }
+
+    // product_data = {'prod_detail': [{'catalog_item': '34D51677644C4667886DB37DC02F5720', 'product_id': '3B7320B7D9B34128', 'short_desc': 'Redmi Note 10S (Frost White, 6GB RAM, 64GB Storage) - Super Amoled Display | 64 MP Quad Camera | Alexa Built in', 'long_desc': 'About this item\nDisplay: FHD+ 1080x2400 AMOLED Dot display; 16.33 centimeters 6.43 inch; 20:9 aspect ratio\nCamera: 64 MP Quad Rear camera with 8MP Ultra-wide, 2MP Macro and Portrait lens 13 MP Front camera\nProcessor: MediaTek Helio G95 Octa-core; 12nm process; Up to 2.05GHz clock speed\nBattery: 5000 mAh large battery with 33W fast charger in-box and Type-C connectivity\nMemory, Storage & SIM: 6GB RAM 64GB UFS 2.2 storage expandable up to 512GB with dedicated SD card slot Dual SIM nano+nano dual standby 4G+4G\nMemory slots available: 1\nAlexa Hands-Free capable: Download the Alexa app on to use Alexa hands-free. Play music, make calls, hear news, open apps, navigate, and more, using just your voice, while on-the-go. Just ask and Alexa will respond instantly.', 'supp_prod_num': None, 'supplier_id': 'SUP002', 'search_term1': '', 'search_term2': '', 'manufacturer': 'Redmi', 'brand': '', 'offer_key': '', 'price_on_request': False, 'manu_prod': '', 'product_type': '01', 'lead_time': 4, 'quantity_avail': '10', 'price': Decimal('13999.00'), 'price_unit': '1', 'cust_prod_cat_id': '', 'quantity_min': 1, 'created_at': datetime.date(2022, 1, 19), 'created_by': 'GIRISH', 'changed_at': datetime.date(2022, 1, 19), 'changed_by': 'GIRISH', 'ctr_num': '', 'ctr_item_num': None, 'product_status': None, 'price_1': None, 'quantity_1': None, 'price_2': None, 'quantity_2': None, 'price_3': None, 'quantity_3': None, 'external_link': '', 'supplier_product_info': '02', 'eform_id': '', 'product_info_id': '81768085', 'products_detail_source_system': 'ERP1', 'del_ind': False, 'client_id': '700', 'country_of_origin_id': 'IN', 'currency_id': 'INR', 'language_id': 'EN', 'unit_id': 'EA', 'prod_cat_id_id': '10000001'}],
+    //                 'product_specification': [{'product_info_guid': '1C644FB841B44AE3817DE2BA71AC115A', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'OPERATING SYSTEM', 'product_info_value': 'ANDROID 11', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '1C8F2B13BFFB42D99831304A171F0397', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'REAR CAMERA LENS 2', 'product_info_value': 'TRIPLE REAR CAMERA (64 MP + 8 MP + 2 MP) | 13 MP FRONT CAMERA', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '31A87D9B97074432935B8ABCECC84B73', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'SCREEN TYPE', 'product_info_value': 'AMOLED', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '37FF53BBDC8446658EB1BE413EBEB4A8', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'REAR CAMERA LENS 1', 'product_info_value': '64 MEGAPIXELS', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '6B280B73274A461B9490D09427F9D8CD', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'BATTERY POWER', 'product_info_value': '5000', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '870A786A78BE4A8CA1A4604F4C02A904', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'SCREEN SIZE', 'product_info_value': '6.43 INCHES', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'},
+    //                                           {'product_info_guid': '88AEF69495D141F59B60F1646726DF63', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'PROCESSOR BRAND', 'product_info_value': 'MEDIATEK HELIO G95', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'}, {'product_info_guid': 'C783117BCF37468ABBF942278E63AB53', 'product_info_id': '81768085', 'product_info_type': 'SPECIFICATIONS', 'product_info_key': 'WARRANTY DETAILS', 'product_info_value': '1 YEAR MANUFACTURER WARRANTY FOR DEVICE AND 6 MONTHS MANUFACTURER WARRANTY FOR IN-BOX ACCESSORIES INCLUDING BATTERIES FROM THE DATE OF PURCHASE', 'product_info_created_at': datetime.datetime(2022, 1, 19, 0, 0), 'product_info_created_by': 'GIRISH', 'product_info_changed_at': None, 'product_info_changed_by': None, 'del_ind': False, 'client_id': '700'}],
+    //                 'prod_img_detail': [{'images_upload_guid': '0F51736D58F242139362C67A8859DA63', 'image_id': '3B7320B7D9B34128', 'image_number': 2, 'image_url': 'catalog/700/3B7320B7D9B34128/prod6_1.jpg', 'image_name': 'prod6_1.jpg', 'image_default': False, 'client_id': '700', 'image_type': 'catalog', 'created_at': datetime.datetime(2022, 1, 19, 15, 50, 38, 951727), 'created_by': 'GIRISH', 'changed_at': None, 'changed_by': None, 'images_upload_source_system': '', 'images_upload_destination_system': '', 'del_ind': False}, {'images_upload_guid': '5F723124050C4CD88C5D7DE879AA0D5E', 'image_id': '3B7320B7D9B34128', 'image_number': 3, 'image_url': 'catalog/700/3B7320B7D9B34128/prod6_2.jpg', 'image_name': 'prod6_2.jpg', 'image_default': False, 'client_id': '700', 'image_type': 'catalog', 'created_at': datetime.datetime(2022, 1, 19, 15, 50, 39, 107635), 'created_by': 'GIRISH', 'changed_at': None, 'changed_by': None, 'images_upload_source_system': '', 'images_upload_destination_system': '', 'del_ind': False}, {'images_upload_guid': '7555FB2BD0524DD39663C3DA284D0311', 'image_id': '3B7320B7D9B34128', 'image_number': 1, 'image_url': 'catalog/700/3B7320B7D9B34128/prod6.jpg', 'image_name': 'prod6.jpg', 'image_default': True, 'client_id': '700', 'image_type': 'catalog', 'created_at': datetime.datetime(2022, 1, 19, 15, 50, 38, 796072), 'created_by': 'GIRISH', 'changed_at': None, 'changed_by': None, 'images_upload_source_system': '', 'images_upload_destination_system': '', 'del_ind': False}], 'variant_data': []}
+</script>

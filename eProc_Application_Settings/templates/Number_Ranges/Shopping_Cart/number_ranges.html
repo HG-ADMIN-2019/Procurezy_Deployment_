@@ -1,0 +1,372 @@
+{% load static %}
+<div class="hg_main hg_application_main" id="disp_num_range" style="display: none;">
+    <div>
+        <h1 style="vertical-align: middle;">Shopping Cart Number Ranges</h1>
+        <hr class="hg_heading_hrborder">
+    </div>
+    <div id="edit_div" class="hg_button_bottom_padding" style="display: block;">
+        <button class="btn btn-primary" onclick="edit_sc_number_ranges()"><i class="fas fa-edit" id="edit" title="Edit"></i>
+            Edit</button>
+    </div>
+    <div id="add_delete_line_div" style="display: none;" class="hg_button_bottom_padding">
+        <button class="btn btn-primary hg_button_margin" onclick="sc_num_range_new_line();"><i class="fa fa-plus"
+                aria-hidden="true" id="add_line" title="Add Line"></i> Add</button>
+        <button class="btn btn-primary" onclick="delete_number_ranges()"><i class="fa fa-trash" aria-hidden="true"
+                title="Delete Line" id="delete_line"></i> Delete</button>
+    </div>
+    <div class="hg_table_app_align">
+        <form method="post" id="sc_num_range_form">{% csrf_token %}
+            <span id="sc_num_success" class="hg_success"></span>
+            <span id="sc_num_errors" class="hg_error"></span>
+            <table id="sc_num_ranges" class="table table-striped">
+                <thead>
+                    <tr id="tr_heading">
+                        <th scope="col">Sequence</th>
+                        <th scope="col">Starting</th>
+                        <th scope="col">Ending</th>
+                        <th scope="col">Current</th>
+                    </tr>
+                </thead>
+                <tbody id="sc_nr_tbody">
+
+
+                </tbody>
+            </table>
+            <div id="save_cancel_button" class="hg_cancel_save_button_align" style="display:none;">
+                <button type="button" class="btn btn-primary hg_button_margin" onclick="display_sc_number_ranges()"><i
+                        class="fas fa-times"></i> cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+    // Array to store number ranges
+    var sc_number_ranges_array = []
+    // Array to store used or configured number ranges so user cannot delete number ranges
+    var sequence = []
+    // Array to store sequence to be deleted
+    var sequence_to_delete = []
+
+    // Function to get SC number ranges from DB
+    function get_sc_num_ranges() {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Configuration:get_number_ranges' %}",
+            success: function (response) {
+                th_data = '<th >Sequence</th> <th >Starting</th> <th >Ending</th> <th>Current</th>'
+                $('#tr_heading').empty();
+                $('#tr_heading').append(th_data);
+                // If no number ranges are available display create option else display available number ranges
+                if (response.length == 0) {
+                    create_num_range()
+                } else {
+                    var content = '';
+                    sc_number_ranges_array = []
+                    $.each(response, function (index, value) {
+                        if (value['model'] == 'eProc_Configuration.numberranges') {
+                            // Dictionary to store available number ranges for display and editing number ranges
+                            sc_number_ranges_dict = {}
+                            sc_number_ranges_dict.sequence = value.fields.sequence
+                            sc_number_ranges_dict.starting = value.fields.starting
+                            sc_number_ranges_dict.ending = value.fields.ending
+                            sc_number_ranges_dict.current = value.fields.current
+                            sc_number_ranges_dict.guid = value.pk
+                            sc_number_ranges_array.push(sc_number_ranges_dict)
+                            content += '<tr>';
+                            content += '<td>' + value.fields.sequence + '</td>';
+                            content += '<td>' + value.fields.starting + '</td>';
+                            content += '<td>' + value.fields.ending + '</td>';
+                            content += '<td>' + value.fields.current + '</td>';
+                            content += '</tr>';
+
+                        } else {
+                            // To get configured or used number ranges so that user cannot select number range to delete
+                            get_sequence = value.fields.sequence
+                            sequence.push(get_sequence)
+                        }
+                    });
+                    $('#sc_nr_tbody').empty();
+                    $('#sc_nr_tbody').append(content);
+                }
+                hide_content_divs()
+                document.getElementById("disp_num_range").style.display = "block";
+            }
+        })
+    }
+
+    // Function to display number ranges in editable mode
+    // Guid is used as a reference to check if number range is to be created or updated
+    function edit_sc_number_ranges() {
+        document.getElementById("edit_div").style.display = "none";
+        document.getElementById("add_delete_line_div").style.display = "block";
+        document.getElementById("save_cancel_button").style.display = "block";
+        th_data = '<th >Select</th> <th >Sequence</th> <th >Starting</th> <th >Ending</th> <th>Current</th>'
+        $('#tr_heading').empty();
+        $('#tr_heading').append(th_data);
+
+        body_content = '';
+        $.each(sc_number_ranges_array, function (index, data) {
+            body_content += '<tr><td><input class="hg_input_box_width" name="sc_checkbox" type="checkbox" id="' + data['sequence'] + '"></td><td><input class="hg_input_box_width" type="number" name="sequence" value="' + data['sequence'] + '" required></td><td><input class="hg_input_box_width" type="number" name="starting" value="' + data['starting'] + '" required></td><td><input class="hg_input_box_width" type="number" name="ending" value="' + data['ending'] + '" required></td><td><input class="hg_input_box_width" type="number" name="current" value="' + data['current'] + '" required></td><td hidden><input class="hg_input_box_width" type="text" value="' + data['guid'] + '"></td></tr>'
+        });
+
+        $('#sc_nr_tbody').empty();
+        $('#sc_nr_tbody').append(body_content);
+        document.getElementById("save_cancel_button").style.display = "block";
+        $.each(sequence, function (key, value) {
+            document.getElementById(value).disabled = true;
+        });
+    }
+
+    // Function to display number ranges in non editable mode
+    function display_sc_number_ranges() {
+        document.getElementById("edit_div").style.display = "block";
+        document.getElementById("add_delete_line_div").style.display = "none";
+        document.getElementById("save_cancel_button").style.display = "none";
+        th_data = '<th >Sequence</th> <th >Starting</th> <th >Ending</th> <th>Current</th>'
+        $('#tr_heading').empty();
+        $('#tr_heading').append(th_data);
+        body_content = '';
+        $.each(sc_number_ranges_array, function (index, data) {
+            body_content += '<tr>';
+            body_content += '<td>' + data.sequence + '</td>';
+            body_content += '<td>' + data.starting + '</td>';
+            body_content += '<td>' + data.ending + '</td>';
+            body_content += '<td>' + data.current + '</td>';
+            body_content += '</tr>';
+        });
+        $('#sc_nr_tbody').empty();
+        $('#sc_nr_tbody').append(body_content);
+
+    }
+
+    // Function to update or create shopping cart number ranges
+    $('#sc_num_range_form').submit(function (e) {
+        e.preventDefault();
+        var sc_number_ranges = new Array();
+        $("#sc_num_ranges tbody tr").each(function (index) {
+            var row = $(this);
+            var available_number_ranges = {};
+            available_number_ranges.sequence_delete = sequence_to_delete;
+            available_number_ranges.sequence = row.find("td:eq(1) input[type='number']").val();
+            available_number_ranges.starting = row.find("td:eq(2) input[type='number']").val();
+            available_number_ranges.ending = row.find("td:eq(3) input[type='number']").val();
+            available_number_ranges.current = row.find("td:eq(4) input[type='number']").val();
+            available_number_ranges.guid = row.find("td:eq(5) input[type='text']").val();
+            sc_number_ranges.push(available_number_ranges);
+
+        });
+        // To check if all the number ranges are being deleted
+        if (sc_number_ranges.length == 0) {
+            num_range_data = JSON.stringify('Delete all number ranges')
+        } else {
+            // Validation for number range starts
+
+            // Validations to check for duplicate number ranges
+            var sequence = sc_number_ranges.map(function (item) { return item.sequence });
+            var is_sequence = sequence.some(function (item, idx) {
+                return sequence.indexOf(item) != idx
+            });
+            if (is_sequence) {
+                //document.getElementById("sc_num_errors").innerHTML = messageConstants["JMSG001"];
+                
+                        var msg = "JMSG001";
+                        var msg_type ;
+                      msg_type = message_config_details(msg);
+                      $("#error_msg_id").prop("hidden", false)
+
+                      if(msg_type.message_type== "ERROR"){
+                            display_message("error_msg_id", msg_type.messages_id_desc)
+                      }
+                      else if(msg_type.message_type== "WARNING"){
+                         display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                      }
+                      else if(msg_type.message_type== "INFORMATION"){
+                         display_message("id_info_msg_id", msg_type.messages_id_desc)
+                      }
+                return false;
+            }
+            var starting = sc_number_ranges.map(function (item) { return item.starting });
+            var is_starting = starting.some(function (item, idx) {
+                return starting.indexOf(item) != idx
+            });
+            if (is_starting) {
+                document.getElementById("sc_num_errors").innerHTML = 'Duplicate numbers for starting was found'
+                return false;
+            }
+
+            var ending = sc_number_ranges.map(function (item) { return item.ending });
+            var is_ending = ending.some(function (item, idx) {
+                return ending.indexOf(item) != idx
+            });
+            if (is_ending) {
+                document.getElementById("sc_num_errors").innerHTML = 'Duplicate numbers for ending was found'
+                return false;
+            }
+
+            // For loop to check if number ranges conflicts with other number ranges
+            for (i = 0; i < starting.length; i++) {
+                start_num = parseInt(starting[i]);
+                for (j = 0; j < starting.length; j++) {
+                    start = parseInt(starting[j]);
+                    end = parseInt(ending[j])
+                    check = range(start + 1, end + 1)
+                    is_valid = check.includes(start_num);
+                    if (is_valid) {
+                        document.getElementById("sc_num_errors").innerHTML = String(start_num) + '   ' + 'Conflicts with other number ranges'
+                        return false;
+                    } else {
+                        document.getElementById("sc_num_errors").innerHTML = '';
+                    }
+
+                }
+            }
+            // For loop to validate less than or greater than conditions
+            for (i = 0; i < sc_number_ranges.length; i++) {
+                sequence = sc_number_ranges[i]['sequence']
+                starting = sc_number_ranges[i]['starting']
+                ending = sc_number_ranges[i]['ending']
+                current = sc_number_ranges[i]['current']
+               
+                if (parseInt(ending) < parseInt(starting)) {
+                    
+                            var msg = "JMSG035";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type== "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                          var display = msg_type.messages_id_desc;
+                          document.getElementById("sc_num_errors").innerHTML = display;
+
+                            return false;
+                } else if (parseInt(current) < parseInt(starting)) {
+                     
+                            var msg = "JMSG036";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type== "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                           var display = msg_type.messages_id_desc;
+                          document.getElementById("sc_num_errors").innerHTML = display;
+
+                            return false;
+                } else if (parseInt(current) > parseInt(ending)) {
+                         
+                            var msg = "JMSG037";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type== "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type== "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                           var display = msg_type.messages_id_desc;
+                            document.getElementById("sc_num_errors").innerHTML = display;
+
+                            return false;
+                } else {
+                    document.getElementById("sc_num_errors").innerHTML = ''
+                }
+            }
+            // If not all number ranges are deleted send the data to backend to update or delete
+            num_range_data = JSON.stringify(sc_number_ranges)
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Configuration:edit_create_number_ranges' %}",
+            data: num_range_data,
+            success: function (response) {
+                document.getElementById("sc_num_success").innerHTML = response.message
+                // Displaying create option if no number ranges are available
+                if (sc_number_ranges.length == 0) {
+                    create_num_range()
+                } else {
+                    // Updating sc_number_ranges_array array for updated values and displaying it in display mode
+                    sc_number_ranges_array = []
+                    for (i = 0; i < sc_number_ranges.length; i++) {
+                        sc_number_ranges_array.push(sc_number_ranges[i])
+                    }
+                    display_sc_number_ranges()
+                    sequence_to_delete = []
+                }
+            },
+        })
+
+    });
+
+    // Function to add a new line for creating number range
+    function sc_num_range_new_line() {
+        newRowContent = '<tr><td><input class="hg_input_box_width" type="checkbox" name="sc_checkbox"></td><td><input  class="hg_input_box_width input" type="number" required></td><td><input class="hg_input_box_width input" type="number"required></td><td><input class="input_box_width input" type="number" required></td><td><input class="hg_input_box_width input" type="number" required></td><td hidden><input class="hg_input_box_width" type="text" value=""></td></tr>'
+        $("#sc_num_ranges tbody").append(newRowContent);
+    }
+
+    // Function similar to range() in python
+    function range(start, stop, step) {
+        if (typeof stop == 'undefined') {
+            // one param defined
+            stop = start;
+            start = 0;
+        };
+        if (typeof step == 'undefined') {
+            step = 1;
+        };
+        var result = [];
+        for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+            result.push(i);
+        };
+        return result;
+    };
+
+    setInterval(function () {
+        document.getElementById('sc_num_success').innerHTML = ''
+    }, 5000);
+
+    // Function to delete number ranges from UI
+    function delete_number_ranges() {
+        sequence_to_delete = []
+        del_seq = document.getElementsByName("sc_checkbox")
+        for (index = 0; index < del_seq.length; index++) {
+            if (del_seq[index].checked) {
+                sequence_to_delete.push(del_seq[index].id)
+            }
+        }
+        application_settings_delete_Row('sc_num_ranges')
+    }
+
+    // Function to display create number ranges if no number ranges are available
+    function create_num_range() {
+        th_data = '<th >Select</th> <th >Sequence</th> <th >Starting</th> <th >Ending</th> <th>Current</th>'
+        $('#tr_heading').empty();
+        $('#tr_heading').append(th_data);
+        document.getElementById("display_edit_nr").style.display = "none";
+        document.getElementById("save_cancel_button").style.display = "block";
+        sc_num_range_new_line()
+    }
+</script>

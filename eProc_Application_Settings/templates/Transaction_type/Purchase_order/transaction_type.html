@@ -1,0 +1,535 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Purchase Order Transaction Types (Application Settings) {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Purchase Order Transaction Types</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Application_Settings:extract_purchase_order_transaction_type_data' %}'" type="button">
+                    <i class="fas fa-download"></i> extract
+                </button>
+                <button type="button" id="id_add_data" title="Add Purchase Order Transaction Type" value="ADD"  class="btn btn-primary display_buttons " data-toggle="modal" data-target="#myModal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> Add Purchase Order Transaction Type
+                </button>
+                <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span id="success_msg_id"></span></div>
+            <div class="table-container tcw-80">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button()">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" title= "DELETE" value="Delete" style="display:none;" onclick="onclick_delete_button()">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm"  title="Copy" id="id_copy_data" style="display:none;" value="COPY"  type="button" onclick="onclick_copy_button()">
+                        <i class="fa fa-copy"></i> copy
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;" value="UPDATE"  type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> update
+                    </button>
+                    <button  class="btn btn-secondary btn-sm" title="Cancel" id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_transaction_types_table table table-bordered custom-table">
+                    <thead id="id_transaction_types_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox" hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th>Transaction Type</th>
+                            <th>Document Type</th>
+                            <th>Sequence</th>
+                            <th>Description</th>
+                            <th>Active/Inactive Flag</th>
+                            <th hidden>guid</th>
+                            <th hidden>del_ind</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_transaction_types_tbody">
+                        {% for transaction_types in transaction_type %}
+                            <tr>
+                                <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                                <td>{{transaction_types.transaction_type}}</td>
+                                <td>{{transaction_types.document_type}}</td>
+                                <td>{{transaction_types.sequence}}</td>
+                                <td>{{transaction_types.description}}</td>
+                                <td class="class_select_checkbox">
+                                    {% if transaction_types.active_inactive %}
+                                    <input type="checkbox" name="active_inactive" value="" checked disabled>
+                                    {% else %}
+                                    <input type="checkbox" name="active_inactive" value="" disabled>
+                                    {% endif %}
+                                </td>
+                                <td hidden>{{transaction_types.guid}}</td>
+                                <td hidden>{{transaction_types.del_ind}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--end of display basic Transaction Type table-->
+    <!-- The Modal -->
+    <div class="modal fade" id="myModal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title"> Maintain Purchase Order Transaction Type</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> add new row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash"></i> delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_transaction_types_code"></p>
+                            <p id="id_error_msg_transaction_types_name"></p>
+                            <p id="id_error_msg_transaction_types_length"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table  table table-bordered mt-2"  id="id_popup_table">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Transaction Type</th>
+                                    <th>Document Type</th>
+                                    <th>Sequence</th>
+                                    <th>Description</th>
+                                    <th>Active/Inactive Flag</th>
+                                    <TH hidden>GUID</TH>
+                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                    <button class="btn btn-primary btn-sm" title="Delete" id="delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" onclick="hideModal()">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %} {% endfor %} {% endif %}
+    </div>
+</div>
+{{ transaction_type|json_script:"transaction_type" }}
+
+<script>
+    var rendered_transaction_types_data = JSON.parse(document.getElementById('transaction_type').textContent);
+    var rendered_document_type
+    var rendered_active_inactive
+    var rendered_sequence_num = {{upload_numberrange|safe}};
+    var messages_list = {{messages_list|safe}};
+    var transaction_types_data_array = {}
+    var transaction_types = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_TRANSACTION_TYPES"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_TRANSACTION_TYPES"]
+
+    //*********************************
+    var doc_type_dropdown = '';
+    var sequence_dropdown = '';
+    var active_inactive_dropdown = '';
+    var document_type_dropdown= '';
+    active_inactive_dropdown = '';
+    var rendered_sequence_array =[];
+    var sequence_remove_array = [];
+
+    //*****************************
+    function dropdown_value(){
+        $.each(rendered_active_inactive, function(i, item){
+            active_inactive_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+        });
+        $.each(rendered_document_type, function(i, item){
+            document_type_dropdown += '<option value="' + item.document_type + '">' + item.document_type + '</option>';
+        });
+    }
+
+    //onclick of add button display myModal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        OpenLoaderPopup();
+        var data = {'table_name':'TransactionTypesPO'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_active_inactive = response.rendered_active_inactive
+                rendered_document_type = response.document_type_render
+                rendered_sequence_num = response.rendered_sequence
+                eliminate_used_sequence();
+                dropdown_value();
+                $("#error_msg_id").css("display", "none")
+                $( "#header_select").prop( "hidden", false );
+                GLOBAL_ACTION = button.value
+                display_button();
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#myModal').modal('show');
+                eliminate_used_sequence()
+                new_row_data(); // Function for add a new row data
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //**********************************************************
+    function onclick_copy_update_button() {
+        OpenLoaderPopup();
+        var data = {'table_name':'TransactionTypesPO'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_active_inactive = response.rendered_active_inactive
+                rendered_document_type = response.document_type_render
+                rendered_sequence_num = response.rendered_sequence
+                eliminate_used_sequence();
+                dropdown_value();
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                //Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[class="checkbox_check"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var dropdown_val = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        var document_type = row.cells[2].innerHTML
+                        var sequence = row.cells[3].innerHTML
+                        var active_inactive = row.cells[5].children.active_inactive.checked
+                        dropdown_val.push([document_type, sequence, active_inactive])
+                        sequence_remove_array = $.grep(sequence_remove_array, function (value) {
+                            return value != sequence;
+                        });
+                        rendered_sequence_array.push(sequence)
+                        guid = ''
+                        if (GLOBAL_ACTION == "UPDATE") {
+                                guid = row.cells[6].innerHTML
+                            eliminate_used_sequence()
+                            edit_basic_data += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control check_special_char" type="text" maxlength="15" value="' + row.cells[1].innerHTML + '"  name="transaction type" style="text-transform:uppercase;" disabled></td><td><select class="input form-control" disabled>' + document_type_dropdown + '</select></td><td><select class="input form-control" disabled>' + sequence_dropdown + '</select></td><td><input type="text" class= "form-control check_special_char" maxlength="10" value="' + row.cells[4].innerHTML + '"  name="transaction description"  required></td><td><input type="checkbox"  name="active_inactive" required></td><td hidden><input type="text" class= "form-control" value="' + guid + '"></td><td hidden><input type="checkbox" required></td></tr>';
+                        }
+                        else{
+                            eliminate_used_sequence()
+                            edit_basic_data += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control check_special_char" type="text" maxlength="15" value="' + row.cells[1].innerHTML + '"  name="transaction type" style="text-transform:uppercase;"></td><td><select class="input form-control" disabled>' + document_type_dropdown + '</select></td><td><select class="input form-control">' + sequence_dropdown + '</select></td><td><input type="text" class= "form-control check_special_char" maxlength="10" value="' + row.cells[4].innerHTML + '"  name="transaction description"  required></td><td><input type="checkbox"  name="active_inactive" required></td><td hidden><input type="text" class= "form-control" value="' + guid + '"></td><td hidden><input type="checkbox" required></td></tr>';
+                        }
+                    }
+                }
+                $('#id_popup_table').append(edit_basic_data);
+                var i = 0;
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    var document_type = dropdown_val[i][0]
+                    var sequence = dropdown_val[i][1]
+                    var active_inactive = dropdown_val[i][2]
+                    $(row.find("TD").eq(2).find("select option[value=" + document_type + "]")).attr('selected', 'selected');
+                     if(GLOBAL_ACTION == "UPDATE"){
+                        var seq_val = '<option value="'+ sequence +'" selected>' + sequence + '</option>'
+                        $(row.find("TD").eq(3).find("select")).prepend(seq_val);
+                    }
+                    else{
+                        $(row.find("TD").eq(3).find("select option[value=" + sequence + "]")).attr('selected', 'selected');
+                    }
+                    if(active_inactive) {
+                        $(row.find("TD").eq(5).find('input[name="active_inactive"]').attr('checked', 'checked'));
+                    }
+                    i++;
+                })
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#myModal').modal('show');
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        var transaction_type = {}
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, transaction_types_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var transaction_types_data_array = transaction_types_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':transaction_types_data,'table_name':'TransactionTypes','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_transaction_types_data = Response[0];
+                        rendered_active_inactive = Response[2];
+                        display_basic_db_data();
+                        dropdown_value();
+                        $('#myModal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        table_sort_filter('id_popup_table');
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message){
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+        // Onclick delete Button
+    var main_table_checked = [];
+    function onclick_delete_button() {
+        $('#id_popup_table').DataTable().destroy();
+        $("#error_msg_id").css("display", "none")
+        $("#id_popup_tbody").empty();
+        GLOBAL_ACTION = "DELETE";
+        var edit_basic_data = "";
+        var guid = '';
+        var dropdown_values = [];
+        var dropdown_val = [];
+        get_row_data("#display_basic_table"); // Function call to get the selected row data
+        display_button(); // Call the display_button function to show/hide the buttons
+        var data = {'data': main_table_checked, 'table_name': 'TransactionTypes', 'action': GLOBAL_ACTION };
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_delete_flags' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                var docTypeArray = Response.delete_flags; // Get the delete_flags array from the response
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td .checkbox_check', res);
+                var j = 0; // Index for docTypeArray
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        var active_inactive = row.cells[5].children.active_inactive.checked
+                        dropdown_val.push([active_inactive])
+                        if (j < docTypeArray.length && docTypeArray[j] === false) {
+                            check = '<input class="checkbox_check" type="checkbox" disabled>';
+                            $('#delete_data').prop('disabled', true);
+                        } else {
+                            check = '<input class="checkbox_check" type="checkbox" onclick="enableDeleteButton()">';
+                        }
+                        j++; // Move to the next index in docTypeArray
+                        edit_basic_data +=
+                            '<tr>' +
+                            '<td>' + check + '</td>' +
+                            '<td><input class="form-control" type="text" value="' + row.cells[1].innerHTML + '" disabled></td>' +
+                            '<td><input class="form-control" type="text" value="' + row.cells[2].innerHTML + '" disabled></td>' +
+                            '<td><input class="form-control" type="text" value="' + row.cells[3].innerHTML + '" disabled></td>' +
+                            '<td><input class="form-control" type="text" value="' + row.cells[4].innerHTML + '" disabled></td>' +
+                            '<td><input type="checkbox"  name="active_inactive" disabled></td>' +
+                            '<td hidden><input required></td>' +
+                            '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>' +
+                            '</tr>';
+                    }
+                }
+                $('#id_popup_tbody').append(edit_basic_data);
+                var k = 0;
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    var active_inactive = dropdown_val[k][0]
+                    if(active_inactive) {
+                        $(row.find("TD").eq(5).find('input[name="active_inactive"]').attr('checked', 'checked'));
+                    }
+                    k++;
+                })
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#myModal').modal('show');
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            },
+        });
+    }
+  
+    //delete the selected row in db................
+    var main_table_transaction_types_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_row_data("#id_popup_table");
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_checked,'table_name':'TransactionTypes','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                rendered_transaction_types_data = Response[0];
+                rendered_active_inactive = Response[2];
+                eliminate_used_sequence();
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //onclick of cancel display the table in display mode............
+    function display_basic_db_data() {
+        $('#display_basic_table').DataTable().destroy();
+        $('#id_transaction_types_tbody').empty();
+        var edit_basic_data = '';
+        $.each(rendered_transaction_types_data, function (i, item) {
+            var data = '';
+            if (item.active_inactive == true){
+                data = '<input type="checkbox" name="active_inactive" value="" checked disabled>'
+            } else{
+                data = '<input type="checkbox" name="active_inactive" value="" disabled>'
+            }
+            edit_basic_data += '<tr ><td class="class_select_checkbox"><input class="checkbox_check" onclick="valueChanged()" type="checkbox" required></td><td>' + item.transaction_type + '</td><td>' + item.document_type + '</td><td>' + item.sequence + '</td><td>' + item.description + '</td><td>' + data + '</td><td hidden>' + item.guid + '</td><td hidden>' + item.del_ind + '</td></tr>';
+            sequence_remove_array.push(item.sequence)
+        });
+        $('#id_transaction_types_tbody').append(edit_basic_data);
+        $("#hg_select_checkbox").prop("hidden", true);
+        $(".class_select_checkbox").prop("hidden", true);
+        $('input.checkbox_check:checkbox').removeAttr('checked');
+        $('#id_edit_data').show();
+        $('#id_cancel_data').hide();
+        $("#id_delete_data").hide();
+        $("#id_copy_data").hide();
+        $("#id_update_data").hide();
+        $("#id_save_confirm_popup").hide();
+        $("#id_delete_confirm_popup").hide();
+        $('#id_check_all').hide();
+        table_sort_filter('display_basic_table');
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, transaction_types) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y';
+        $.each(transaction_types, function (i, item) {
+                if ((item.transaction_type.length == 0) || (item.description.length == 0) || (item.sequence == null)){
+                    $('#myModal').modal('show');
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    no_duplicate_value = 'N'
+                    return [no_duplicate_value,error_message]
+                }
+
+        });
+        if(no_duplicate_value == 'Y'){
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                } else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                $('#myModal').modal('show');
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var transaction_types_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            transaction_types_dic = {}
+            transaction_types_dic.transaction_type = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase();
+            transaction_types_dic.document_type = row.find("TD").eq(2).find("select option:selected").val();
+            var compare = transaction_types_dic.transaction_type+'-'+transaction_types_dic.document_type
+            transaction_types_check.push(compare);
+            jQuery.grep(transaction_types_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+        });
+    }
+</script>
+<script src="{% static 'scripts/transaction_type.js' %}"></script>   
+{% endblock %}

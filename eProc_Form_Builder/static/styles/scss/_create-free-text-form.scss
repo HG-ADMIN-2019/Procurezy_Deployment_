@@ -1,0 +1,127 @@
+.select-input-container {
+    display: grid;
+    grid-template-columns: 33.33% 33.33% 33.33%;
+
+    .select-input-item {
+        margin: 0.45rem;
+
+        &__card {
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            padding: 0.5rem;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.02);
+            }
+            
+
+            .label-select-input-item {
+                display: initial;
+                margin-bottom: initial;
+                width: 100%;
+                cursor: pointer;
+            }
+
+            &.selected {
+                border: 1px solid #80bdff;
+                box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.4)
+            }
+
+            &.eform-date-disable {
+                opacity: 0.5; 
+                pointer-events: none;
+            }
+        }
+
+        &__card-section {
+            display: flex;
+
+            .select-text-style {
+                font-weight: 500;
+                padding-left: 1rem;
+            }
+        }
+    }
+}
+
+.input-fieds-subhead-text {
+    font-size: 14px; 
+    font-weight: 500;
+}
+
+.icon-color-blue {
+    color: $blue-primary;
+}
+
+.icon-color-green {
+    color: $green-primary;
+}
+
+.icon-color-purple {
+    color: $purple-primary;
+}
+
+.icon-color-teal {
+    color: $teal-primary;
+}
+
+.icon-color-tangerine {
+    color: $tangerine-primary;
+}
+
+.icon-color-red {
+    color: $red-primary;
+}
+
+.dp-prd-opt-wrapper {
+    display: flex;
+    padding: 5px 10px;
+    gap: 10px 10px;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+
+    .dp-prd-badge {
+        background-color: #e9ecef;
+        border-radius: 20px;
+        padding: 5px 10px;
+
+        &:hover {
+            background-color: #d5d5d5;
+        }
+
+        label {
+            margin-bottom:0;
+            cursor: pointer;
+        }
+
+        &.selected {
+            background-color: $blue-primary;
+            color: white;
+        }
+
+        &.dp-prd-badge-disable {
+            opacity: 0.5; 
+            pointer-events: none;
+        }
+    }
+}
+
+.eform-field-wrapper {
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.eform-field-wrapper:hover {
+    background: #e9ecef;
+}
+
+.eform-field-btn-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.eform-field-btn-wrapper .btn {
+    margin-top: 0.7rem;
+}

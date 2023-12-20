@@ -1,0 +1,1191 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %}  Supplier Details (Supplier Management) {% endblock %}
+
+{% block maincontent %}
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>-->
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between">
+            <h3>Supplier Registration</h3>
+            <div></div>
+        </div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#basic_data_tab" class="sub-tab active">
+                <div class="sub-tab-link">
+                    <i class="fas fa-info-circle"></i><span> Supplier Information</span>
+                </div>
+            </li>
+            <li data-tab-target="#org_data_tab" class="sub-tab" id="org_info_tab" hidden>
+                <div class="sub-tab-link">
+                    <i class="fas fa-sitemap"></i><span> Organizational Information</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="basic_data_tab" data-tab-content class="active">
+                <div class="mt-3">
+                    <div id="save_error_div" class="alert alert-danger display-none" role="alert" ></div>
+
+                    <!-- Display the success message upon successful registration-->
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+
+                    <!--Supplier register form-->
+                    <form method="POST" id="supplier_form_field" name="supplier_form_field" >
+                        {% csrf_token %}
+                        <div class="alert alert-success display-none" id="supplier_basic_update_success" role="alert"></div>
+                        <!--    Basic Data      -->
+                        <div class="d-flex justify-content-end">
+                            <div id="sbd_save_cancel_button" >
+                                <button type="submit"  id="save_basic" name="save_basic" class="btn btn-primary" ><i class="fas fa-save"></i> save</button>
+                            </div>
+                            <div id="cancel_button" hidden style="padding-left: 5px;">
+                                 <button id="cancel_id" type="button" class="btn btn-primary" onclick="cancel_basic_details();"><i class="fas fa-times"></i> cancel</button>
+                            </div>
+                            <div id="sbd_edit_button" hidden>
+                                <button type="button" class="btn btn-primary" onclick="edit_basic_supp_data();"><i class="fas fa-edit"></i> edit</button>
+                            </div>
+                        </div>
+                        <div class="card card-shadow-1 mt-3">
+                            <div class="card-body">
+                                <div class="elements-space-between">
+                                    <h5 class="card-title">Account Information</h5>
+                                    <div>
+                                        <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <input value="{{supplier_info.supp_guid}}" id="supplier_guid" hidden>
+                                    <div class="form-group col-md">
+                                        <label> Supplier Number</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="10" class="form-control hg_edit_display_mode mandatory_fields check_special_char_nospace" name="supplier_id" id="supplier_id" value="{{supplier_info.supplier_id}}">
+                                        <span id="err_supp_id" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Supplier Type</label><span class="hg_required"></span><br>
+                                        <select name="supplier_type" id="supplier_type" class="form-control hg_edit_display_mode mandatory_fields">
+                                                 {% for suptype in dropdown_suptype_values %}
+                                                    <option value="{{suptype.field_type_id}}" {% if supplier_info.supp_type == suptype.field_type_id %}selected{% endif %}>{{suptype.field_type_desc}}</option>
+                                                {% endfor %}
+                                        </select>
+                                        <span id="err_supp_type" class="error_message" hidden> </span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Registration Number</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="30" class="form-control hg_edit_display_mode mandatory_fields check_special_char_nospace" id="supplier_regnum" value="{{supplier_info.registration_number}}">
+                                        <span id="err_reg_num" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> First Name</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="40" class="form-control hg_edit_display_mode mandatory_fields check_special_char_nospace" id="name1" name="name1" value="{{supplier_info.name1}}" >
+                                        <span id="err_supp_name1" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Last Name</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="40" class="form-control hg_edit_display_mode mandatory_fields check_special_char" id="name2" value="{{supplier_info.name2}}" >
+                                        <span id="err_supp_name2" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Currency</label><span class="hg_required"></span><br>
+                                        <select name="" id="currency_id" class="form-control hg_edit_display_mode mandatory_fields">
+                                         <option value="" selected>Select</option>
+                                            {% for items in currency_id %}
+                                                <option value="{{items.currency_id}}">{{items.currency_id}} - {{items.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_currency" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Language</label><span class="hg_required"></span><br>
+                                        <select name="" id="language_id" class="form-control hg_edit_display_mode dropdown_fields"  >
+                                        <option value="" selected>Select</option>
+                                        {% for items in language_list %}
+                                            <option value="{{items.language_id}}" {% if supplier_info.language_id == items.language_id %}selected{% endif %} >{{items.language_id}} - {{items.description}}</option>
+                                        {% endfor %}
+                                        </select>
+                                        <span id="err_language" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Country</label><span class="hg_required"></span><br>
+                                        <select name="" id="country_code_id" class="form-control hg_edit_display_mode dropdown_fields" title="Select..">
+                                        <option value="" selected>Select</option>
+                                        {% for items in country_list %}
+                                            <option value="{{items.country_code}}" {% if country_list.country_code == items.country_code %}selected{% endif %}>{{items.country_code}} - {{items.country_name}}</option>
+                                        {% endfor %}
+                                        </select>
+                                        <span id="err_country" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> City</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="40" class="form-control hg_edit_display_mode mandatory_fields check_special_char_nospace" id="city_id" name="city_id" value="{{supplier_info.city}}">
+                                        <span id="err_city" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Street</label><br>
+                                        <input type="text" maxlength="60" class="form-control hg_edit_display_mode" id="street_id" value="{{supplier_info.street}}">
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Postal Code</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="10" class="form-control hg_edit_display_mode check_postal_code mandatory_fields" id="postal_code_id" value="{{supplier_info.postal_code}}">
+                                        <span id="err_postal_code" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <div class="alert alert-danger display-none" id="image-upload-errors" role="alert"> </div>
+    
+                                        <div style="display:flex; gap: 1rem;">
+                                            <div>
+                                                <label> Upload Supplier Image</label><br>
+                                                <input type="file" class="hg_edit_display_mode" name="supplier_image" id="supplier_image_id" onchange="loadFile3(event)">
+                                                <small class="form-text text-muted"> Supported images types - jpg, jpeg, png, bmp, tif, tiff or gif </small>
+                                                <small class="form-text text-muted"> Supported Image size - less than 200KB  </small>
+                                            </div>
+                                            
+                                           <div>
+                                             {% for x in supp_img_info %}
+                                                <img id="image-preview3" class="upload-img-style" src="{{ x.image_url.url }}" style="height:200px;width:200px; margin: 10px;border: 2px solid blue" onerror='this.src="{{ x.image_url.url }}"'>
+                                            {% endfor %}
+                                               <img id="image-preview" class="upload-img-style display-none" src="" style="height:200px;width:200px; margin: 0px;border: 2px solid blue" onerror='this.src="/static/images/no-image-cropped.png"'>
+                                           </div> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <!--  Contact information  -->
+                        <div class="card card-shadow-1 mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Contact information</h5>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> E-mail</label><span class="hg_required"></span><br>
+                                        <input type="text" class="form-control hg_edit_display_mode mandatory_fields" id="email_id" name="email_id" value="{{supplier_info.email}}" >
+                                        <span id="err_email" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Phone</label><br>
+                                        <input type="text" maxlength="30" class="form-control hg_edit_display_mode check_phone_number" id="landline_id" value="{{supplier_info.landline}}">
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Mobile</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="10" class="form-control hg_edit_display_mode  check_phone_number" id="mobile_num_id" value="{{supplier_info.mobile_num}}">
+                                        <span id="err_mobile" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Fax</label><br>
+                                        <input maxlength="20" type="text" class="form-control hg_edit_display_mode" id="fax_id" value="{{supplier_info.fax}}">
+                                    </div>
+                                </div><br>
+                                <small class="form-text text-muted help-text-phone-numbers"></small>
+                            </div>
+                        </div>
+
+                        <!--     Extended data       -->
+                        <div class="card card-shadow-1 mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Extended data</h5>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Search Term 1</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="20" class="form-control hg_edit_display_mode mandatory_fields check_special_char" id="search_term1_id" value="{{supplier_info.search_term1}}">
+                                        <span id="err_search_term1" class="error_message" hidden></span>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Search Term 2</label><span class="hg_required"></span><br>
+                                        <input type="text" maxlength="20" class="form-control hg_edit_display_mode mandatory_fields check_special_char" id="search_term2_id" value="{{supplier_info.search_term2}}">
+                                        <span id="err_search_term2" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Working Days</label><span class=""></span><br>
+<!--                                        <input type="text" class="form-control hg_edit_display_mode" id="working_days" value="{{supplier_info.delivery_days}}">-->
+                                         <div  id="display_mode" >
+                                        <select type="text" class="multiple_select form-control dropdown_required"  id="working_days" name="working_days" multiple data-selected-text-format="count" data-actions-box="true" disabled>
+                                            <option value="1">Sunday</option> <option value="2">Monday</option> <option value="3">Tuesday</option> <option value="4">Wednesday</option> <option value="5">Thursday</option> <option value="6">Friday</option> <option value="7">Saturday</option>
+                                        </select>
+                                         <span id="err_working_days_disp" class="wday_err_msg" hidden></span>
+                                         </div>
+                                        <div  id="edit_mode" hidden>
+                                        <select type="text" class="multiple_select form-control dropdown_required"  id="working_days_id" name="working_days" multiple data-selected-text-format="count" data-actions-box="true" title='Select...' >
+                                            <option value="1">Sunday</option> <option value="2">Monday</option> <option value="3">Tuesday</option> <option value="4">Wednesday</option> <option value="5">Thursday</option> <option value="6">Friday</option> <option value="7">Saturday</option>
+                                        </select>
+                                        <span id="err_working_days" class="wday_err_msg" hidden></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Duns Number</label><br>
+                                        <input type="text" maxlength="9" class="form-control hg_edit_display_mode" id="duns_number_id" value="{{supplier_info.duns_number}}">
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Output Medium </label><span class="hg_required"></span><br>
+                                        <select name="" id="output_medium_id" class="form-control hg_edit_display_mode mandatory_fields">
+                                                 {% for output in dropdown_output_med_values %}
+                                                    <option value="{{output.field_type_id}}" {% if supplier_info.output_medium == output.field_type_id %}selected{% endif %}>{{output.field_type_desc}}</option>
+                                                {% endfor %}
+                                        </select>
+                                        <span id="err_output_med" class="error_message" hidden></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <div id="org_data_tab" data-tab-content>
+                <div class="mt-3">
+                    <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span id="success_msg_id"></span></div>
+
+                    <div class="card card-shadow-1 mt-3">
+                        
+                        <div class="card-body">
+                             <div class="elements-space-between">
+                                <h5>Organizational Details</h5>
+<!-- ---------------------------------------------------- -->
+                                <div>
+                                    <button class="btn btn-primary" id="id_edit_data" onclick="onclick_edit_button();"><i class="fas fa-edit" title="Edit Organizational data" ></i> Edit</button>
+                                    <button class="btn btn-primary" id="id_add_data" value="ADD" title="Add Org Info" data-toggle="modal"  data-target="#supplierOrgModal" onclick="onclick_add_button(this);">
+                                    <i class="fa fa-plus"></i> add organizational data
+                                    </button>
+                                </div>
+                             </div>
+                        <div class="table-container tcw-60">
+                            <div class="edit-button-section mb-4">
+                                <div  class="mb-3" style="display: block;">
+                                </div>
+                    <button class="btn btn-outline-danger btn-sm"  title="Delete" id="id_delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;"  value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel"  id="id_cancel_data" style="display:none;" type="button" onclick="edit_supp_org()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <div>
+                <table id="display_basic_org_table" class="org_registration_table" style="width:100%">
+                                    <thead id="supp_org_header" class="thead-light">
+                                    <tr>
+                                        <th id="hg_select_checkbox"  hidden>
+                                            <div id="id_check_all" style="display:none;">
+                                                <input type="checkbox" id="selectAll" name="chk[]" onclick="checkAll(this)">
+                                            </div>
+                                        </th>
+                                        <th hidden>Guid</th>
+                                        <th>Purchasing organization </th>
+                                        <th>PO Currency</th>
+                                        <th>Payment Terms</th>
+                                        <th>INCO Term </th>
+                                        <th>Confirmation Based Invoice</th>
+                                        <th>Confirmation & Invoice</th>
+                                        <th>Confirmation Only </th>
+                                        <th>PO Response</th>
+                                        <th>Shipping Notification</th>
+                                        <th>Purchase Block</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="supp_org_body">
+                                    {% for data in supplier_org_info %}
+                                    <tr>
+                                        <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                                        <td hidden>{{data.guid}}</td>
+                                        <td>{{data.porg_id}}</td>
+                                        <td>{{data.currency_id_id}}</td>
+                                        <td>{{data.payment_term_key}}</td>
+                                        <td>{{data.incoterm_key_id}}</td>
+                                        <td>
+                                            {% if data.gr_ind %}
+                                            <input type="checkbox" name="gr_inv_vrf" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="gr_inv_vrf" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.ir_ind %}
+                                            <input type="checkbox" name="inv_conf_exp" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="inv_conf_exp" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.ir_gr_ind %}
+                                            <input type="checkbox" name="gr_conf_exp" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="gr_conf_exp" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.po_resp %}
+                                            <input type="checkbox" name="po_resp" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="po_resp" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.ship_notif_exp %}
+                                            <input type="checkbox" name="ship_notif_exp" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="ship_notif_exp" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.purch_block %}
+                                            <input type="checkbox" name="purch_block" value="" checked disabled>
+                                            {% else %}
+                                            <input type="checkbox" name="purch_block" value="" disabled>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                        </div>
+                            <div id="supp_org_cancel_save" class="display-none">
+                                <button class="btn btn-primary hg_button_margin" onclick="cancel_supp_org_data()"><i class="fas fa-times"></i> cancel</button>
+                                <button id="save" name="save" onclick="supp_org_data_save()" class="btn btn-primary hg_button_margin"> <i class="fas fa-save"></i> save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--modal popup for Add,copy,update and upload-->
+    <!-- The Modal -->
+    <div class="modal fade" id="supplierOrgModal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title"> Maintain Organizational Information</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                   <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> Add New Row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash"></i> delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_country_code" ></p>
+                            <p id="id_error_msg_country_name" ></p>
+                            <p id="id_error_msg_country_length" ></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                            <thead>
+                            <tr>
+                               <th id="header_select">Select</th>
+                                        <th hidden>Guid</th>
+                                        <th>Purchasing organization </th>
+                                        <th>PO Currency</th>
+                                        <th>Payment Terms</th>
+                                        <th>INCO Term </th>
+                                        <th>Confirmation Based Invoice</th>
+                                        <th>Confirmation & Invoice</th>
+                                        <th>Confirmation Only </th>
+                                        <th>PO Response</th>
+                                        <th>Shipping Notification</th>
+                                        <th>Purchase Block</th>
+                                <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                            </tr>
+                            </thead>
+                            <tbody id="id_popup_tbody">
+
+                            </tbody>
+                        </table>
+                   </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" title="Save" id="save_id" onclick="supp_org_data_save()"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <div id="buisness_doc_tab" data-tab-content>
+                <div class="mt-3">
+                    <h3>Business Document</h3>
+                    <p>Business Document.</p>
+                    <select id="testid" class="form-control"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="hg_spacer2"> &nbsp; </div>
+    </div>
+    {{ supplier_org_info|json_script:"supplier_org_info" }}
+    {{ supplier_info.delivery_days|json_script:"w_days" }}
+    {% include 'configuration_common_pop_up.html' %}
+<script>
+var GLOBAL_ACTION
+var rendered_supp_org_data = JSON.parse(document.getElementById('supplier_org_info').textContent);
+var w_days = JSON.parse(document.getElementById('w_days').textContent);
+var rendered_porg_data;
+var country_id = '{{supplier_info.country_code | safe}}';
+var curr_id = '{{supplier_info.currency_id | safe}}';
+var lang_id = '{{supplier_info.language_id | safe}}';
+var img_url = '{{img_url.url | safe}}';
+var error_flag = 0; var err_state = "";
+var is_valid = true;
+var validate_add_attributes = [];
+var messages_list = {{messages_list|safe}};
+var msg_display_interval = {{msg_display_time_value|safe}};
+
+$(document).ready(function(e){
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "4rem");
+    NavigateTabs(); // Custom function to switch tabs
+    GLOBAL_ACTION = '{{supplier_action}}';
+    form_method = '{{form_method|safe}}';
+    if(GLOBAL_ACTION == 'CREATE'){
+      $("#business_doc_tab").hide();
+      $("#sbd_save_cancel_button").prop("hidden", false);
+      $("#sbd_edit_button").prop("hidden", true);
+      document.getElementById('sbd_edit_button').style.display = 'none';
+     $("#working_days").prop("hidden", false);
+     $("#working_days").prop("disabled", false);
+     $("#working_days_id").prop("hidden", true);
+     MultipleSelect();
+       var flag = localStorage.getItem("error_flag");
+         if((flag == "1")){
+            document.getElementById('save_error_div').innerHTML = localStorage.getItem("error_msg");
+            $('#save_error_div').show();
+            get_values_onerror();
+            setTimeout(function() {
+            $('#save_error_div').hide(); }, 20000);
+            return false;
+         }
+         else {
+            localStorage.clear();
+         }
+    }
+    else{
+        $("#org_info_tab").prop("hidden", false);
+         document.getElementById('sbd_edit_button').style.display = 'block';
+         $("#sbd_edit_button").prop("hidden", false);
+        $("#sbd_save_cancel_button").prop("hidden", true);
+        $(".hg_edit_display_mode").prop( "disabled", true );
+        $("#country_code_id").val(country_id).attr('selected', 'selected');
+        $("#language_id").val(lang_id).attr('selected', 'selected');
+        $("#currency_id").val(curr_id).attr('selected', 'selected');
+        $("#working_days").prop("hidden", false);
+        $("#working_days_id").prop("hidden", true);
+        var wday_array = [];
+        wday_array = w_days.split(",");
+        var num = w_days.match(/\d/g);
+        if(!(num == null)){
+            $("select[id=working_days]").val(num);
+            var working_days_values = [];
+            for(j=0; j<num.length; j++)
+            {
+                  working_days_values[j] = get_days(num[j]);
+            }
+            $("#working_days_id").val(num);
+        }
+        values_reload();
+        MultipleSelect();
+    }
+    if(form_method == 'GET'){
+        $("#supplier_form_field")[0].reset();
+    }
+    MultipleSelect();
+});
+
+ $("body").on("keypress keyup change blur", ".mandatory_fields", function (event) {
+    if((event.currentTarget.value == "") || (event.currentTarget.value == null)) {
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', false);
+        event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+    }
+    else if(event.currentTarget.value.length < 3 ){
+        $('#event.currentTarget.nextElementSibling.id').prop('hidden', true);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+         var display_id = event.currentTarget.nextElementSibling.id;
+         $('#'+display_id).prop('hidden', false);
+        event.currentTarget.nextElementSibling.innerHTML = "Please enter min 3 chars";
+    }
+    else if(event.currentTarget.value.length >= 3 ){
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', true);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+    }
+    else{
+        $(".error_message").prop("hidden", false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+    }
+ });
+ $("body").on("keypress keyup change blur", ".dropdown_fields", function (event) {
+    if((event.currentTarget.value == "") || (event.currentTarget.value == null)) {
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', false);
+        event.currentTarget.nextElementSibling.innerHTML = "Please select value";
+    }
+    else{
+        $(".error_message").prop("hidden", false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+    }
+ });
+
+$('#email_id').on('blur',function (event) {
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+         if (!(event.currentTarget.value).match(mailformat)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+                 $(".error_message").prop("hidden", false);
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', false);
+                document.getElementById(display_id).style.display = "block";
+                event.currentTarget.nextElementSibling.innerHTML = display1 + " for Email Id";
+               is_valid = false;
+         }
+});
+
+$('#mobile_num_id').on('keyup change blur',function (event) {
+    if((event.currentTarget.value == "") || (event.currentTarget.value == null)) {
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', false);
+        event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+        is_valid = false;
+    }
+    else if((event.currentTarget.value.length > 0) && (event.currentTarget.value.length < 10)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+                 $(".error_message").prop("hidden", false);
+                var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', false);
+                document.getElementById(display_id).style.display = "block";
+                event.currentTarget.nextElementSibling.innerHTML ="Enter 10 numbers for Mobile Number";
+               is_valid = false;
+         }
+         else if(event.currentTarget.value.length == 10 ){
+        var display_id = event.currentTarget.nextElementSibling.id;
+        $('#'+display_id).prop('hidden', false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+        is_valid = true;
+    }
+    else{
+        $(".error_message").prop("hidden", false);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+    }
+});
+
+ $('form').on('submit',function (e) {
+<!--    OpenLoaderPopup();-->
+    var valid = save_basic_form_validation();
+    if(!valid){
+        localStorage.setItem("error_flag", 1);
+        values_reload();
+        get_values_onerror();
+        e.preventDefault();
+    }
+    else{
+        values_reload();
+        save_basic_details();
+
+    }
+ });
+
+var workingdays_dropdown = '';
+    workingdays_dropdown = '<option value="1">Sunday</option> <option value="2">Monday</option> <option value="3">Tuesday</option> <option value="4">Wednesday</option> <option value="5">Thursday</option> <option value="6">Friday</option> <option value="7">Saturday</option>';
+
+var porg_opt ,currency_opt1, payterm_opt, incoterm_opt, country_opt,language_opt ,porg_opt_onload;
+
+// Global variables - master data
+function get_dropdown(){
+    var porg_list = {{purch_org_list|safe}}
+    var porg_id_array = [];
+    var add_attr_unique_list = [];
+    porg_opt = '';
+    $.each(rendered_supp_org_data, function(index, data){
+        porg_id_array.push(data.porg_id);
+    });
+    for( let porg = 0; porg < porg_list.length; porg++ ) {
+         if ($.inArray(porg_list[porg], porg_id_array) == -1) {
+                    add_attr_unique_list.push(porg_list[porg]);
+        }
+    }
+    for(var i=0;i<add_attr_unique_list.length;i++){
+        porg_opt += '<option value="' + add_attr_unique_list[i] + '"> '+add_attr_unique_list[i]+' </option>'
+    }
+    for( let j = 0; j < porg_list.length; j++ ) {
+        porg_opt_onload += '<option value="' + porg_list[j] + '"> '+porg_list[j]+' </option>'
+    }
+    var currency_list = {{currency_id|safe}}
+     currency_opt1 = ''
+    $.each(currency_list, function (i, item) {
+                currency_opt1 += '<option  value="' + item.currency_id + '">' + item.currency_id+'-'+item.description + '</option>'
+            });
+    var payterm_list = {{payterm_list|safe}}
+    payterm_opt = ''
+    for ( let payterm=0; payterm < payterm_list.length; payterm++ ){
+        payterm_opt += '<option value="'+payterm_list[payterm]+'"> '+payterm_list[payterm]+' </option>'
+    }
+    var incoterm_list = {{incoterm_list|safe}}
+    incoterm_opt = ''
+    for ( let incoterm=0; incoterm < incoterm_list.length; incoterm++ ){
+        incoterm_opt += '<option value="'+incoterm_list[incoterm]+'"> '+incoterm_list[incoterm]+' </option>'
+    }
+    var country_list = {{country_list|safe}}
+    country_opt = ''
+    $.each(country_list, function(i, value){
+        country_opt += '<option> '+country_list[i]+' </option>'
+    });
+    var language_list = {{language_list|safe}}
+    language_opt = ''
+    $.each(language_list, function(i, value){
+        language_opt += '<option> '+language_list[i]+' </option>'
+    });
+}
+
+function ajax_update_supplier_basic_details(data) {
+<!--    OpenLoaderPopup();-->
+    setTimeout(open, 10);
+    let urlLink = "{% url 'eProc_Suppliers:update_suppliers_basic_details' %}"
+    var response = FormAjaxCallAPI(urlLink,data)
+    return response
+}
+
+const ajax_update_supplier_org_details_url = "{% url 'eProc_Suppliers:update_supplier_purch_details' %}";
+
+// Function to save edited supplier basic details data
+function save_basic_details() {
+    setTimeout(function() {
+                     OpenLoaderPopup();
+            }, 50);
+    var supplier_data = {}
+    var is_save_form_valid='';
+    var error_message = '';
+    var working_days ;
+    const uploaded_file = document.getElementById('supplier_image_id');
+    const file = uploaded_file.files[0];
+
+    formdata = new FormData();
+    formdata.append("supplier_image",file);
+    formdata.append("supplier_guid",$('#supplier_guid').val());
+    formdata.append("supplier_id",$('#supplier_id').val());
+    formdata.append("supplier_type" ,$('#supplier_type').val());
+    formdata.append("registration_number",$('#supplier_regnum').val());
+    formdata.append("name1",$('#name1').val());
+    formdata.append("name2",$('#name2').val());
+    formdata.append("city_id",$('#city_id').val());
+    formdata.append("postal_code_id",$('#postal_code_id').val());
+    formdata.append("street_id",$('#street_id').val());
+    formdata.append("country_code_id",$('#country_code_id').val());
+    formdata.append("currency_id",$('#currency_id').val());
+    formdata.append("language_id",$('#language_id').val());
+    formdata.append("landline_id",$('#landline_id').val());
+    formdata.append("mobile_num_id",$('#mobile_num_id').val());
+    formdata.append("fax_id",$('#fax_id').val());
+    formdata.append("email_id",$('#email_id').val());
+    formdata.append("search_term1_id",$('#search_term1_id').val());
+    formdata.append("search_term2_id",$('#search_term2_id').val());
+    formdata.append("duns_number_id",$('#duns_number_id').val());
+    formdata.append("output_medium_id",$('#output_medium_id').val());
+    formdata.append("status",GLOBAL_ACTION);
+    if(GLOBAL_ACTION == "CREATE")
+    { working_days = $('#working_days').val(); }
+    else
+    { working_days = $('#working_days_id').val(); }
+    formdata.append("working_days_id",working_days);
+     if(is_valid){
+        response = ajax_update_supplier_basic_details(formdata)
+        encrypted_supplier = response.encrypted_supplier
+        message = response.message
+        msg_type = response.msg_type
+        if(msg_type.type=='success'){
+            document.getElementById('supplier_basic_update_success').innerHTML = message;
+             setTimeout(function() {
+                     CloseLoaderPopup();
+            }, 500);
+            $('#supplier_basic_update_success').show();
+            $('#save_error_div').hide();
+             localStorage.setItem("success_msg", message);
+            if(GLOBAL_ACTION == 'CREATE'){
+                    $("#supplier_form_field")[0].reset();
+                    localStorage.clear();
+            }
+            localStorage.setItem("error_flag", 0);
+        }
+        if(msg_type.type=='error'){
+           setTimeout(function() {
+            CloseLoaderPopup(); }, 1000);
+            document.getElementById('save_error_div').innerHTML = message;
+            $('#save_error_div').show();
+            localStorage.setItem("error_flag", 1);
+            localStorage.setItem("error_msg", message);
+            err_state = "From_Error";
+        }
+     }
+    else{
+        get_values_onerror();
+        CloseLoaderPopup();
+        document.getElementById('save_error_div').innerHTML = "Please check values entered";
+        $('#save_error_div').show();
+    }
+}
+function timer(){
+    CloseLoaderPopup();
+}
+function open(){
+    OpenLoaderPopup();
+}
+function MultipleSelect() {
+     $('#working_days_id').selectpicker();
+     $('#working_days').selectpicker();
+    $('.multiple_select').selectpicker();
+}
+function get_days(workingday){
+        var day;
+        switch (workingday) {
+                    case '1':
+                            day = "Sun";
+                            break;
+                    case '2':
+                            day = "Mon";
+                            break;
+                    case '3':
+                            day = "Tue";
+                            break;
+                    case '4':
+                            day = "Wed";
+                            break;
+                    case '5':
+                            day = "Thur";
+                            break;
+                    case '6':
+                            day = "Fri";
+                            break;
+                    case '7':
+                            day = "Sat";
+                    }
+        return day;
+}
+
+function get_values(short_day){
+        var day;
+        switch (short_day) {
+                    case 'Sun':
+                            day = "1";
+                            break;
+                    case 'Mon':
+                            day = "2";
+                            break;
+                    case 'Tue':
+                            day = "3";
+                            break;
+                    case 'Wed':
+                            day = "4";
+                            break;
+                    case 'Thur':
+                            day = "5";
+                            break;
+                    case 'Fri':
+                            day = "6";
+                            break;
+                    case 'Sat':
+                            day = "7";
+                    }
+        return day;
+}
+function loadFile3(event) {
+    $('#image-upload-errors').html('');
+    $('#image-upload-errors').hide();
+    var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+    var reader = new FileReader();
+    reader.onload = function(){
+        const uploadfile = document.getElementById('supplier_image_id');
+        if (uploadfile.files.length > 0) {
+            const filedata = uploadfile.files[0];
+            const fsize = filedata.size;
+            const file_extension = ((filedata.name).split(".")[1]).toUpperCase();
+            console.log("file extentio  "+file_extension)
+            console.log("file size is  "+fsize)
+
+            if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+
+                if (fsize >= 200000){
+                    $('#image-upload-errors').html('Please upload an image with size less than 200KB');
+                    $('#image-upload-errors').show();
+                } else {
+                    $('#image-preview').show();
+                    $('#image-preview3').hide();
+                    var output = document.getElementById('image-preview');
+                    output.src = reader.result;
+                }
+            } else {
+                $('#image-upload-errors').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif');
+                $('#image-upload-errors').show();
+            }
+        }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+//delete the selected row in db................
+    var main_table_supp_checked = [];
+    function main_table_delete(){
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_supp_checked = [];
+        $('#display_basic_org_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_supp_checked,'table_name':'OrgSuppliers','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Suppliers:update_supplier_purch_details' %}",
+            data:JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_supp_org_data = Response[0];
+                edit_supp_org();
+                success_response(Response);  // Display Response data
+                CloseLoaderPopup();
+            }
+        });
+    }
+    //onclick of add button display supplierOrgModal popup and set GLOBAL_ACTION button value
+function onclick_add_button(button) {
+   OpenLoaderPopup();
+    var data = {'table_name':'OrgPorg'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Suppliers:get_supp_org_dropdown' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_porg_data = response.porg_data;
+                get_dropdown();
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop( "hidden", false );
+                GLOBAL_ACTION = button.value
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#supplierOrgModal').modal('show');
+                new_row_data();  // Add a new row in popup
+                table_sort_filter('id_popup_table');
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+}
+//**********************************************************
+function onclick_copy_update_button(data) {
+                get_dropdown();
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                //Reference the Table.
+                var res = get_all_org_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[class="checkbox_check"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var unique_input = '';
+                var dropdown_array = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i <  $chkbox_all.length; i++) {
+                    if ( $chkbox_all[i].checked) {
+                        var row =  $chkbox_all[i].parentNode.parentNode;
+                        if(GLOBAL_ACTION == "UPDATE"){
+                            unique_input = '<select class="form-control"  type="text"  name="porg_id" disabled><option>'+row.cells[2].innerHTML+'</option></select>'
+                            edit_basic_data += '<tr><td hidden><input type="checkbox" required></td>'+
+                                '<td hidden><input type="text" name="supp_org_guid"></td>'+
+                                '<td>'+unique_input+'</td>'+
+                                '<td><select class="form-control" type="text"  name="currency_id">'+currency_opt1+'</select></td>'+
+                                '<td><select style="width:auto;" class="form-control" type="text"  name="payment_term">'+payterm_opt+'</select></td>'+
+                                '<td><select style="width:auto;" class="form-control" type="text"  name="incoterm">'+incoterm_opt+'</select></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="gr_inv_vrf_checkbox" required></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="inv_conf_exp_checkbox" required></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="gr_conf_exp_checkbox" required></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="po_resp_checkbox" required></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="ship_notif_exp_checkbox" required></td>'+
+                                '<td><input class="checkbox-size" type="checkbox"  name="purch_block_checkbox" required></td>'+
+                                '<td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
+                            $("#header_select").prop("hidden", true);
+                        }
+                        var porg_id = row.cells[2].innerHTML
+                        var payterm = row.cells[4].innerHTML
+                        var incoterm = row.cells[5].innerHTML
+                        var gr_inv_vrf = row.cells[6].children[0].checked
+                        var inv_conf_exp = row.cells[7].children[0].checked
+                        var currency_id = row.cells[3].innerHTML
+                        var gr_conf_exp = row.cells[8].children[0].checked
+                        var po_resp = row.cells[9].children[0].checked
+                        var ship_notif_exp = row.cells[10].children[0].checked
+                        var purch_block = row.cells[11].children[0].checked
+                        dropdown_array.push([porg_id,payterm,incoterm, gr_inv_vrf, inv_conf_exp, currency_id, gr_conf_exp,po_resp, ship_notif_exp,purch_block])
+                    }
+                }
+                $('#id_popup_tbody').append(edit_basic_data);
+                var i = 0;
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    var porg_id = dropdown_array[i][0]
+                    var payterm = dropdown_array[i][1];
+                    var incoterm = dropdown_array[i][2];
+                    var gr_inv_vrf =dropdown_array[i][3];
+                    var inv_conf_exp = dropdown_array[i][4];
+                    var currency_id = dropdown_array[i][5];
+                    var gr_conf_exp = dropdown_array[i][6];
+                    var po_resp = dropdown_array[i][7];
+                    var ship_notif_exp = dropdown_array[i][8];
+                    var purch_block = dropdown_array[i][9];
+                    $(row.find("TD").eq(2).find("select option[value=" + porg_id + "]")).attr('selected', 'selected');
+                    $(row.find("TD").eq(3).find("select option[value=" + currency_id + "]")).attr('selected', 'selected');
+                    $(row.find("TD").eq(4).find("select option[value=" + payterm + "]")).attr('selected', 'selected');
+                    $(row.find("TD").eq(5).find("select option[value=" + incoterm + "]")).attr('selected', 'selected');
+                    if(gr_inv_vrf) {
+                        $(row.find("TD").eq(6).find('input[name="gr_inv_vrf_checkbox"]').attr('checked', 'checked'));
+                    }
+                    if(inv_conf_exp) {
+                        $(row.find("TD").eq(7).find('input[name="inv_conf_exp_checkbox"]').attr('checked', 'checked'));
+                    }
+                    if(gr_conf_exp) {
+                        $(row.find("TD").eq(8).find('input[name="gr_conf_exp_checkbox"]').attr('checked', 'checked'));
+                    }
+                    if(po_resp) {
+                        $(row.find("TD").eq(9).find('input[name="po_resp_checkbox"]').attr('checked', 'checked'));
+                    }
+                    if(ship_notif_exp) {
+                        $(row.find("TD").eq(10).find('input[name="ship_notif_exp_checkbox"]').attr('checked', 'checked'));
+                    }
+                    if(purch_block) {
+                        $(row.find("TD").eq(11).find('input[name="purch_block_checkbox"]').attr('checked', 'checked'));
+                    }
+                    i++;
+                });
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#supplierOrgModal').modal('show');
+                table_sort_filter('id_popup_table');
+}
+
+// Function to save edited or updated supplier organizational details data
+function supp_org_data_save(){
+    validate_add_attributes = [];
+    var save_supplier_purch_details = new Array();
+    $('#success_msg_id').empty()
+    $('#id_popup_table').DataTable().destroy();
+    $("#id_popup_table TBODY TR").each(function() {
+        var row = $(this);
+        var get_supp_purch_data = {};
+        get_supp_purch_data.delete_supplier = delete_supp_purch_data;
+        get_supp_purch_data.supp_id = supplierid;
+        get_supp_purch_data.del_ind = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.supp_org_guid = row.find("TD").eq(1).text();
+        get_supp_purch_data.porg_id = row.find("TD").eq(2).find("select option:selected").val();
+        get_supp_purch_data.currency_id = row.find("TD").eq(3).find("select option:selected").val();
+        get_supp_purch_data.payment_term = row.find("TD").eq(4).find("select option:selected").val();
+        get_supp_purch_data.incoterm = row.find("TD").eq(5).find("select option:selected").val();
+        get_supp_purch_data.gr_inv_vrf = row.find("TD").eq(6).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.inv_conf_exp = row.find("TD").eq(7).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.gr_conf_exp = row.find("TD").eq(8).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.po_resp = row.find("TD").eq(9).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.ship_notif_exp = row.find("TD").eq(10).find('input[type="checkbox"]').is(':checked');
+        get_supp_purch_data.purch_block = row.find("TD").eq(11).find('input[type="checkbox"]').is(':checked');
+        var compare = get_supp_purch_data.porg_id;
+        validate_add_attributes.push(get_supp_purch_data.porg_id);
+        save_supplier_purch_details.push(get_supp_purch_data)
+    })
+    var no_duplicate_entries = 'Y';
+    var no_duplicate_value = 'Y';
+    var error_message = '';
+    get_main_table_data(); //Read data from main table
+    // compare for duplicates in popup
+    [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, save_supplier_purch_details)
+    if (error_message){
+        display_error_message(error_message)
+    }
+    else {
+        if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+            // compare main table and pop up for duplicate values
+            [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+            if(no_duplicate_entries == 'N'){
+                $('#countriesModal').modal('show');
+            }
+        }
+    if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+    data = {'data':save_supplier_purch_details,'table_name':'OrgSuppliers','action':GLOBAL_ACTION}
+    OpenLoaderPopup();
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Suppliers:update_supplier_purch_details' %}",
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        success: function (response) {
+            rendered_supp_org_data = response[0];
+            edit_supp_org();
+            $('#supplierOrgModal').modal('hide');
+            success_response(response);
+            CloseLoaderPopup();
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    })
+    }
+    }
+}
+
+// validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, supplier_purch_details) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        $.each(supplier_purch_details, function (i, item) {
+            if (item.porg_id == null)  {
+                $('#supplierOrgModal').modal('show');
+                error_message = ui_messeges("JMSG002")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+            if(format.test(item.porg_id)){
+                $('#supplierOrgModal').modal('show');
+                error_message = ui_messeges("JMSG003") + "Purchasing Org"// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if (no_duplicate_value == 'Y') {
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                }
+                else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                $('#supplierOrgModal').modal('show');
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var supplier_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            supp_org_dic = {}
+            supp_org_dic.porg_id = row.find("TD").eq(2).find("select option:selected").val();
+            var compare = supp_org_dic.porg_id
+            supplier_check.push(compare);
+            jQuery.grep(supplier_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+
+//onclick of select all checkbox
+    function checkAll(ele) {
+        if (ele.checked) {
+            $('.checkbox_check').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = true;
+                    $('#id_delete_data').show();
+                    $('#id_update_data').show();
+                }
+            });
+        }
+        else{
+            $('.checkbox_check').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = false;
+                    $('#id_delete_data').hide();
+                    $('#id_update_data').hide();
+                }
+            });
+        }
+    }
+
+    // Function to get all the checkboxes from main table
+function get_all_org_checkboxes(){
+    var table = $('#display_basic_org_table').DataTable();
+    var $table = table.table().node();
+    var res = table.rows().nodes();
+    return res;
+}
+
+</script>
+
+<script src="{% static 'scripts/display-edit-supplier.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,219 @@
+{% if sc_appr %}
+<div class="workflow-overview">
+
+    <div class="card text-dark workflow-overview__process-card" id="workflow_status_div">
+        <div class="card-body">
+            {% for sc_app in sc_appr %}
+            {% if sc_app.header_guid_id in sc_head.guid and sc_app.step_num == '1'  %}
+            {% if sc_app.app_id != 'Auto'  %}
+            {% if sc_head.status == 'AWAITING_APPROVAL'  or sc_head.status == 'ORDERED' %}
+            <span class="h3">Approval Process Overview</span> by <span class="badge badge-secondary">{{sc_app.app_desc}}</span> 
+            {% elif sc_head.status == 'SAVED' %}
+            <span class="h3">Approval Process Overview</span>
+            <!-- <span class="hg_search_createdOn hg_status_saved">SAVED</span> -->
+            {% elif sc_head.status == 'APPROVED' %}
+            <span class="h3">Approval Process Overview</span>
+            <a href="{% url 'eProc_Doc_Search:generate_sc_details_pdf' sc_head.doc_number %}" target="_blank">
+                 <button style="float: right;" class="btn btn-primary"><i class="far fa-file-pdf"></i> print pdf</button>
+            </a>
+            {% elif sc_head.status == 'PURCHASER_WORKLIST' %}
+            <span class="h3">Approval Process Overview</span> by <span class="badge badge-secondary">Shopper Assist</span>
+            {% elif sc_head.status == 'REJECTED' %}
+            <span class="h3">Approval Process Overview</span>
+            <!-- <span class="hg_search_createdOn hg_status_WFA">REJECTED</span> -->
+            {% endif %}
+            {% elif sc_app.app_id == 'Auto' %}
+            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
+            <span class="h3">Approval Process Overview</span> <span class="badge badge-secondary">Shopper Assist</span>
+            {% elif sc_head.status == 'SAVED' %}
+            <span class="h3">Approval Process Overview</span>
+            <!-- <span class="hg_search_createdOn hg_status_saved">SAVED</span> -->
+            {% else %}
+            <span class="h3">Approval Process Overview</span> 
+            <a href="{% url 'eProc_Doc_Search:generate_sc_details_pdf' sc_head.doc_number %}" target="_blank">
+                <button style="float: right;" class="btn btn-primary"><i class="far fa-file-pdf"></i> print pdf</button>
+            </a>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="workflow-overview__section">
+        <div class="workflow-overview__user-icon-container ao-logged-in-user">
+            <div {% if sc_head.status == 'SAVED' %} class="workflow-user-bg workflow-requester-active" {% else %} class="workflow-user-bg" {% endif %} >
+                <i class="fa fa-user fa-3x" aria-hidden="true"> </i> 
+            </div>
+            <button type="button" class="button-workflow-user">{{ requester_first_name }}</button>
+        </div>
+        <!-------------------------completion workflow display start-------------------------->
+        {% for workflow in sc_completion %}
+        {% if sc_head.guid == workflow.0 %}
+        <div class="workflow-overview__next-icon-container">
+            <i class="fas fa-angle-double-right fa-3x"></i>
+        </div>
+
+        <div class="workflow-overview__user-icon-container">
+            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-active">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-active">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% elif sc_head.status == 'SAVED' %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-inactive">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-inactive">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% else %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-completed">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)"; type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-completed">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this);" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <!-------------------------completion workflow display end-------------------------->
+        <div id="div_manager_detail" class="workflow-overview__managers-section">
+            {% for sc_app in sc_appr %}
+            {% if sc_app.header_guid_id in sc_head.guid  %}
+            {% if sc_head.approval_ind == 'M' %}
+            {% if sc_app.step_num == '1' %}
+            <div class="workflow-overview__next-icon-container">
+                <i class="fas fa-angle-double-right fa-3x"></i>
+            </div>
+            <div class="workflow-overview__user-icon-container ao-logged-in-user">
+                <div class="workflow-user-bg">
+                    <i class="fa fa-user fa-3x" aria-hidden="true"> </i> 
+                </div>
+
+                <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button">multiple</button>
+            </div>
+
+            {% endif %}
+            {% else %}
+            <div class="workflow-overview__next-icon-container">
+                <i class="fas fa-angle-double-right fa-3x"></i>
+            </div>
+
+            {% if sc_app.proc_lvl_sts == 'ACTIVE' and sc_app.app_sts == 'OPEN' %}
+            <div class="workflow-overview__user-icon-container">
+                <div class="workflow-user-bg workflow-active">
+                    <i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i>
+                </div>
+                <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{sc_app.app_id}}</button>
+            </div>
+            {% elif sc_app.proc_lvl_sts == 'INITIATED' and sc_app.app_sts == 'OPEN' %}
+            <div class="workflow-overview__user-icon-container">
+                <div class="workflow-user-bg workflow-inactive">
+                    <i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i>
+                </div>
+                <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{sc_app.app_id}}</button>
+            </div>
+            
+            {% elif sc_app.proc_lvl_sts == 'COMPLETED' and sc_app.app_sts == 'APPROVER_APPROVED' %}
+            <div class="workflow-overview__user-icon-container">
+                <div class="workflow-user-bg workflow-completed">
+                    <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>
+                </div>
+                <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{sc_app.app_id}}</button>
+            </div>
+            {% elif sc_app.proc_lvl_sts == 'COMPLETED' and sc_app.app_sts == 'APPROVER_REJECTED' %}
+            <div class="workflow-overview__user-icon-container">
+                <div class="workflow-user-bg workflow-rejected">
+                    <i class="fas fa-user-times fa-2x icon-workflow-rejected" aria-hidden="true"> </i>
+                </div>
+                <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{sc_app.app_id}}</button>
+            </div>
+            {% endif %}
+
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="workflow-overview__section">
+    <div class="workflow-overview__user-icon-container ao-logged-in-user">
+        <div class="workflow-user-bg">
+            <i class="fa fa-user fa-3x" aria-hidden="true"> </i> 
+        </div>
+
+        <button type="button" class="button-workflow-user">{{ sc_head.requester }}</button>
+    </div>
+    {% for workflow in sc_completion %}
+        {% if sc_head.guid == workflow.0 %}
+        <div class="workflow-overview__next-icon-container">
+            <i class="fas fa-angle-double-right fa-3x"></i>
+        </div>
+
+        <div class="workflow-overview__user-icon-container">
+            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-active">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-active">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% elif sc_head.status == 'SAVED' %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-inactive">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-inactive">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% else %}
+            {% if workflow.1 == 'Multiple' %}
+            <div class="workflow-user-bg workflow-completed">
+                <i class="fas fa-users fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this)"; type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% else %}
+            <div class="workflow-user-bg workflow-completed">
+                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+            </div>
+            <button id="{{workflow.1}}" onclick="get_pgrp_user(this);" type="button" class="button-workflow-user">Purchasing Group: {{workflow.1}}</button>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    <div id="div_manager_detail" class="workflow-overview__managers-section">
+        
+    </div>
+</div>
+{% endif %}

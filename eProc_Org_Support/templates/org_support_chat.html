@@ -1,0 +1,295 @@
+<div class="modal fade" id="myModalChat">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chat-support-title">Chat Support</h5>
+                <button type="button" class="btn btn-outline-secondary remove_upload_data" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+            </div>
+            <div class="modal-body scrollbox">
+                <div id="chat_del_add_button" class="mb-2" hidden></div>
+                <div class="alert alert-success display-none" id="org_support_chat_success" role="alert"></div>
+                <div id="id_check_error_messages_chat" class="alert alert-danger check_error_messages" hidden></div>
+
+                <div>
+                    <p id="id_error_msg_mail" class="alert alert-danger" hidden></p>
+                </div>
+
+                <table class="class_popup_table table table-bordered mt-2" id="id_popup_table_chat">
+                    <thead>
+                        <tr>
+                            <th>Support Username</th>
+                            <th id="id_del_ind_checkbox_chat" hidden>Del Indicator</th>
+                            <th hidden></th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_popup_tbody_chat">
+                        <tr>
+                            <td>
+                                <select name="username" id="username" class="form-control hg_edit_display_mode selectpicker" data-style="btn" data-width="100%" title="Select...">
+                                    {% for value in user_first_names %}
+                                        <option value="{{ value.user_name }}">{{ value.user_data }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td hidden></td>
+                            <td hidden></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary display-none" id="edit_id_chat" onclick="onclick_edit_chat()">
+                    <i class="fas fa-save"></i> edit
+                </button>
+                <div id="save_cancel_btn_chat" class="display-none">
+                    <button class="btn btn-primary" id="save_id_chat" onclick="save_chat_support_data()">
+                        <i class="fas fa-save"></i> save
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="cancel_support_details_chat()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //**************************
+    $(document).ready(function(){
+        var res1;
+        res = {{chat_data | safe }};
+        console.log("res = ",res);
+        res1 = res;
+        $("#username").val(res1).attr('selected', 'selected');
+        $("select[name=username]").val(res1);
+    });
+
+    //*******************************
+    function call_delete_check(check) {
+        if ($(check).is(':checked')) {
+            $("#call_delete_btn").prop( "hidden", false );
+        } else {
+            $("#call_delete_btn").prop( "hidden", true );
+        }
+    }
+
+    //onclick of delete,delete the row.
+    function application_settings_delete_Row(myTable) {
+        $('#id_popup_table').DataTable().destroy();
+        try {
+            var table = document.getElementById(myTable);
+            var rowCount = table.rows.length;
+            for (var i = 0; i < rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[0].childNodes[0];
+                if (null != chkbox && true == chkbox.checked) {
+                    table.deleteRow(i);
+                    rowCount--;
+                    i--;
+                }
+            }
+            $("#id_delete_country").hide();
+            $("#id_copy_country").hide();
+            $("#id_update_country").hide();
+            table_sort_filter_popup_pagination('id_popup_table');
+            return rowCount;
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    //*******************************
+    function save_chat_support_data(){
+        var form_data=[];
+        var uname, guid;
+        $("#id_popup_table_chat TBODY TR").each(function () {
+        var row = $(this);
+        var support_data = {};
+            support_data.support_type = 'CHAT'
+            support_data.support_email = ''
+            support_data.support_number = ''
+    <!--        uname =  row.find("TD").eq(1).find('select[type="text"]').val()-->
+            support_data.username = row.find("TD").eq(0).find('select[type="text"]').val()
+            guid = row.find("TD").eq(2).find('input[type="text"]').val();
+            if(guid == undefined){
+                guid = ''; }
+            support_data.org_support_guid = guid;
+            form_data.push(support_data)
+            console.log(form_data);
+        });
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Org_Support:org_support_save' %}",
+            data: JSON.stringify(form_data),
+            success: function(response) {
+            // $("#org_support_chat_success").append(response.message)
+            document.getElementById('org_support_chat_success').innerHTML = response.message;
+            $('#org_support_chat_success').show();
+    <!--           setTimeout(function () {  }, 5000)-->
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+    <!--        document.getElementById('org_support_guid').value = response.updated_guid;-->
+            $("#org_support_guid").val(response.updated_guid);
+            $("#save_cancel_btn_chat").hide();
+            $("#edit_id_chat").show();
+            $(".hg_edit_display_mode").prop("disabled", true);
+            setTimeout(function(){$('#myModalChat').modal('hide');},5000)
+            }
+        });
+    }
+
+    //********************************
+    function chat_delete_check(check) {
+        if ($(check).is(':checked')) {
+           $("#chat_delete_btn").prop( "hidden", false );
+        } else {
+         $("#chat_delete_btn").prop( "hidden", true );
+        }
+    }
+
+    //onclick of delete,delete the row for Chat
+    function application_settings_delete_Row_chat(myTable) {
+        $('#id_popup_table_chat').DataTable().destroy();
+        try {
+            var table = document.getElementById(myTable);
+            var rowCount = table.rows.length;
+            for (var i = 0; i < rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[0].childNodes[0];
+                if (null != chkbox && true == chkbox.checked) {
+                    table.deleteRow(i);
+                    rowCount--;
+                    i--;
+                }
+            }
+            table_sort_filter_popup_pagination('id_popup_table_chat');
+            return rowCount;
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+
+    var temp,dt;
+    //onclick of add button display myModal popup and set GLOBAL_ACTION button value for Chat
+    function onclick_add_button_chat(button) {
+        $('#myModalChat').modal('show');
+        GLOBAL_ACTION = button.value
+        $('#org_support_chat_success').hide();
+        $("#id_popup_tbody_chat").empty();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Org_Support:get_support_data' %}",
+            data: {
+               // calender_id: GLOBAL_CALENDER_ID
+            },
+            success: function (response) {
+                if (response['chat_support_data_array'].length == 0) {
+                    document.getElementById('save_cancel_btn_chat').style.display = 'block';
+                    document.getElementById('edit_id_chat').style.display = 'none';
+                    basic_add_new_html = '<tr>' +
+                        // '<td id="chat_checkbox" hidden><input type="checkbox" onchange="chat_delete_check(this);" required></td>' +
+                        '<td><select type="text" name="username" id="username" class="multiple_select form-control hg_edit_display_mode" multiple data-selected-text-format="count" data-actions-box="true">' +
+                        '{% for value in user_first_names %}' +
+                        '<option value="{{value.user_name}}">{{value.user_data}}</option>{% endfor %}</select></td>' +
+                        '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>' +
+                        '<td hidden><input type="text" id="org_support_guid"></td>' +
+                      '</tr>';
+                    $('#id_popup_tbody_chat').append(basic_add_new_html);
+                    $('#id_popup_table_chat tbody').html(basic_add_new_html);
+    <!--                                          MultipleSelect();-->
+                    } else {
+                        document.getElementById('edit_id_chat').style.display = 'block'
+                        document.getElementById('save_cancel_btn_chat').style.display = 'none';
+                        content = '';
+                        var  flag;
+    <!--                     for(i=0;i<response['chat_support_data_array'].length; i++)-->
+    <!--                     {-->
+                        temp = response['chat_support_data_array'];
+                        var dt = [];
+                        dt = response['user_data'];
+                        console.log(dt, temp);
+                        content += '<tr>';
+                        content += '<td><input id="username_inp" class="form-control" type="text" value="' + dt[0] + '" disabled/>' +
+                            '<div id="select_id" hidden><select type="text" name="username" id="username" class="multiple_select form-control hg_edit_display_mode display-none" multiple data-selected-text-format="values" title="Select...">' +
+                            '{% for value in user_first_names %}' +
+                            '<option value="{{value.user_name}}">{{value.user_data}}</option>{% endfor %}</select></div></td>';
+                        content += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                        content += '<td hidden><input class="input" type="text" name="org_support_guid" value="' + response['chat_support_guid_array'] + '" /></td>';
+                        content += '</tr>';
+                        $('#id_popup_table_chat tbody').html(content);
+                        $('#myModalChat').modal('show');
+    <!--                         MultipleSelect();-->
+                        $("#username").val(temp[0]);
+    <!--                          $("select[name=username]").val(dt);-->
+    <!--                         $('#username').val(dt);-->
+    <!--                         $('#username').val(temp).attr('selected', 'selected');-->
+    <!--                        }-->
+                    }
+                },
+                error: function (error) {
+                   // error_msg.innerHTML = error.responseText
+                }
+            })
+            $("#id_del_ind_checkbox_chat").prop("hidden", true);
+    <!--    document.getElementById("id_del_add_button").style.display = "block";-->
+            $("#save_id_chat").prop("hidden", false);
+
+        }
+
+    // on click add icon display the row in to add the new entries for chat
+    function add_popup_row_chat() {
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table_chat').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+        basic_add_new_html = '<tr ><td><input type="checkbox" onchange="chat_delete_check(this)" required></td>'+
+            '<td><select name="username" id="username" class="multiple_select form-control hg_edit_display_mode"  multiple data-selected-text-format="count" data-actions-box="true" >'+
+            ' {% for value in user_first_names %} '+
+            '<option value="{{value.user_name}}">{{value.user_data}}</option> {% endfor %}</select></td>';
+            '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>'+
+            '<td hidden><input type="text" id="org_support_guid"></td></tr>';
+            $('#id_popup_tbody_chat').append(basic_add_new_html);
+    <!--    MultipleSelect();-->
+            table_sort_filter_popup_pagination('id_popup_table_chat');
+        }
+
+    //***********************************
+    function cancel_support_details_chat(){
+        $(".hg_edit_display_mode").prop( "disabled", true );
+        $('#org_support_chat_success').hide();
+        document.getElementById('save_cancel_btn_chat').style.display = 'none'
+        document.getElementById('edit_id_chat').style.display = 'block'
+        $(".class_chat_checkbox").prop( "hidden", true );
+        $("#select_chat").prop( "hidden", true );
+        $("#chat_del_add_button").prop( "hidden", true );
+        $("#select_id").prop( "hidden", true );
+        $("#username_inp").prop( "hidden", false );
+    }
+
+    //**************************
+    function onclick_edit_chat(){
+        $(".hg_edit_display_mode").prop( "disabled", false );
+        $("#chat_del_add_button").prop( "hidden", false );
+        $("#select_chat").prop( "hidden", false );
+        $("#chat_checkbox").prop( "hidden", false );
+        $("#chat_del_add_button").prop( "hidden", false );
+        document.getElementById('save_cancel_btn_chat').style.display = 'block';
+        document.getElementById('edit_id_chat').style.display = 'none';
+        $('#org_support_chat_success').hide();
+    <!--     MultipleSelect();-->
+        $("#select_id").prop( "hidden", false );
+        $("#username_inp").prop( "hidden", true );
+        $("select[name=username]").val(dt);
+        $('#username').val(dt);
+        $('#username').val(temp).attr('selected', 'selected');
+    }
+
+    //********************
+    function MultipleSelect() {
+        $('.multiple_select').selectpicker();
+    }
+
+ </script>

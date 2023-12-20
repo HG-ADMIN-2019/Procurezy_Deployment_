@@ -1,0 +1,300 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Monitor Documents (Admin Tool) {% endblock %}
+
+{% block maincontent %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="elements-space-between">
+            <h3>Monitor Documents</h3>
+            <div></div>
+        </div>
+
+        <hr>
+
+        <div class="card card-shadow-1">
+            <div class="card-body">
+                <form method="post" action="{% url 'eProc_Admin_Tool:application_monitoring' %}">
+                    {% csrf_token %}
+                    {{ user_rep_form.non_field_errors }}
+
+                    <!-- The new set up UI changes-->
+                    <div class="row" id="{{ user_rep_form.name }}" title="{{ user_rep_form.label }}">
+
+                        <div class="col-md">
+                            <label>Document Type </label>
+                            {{ application_monitoring_form.doc_type }}
+                        </div>
+                        <div class="col-md">
+                            <label>Company Number</label>
+                            {{ application_monitoring_form.company_code }}
+                        </div>
+                        <div class="col-md">
+                            <label>From Date</label>
+                            {{ application_monitoring_form.from_date }}
+                        </div>
+                        <div class="col-md">
+                            <label>To Date</label>
+                            {{ application_monitoring_form.to_date }}
+                        </div>
+                        <div class="col-md">
+                            <label>Document Number</label>
+                            {{ application_monitoring_form.doc_num }}
+                        </div>
+                        <div class="col-md">
+                            <label>Created By</label>
+                            {{ application_monitoring_form.created_by }}
+                        </div>
+                        <div class="col-md">
+                            <label>Requested By</label>
+                            {{ application_monitoring_form.requester }}
+                        </div>
+                        <div class="col-md">
+                            <label>Error Type</label>
+                            {{ application_monitoring_form.doc_types }}
+                        </div>
+
+                        <div class="col-auto my-1">
+                            <button class="btn btn-primary button-search-users" id="hg_user_report_search" type="submit"
+                                    title="Please click to get the search details!"><i class="fas fa-search"></i> search
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="elements-space-between"> 
+                        <button class="btn btn-link" type="reset" value="Reset">clear filters</button>
+                        <div>
+                            <span class="badge help-text-badge help-text-star-search"></span>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        <!--    To Display Header Details only if there are any results-->
+        {% if sc_header_list|length >= 1 %}
+        {% if sc_header_list %}
+
+        <div class="card mt-5">
+            <div class="mo-doc-button-group__saved">
+                <button class="btn btn-primary " id="reprocess_check" type="submit" style="float:right" name="reprocess_po"
+                        title="Please click to get the search details!"> Process PO
+                </button>
+            </div>
+            <!--Company code, Company name, Username, Last name, First name,
+                Email address, Ship to address, user lock status -->
+            <table class="table table_sort_filter_export_excel" id="doc_list" >
+                <thead class="thead-light">
+                <tr>
+                    <th>Select</th>
+                    <th scope="col">Document Number</th>
+                    <th scope="col">Document Name</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Total Value</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Requested By</th>
+                    <th scope="col">Created By</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Ordered At</th>
+                    <th scope="col" hidden>Changed At</th>
+                    <th scope="col" hidden>Changed By</th>
+                </tr>
+                </thead>
+                <tbody id="doc_list_tbody">
+                <!--   Looping over the cart_items to get individual fields         -->
+                {% for items in sc_header_list %}
+                <tr>
+                    <td ><input class="reprocess" type="checkbox" id="{{items.doc_number}}"></td>
+                    <td scope="row"><a href="{% url 'eProc_Doc_Details:my_order_document_detail' items.encrypted_header_guid 'my_order' %}" target="_blank">{{ items.doc_number }}</a></td>
+                    <td scope="row">{{ items.description }}</td>
+                    <td scope="row">{{ items.status }}</td>
+                    <td scope="row">{{ items.total_value }}</td>
+                    <td scope="row">{{ items.currency }}</td>
+                    <td scope="row">{{ items.requester }}</td>
+                    <td scope="row">{{ items.created_by }}</td>
+                    <td scope="row">{{ items.created_at }}</td>
+                    <td scope="row">{{ items.ordered_at }}</td>
+                    <td scope="row" hidden>{{ items.changed_at }}</td>
+                    <td scope="row" hidden>{{ items.changed_by }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="hg_spacer2"> &nbsp; </div>
+<div class="modal fade" id="product_list_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="catalog_mapping_title"> Document List</h4>
+                <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body scrollbox">
+                <h5 class="mb-2">Error Documents</h5>
+                <div class="tab-content">
+                    <div id="freetext_table_div"data-tab-content class="active mt-4 pl-3 pr-3" >
+
+                        <table class="class_popup_table table table-bordered mt-2" id="id_freetext_popup_table" >
+                            <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Company Number</th>
+                                <th>Error Type</th>
+                                <th>Error Description</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_invalid_sc_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'scripts/user_report.js' %}"></script>
+<script>
+    // Function to get username
+
+$(document).ready(function () {
+
+    nav_bar_admin();
+    table_sort_filter_export_excel();
+     NavigateTabs(); // Custom function to switch tabs
+});
+ $('#reprocess').click(function () {
+    doc_num_list = get_doc_list("check_box_input_id")
+    if (doc_num_list.length > 0 ){
+        OpenLoaderPopup();
+        $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Admin_Tool:application_monitoring' %}",
+                data: {
+                    'doc_num': doc_num_list,
+                    'status':'REPROCESS'
+                },
+                success: function (response) {
+                    console.log(response)
+                    display_reprocess_po_data(response.sc_header_list)
+                    CloseLoaderPopup();
+                }
+        });
+    }
+ });
+$('#reprocess_check').click(function () {
+    doc_num_list = get_doc_list("reprocess")
+    error_type = $('#id_doc_types').val();
+    if (doc_num_list.length > 0 ){
+        OpenLoaderPopup();
+        $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Admin_Tool:application_monitoring' %}",
+                data: {
+                    'doc_num': doc_num_list,
+                    'status':'CHECK',
+                    'error_type':error_type
+                },
+                success: function (response) {
+                    console.log(response)
+                    display_check_popup(response.result)
+                    display_reprocess_po_data(response.sc_header_list)
+                    CloseLoaderPopup();
+                    $("#product_list_popup").modal("show");
+                }
+        });
+    }
+});
+
+ function display_reprocess_po_data(data){
+    $('#doc_list').DataTable().destroy();
+    $('#doc_list_tbody').empty();
+    var edit_basic_data = '';
+    $.each(data, function (i, items) {
+      edit_basic_data += ' <tr>'+
+                    '<td ><input class="reprocess" type="checkbox" id="'+items.doc_number+'"></td>'+
+                    '<td scope="row"><a class = "dummy_doc_class" id= "' + items.encrypted_header_guid + '">'+ items.doc_number +'</a></td>'+
+                    '<td scope="row">'+ items.description +'</td>'+
+                    '<td scope="row">' + items.status + ' </td>'+
+                    '<td scope="row">' + items.total_value +'</td>'+
+                    '<td scope="row">' + items.currency + '</td>'+
+                    '<td scope="row">' + items.requester +'</td>'+
+                    '<td scope="row">' + items.created_by + '</td>'+
+                    '<td scope="row">' + items.created_at + '</td>'+
+                    '<td scope="row">' + items.ordered_at + '</td>'+
+                    '<td scope="row" hidden>' + items.changed_at + '</td>'+
+                    '<td scope="row" hidden>' + items.changed_by + '</td>'+
+                '</tr>';
+    });
+    $('#doc_list_tbody').append(edit_basic_data);
+    table_sort_filter_export_excel()
+    $("#product_list_popup").modal("hide");
+ }
+
+$(document).on('click', '.dummy_doc_class', function () {
+    var url = "{% url 'eProc_Doc_Details:my_order_document_detail' 123 'my_order' %}";
+    var id = $(this).attr('id');
+    var href_link = url.replace('123', id)
+    window.open(href_link,'_blank');
+});
+function get_doc_list(class_name){
+ var checkBoxes = document.getElementsByClassName(class_name);
+    var doc_num_list = []
+    for (var i = 0; i < checkBoxes.length; i++) {
+            console.log(checkBoxes[i].checked)
+            if (checkBoxes[i].checked) {
+                doc_num_list.push(checkBoxes[i].id)
+                console.log(checkBoxes[i].id)
+            }
+    }
+    return doc_num_list
+}
+function display_check_popup(validation_result){
+    update_invalid_table(validation_result.invalid_list)
+
+}
+
+
+
+function update_invalid_table(invalid_list){
+    $('#id_invalid_sc_tbody').empty();
+    var edit_valid_data
+    $.each(invalid_list, function (i, items) {
+        edit_valid_data += '<tr>'+
+                            '<td>'+items.doc_number+'</td>'+
+                            '<td> '+items.company_code_id +' </td> '+
+                            '<td> '+items.error_type +' </td> '+
+                            '<td> '+items.error_message +' </td> '+
+                            '</tr>'
+    });
+    $('#id_invalid_sc_tbody').append(edit_valid_data);
+}
+
+$('#select_all').click(function(){
+            if($(this).prop("checked")) {
+                $(".check_box_input_id").prop("checked", true);
+            } else {
+                $(".check_box_input_id").prop("checked", false);
+            }
+        });
+</script>
+
+{% if inc_footer %}
+{% include 'root/footer.html' %}
+{% endif %}
+{% endblock %}

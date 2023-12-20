@@ -1,0 +1,133 @@
+.hg-icon-blue-primary {
+    color: $blue-primary;
+    cursor: pointer;
+}
+
+.sc-more-btn-wrapper {
+    // margin-bottom: 1rem;
+}
+// revisit
+.add-note-internal{
+    border: none; 
+    background-color:$blue-primary; 
+    color: white; 
+    padding: 10px 10px; 
+}
+// revisit
+.add-note-external{
+    border: none; 
+    background-color:#dbdad9; 
+    color: black; 
+    padding: 10px 10px; 
+}
+// revisit
+.add_notes_textarea{
+    padding: 10px; 
+    width:100%; 
+    resize: none; 
+    border-color: #ddd
+}
+
+.attachment-input-name {
+    width:450px;
+}
+
+.view-attachments-header {
+    padding: 1rem;
+    @include space-in-between;
+}
+
+.card-header.call-off-header-section {
+    background-color: white; 
+    font-size: 20px;
+    @include space-in-between;
+}
+
+.call-off-form-label {
+    width: 150px;
+    display: inline-block;
+    font-weight: 500;
+}
+
+.sc-item-table {
+    &__item-img {
+        border: 1px solid #e9ecef; 
+        width:60px;
+        height:60px; 
+    }
+
+    &__supplier-desc {
+        color:$blue-primary;
+    }
+
+}
+
+/* .modal {
+        overflow-y:auto;
+} */
+
+// to be reviewed and moved to a central location
+.item-table-action__section {
+    background-color: white;
+
+    .card-header.item-table-action__header {
+        background-color: white; 
+        font-size: 20px;
+        @include space-in-between;
+    }
+}
+
+.action-item-notes__buttons-section {
+    border-bottom: 1px solid #ddd
+}
+
+.action-item-notes__textarea {
+    margin: 1rem;
+}
+
+.item-table-cart-value-section {
+    font-size: 20px;
+    font-weight: 500;
+
+    .item-table-total-cart-value {
+        font-size: 25px;
+    }
+}
+
+.add-attachment-section {
+    flex-grow: 1;
+}
+
+.attachment-added-section {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(233, 236, 239, 0.5);
+    flex-grow: 2;
+
+    .table {
+        padding: 0 10px;
+    }
+}
+
+.cart-value-card {
+    margin: 0 2rem 2rem; 
+
+    .cart-value-section {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .cart-value-label {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    
+    .cart-value-desc {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+    }
+}
+
+

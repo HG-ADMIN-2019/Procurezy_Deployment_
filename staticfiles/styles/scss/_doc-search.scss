@@ -1,0 +1,42 @@
+.my-orders-results-table {
+    width: 100% !important;
+
+    tbody td{
+        padding: 5px 0;
+    }
+    .my-orders-card-list {
+        border-radius: 10px;
+
+        .card-header {
+            background-color: white; 
+            border-bottom: none; 
+            border-radius: 10px; 
+        }
+
+        .badge_status_await_approval,
+        .badge_status_save,
+        .badge_status_approved,
+        .badge_status_purch_wrkl,
+        .badge_status_rejected {
+            font-size: 15px;
+            padding: 8px 12px;
+        }
+
+        .plus-symbol{
+            float: right;
+            color: rgb(192, 192, 192)
+        }
+        
+        .grey-border{
+            border-right: solid #EAEAEA;
+        }
+    }
+
+    .link-blue{
+        color:$blue-primary;
+    }
+
+    
+}
+
+

@@ -1,0 +1,133 @@
+from datetime import datetime, timedelta
+
+from django.db import models
+from eProc_Basic.Utilities.global_defination import global_variables
+
+
+# class User:
+#     @staticmethod
+def get_login_user_name():
+    return global_variables.GLOBAL_LOGIN_USERNAME
+
+
+class Country(models.Model):
+    """
+    Contains a list of Countries (General application tables)
+    """
+    country_code = models.CharField(db_column='COUNTRY_CODE', primary_key=True, max_length=2)
+    country_name = models.CharField(db_column='COUNTRY_NAME', max_length=100, null=False)
+    country_created_by = models.CharField(db_column='COUNTRY_CREATED_BY', max_length=30, null=True)
+    country_created_at = models.DateTimeField(db_column='COUNTRY_CREATED_AT', max_length=50, auto_now_add=True, null=True)
+    country_changed_by = models.CharField(db_column='COUNTRY_CHANGED_BY', max_length=30, null=True)
+    country_changed_at = models.DateTimeField(db_column='COUNTRY_CHANGED_AT', max_length=50,
+                                              auto_now=True, null=True)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_COUNTRY'
+
+    def __str__(self):
+        return self.country_code
+
+
+class Currency(models.Model):
+    """
+    Contains a list of Currencies (General application tables)
+    """
+    currency_id = models.CharField(db_column='CURRENCY_ID', primary_key=True, max_length=3)
+    description = models.CharField(db_column='DESCRIPTION', max_length=100, null=False)
+    currency_created_by = models.CharField(db_column='CURRENCY_CREATED_BY', max_length=30, null=True)
+    currency_created_at = models.DateTimeField(db_column='CURRENCY_CREATED_AT', max_length=50, null=True)
+    currency_changed_by = models.CharField(db_column='CURRENCY_CHANGED_BY', max_length=30, null=True)
+    currency_changed_at = models.DateTimeField(db_column='CURRENCY_CHANGED_AT', max_length=50, null=True)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_CURRENCY'
+
+    def __str__(self):
+        return self.currency_id
+
+
+class Languages(models.Model):
+    """
+    Contains a list of languages (General application tables)
+    """
+    language_id = models.CharField(db_column='LANGUAGE_ID', primary_key=True, max_length=2)
+    description = models.CharField(db_column='DESCRIPTION', max_length=100, null=False)
+    languages_created_by = models.CharField(db_column='LANGUAGES_CREATED_BY', max_length=30, null=True)
+    languages_created_at = models.DateTimeField(db_column='LANGUAGES_CREATED_AT', max_length=50, null=True)
+    languages_changed_by = models.CharField(db_column='LANGUAGES_CHANGED_BY', max_length=30, null=True)
+    languages_changed_at = models.DateTimeField(db_column='LANGUAGES_CHANGED_AT', max_length=50, null=True)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_LANGUAGE'
+
+    def __str__(self):
+        return self.language_id
+
+
+class UnspscCategories(models.Model):
+    """
+    Contains Product category details
+    """
+    prod_cat_id = models.CharField(db_column='PROD_CAT_ID', primary_key=True,max_length=20, null=False, verbose_name='Product Category')
+    prod_cat_desc = models.CharField(db_column='PROD_CAT_DESC',max_length=20, null=True,verbose_name='Product Category Description')
+    unspsc_categories_created_by = models.CharField(db_column='UNSPSC_CATEGORIES_CREATED_BY', max_length=30, null=True)
+    unspsc_categories_created_at = models.DateTimeField(db_column='UNSPSC_CATEGORIES_CREATED_AT', max_length=50,
+                                                        null=True)
+    unspsc_categories_changed_by = models.CharField(db_column='UNSPSC_CATEGORIES_CHANGED_BY', max_length=30, null=True)
+    unspsc_categories_changed_at = models.DateTimeField(db_column='UNSPSC_CATEGORIES_CHANGED_AT', max_length=50,
+                                                        null=True)
+
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_UNSPSC_CATEGORIES'
+
+
+class TimeZone(models.Model):
+    time_zone = models.CharField(db_column='TIME_ZONE', primary_key=True, max_length=6)
+    description = models.CharField(db_column='DESCRIPTION', max_length=255, null=False)
+    utc_difference = models.CharField(db_column='UTC_DIFFERENCE', max_length=15, null=False)
+    daylight_save_rule = models.CharField(db_column='DAYLIGHT_SAVE_RULE', max_length=10, null=False)
+    time_zone_created_by = models.CharField(db_column='TIME_ZONE_CREATED_BY', max_length=30, null=True)
+    time_zone_created_at = models.DateTimeField(db_column='TIME_ZONE_CREATED_AT', max_length=50, null=True)
+    time_zone_changed_by = models.CharField(db_column='TIME_ZONE_CHANGED_BY', max_length=30, null=True)
+    time_zone_changed_at = models.DateTimeField(db_column='TIME_ZONE_CHANGED_AT', max_length=50, null=True)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_TIMEZONE'
+
+    def __str__(self):
+        return self.time_zone
+
+
+class UnitOfMeasures(models.Model):
+    """
+    Contains a list of Unit of Measures (General application tables)
+    """
+    uom_id = models.CharField(db_column='UOM_ID', primary_key=True, max_length=3)
+    uom_description = models.CharField(db_column='UOM_DESCRIPTION', max_length=100, null=False)
+    iso_code_id = models.CharField(db_column='ISO_CODE_ID', max_length=3, null=False)
+    unit_of_measures_created_by = models.CharField(db_column='UNIT_OF_MEASURES_CREATED_BY', max_length=30, null=True)
+    unit_of_measures_created_at = models.DateTimeField(db_column='UNIT_OF_MEASURES_CREATED_AT', max_length=50,
+                                                       null=True)
+    unit_of_measures_changed_by = models.CharField(db_column='UNIT_OF_MEASURES_CHANGED_BY', max_length=30, null=True)
+    unit_of_measures_changed_at = models.DateTimeField(db_column='UNIT_OF_MEASURES_CHANGED_AT', max_length=50,
+                                                       null=True)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    def __str__(self):
+        return self.uom_id
+
+    class Meta:
+        managed = True
+        db_table = 'MBD_UNIT_OF_MEASURE'

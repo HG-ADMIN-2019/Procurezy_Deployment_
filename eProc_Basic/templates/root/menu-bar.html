@@ -1,0 +1,340 @@
+{% load static %}
+
+<nav id="nav_menu_items" class="navbar navbar-expand-sm navbar-light bg-light menu-bar">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse text-capitalize" id="navbarTogglerDemo01">
+
+        <div id="shop_shop_plus_submenu" style="display:none;">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+
+                <li class="nav-item active" id="nav-item__catalog">
+                    {% if sub_menu.CATALOG %}
+                    {% url 'eProc_Catalog:get_catalogs' as catalog_url %}
+                    <div class="dropdown">
+                        <div class="nav-link dropbtn" id="id_catlg_btn" ><a href="{% url 'eProc_Catalog:get_catalogs' 'All' 'create' %}" {% if request.path == catalog_url %} class="active"{% endif %}>Products & services</a></div>
+                        <div class="dropdown-menu dropdown-content">
+                            {% for catalog in assigned_catalogs %}
+                            <a class="dropdown-item" href="{% url 'eProc_Catalog:get_catalogs' catalog.catalog_id 'create' %}" >{{catalog.name|upper}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item" id="nav-item__myorders">
+                    {% if sub_menu.MY_ORDER %}
+                    {% url 'eProc_Doc_Search_and_Display:search_shopping_carts'  as my_order_url %}
+                    <div class="nav-link" id="my_order_btn"><a href="{{my_order_url}}" {% if request.path == my_order_url %} class="active"{% endif %}>My orders</a></div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        <div id="admin_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+
+
+                <li class="nav-item active" id="nav-item__user">
+                    {% if sub_menu.EMPLOYEE_MANAGEMENT %}
+                    <div class="nav-link" id="employee_managment_btn"><a href="{% url 'eProc_Admin_Tool:employee_search' %}">Employees</a></div>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item" id="nav-item__supplier">
+                    {% if sub_menu.SUPPLIER_MANAGEMENT %}
+                    <div class="nav-link" id="supplier_management_btn"><a href="{% url 'eProc_Admin_Tool:supplier_search' %}">Suppliers</a></div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-application_monitoring">
+                    {% if sub_menu.APPLICATION_MONITOR %}
+                     <div class="dropdown">
+                        <div class="nav-link dropbtn" id="application_monitor_btn" >
+                            <a href="{% url 'eProc_Admin_Tool:application_monitoring' %}">Application Monitoring</a>
+                            <i class="material-icons" style="vertical-align: bottom;">keyboard_arrow_down </i>
+                        </div>
+                        <div class="dropdown-menu dropdown-content">
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:email_user_monitoring' %}">Emails</a>
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:application_monitoring' %}">Documents</a>
+                        </div>
+                    </div>
+
+
+<!--                    <div class="nav-link dropbtn" id="application_monitor_btn"><a href="{% url 'eProc_Admin_Tool:application_monitoring' %}">Application Monitoring</a></div>-->
+                    {% endif %}
+                </li>
+
+<!--                <li class="nav-item" id="nav-item__substitution">-->
+<!--                    {% if sub_menu.SUBSTITUTION %}-->
+<!--                    <div class="nav-link" id="substitution_btn"><a href="#">Substitution</a></div>-->
+<!--                    {% endif %}-->
+<!--                </li>-->
+
+                <li class="nav-item" id="nav-item__reports">
+                    {% if sub_menu.REPORTS %}
+                    <div class="dropdown">
+                        <div class="nav-link dropbtn" id="reports_btn" >
+                            <a>Admin Reports</a>
+                            <i class="material-icons" style="vertical-align: bottom;">keyboard_arrow_down </i>
+                        </div>
+                        <div class="dropdown-menu dropdown-content">
+
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:user_report' %}">Users</a>
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:approval_report' %}">Approvals</a>
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:doc_search_report' %}">Documents</a>
+                            <a class="dropdown-item" href="{% url 'eProc_Admin_Tool:accnt_report' %}">Account Assignments</a>
+
+                        </div>
+                    </div>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item" id="nav-item__config_home">
+<!--                          {{sub_menu.CONST_CONFIG_HOME}}-->
+<!--                    {% if sub_menu.CONST_CONFIG_HOME %}-->
+<!--                    <div class="nav-link" id="config_home_btn"><a href="#">CONFIG HOME</a></div>-->
+<!--                    {% endif %}-->
+                    <div class="nav-link" id="config_home_btn"><a href="{% url 'eProc_Admin_Tool:org_announcements_search' %}">Organizational Announcements</a></div>
+
+                </li>
+                 <li class="nav-item" id="nav-item__config_home_support">
+                        <div class="nav-link" id="config_support_btn"><a href="{% url 'eProc_Org_Support:org_support_config' %}">Application Support Configuration</a></div>
+                 </li>
+                <li class="nav-item" id="data_clean_up">
+                        <div class="nav-link" id="data_clean_up_btn"><a href="{% url 'eProc_Shopping_Cart:data_clean_up' %}">Data Clean-up</a></div>
+                 </li>
+            </ul>
+        </div>
+
+        <div id="purchaser_sub_menu" style="display:none" >
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__shopassist">
+                    {% if sub_menu.SC_COMPLETION %}
+                    {% url 'eProc_Doc_Search_and_Display:sc_completion_doc_search'  as sc_completion_url %}
+                    <div class="nav-link" id="sc_completion_btn"><a href="{{sc_completion_url}}" {% if request.path == sc_completion_url %} class="active"{% endif %} >Shopping assist</a></div>
+                    {% endif %}
+                </li>
+<!--                <li class="nav-item" id="nav-item__categroup">-->
+<!--                    {% if sub_menu.GROUP_CATEGORY %}-->
+<!--                    {% url 'eProc_Purchaser_Cockpit:sc_item_field_filter'  as group_cat_url %}-->
+<!--                    <div class="nav-link" id="grp_cat_btn"><a href="{{group_cat_url}}" {% if request.path == group_cat_url %} class="active"{% endif %} >Category Grouping</a></div>-->
+<!--                    {% endif %}-->
+<!--                </li>-->
+                <li class="nav-item" id="nav-item__po">
+                    {% if sub_menu.CHANGE_PO %}
+                    <div class="nav-link" id="change_po_btn"><a href="#">Purchase orders</a></div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <div id="shop_assist_sub_menu" style="display:none" >
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item_grp_categroup">
+                    {% if sub_menu.SC_GROUPING %}
+                    {% url 'eProc_Purchaser_Cockpit:sc_item_field_filter'  as group_cat_url %}
+                    <div class="nav-link" id="grp_cat_btn">
+                        <a href="{{group_cat_url}}" {% if request.path == group_cat_url %} class="active" {% endif %} >Shopping Cart Grouping</a>
+                    </div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-item_rfq">
+                    {% if sub_menu.RFQ %}
+                    {% url 'eProc_Purchaser_Cockpit:rfq_details'  as rfq_url %}
+                    <div class="nav-link" id="change_rfq_btn">
+                        <a href="{{rfq_url}}" {% if request.path == rfq_url %} class="active"{% endif %}>RFQ</a>
+                    </div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <div id="user_settings_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__usersetting">
+                    {% if sub_menu.PERSONAL_SETTINGS %}
+                    {% url 'eProc_User_Settings:personal_settings_display'  as personal_settings_url %}
+                    <div class="nav-link" id="personal_settings_btn">
+                        <a href="{{personal_settings_url}}" {% if request.path == personal_settings_url %} class="active"{% endif %} > User setting</a>
+                    </div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-item__purchsetting">
+                    {% if sub_menu.PURCHASE_SETTINGS %}
+                    {% url 'eProc_User_Settings:purchase_settings'  as purchase_settings_url %}
+                    <div class="nav-link" id="purch_settings_btn">
+                        <a href="{{purchase_settings_url}}" {% if request.path == purchase_settings_url %} class="active"{% endif %} >Purchase setting</a>
+                    </div>
+                    {% endif %}
+                </li>
+
+            </ul>
+        </div>
+        <div id="som_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__som">
+                    {% url 'eProc_Supplier_Order_Management:po_extract'  as personal_settings_url %}
+                    <div class="nav-link" id="som_btn">
+                        <a href="{{personal_settings_url}}" {% if request.path == personal_settings_url %} class="active"{% endif %} > Supplier Order Management</a>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+        <div id="time_sheet_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__project">
+                    {% if sub_menu.PROJECTS %}
+                    {% url 'eProc_Projects:proj_user_search'  as project_url %}
+                    <div class="nav-link" id="project_btn">
+                        <a href="{{project_url}}" {% if request.path == project_url %} class="active"{% endif %} > Projects</a>
+                    </div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-item__effort">
+                    {% if sub_menu.EFFORTS %}
+                    {% url 'eProc_Time_Sheet:get_project_details'  as time_sheet_url %}
+                    <div class="nav-link" id="effort_btn">
+                        <a href="{{time_sheet_url}}" {% if request.path == time_sheet_url %} class="active"{% endif %} >Efforts</a>
+                    </div>
+                    {% endif %}
+                </li>
+
+            </ul>
+        </div>
+
+        <div id="whatsapp_marketing_sub_menu" >
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__marketing">
+                    {% if sub_menu.SEND_MESSAGE %}
+                    {% url 'eProc_Marketing:index'  as marketing_url %}
+                    <div class="nav-link" id="whatsapp_btn">
+                        <a href="{{marketing_url}}" {% if request.path == marketing_url %} class="active"{% endif %} > Send Message</a>
+                    </div>
+                    {% endif %}
+                </li>
+<!--                <li class="nav-item active" id="nav-item__marketing">-->
+<!--                    {% if sub_menu.SEND_MESSAGE %}-->
+<!--                    {% url 'eProc_Marketing:index'  as marketing_url %}-->
+<!--                    <div class="nav-link" id="whatsapp_btn">-->
+<!--                        <a href="{{marketing_url}}" {% if request.path == marketing_url %} class="active"{% endif %} > Config</a>-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+<!--                </li>-->
+
+            </ul>
+        </div>
+
+        <div id="content_management_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__product_and_service">
+                    {% if sub_menu.PRODUCT_AND_SERVICE_CONFIG %}
+                    {% url 'eProc_Manage_Content:product_and_service_config' as product_and_service_config_url %}
+                    <div class="nav-link" id="product_and_service_btn">
+                        <a href="{{product_and_service_config_url}}" {% if request.path == product_and_service_config_url %} class="active"{% endif %} > Product and Service Configuration</a>
+                    </div>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item" id="nav-item__formbuilder">
+                    {% if sub_menu.FORM_BUILDER %}
+                    {% url 'eProc_Form_Builder:display-freetext-forms' as display_freetext_form_url %}
+                    <div class="nav-link" id="free_text_form_btn">
+                        <a href="{{display_freetext_form_url}}"  {% if request.path == display_freetext_form_url %} class="active"{% endif %}> Free Text Form </a>
+                    </div>
+                    {% endif %}
+
+                </li>
+
+                <li class="nav-item" id="nav-item__catalog_configuration">
+                    {% if sub_menu.CATALOG_CONFIG %}
+                    {% url 'eProc_Manage_Content:catalog_config' as catalog_configuration_url %}
+                    <div class="nav-link" id="catalog_configuration_btn" >
+                        <a href="{{catalog_configuration_url}}" {% if request.path == catalog_configuration_url %} class="active"{% endif %} >Catalog Configuration and Mapping</a>
+                    </div>
+                    {% endif %}
+                </li>
+
+            </ul>
+        </div>
+
+
+        <div id="goods_receipts_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__confirmation">
+                    {% if sub_menu.CONFIRMATION %}
+                    <div class="nav-link" id="confirmation_btn" ><a href="#">confirmation</a></div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-item__cancellation">
+                    {% if sub_menu.CANCELLATION %}
+                    <div class="nav-link" id="cancellation_btn"  ><a href="#">cancellation</a></div>
+                    {% endif %}
+                </li>
+                <li class="nav-item" id="nav-item__returns">
+                    {% if sub_menu.RETURN_DELIVERY %}
+                    <div class="nav-link" id="return_delivery_btn"  ><a href="#">Return delivery</a></div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        <div id="approvals_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__workflow">
+                    {% if sub_menu.WORK_FLOW_ITEMS %}
+                    {% url 'eProc_Workflow:workflow_item'  as workflow_url %}
+                    <div class="nav-link" id="work_flow_btn"  ><a href="{{workflow_url}}" {% if request.path == workflow_url %} class="active"{% endif %} >Work flow items</a></div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        <div id="configuration_sub_menu" style="display:none">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__basic_settings">
+
+                    <div class="nav-link" title="Basic Settings" id="basic_settings_btn">
+                        <a href="{% url 'eProc_Configuration:basic_settings' %}">Basic Settings</a>
+                    </div>
+
+                </li>
+
+                <li class="nav-item" title="Application Data Configuration" id="nav-item__application_settings">
+
+                    <div class="nav-link" id="application_settings_btn">
+                        <a href="{% url 'eProc_Configuration:application_data_configuration' %}">Application Settings</a>
+                    </div>
+
+                </li>
+                <li class="nav-item" title="Master Data Configuration" id="nav-item__master_data_settings">
+
+                    <div class="nav-link" id="master_data_settings_btn">
+                        <a href="{% url 'eProc_Configuration:master_data_configuration' %}">Master Settings </a>
+                    </div>
+
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<script>
+   $('.menu-bar .nav-item').click(function(){
+        var id = $(this).attr("id")
+
+        $(".menu-bar").find(".active").removeClass("active");
+        sessionStorage.setItem("previously_selected_menuitem_link", id);
+    })
+
+    $(document).ready(function(){
+        var previously_selected_menuitem_link = sessionStorage.getItem('previously_selected_menuitem_link');
+
+        if(previously_selected_menuitem_link) {
+            $(".menu-bar").find(".active").removeClass("active");
+            $('#' + previously_selected_menuitem_link).addClass("active");
+        }
+    })
+</script>

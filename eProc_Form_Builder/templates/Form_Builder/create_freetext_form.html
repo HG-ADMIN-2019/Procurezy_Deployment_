@@ -1,0 +1,538 @@
+<!--Rendering free text configuration form-->
+<!-- User story SC-FT-US01 -->
+
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Create Freetext Form {% endblock %}
+{% block maincontent %}
+
+<style>
+    button.btn.dropdown-toggle.btn-light{
+        background-color: white;
+        border: 1px solid #ced4da;
+    }
+</style>
+
+<div class="container-fluid">
+
+    <form method="POST" id="formbuilder_form">
+        {% csrf_token %}
+
+        <div class="mep-form_wrapper">
+
+            <div>
+                <div class="elements-space-between">
+                    <h3>Freetext Form Builder</h3>
+
+
+                    <div>
+                        <button type="reset" id="ft_cancel" class="btn btn-outline-primary dummy_ft_button_class" onclick="enable_disable('CANCEL')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" id="ft_save" class="btn btn-primary dummy_ft_button_class" onclick="save_configured_form();">
+                            <i class="fas fa-check" title="Update"></i> Save
+                        </button>
+                        <button type="button" id="ft_edit" class="btn btn-primary dummy_ft_button_class" onclick="enable_disable('EDIT')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div id="save_error_div" class="alert alert-danger display-none" role="alert" ></div>
+            <div id="save_success_div" class="alert alert-success display-none" role="alert" ></div>
+            <div class="mt-4">
+                <span class="product-id-label">Free Text Form ID: </span><span class="product-id-text" id="freetext_id">{{freetext_id}}</span>
+            </div>
+            <div class="mt-3">
+                <div class="row no-gutters justify-content-center">
+                    <div class="col-10 pt-2">
+                        <div class="card card-shadow-1" id="">
+                            <div class="card-body">
+
+                                <div class="elements-space-between">
+                                    <h5 class="card-title">Basic Form Details</h5>
+                                    <div>
+                                        <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Supplier Name<span class="hg_required"></span></label>
+                                        <input type="text" placeholder="Please select supplier" class="form-control toggle_mode" value="{{freetext_details.supplier_id}}" id="supplier_id_free_text">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label>Description<span class="hg_required"></span></label>
+                                        <input type="text" name="description" class="form-control toggle_mode check_special_char" value="{{freetext_details.description}}" id="supplier_description" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Product Category<strong>(UNSPSC)</strong></label> <span class="hg_required"></span>
+                                        <input type="text" placeholder="Click to select product category" value="{{freetext_details.prod_cat_id}}" class="form-control toggle_mode" id="product_category_free_text" onkeydown="return false;">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Currency<span class="hg_required"></span></label>
+                                        <select class="form-control toggle_mode" id="currency_id">
+                                            {% if not freetext_details.currency_id_id %}
+                                            <option value="">select</option>
+                                            {% endif %}
+                                            {% for currency in currency_list %}
+                                            {% if freetext_details.currency_id_id == currency.currency_id %}
+                                            <option value="{{currency.currency_id}}">{{currency.currency_id}} - {{currency.description}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% for currency in currency_list %}
+                                            {% if freetext_details.currency_id_id != currency.currency_id %}
+                                            <option value="{{currency.currency_id}}">{{currency.currency_id}} - {{currency.description}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+
+                                    <div class="form-group col-md-6">
+                                        <label>Lead Time <strong>(Buisness Days)</strong> <span class="hg_required"></span></label>
+                                        <input type="number" name="lead_time" id="lead_time" value="{{freetext_details.lead_time}}" class="form-control toggle_mode" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Supplier Product Number<span class="hg_required"></span></label>
+                                        <input type="text" name="supp_art_no" class="form-control toggle_mode check_special_char" value="{{freetext_details.supp_product_id }}" id="supplier_article_number" required>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card mt-3 card-shadow-1">
+                            <div class="card-body">
+                                <div class="elements-space-between">
+                                    <h5 class="card-title"> Custom Eform Fields</h5>
+                                    <button type="button" id="create_new_fields" class="btn btn-outline-primary toggle_mode" onclick="create_eform_field_popup()" disabled>
+                                        <i class="fas fa-plus"></i> Create New Fields
+                                    </button>
+                                </div>
+                                <p>Create or add your own custom fields for your freetext item</p>
+
+                                <div class="alert alert-danger display-none" role="alert" id="remove_error_div" ></div>
+
+                                <div class="row justify-content-center" >
+                                    <div class="col-md-7 freetext-eform-body" id="eform_body"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- <div id="form_buttons" class="d-flex justify-content-end">
+            <div>
+                <button type="button" id="cancel_button" class="btn btn-primary" onclick="display_mode()" hidden>Cancel</button>
+                <button id="reset_button" class="btn btn-primary" type="reset"><i class="fas fa-sync-alt" title="Reset"></i> RESET</button>
+            </div>
+        </div>
+        <br>
+        <div id="edit_button" class="d-flex justify-content-end">
+            <div>
+                <button class="btn btn-primary" type="button" title="Go Back" onclick="go_back()"><i class="fas fa-arrow-left"></i> Go Back</button>
+                <button class="btn btn-primary" type="button" title="Edit" onclick="edit_mode()"><i class="far fa-edit"></i> Edit</button>
+            </div>
+        </div> -->
+    </form>
+
+</div>
+
+
+<div class="modal fade" id="create_eform_fields_popup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add Custom Fields</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="create_error_div"  class="alert alert-danger display-none" role="alert"></div>
+
+                <div class="form-group">
+                    <label for="field_type">Select Field Type</label> <span class="hg_required"></span>
+
+                    <div class="select-input-container">
+                        <div class="select-input-item">
+                            <div class="select-input-item__card">
+                                <input type="radio" id="input_singleline_text" name="eform_input_type" class="" value="single_line_text" style="display: none;">
+                                <label for="input_singleline_text" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-red">text_format</span>
+                                        <span class="select-text-style">Single line text</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="select-input-item">
+                            <div class="select-input-item__card">
+                                <input type="radio" id="input_multiline_text" name="eform_input_type" class="" value="textarea" style="display: none;">
+                                <label for="input_multiline_text" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-tangerine">notes</span>
+                                        <span class="select-text-style">Multi-line text</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="select-input-item">
+                            <div class="select-input-item__card">
+                                <input type="radio" id="input_number_type" name="eform_input_type" class="" value="number" style="display: none;">
+                                <label for="input_number_type" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-teal">123</span>
+                                        <span class="select-text-style">Numbers</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="select-input-item">
+                            <div class="select-input-item__card">
+                                <input type="radio" id="input_dropdown_type" name="eform_input_type" class="" value="dropdown" style="display: none;">
+                                <label for="input_dropdown_type" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-purple">arrow_drop_down_circle</span>
+                                        <span class="select-text-style">Dropdowns</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="select-input-item">
+                            <div class="select-input-item__card eform-card-type-date">
+                                <input type="radio" id="input_datetime_type" name="eform_input_type" class="" value="date" style="display: none;">
+                                <label for="input_datetime_type" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-green">calendar_month</span>
+                                        <span class="select-text-style">Date field</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="select-input-item">
+                            <div class="select-input-item__card">
+                                <input type="radio" id="input_checkbox_type" name="eform_input_type" value="checkbox" class="" style="display: none;">
+                                <label for="input_checkbox_type" class="label-select-input-item">
+                                    <div class="select-input-item__card-section">
+                                        <span class="material-icons icon-color-blue">check_box</span>
+                                        <span class="select-text-style">Check box</span>
+                                    </div>
+                                </label>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="field_name">Field Name</label> <span class="hg_required"></span>
+                    <input class="form-control dynamic_field" type="text" id="field_name">
+                    <small class="form-text text-muted help-text-alpha-numeric"></small>
+                </div>
+
+                <div id="eform_input_field_properties" style="display: none;">
+
+                    <label for="field_property">Field Properties</label><span class="hg_required"></span>
+
+                    <div id="field_property_dropdown" class="pl-3 pr-3" style="display: none;">
+
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="dropdown_custom_options" value="dropdown_custom_options" name="check_dropdown_type" checked>
+                            <label class="custom-control-label" for="dropdown_custom_options">Add custom options</label>
+                        </div>
+
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="dropdown_predefined_options" value="dropdown_predefined_options" name="check_dropdown_type">
+                            <label class="custom-control-label" for="dropdown_predefined_options">Add predefined options</label>
+                        </div>
+
+                        <hr>
+                        <div id="dropdown_custom_options_section">
+                            <div class="new-option-row-button-wrapper">
+                                <span class="input-fieds-subhead-text"></span>
+                                <div>
+                                    <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_dropdown();"><i class="fa fa-plus"></i> Add another choice</button>
+                                </div>
+
+                            </div>
+                            <table class="table" id="table_id_eform_dropdown">
+                                <thead>
+                                <tr>
+                                    <th>Default</th>
+                                    <th>Dropdown choice</th>
+                                    <th></th>
+                                </tr>
+
+                                </thead>
+                                <tbody id="tbody_eform_dropdown"></tbody>
+
+                            </table>
+                        </div>
+
+                        <div id="dropdown_predefined_options_sections" style="display: none;">
+                            <div class="dp-prd-opt-wrapper">
+                                <span class="dp-prd-badge dp-prd-badge-country">
+                                    <input type="radio" id="dp_prd_option_country" value="Country" name="dp_prd_option" style="display: none;">
+                                    <label for="dp_prd_option_country">Country</label>
+                                </span>
+                                <span class="dp-prd-badge dp-prd-badge-currency">
+                                    <input type="radio" id="dp_prd_option_currency" value="Currency" name="dp_prd_option" style="display: none;">
+                                    <label for="dp_prd_option_currency">Currency</label>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="field_property_datetime" class="pl-3 pr-3 pb-3" style="display: none;">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="datetime_value_on" name="check_input_datetime_type" checked>
+                            <label class="custom-control-label" for="datetime_value_on">Includes on date</label>
+                        </div>
+
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="datetime_value_timeframe" name="check_input_datetime_type">
+                            <label class="custom-control-label" for="datetime_value_timeframe">Includes time frame</label>
+                        </div>
+                    </div>
+
+                    <div class="field-validation-section pl-3 pr-3">
+                        <span class="input-fieds-subhead-text">Validations</span>
+
+                        <div id="field_property_mandatory" style="display: none;">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_required">
+                                <label class="custom-control-label" for="is_required">Mandatory</label>
+                            </div>
+                        </div>
+
+                        <div id="field_property_specialchars_none" style="display: none;">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="no_special_characters">
+                                <label class="custom-control-label" for="no_special_characters">No special characters</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button type="button" class="btn btn-primary" onclick="create_fields()"><i class="fas fa-plus"></i> Add Field</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loader pop up -->
+<!-- {% include 'root/loader.html' %} -->
+
+<!--Select Product category popup -->
+{% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
+<!-- end Select Product category popup-->
+
+<!-- Select supplier popup -->
+{% include 'Shopping_Cart/select_supplier_modal/select_supplier.html' %}
+<!-- End of Select supplier popup -->
+
+<script>
+    var GLOBAL_ACTION
+    var encrypt_freetext_id = '{{encrypt_freetext_id|safe}}'
+    // Function to update supplier value
+    var supplier_id = '{{freetext_details.supplier_id|safe}}';
+    $(document).ready(function(){
+        GLOBAL_ACTION = '{{freetext_action}}';
+        if(GLOBAL_ACTION == 'CREATE'){
+            enable_disable('EDIT')
+        }
+        else{
+            enable_disable('SAVE')
+        }
+        eform_configured = {{eform_configured|safe}};
+        display_fields_from_array(true)
+        $('#nav_menu_items').remove();
+        $("body").css("padding-top", "3.7rem");
+    });
+
+    // pre defined variable
+    var country_list = {{ country_list| safe}}
+    var currency_list = {{ currency_list| safe}}
+
+    // Ajax Function call to save configured form
+    const save_configured_form = () => {
+        $('#save_success_div').hide()
+        $('#save_error_div').hide()
+        var supplier_description = document.getElementById('supplier_description').value
+        var product_category = (document.getElementById('product_category_free_text').value).split(' - ')[0]
+        var currency_id = document.getElementById('currency_id').value
+        var supplier_article_number = document.getElementById('supplier_article_number').value
+        var lead_time = document.getElementById('lead_time').value
+
+        is_save_form_valid = save_form_validation(supplier_id, supplier_description, product_category, supplier_article_number, lead_time)
+        if (is_save_form_valid != '') {
+            $('#save_error_div').html(is_save_form_valid)
+            $('#save_error_div').show()
+            scroll_top()
+            return
+        }
+        freetext_id = document.getElementById('freetext_id').innerHTML
+        var form_data = {
+            supplier_id: supplier_id,
+            supplier_description: supplier_description,
+            product_category: product_category,
+            supplier_article_number: supplier_article_number,
+            lead_time: lead_time,
+            eform_configured: eform_configured,
+            currency_id : currency_id,
+            freetext_id: document.getElementById('freetext_id').innerHTML,
+            eform_id:'{{freetext_details.eform_id|safe}}',
+            type: GLOBAL_ACTION
+        }
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "eProc_Form_Builder:create_update_freetext_form"%}',
+            data: JSON.stringify(form_data),
+            success: function (response) {
+                CloseLoaderPopup();
+                enable_disable('SAVE')
+                $('#save_success_div').html(response.success_message)
+                $('#save_success_div').show()
+                encrypted_id = '{{encrypt_freetext_id|safe}}';
+                freetext_action = '{{freetext_action|safe}}';
+                if(freetext_action == 'CREATE'){
+                    var url = '/configure-freetext/create-freetext/' + encrypted_id + '';
+                    location.href = url
+                }
+            },
+            error: function (response) {
+                CloseLoaderPopup();
+                $('#save_error_div').html(response.responseJSON['error_message'])
+                $('#save_error_div').show()
+            }
+        })
+        scroll_top()
+    }
+
+
+    $('input:radio[name="eform_input_type"]').change(function() {
+        if ($(this).is(':checked')) {
+            $(".select-input-container").find(".selected").removeClass("selected");
+            $(this).closest(".select-input-item__card").addClass("selected");
+
+            var id = this.id;
+            $("#eform_input_field_properties").show();
+            if(id == "input_singleline_text") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").show();
+                $("#field_property_dropdown").hide();
+                $("#field_property_datetime").hide();
+            }
+            else if(id == "input_multiline_text") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").show();
+                $("#field_property_dropdown").hide();
+                $("#field_property_datetime").hide();
+
+            }
+            else if(id == "input_number_type") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").hide();
+                $("#field_property_dropdown").hide();
+                $("#field_property_datetime").hide();
+            }
+            else if(id == "input_dropdown_type") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").hide();
+                $("#field_property_dropdown").show();
+                $("#field_property_datetime").hide();
+                $('#tbody_eform_dropdown').empty();
+                AddNewRow_dropdown()
+            }
+            else if(id == "input_datetime_type") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").hide();
+                $("#field_property_dropdown").hide();
+                $("#field_property_datetime").show();
+            }
+            else if(id == "input_checkbox_type") {
+                $("#field_property_mandatory").show();
+                $("#field_property_specialchars_none").hide();
+                $("#field_property_dropdown").hide();
+                $("#field_property_datetime").hide();
+            }
+        }
+    });
+
+    function AddNewRow_dropdown() {
+        var add_new_row = "";
+        add_new_row = '<tr> <td><input type="radio" id="" name="default_dropdown_option"></td> <td><input type="text" class="form-control" placeholder="Choice"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>'
+        $('#tbody_eform_dropdown').append(add_new_row);
+    }
+
+    $("#table_id_eform_dropdown").on('click','.row-delete-btn',function(){
+        $(this).closest('tr').remove();
+    });
+
+    $('input:radio[name="check_dropdown_type"]').change(function() {
+        $('#field_name').val('');
+        if ($(this).is(':checked')) {
+            var id = this.id;
+            if(id == "dropdown_custom_options") {
+                $("#dropdown_custom_options_section").show();
+                $("#dropdown_predefined_options_sections").hide();
+                $('input[name="dp_prd_option"]').prop('checked', false);
+                $(".dp-prd-opt-wrapper").find(".selected").removeClass("selected");
+
+            }
+            else if(id=="dropdown_predefined_options") {
+                $("#dropdown_custom_options_section").hide();
+                $("#dropdown_predefined_options_sections").show();
+            }
+
+        }
+    });
+
+    $('input:radio[name="dp_prd_option"]').change(function() {
+        if ($(this).is(':checked')) {
+            $(".dp-prd-opt-wrapper").find(".selected").removeClass("selected");
+            $(this).closest(".dp-prd-badge").addClass("selected");
+            var field_name = this.value;
+            $('#field_name').val(field_name);
+        }
+    });
+</script>
+
+<script src="{% static 'scripts/form_fields.js' %}"></script>
+
+{% endblock %}

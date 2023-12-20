@@ -1,0 +1,463 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Purchase Settings {% endblock %}
+
+{% block maincontent %}
+
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div>
+            <div class="elements-space-between">
+                <h3>Purchase Settings</h3>
+                <div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#purchase_setup_information" class="sub-tab active">
+                <div class="sub-tab-link">
+                    <i class="fas fa-info-circle"></i><span> Purchase Setup</span>
+                </div>
+            </li>
+            <li data-tab-target="#org_setup_information" class="sub-tab">
+                <div class="sub-tab-link">
+                    <i class="fas fa-chevron-circle-down"></i><span> Organizational Data</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div id="purchase_setup_information" data-tab-content class="active">
+
+                <div class="mt-3">
+
+                    <p class="text-muted">
+                        Application help text here - Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et doloremque eveniet qui provident? Commodi dignissimos excepturi neque non ex reprehenderit? Amet quis suscipit reprehenderit saepe perspiciatis fugit totam dolorem harum.
+                    </p>
+
+                    <!-- Edit, SAVE, Cancel Buttons-->
+                    <div class="d-flex justify-content-end mt-4 mb-3">
+                        <div>
+                            <button class="btn btn-primary" id="edit_purch_settings" name="edit" type="button">
+                                <i class="fas fa-edit"></i> edit
+                            </button>
+                            <button class="btn btn-outline-primary d-none" type="button" id="purch_cancel" value="Reset">
+                                <i class="fas fa-times"></i> cancel
+                            </button>
+                            <button type="button" name="save" id="save_user_settings_attr"
+                                    class="btn btn-primary d-none">
+                                <i class="fas fa-save"></i> save
+                            </button>
+                        </div>
+                        
+                    </div>
+                    <!--End of Edit, SAVE, Cancel Buttons-->
+
+                    <!-- to be reviewed -->
+                    <div class="required-fields">
+                        {{ user_setting_form.non_field_errors }}
+                    </div>
+
+                    <div id="display_mode_purch" style="display:block;">
+
+                        <div id="purchase_settings_error_msg" class="alert alert-danger">
+                            {% for purch_message in error_msg %}
+                            {{purch_message}}<br>
+                            {% endfor %}
+                        </div>
+                        <div class="alert alert-success display-none" id="user_setting_update_success" role="alert"></div>
+
+                        <!-- Purchase setup card start-->
+                        <div class="card card-shadow-1 mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Purchase Setup</h5>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label for="ACC_CAT">Account assignment category<span
+                                                class="required hg_required"></span></label>
+                                        <div id="default_div_id_acc">
+                                            <input type="text" class="form-control" id="input_id_acc" value="{{user_setting_default_list.0.0}}" disabled>
+                                        </div>
+                                        <div id="acc_div_id" class="d-none">
+                                            <select name="acc_value_disable" id="ACC_CAT"
+                                                    class="form-control pur_set_slct">
+                                                {% for acc in user_setting_list.0 %}
+                                                <option value="{{acc}}">{{acc}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ml-4 col-md">
+                                        <label for="CT_CTR">Cost center</label>
+                                        <div id="default_div_id_cc">
+                                            <input type="text" class="form-control" id="input_id_cc" value="{{user_setting_default_list.1.0}}" disabled>
+                                        </div>
+                                        <div id="cc_div_id" class="d-none">
+                                            <select name="cc_value_disable" id="CT_CTR"
+                                                    class="form-control pur_set_slct">
+                                                {% for cc in user_setting_list.1 %}
+                                                <option value="{{cc}}">{{cc}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ml-4 col-md">
+                                        <label for="WBS_ELEM">WBS element</label>
+                                        <div id="default_div_id_wbs">
+                                            <input type="text" class="form-control" id="input_id_wbs" value="{{user_setting_default_list.2.0}}" disabled>
+                                        </div>
+                                        <div id="wbs_div_id" class="d-none">
+                                            <select name="wbs_value_disable" id="WBS_ELEM"
+                                                    class="form-control pur_set_slct">
+                                                {% for wbs in user_setting_list.2 %}
+                                                <option value="{{wbs}}">{{wbs}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label for="INT_ORD">Internal order</label>
+                                        <div id="default_div_id_io">
+                                            <input type="text" class="form-control" id="input_id_io" value="{{user_setting_default_list.3.0}}" disabled>
+                                        </div>
+                                        <div id="or_div_id"class="d-none">
+                                            <select name="int_value_disable" id="INT_ORD"
+                                                    class="form-control pur_set_slct">
+                                                {% for io in user_setting_list.3 %}
+                                                <option value="{{io}}">{{io}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ml-4 col-md">
+                                        <label for="AS_SET">Asset </label>
+                                        <div id="default_div_id_asset">
+                                            <input type="text" class="form-control" id="input_id_asset" value="{{user_setting_default_list.4.0}}" disabled>
+                                        </div>
+                                        <div id="asset_div_id" class="d-none">
+                                            <select name="asset_value"  id="AS_SET"
+                                                    class="form-control pur_set_slct">
+                                                {% for asset in user_setting_list.4 %}
+                                                <option value="{{asset}}">{{asset}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Purchase setup card end-->
+
+                        <!-- General setup card start-->
+                        <div class="card card-shadow-1 mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">General Setup</h5>
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="DEF_DOC_SEARCH">My Orders default:<span class="required hg_required"></span></label>
+                                        <div id="default_div_id_doc_type">
+                                            <input type="text" class="form-control" id="input_id_doc_type" value="{{user_setting_default_list.5.0}}" disabled>
+                                        </div>
+                                        <div id="doc_type_div_id" class="d-none">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <select name="Doc_search_value_disable" id="DEF_DOC_SEARCH"
+                                                    class="form-control pur_set_slct">
+                                                        {% for Doc_search in user_setting_list.5 %}
+                                                        <option value="{{Doc_search}}">{{Doc_search}}</option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col">
+
+                                        <!--  Shipping details section card section  -->
+                                        <div class="card" style="height:100%;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Shipping Address</h5>
+                                                <div class="elements-space-between">
+                                                    <div class="pur_set_slct" id="default_select_del_addr">
+                                                        {% for addr in user_setting_default_list.6 %}
+                                                        <span hidden id="DEL_ADDR">{{ addr.address_number}}</span>
+                                                        <span id="shipping_street_output">{{ addr.street }},</span><br>
+                                                        <span id="shipping_area_output">{{ addr.area }},</span><br>
+                                                        <span id="shipping_landmark_output">{{ addr.landmark }},</span><br>
+                                                        <span id="shipping_city_output">{{ addr.city }}</span> - <span
+                                                            id="shipping_pcode_output">{{ addr.postal_code }}</span><br>
+                                                        <span id="shipping_region_output">{{ addr.region }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" id="shipping_addr_actions" class="hg_button_edit hg_display d-none" data-toggle="modal" data-target="#ChngShipAddr"> change address</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col">
+
+                                        <!--  Invoice address details section card section  -->
+                                        <div class="card" style="height:100%;">
+                                            <!-- <div class="card-header d-flex justify-content-between">
+                                                <div>
+                                                    <h5>Invoice address</h5>
+                                                </div>
+                                                <div id="invoice_addr_actions" class="dropdown d-none">
+                                                    <a aria-expanded="false" aria-haspopup="true"
+                                                    class="dropdown-toggle hg_display" data-toggle="dropdown"
+                                                    id="dropdownMenuButton" type="button">make changes </a>
+                                                    <div aria-labelledby="dropdownMenuButton" class="dropdown-menu">
+                                                        
+                                                        <a class="dropdown-item" data-addrtype="invoice" data-target="#ChngInvcAddr"
+                                                        data-toggle="modal" href="#">Change Invoice Address</a>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                                            <div class="card-body">
+                                                <h5 class="card-title">Invoice Address</h5>
+                                                <div class="elements-space-between">
+                                                    <div >
+                                                        {% for addr in user_setting_default_list.7 %}
+                                                        <span hidden id="INV_ADDR">{{ addr.address_number}}</span>
+                                                        <span id="invoice_street_output">{{ addr.street }},</span><br>
+                                                        <span id="invoice_area_output">{{ addr.area }},</span><br>
+                                                        <span id="invoice_landmark_output">{{ addr.landmark }},</span><br>
+                                                        <span id="invoice_city_output">{{ addr.city }}</span> - <span
+                                                            id="invoice_pcode_output">{{ addr.postal_code }}</span><br>
+                                                        <span id="invoice_region_output">{{ addr.region }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" id="invoice_addr_actions" class="hg_button_edit hg_display d-none" data-toggle="modal" data-target="#ChngInvcAddr"> change address</button>
+                                                    </div>
+
+                                                </div>
+
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- General setup card end-->
+
+                        
+                    </div>
+                </div>
+                 
+            </div>
+
+            <div id="org_setup_information" data-tab-content>
+                <div class="mt-3">
+                    <p class="text-muted">
+                        Application help text here - Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et doloremque eveniet qui provident? Commodi dignissimos excepturi neque non ex reprehenderit? Amet quis suscipit reprehenderit saepe perspiciatis fugit totam dolorem harum.
+                    </p>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Organization Setup</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    <p class="user-roles__header">Roles assigned to you </p>
+                                    <table class="table table-bordered user-roles__table">
+                                        <thead>
+                                            <tr>
+                                                <td>Roles Description</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for asg_role in user_setting_list.14 %}
+                                            <tr>
+                                                <td>
+                                                    {% if asg_role.role == 'SHOP'%}
+                                                    <span class="user-roles__icons user-role__icon-shop"><i class="fas fa-user"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span> 
+                                                    {% elif asg_role.role == 'SHOP_ADMIN' %}
+                                                    <span class="user-roles__icons user-role__icon-admin"><i class="fas fa-users-cog"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span> 
+                                                    {% elif asg_role.role == 'SHOP_MANAGER' %}
+                                                    <span class="user-roles__icons user-role__icon-manager"><i class="fas fa-user-tie"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span>
+                                                    {% elif asg_role.role == 'SHOP_PURCHASER' %}
+                                                    <span class="user-roles__icons user-role__icon-purchaser"><i class="fas fa-user-friends"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span>
+                                                    {% elif asg_role.role == 'SHOP_PLUS' %}
+                                                    <span class="user-roles__icons user-role__icon-shop-plus"><i class="fas fa-user-plus"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span>
+                                                    {% elif asg_role.role == 'SHOP_ASSIST' %}
+                                                    <span class="user-roles__icons user-role__icon-other"><i class="material-icons-outlined">accessibility_new</i></span> &nbsp; <span>{{asg_role.role_desc}}</span>
+                                                    {% else %}
+                                                    <span class="user-roles__icons user-role__icon-other"><i class="fas fa-user-tag"></i></span> &nbsp; <span>{{asg_role.role_desc}}</span> 
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+        
+                                <div class="col">
+                                    <p class="user-roles__header">Your spending limit </p>
+                                    <table class="table table-bordered user-roles__table">
+                                        <thead>
+                                            <tr>
+                                                <td>Spending limit</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for spending_limit in user_setting_list.12 %}
+                                            <tr>
+                                                <td>{{spending_limit}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+        
+                                <div class="col">
+                                    <p class="user-roles__header">Your Approver limit</p>
+                                    <table class="table table-bordered user-roles__table">
+                                        <thead>
+                                            <tr>
+                                                <td>Approver limit</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for Approver_limit in user_setting_list.13 %}
+                                            <tr>
+                                                <td>{{Approver_limit}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+        
+                            <h5>Organization structure</h5>
+                            <hr> 
+                            <div class="row">
+                                <div class="col">
+                                    <label for="">Company Code</label>
+                                    <select name="" id="company_code_select_id" onchange="get_porg_pgrp(this,'company_code');" class="custom-select">
+                                        {% for cmp_code_value in company_code_dictionary_list %}
+                                        <option value="{{cmp_code_value.company_id}}">{{cmp_code_value.company_code_description}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="">Purchase organisation</label>
+                                    <select name="" id="porg_select_id" onchange="get_porg_pgrp(this,'purchase_organization');" class="custom-select">
+                                        {% for purch_org in purchase_org_dictionary_list %}
+                                        <option value="{{purch_org.porg_id}}">{{purch_org.porg_description}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="">Purchase group</label>
+                                    <select name="" id="pgroup_select_id" class="custom-select">
+                                        {% for purch_grp in purchase_group_dictionary_list %}
+                                        <option value="{{purch_grp.pgroup_id}}">{{purch_grp.pgroup_description}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--start of change shipping address pop-up-->
+{% include 'Ship To Bill To Address/change_shipping_address_modal.html' %}
+<!--end of change shipping address pop-up-->
+
+<!--start of change Invoice address pop-up-->
+{% include 'Ship To Bill To Address/change_invoice_address_modal.html' %}
+<!--end of change Invoice address pop-up-->
+
+
+{% include 'root/loader.html' %}
+
+
+<script>
+
+$(document).ready(function () {
+    
+    // assign Account assignment category default data
+    var acc_default_value = '{{ user_setting_default_list.0.0 | safe }}'
+    // if Account assignment category is null then add class which is used when we save
+    if (!acc_default_value){
+    $('#ACC_CAT').addClass('drop_down_change_class');
+    }
+    var cc_default_value = '{{ user_setting_default_list.1.0| safe}}'
+    if (!cc_default_value){
+    $('#CT_CTR').addClass('drop_down_change_class');
+    }
+    var wbs_default_value = '{{ user_setting_default_list.2.0| safe}}'
+    if (!wbs_default_value){
+    $('#WBS_ELEM').addClass('drop_down_change_class');
+    }
+    var io_default_value = '{{ user_setting_default_list.3.0| safe}}'
+    if (!io_default_value){
+    $('#INT_ORD').addClass('drop_down_change_class');
+    }
+    var asset_default_value = '{{ user_setting_default_list.4.0| safe}}'
+    if (!asset_default_value){
+    $('#ACC_CAT').addClass('drop_down_change_class');
+    }
+    var my_order_default_value = '{{ user_setting_default_list.5.0| safe}}'
+    if (!my_order_default_value){
+    $('#DEF_DOC_SEARCH').addClass('drop_down_change_class');
+    }
+    var default_delivery_addr = '{{user_setting_default_list.6.0.address_number|safe}}'
+    var default_inv_addr = '{{user_setting_default_list.7.0.address_number|safe}}'
+    var send_acc_value = '';
+    var send_cc_value = '';
+    var send_wbs_value = '';
+    var send_or_value = '';
+    var send_asset_value = '';
+    var send_my_order_value = '';
+    var send_del_addr_value = '';
+    var send_inv_addr_value = '';
+    var update_default = [];
+
+    NavigateTabs(); // Custom function to switch tabs
+});
+
+// ajax save user setting
+function ajax_save_user_setting_attr(data){
+    urlLink = "{% url 'eProc_User_Settings:save_purchase_settings' %}";
+    FormAjaxCallAPI(urlLink, data)
+}
+
+
+function ajax_get_porg_pgrp(data) {
+    urlLink = "{% url 'eProc_User_Settings:get_porg_pgrp' %}";
+    let org_data = AjaxCallAPIBasic(urlLink, data);
+    return org_data
+}
+
+</script>
+
+<script src="{% static 'scripts/purchase_settings.js' %}"></script>
+{% endblock %}

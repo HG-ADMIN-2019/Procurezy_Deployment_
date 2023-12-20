@@ -1,0 +1,107 @@
+<script>
+    //// Ajax call function for submitting formdata
+function FormAjaxCallAPI(urlLink,data){
+  {
+        OpenLoaderPopup();
+       jQuery.ajax({
+           async : false,
+           type: 'POST',
+           url: urlLink,
+           contentType: "application/json; charset=utf-8",
+           data: data,
+           success: function(result){
+               response = result;
+               CloseLoaderPopup();
+           },
+           error: function(xhr, resp, text) {
+           },
+			cache: false,
+			processData: false,
+			contentType: false,
+
+       });
+   }
+   return response;
+};
+
+
+function AjaxCallAPI(urlLink, data){
+   jQuery.ajax({
+       async : false,
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(data),
+       success: function(result){
+           response = result;
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+   return response;
+};
+
+function AjaxCallAPIBasic(urlLink, data) {
+    OpenLoaderPopup();
+    jQuery.ajax({
+       async : false,
+       type: 'POST',
+       url: urlLink,
+       data: data,
+       success: function(result){
+           response = result;
+       },
+       error: function(xhr, resp, text) {
+       },
+   });
+   return response;
+}
+
+// Function to get message details
+function message_config_details(msgId){
+var msg_type, result;
+ $.ajax({
+            async: false,
+            type: 'POST',
+            url: "{% url 'eProc_Basic:get_message_description' %}",
+          data: JSON.stringify(msgId),
+          dataType: 'json',
+            success: function (response) {
+               result = response;
+               console.log(response);
+            },
+            error: function (error) {
+
+            }
+        })
+       return  result;
+}
+
+function AjaxCallWithCSRF(urlLink, data, csrf){
+    var result_data = {}
+         result_data = {
+        'status': data['status'],
+        'csrfmiddlewaretoken': csrf,
+        }
+   jQuery.ajax({
+       async : false,
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: result_data,
+       success: function(result){
+           response = result;
+       },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+   return response;
+};
+
+</script>

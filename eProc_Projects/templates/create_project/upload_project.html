@@ -1,0 +1,312 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+
+
+{% include 'root/navbar.html' %}
+{% include 'root/loader.html' %}
+
+<style>
+    .hg_catalog_edit_mode {
+        border: none;
+    }
+
+    .hg_button {
+        float: left;
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+</style>
+
+<body >
+ <div class="hg_spacing">
+        <h1 style="vertical-align: middle;">Maintain Available catalogs</h1>
+        <hr class="hg_heading_hrborder">
+    </div>
+<div class="hg_spacing">
+
+    <button class="btn btn-primary hg_button_margin" onclick="edit_catalogs()" id="edit_cat" style="display: block;"> <i
+            class="fas fa-pencil-alt"></i> Edit
+        Catalogs</button>
+    <button class="btn btn-primary hg_catalog_edit_mode hg_button_margin" id="add_new" onclick="open_po_up()" style="display:none;"> <i
+            class="fa fa-plus" aria-hidden="true" id="add_line" title="Add Line"></i> &nbsp;Add
+        Catalog</button>
+    <button class="btn btn-primary hg_catalog_edit_mode hg_button_margin" id="delete_cat" onclick="application_settings_delete_Row('catalog_list')" style=" display:none;margin-top:20px"> <i
+            class="fa fa-trash" aria-hidden="true" title="Delete Line"></i>Delete
+        Catalog</button>
+</div>
+
+ <div id="add_catalog" class="modal" style="display: none;padding:30%; padding-top:5%;">
+        <!-- Modal content -->
+        <div class="modal-content" style="width:475px;padding: 10px; margin-top: 5%;">
+            <div>
+                <div class="modal-header" >
+                    <h5 class="modal-title">Add new catalog</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick='document.getElementById("add_catalog").style.display = "none"' >
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <p>Catalog ID : <br>
+                    <input type="text" class="form-control" id="cata_id"></p>
+                <p>Catalog Name : <br>
+                    <input type="text" class="form-control" id="cata_name"></p>
+                <p>Description : <br>
+                    <input type="text" class="form-control" id="cata_desc"></p>
+                <p>Product Type : <br>
+                    <select class="form-control" id="cata_type">
+                        <option value="" disabled selected>Select your option</option>
+                        <option> Products </option>
+                        <option> Services </option>
+                        <option> Both </option>
+                    </select></p>
+                <div class="modal-footer">
+                    <button class="btn btn-primary hg_button_margin"
+                        onclick="document.getElementById('add_catalog').style.display='none'"> <i
+                            class="fas fa-times"></i> Cancel</button>
+                    <button class="btn btn-primary" id="save_pop" onclick="add_catalog()"><i class="fas fa-save"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hg_table_app_align hg_spacing">
+        <table id="catalog_list" class="table_sort_filter table-striped">
+
+            <thead id="display_header">
+            <tr>
+                <th id="hg_select_checkbox" style="padding:10px; width:30px;" hidden>Select</th>
+
+                <th style="padding:10px; width:30px;">Catalog ID</th>
+                <th style="padding:10px; width:30px;">Catalog Name</th>
+                <th style="padding:10px; width:30px;">Catalog Description</th>
+                <th style="padding:10px; width:30px;">Product Type</th>
+                <th style="padding:10px; width:30px;" class="action_class" hidden>Action</th>
+                <th style="padding:10px; width:30px;" hidden>Guid</th>
+            </tr>
+            </thead>
+            <tbody id="display_data">
+            {% for catalog in upload_catalog %}
+            <tr >
+                {% if value in my_list %}
+                <td ><input type="checkbox"></td>
+                {% else %}
+                <td hidden><input type="checkbox" disabled></td>
+                {% endif %}
+                <td>{{catalog.catalog_id}}</td>
+                <td>{{catalog.name}}</td>
+                <td>{{catalog.description}}</td>
+                <td>{{catalog.product_type}}</td>
+                <td id="icon_disp" class="hg_catalog_edit_mode"  style="display:none;"></td>
+                <td hidden>{{catalog.catalog_guid}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+
+ <div>
+        <button id="basic_edit_save" type="button" class="btn btn-primary hg_catalog_edit_mode  hg_cancel_save_button_align" onclick="cancel_catalog_changes()" style="display: none;"><i
+                class="fas fa-times"></i> cancel</button>
+        <button class="btn btn-primary hg_catalog_edit_mode hg_button_margin hg_cancel_save_button_align" id="save_cat" onclick="catalog_save_basic()" style="display: none;"><i
+            class="fas fa-save"></i> Save </button>
+
+    </div>
+<script>
+    var content_managment_settings = '{{content_managment_settings|safe}}';
+    var rendered_catalog_data ={{upload_catalog|safe}};
+    var edit_catalog_save_ind = ""
+    var edit_catalog_tr = ""
+
+
+//**********************
+ // on click of upload catalog types display catalog data from db
+
+    function basic_settings_upload(upload_catalog) {
+
+       document.getElementById("basic_edit_save").style.display = "none";
+}
+
+
+//**********************************************************
+  // on click edit icon display the data in edit mode
+
+function edit_catalogs(){
+var edit_icon="<i class='fas fa-edit 'style='color:orange' title='Edit' onclick= 'edit_catalog_save(this)'></i>";
+    $('#display_data').empty();
+    var edit_basic_data = '';
+    $.each(rendered_catalog_data, function (i, item) {
+        edit_basic_data +='<tr ><td><input type="checkbox" class="hg_deleteable" required></td><td>'+ item.catalog_id +'</td><td>' + item.name + '</td><td>' + item.description + '</td><td>' + item.product_type + '</td><td hidden>' + item.catalog_guid + '</td><td class= "hg_catalog_edit_mode" style="display:block;">' + edit_icon + '</td></tr>';
+          });
+     $('#display_data').append(edit_basic_data);
+     $( "#hg_select_checkbox").prop( "hidden", false );
+     $( ".action_class").prop( "hidden", false );
+     $( ".hg_catalog_edit_mode").prop( "hidden", false );
+
+
+
+        document.getElementById("edit_cat").style.display = "none";
+        document.getElementById("add_new").style.display = "block";
+        document.getElementById("basic_edit_save").style.display = "block";
+        document.getElementById("save_cat").style.display = "block";
+        document.getElementById("delete_cat").style.display = "block";
+        //document.getElementById("icon_disp").style.display = "block";
+
+
+
+}
+
+//**********************************
+function open_po_up() {
+        document.getElementById('add_catalog').style.display = 'block'
+        $('#add_catalog').find('input:text').val('');
+        document.getElementById("cata_id").readOnly = false;
+        document.getElementById("cata_id").style.backgroundColor = 'white'
+    }
+
+//*********************
+
+ // on click of add new line icon, add new line to editable table
+    function open_po_up() {
+
+            document.getElementById('add_catalog').style.display = 'block'
+        }
+
+//**************************
+//sort and filter feature for tables
+$(document).ready(function(){
+    table_sort_filter()
+});
+
+//************************
+
+
+   function add_catalog() {
+        let id = document.getElementById("cata_id").value;
+        let name = document.getElementById("cata_name").value;
+        let desc = document.getElementById("cata_desc").value;
+        let prd_type = $("#cata_type option:selected").text();
+
+         let input = {
+                "id": id,
+                "name": name,
+                "description": desc,
+                "product_type": prd_type
+            }
+
+                   let edit_icon = "&nbsp;&nbsp;<i class='fas fa-edit 'style='color:orange' title='Edit' onclick= 'edit_catalog_save(this)'></i>"
+
+
+                    let child = '<tr ><td class= "hg_catalog_edit_mode" style="display:block; "> <input type= "checkbox" class="hg_deleteable"></td><td>' + id + '</td><td>' + name + '</td><td>' + desc + '</td><td>' + prd_type + '</td><td class= "hg_catalog_edit_mode" style="display:block">' + edit_icon + '</td></tr>'
+                    $("#catalog_list").append(child)
+
+                document.getElementById("add_catalog").style.display = "none"
+                // $('#add_catalog').find('input:number').val('');
+              //  $('#add_catalog').find('input:text').val('');
+
+            }
+
+
+
+
+
+
+//****************
+
+
+  //onclick of cancel............
+
+function cancel_catalog_changes(){
+    $('#display_data').empty();
+    var edit_basic_data = '';
+    $.each(rendered_catalog_data, function (i, item) {
+        edit_basic_data += '<tr ><td>' + item.catalog_id + '</td><td>' + item.name + '</td><td>' + item.description + '</td><td>' + item.product_type + '</td></tr>';
+
+     });
+
+     $('#display_data').append(edit_basic_data);
+     $( "#hg_select_checkbox").prop( "hidden", true );
+     $( ".action_class").prop( "hidden", true );
+
+    document.getElementById("basic_edit_save").style.display = "block";
+        document.getElementById("edit_cat").style.display = "block";
+        document.getElementById("add_new").style.display = "none";
+        document.getElementById("basic_edit_save").style.display = "none";
+        document.getElementById("basic_edit_save").style.display = "none";
+
+}
+
+
+//**********************
+    // on click of save, save edited data into db
+        function catalog_save_basic() {
+            var catalog_data = new Array();
+            $("#catalog_list TBODY TR").each(function () {
+                var row = $(this);
+                var get_catalog_data = {};
+                get_catalog_data.catalog_id= row.find("TD").eq(1).html();
+                get_catalog_data.name = row.find("TD").eq(2).html();
+	            get_catalog_data.description = row.find("TD").eq(3).html();
+	            get_catalog_data.product_type = row.find("TD").eq(4).html();
+               catalog_data.push(get_catalog_data);
+            })
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:save_catalog_data' %}",
+                data: JSON.stringify(catalog_data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Response) {
+                        rendered_catalog_data = Response;
+                         $( "#hg_select_checkbox").prop( "hidden", true );
+                         $('tr td:nth-child(1)').hide();
+                        //catalog_save_basic();
+
+            }
+        });
+        }
+
+//*************************
+ //onclick of delete,delete the row.
+  function application_settings_delete_Row(myTable) {
+            try {
+                var table = document.getElementById(myTable);
+                var rowCount = table.rows.length;
+
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var chkbox = row.cells[0].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                    }
+                }
+                return rowCount;
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+//*******************
+function edit_catalog_save(instance) {
+        let get_tr = instance.parentElement.parentElement
+        edit_catalog_tr = get_tr.id
+        let get_cells = get_tr.cells
+        document.getElementById("cata_id").value = get_cells[1].innerText
+        document.getElementById("cata_id").readOnly = true;
+        document.getElementById("cata_id").style.backgroundColor = "#ececec"
+        document.getElementById("cata_name").value = get_cells[2].innerText
+        document.getElementById("cata_desc").value = get_cells[3].innerText
+        document.getElementById("add_catalog").style.display = "block"
+        edit_catalog_save_ind = "X"
+    }
+
+</script>
+</body>
+{% endblock %}

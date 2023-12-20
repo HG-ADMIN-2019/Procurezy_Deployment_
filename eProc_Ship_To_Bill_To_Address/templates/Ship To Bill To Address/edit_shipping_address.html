@@ -1,0 +1,56 @@
+{% load static %}
+<div class="modal fade" id="EditShipAddr">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Current Shipping Address</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="alert alert-danger display-none" id="edit_address_error_div"></div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group"><label>Street</label><br>
+                        <input type="text" class="form-control hg_edit_address hg_special_character check_address"  id="street_input" value="">
+                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9 [#,-._ ]</small>
+                    </div>
+                    <div class="form-group"><label>Area</label><br>
+                        <input type="text" class="form-control hg_edit_address hg_special_character check_address" id="area_input" value="">
+                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9 [#,-._ ]</small>
+                    </div>
+                    <div class="form-group"><label>Landmark</label><br>
+                        <input type="text" class="form-control hg_edit_address hg_special_character check_address" id="landmark_input" value="">
+                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9 [#,-._ ]</small>
+                    </div>
+                    <div class="form-group"><label>City</label><br>
+                        <input type="text" class="form-control  hg_edit_address hg_special_character check_city" id="city_input" value="">
+                        <small class="form-text text-muted">Valid characters are A-Z a-z </small>
+                    </div>
+                    <div class="form-group"><label>Postal Code</label><br>
+                        <input type="text" class="form-control hg_edit_address hg_special_character check_postal_code" id="pcode_input" value="">
+                        <small class="form-text text-muted">Valid characters are A-Z a-z 0-9 [- ]</small>
+                    </div>
+                    <div class="form-group"><label>Region</label><br>
+                        <input type="text" class="form-control hg_edit_address hg_special_character check_region" id="region_input" value=""></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button type="button" id="submit_addr" class="btn btn-primary" onclick="submitAddress()"><i class="fas fa-save"></i> &nbsp;submit </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if is_second_step %}
+<script src="{% static 'scripts/edit_ship_address_sc2nd_step.js' %}"> </script>
+{% endif %}
+
+{% if is_document_detail %}
+<script src="{% static 'scripts/edit_ship_address_document_detail.js' %}"> </script>
+{% endif %}

@@ -1,0 +1,113 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Organizational Support {% endblock %}
+{% block maincontent %}
+
+<style>
+    .sub-menu-icon-wrapper {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 50%;
+        margin: 0 auto;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sub-menu-main-icon-wrapper {
+        height: 10rem;
+        width: 10rem;
+        border-radius: 50%;
+        margin: 0 auto;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .small {
+        font-size: 2.5rem !important;
+    }
+
+    .big {
+        font-size: 8rem;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+{% include 'org_support_call.html' %}
+{% include 'org_support_email.html' %}
+{% include 'org_support_chat.html' %}
+
+<div class="container-fluid">
+    <div id="upload-basic-data" class="upload-data-tab">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card config-card pointer" id="id_add_country" value="ADD" data-toggle="modal"
+                    onclick="onclick_add_button(this);">
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper blue">
+                            <i class="material-icons-outlined">
+                                call
+                            </i>
+                        </div>
+                        <a>
+                            <div class="mt-3">
+                                <span class="upload-data-label">Call Support</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="onclick_add_button_email(this)">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper light-green">
+                            <i class="material-icons-outlined">
+                                email
+                            </i>
+                        </div>
+
+                        <a>
+                            <div class="mt-3">
+                                <span class="upload-data-label">Email Support</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card pointer" onclick="onclick_add_button_chat(this)">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper purple">
+                            <i class="material-icons-outlined">
+                                chat
+                            </i>
+                        </div>
+                        <a>
+                            <div class="mt-3">
+                                <span class="upload-data-label">Chat Support</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        nav_bar_admin();
+    });
+
+
+</script>
+{% endblock %}

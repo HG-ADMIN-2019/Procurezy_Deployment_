@@ -1,0 +1,224 @@
+{% load static %}
+
+<style>
+  .fav_sc_items_list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fav_sc_items_list::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  background-color: rgba(184, 184, 184, 0.6);
+  border-radius: 10px;
+}
+</style>
+
+<!--Start product detail popup-->
+<div class="modal fade" id="prod_detail_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div>
+                <button type="button" class="close" data-dismiss="modal" style="padding-right: 1%">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-5">
+                        <div class="product-image-section">
+                            <div class="product-image-section__showcase">
+                                <img id="image_featured" onerror='this.src="/static/images/no-image-cropped.png"'
+                                    alt="product image1" class="image-featured">
+                            </div>
+                            <div class="product-image-section__select-img">
+                                <img id="img_1" onerror='this.src="/static/images/no-image-cropped.png"'
+                                    alt="product image1" class="image-thumbnail">
+                                <img id="img_2" onerror='this.src="/static/images/no-image-cropped.png"'
+                                    alt="product image2" class="image-thumbnail">
+                                <img id="img_3" onerror='this.src="/static/images/no-image-cropped.png"'
+                                    alt="product image3" class="image-thumbnail">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-7">
+                        <div class="fav_sc_items_list" style="height:80vh; overflow-y:auto; padding: 0rem 1.5rem; width: auto;">
+
+                            <div class="product-detail-section__header">
+                                <div>
+                                    <span class="product-header-text" id="id_desc"></span>
+                                </div>
+                                <div class="product-detail-section__header-bottom">
+                                    <div>
+                                        <span class="product-header-sub-text">by </span>
+                                        <span class="product-header-sub-text" id="id_supp"></span>
+                                    </div>
+    
+                                    <div id="product_external_link">
+    
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__pricing mt-3 mb-4">
+                                <div class="product-pricing-text">
+                                    <span class="text-muted" id="id_currency"> </span>
+                                    <span id="id_price"> </span>
+                                    <span id="id_unit" class="product-pricing-text__unit"></span>
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__discount mt-3 mb-4" id="product-detail-section__discount" style="display: none;">
+                                <span class="discount-section-title">Available Discount</span>
+                                <div id="discount_info_body">
+                                    
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__addtocart mt-3 mb-4">
+                                <div class="product-detail-section__addtocart-top">
+                                    <div class="box1">
+                                        <span class="h5">Quantity</span>
+                                    </div>
+                                    <div class="box2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="quantity-left-minus btn btn-light btn-lg" onclick="on_change_quantity('DECREMENT')"  data-type="minus" data-field=""><i class="fas fa-minus"></i></button>
+                                            </div>
+                                            <input type="number" onkeypress="return event.charCode >= 49" id="id_quantity" name="catalog_quantity" class="form-control product-quantity-input" min="1" max="100" style="height: auto;" value="1">
+                                            <div class="input-group-append">
+                                                <button type="button" class="quantity-right-plus btn btn-light btn-lg" onclick="on_change_quantity('INCREMENT')" data-type="plus" data-field=""><i class="fas fa-plus"></i></button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                   <div class="box3">
+                                        <button type="button" class="btn btn-primary btn-add-product btn-lg" onclick="add_catalog_popup()"> add to cart <i class="material-icons"> add_shopping_cart </i></button>
+                                   </div>
+                                </div>
+
+                                <div class="product-detail-section__addtocart-bottom">
+                                    <div>
+                                        <span>Minimum Order Quantity: <span id="min_order_qty_popup"></span> </span>
+                                    </div>
+                                    <div>
+                                        <span> Lead Time(Days): <span id="lead_time_popup"></span> </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div class="product-detail-section__vwbp" id="product-detail-section__vwbp" style="display: none;">
+                                <h5 id="product-detail-section__vwbp-field-name"> </h5>
+                                <div class="row no-gutters select-option-container" id="vwbp_options_body">
+                                    
+                                </div>
+                            </div>
+
+                            
+                            <div class="product-detail-section__vwap" id="product-detail-section__vwap" style="display: none;">
+                                <h5 id="product-detail-section__vwap-field-name"> </h5>
+                                <div class="row no-gutters select-option-container" id="vwap_options_body">
+
+                                </div>
+                            </div>
+                            
+
+                            <div class="product-detail-section__vwobp" id="product-detail-section__vwobp" style="display: none;">
+                                <div class="row" id="vwobp_dropdown_body">
+                                    
+                                </div>
+                            </div>
+
+                            <div class="product-detail-section__product-description mt-3 mb-5">
+                                <h5 class="card-title">Product Description</h5>
+                                <p id="id_prod_desc"> </p> 
+                            </div>
+
+                            <div class="product-detail-section__product-specification mt-3 mb-5" id="prod_spec_div_id" style="display:none">
+                                <h5 class="card-title">Product Specification</h5>
+
+                                <table class="table table-bordered mt-1" id="prod_spec_main_table" >
+                                    <tbody id="product_spec_main_tbody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="product-detail-section__product-add-data mt-3 mb-4">
+                                <h5 class="card-title">Additional Information</h5>
+
+                                <div>
+                                    <div>
+                                        <span class="h6">Lead Time (days) </span> <span id="id_lead_time"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Price Unit </span><span id="id_lot_size"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Product Category </span><span id="id_unspsc_cat"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6">Available Quantity </span> <span id="id_available_qty"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Manufacturer </span> <span id="id_manufacturer"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Country of Origin </span> <span id="id_country_of_origin"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Brand </span> <span id="id_brand"></span>
+                                    </div>
+                                    <div>
+                                        <span class="h6"> Contract Number </span> <span id="id_contract_num"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--End product detail popup-->
+<script src="{% static 'scripts/product_complete_detail_popup.js' %}"></script>
+<script>  
+  // ajax Function to view product details
+  function ajax_view_prod_detail(data) {
+    urlLink = "{% url 'eProc_Catalog:get_product_service_prod_details' %}";
+    let result = AjaxCallAPI(urlLink, data);
+    return result;
+  }
+
+  $(document).ready(function() {
+    var image_thumbnail = document.getElementsByClassName('image-thumbnail');
+
+    for(i=0; i < image_thumbnail.length; i++){
+        console.log(image_thumbnail);
+        image_thumbnail[0].classList.add('prod-img-selected');
+
+    };
+
+    catalog_quantity = 0;
+
+    $('.quantity-right-plus').click(function(e){
+        e.preventDefault();
+        var catalog_quantity = parseInt($('#id_quantity').val());
+        $('#id_quantity').val(catalog_quantity + 1);
+    })
+    $('.quantity-left-minus').click(function(e){
+        e.preventDefault();
+        var catalog_quantity = parseInt($('#id_quantity').val());
+        if(catalog_quantity>1) {
+            $('#id_quantity').val(catalog_quantity - 1);
+        }
+
+    })
+})
+</script>

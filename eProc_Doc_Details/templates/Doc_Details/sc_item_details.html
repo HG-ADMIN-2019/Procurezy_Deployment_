@@ -1,0 +1,906 @@
+{% load static %}
+<style>
+
+    .sub-tabs .sub-tab-link.text-size-small {
+        font-size: 17px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .sc-completion__supplier-desc {
+        color: #007bff;
+    }
+
+    .sub-tabs .sub-tab-link.text-size-x-small {
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+
+<!--  Defining table for displaying cart items in 1st step of shopping cart wizard  -->
+<div class="table-responsive-lg">
+    <table id="cart_details" class="table" >
+        <thead class="thead-light">
+        <tr>
+            <!-- <th></th> -->
+            <th>No</th>
+            <th>Item</th>
+            <th style="width: 20%;">Description</th>
+            <th>Call Off</th>
+            <th>Supplier Product Number</th>
+            <th>Delivery Date</th>
+            <th>Price Unit</th>
+            <th>Unit</th>
+            <th>Price Per Unit</th>
+            <th>Total</th>
+            <th>Quantity</th>
+            <th id="table_header_action">Action</th>
+        </tr>
+        </thead>
+
+        <!--   Looping over the cart_items to get items    -->
+        {% for itm in item_dictionary_list %}
+        <tr id="{{itm.guid}}">
+            <!-- <td>
+                <input onchange="checkbox_onchange(this)" type="checkbox" name="select_item" id="select_item-{{forloop.counter}}_{{itm.call_off}}-{{itm.guid}}">
+            </td> -->
+            <td id="{{itm.item_num}}_{{itm.call_off}}">{{itm.item_num}}</td>
+            <td>
+                <a href="#" onclick="view_detail('{{ itm.int_product_id}}','{{itm.guid}}')">
+                    <img class="sc-item-table__item-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{itm.image_url}}">
+                </a>
+            </td>
+            <td id="description-{{itm.guid}}">
+                <!--                <span id="desc-{{items.guid}}">{{ itm.description }}</span>-->
+                <div class="desc-section-top">
+                    <div id="desc-{{itm.guid}}">
+                        {% if itm.call_off == '01'%}
+                        <a href="#" onclick="view_detail('{{ itm.int_product_id}}','{{itm.guid}}')">{{ itm.description }}</a>
+                        {% else %}
+                        <a  id="sc_item_description-{{itm.guid}}">{{ itm.description }}</a>
+                        {% endif %}
+                    </div>
+                    <div class="sc-completion__supplier-desc" id="supp-{{itm.guid}}">by - {% if itm.call_off == '04' %}{{ itm.pref_supplier }}{% else %}{{ itm.supplier_id }}{% endif %}</div>
+                </div>
+
+                <!-- Section to display change action icon, eform View Additional details button -->
+                <div class="desc-section-bottom">
+                    <button type="button" class="hg_button_round notes badge_status_await_approval" id="notes_added-{{itm.guid}}" title="Notes Added" {% if itm.supplier_note_existence_flag or itm.internal_note_existence_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                        <i class="material-icons-outlined">description</i>
+                    </button>
+
+                    <button type="button" class="hg_button_round attachment badge_status_purch_wrkl" id="attachment_added-{{itm.guid}}" title="Attachments Added" {% if itm.attachment_existence_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                        <i class="material-icons-outlined">attach_file</i>
+                    </button>
+
+                    <button type="button" class="hg_button_round ship-address badge_status_save" id="shippingAddress_added-{{itm.guid}}" title="Shipping Address Changed" {% if itm.address_change_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                        <i class="material-icons-outlined">local_shipping</i>
+                    </button>
+
+                    <button type="button" class="hg_button_round acct-det badge_status_approved" id="accounting_added-{{itm.guid}}" title="Cost objects changed" {% if itm.accounting_change_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                        <i class="material-icons-outlined">account_balance_wallet</i>
+                    </button>
+
+                </div>
+            </td>
+            <td id="call_off-{{itm.guid}}">{{itm.call_off}}</td>
+            <td id="prod_cat_id-{{itm.guid}}" hidden>{{itm.prod_cat_id}}</td>
+            <td id="supp_prod_num-{{itm.guid}}">{{itm.supp_product_id}}</td>
+            <td id="item_del_date-{{itm.guid}}">{{itm.item_del_date|date:'Y-m-d'}}</td>
+            <td id="price_unit-{{itm.guid}}">{{itm.price_unit}}</td>
+            <td id="unit-{{itm.guid}}">{{itm.unit_desc}}</td>
+            <td><span id="price-{{itm.guid}}"
+                      class="hg_total_value">{% if itm.call_off == '04' %}-{% else %}{{ itm.price }}</span>&nbsp;&nbsp;&nbsp;/&nbsp
+                <span id="currency-{{items.guid}}">{{itm.currency}}</span>
+                {% endif %}</td>
+            <td id="value-{{itm.guid}}">
+                 <span id="ScIem-value-{{itm.guid}}"
+                    class="hg_item_total_value update_converted_value">{{itm.value}}</span>&nbsp/&nbsp;{{request.user.currency_id}}</td>
+            {% if itm.call_off == "01"%}
+            <td id="catalog_qty-{{itm.guid}}">{{itm.catalog_qty}}</td>
+            {% else %}
+            <td id="quantity-{{itm.guid}}">{{itm.quantity}}</td>
+            {% endif %}
+
+            <td class="table_body_action_icons item-action-icon-section">
+                <span onclick="display_delete_popup('{{itm.guid}}')" title="Delete Item" class="sc-completion-item-delete-icon">
+                    <i class="material-icons item-action-icons"> delete_outline</i>
+                </span>
+                <span onclick="on_click_item_display_detail('{{forloop.counter}}_{{itm.call_off}}');" title="More Details">
+                    <i class="material-icons-outlined item-action-icons"> more</i>
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Cart value section -->
+<div class="row no-gutters justify-content-end">
+    <div class="col-lg-4">
+        <div class="card cart-value-card">
+            <div class="card-body">
+                <div class="cart-value-section">
+                        <span class="cart-value-label">Total Value (Net)</span>
+                        <span class="cart-value-desc" ><span id="actual_price">{{actual_price}}</span> {{request.user.currency_id}}</span>
+                    </div>
+                    <div class="cart-value-section">
+                        <span class="cart-value-label">Total Discount</span>
+                        <span class="cart-value-desc" >- <span id="discount_value">{{discount_value}}</span> {{request.user.currency_id}}</span>
+                    </div>
+                <hr>
+                <div id="total_value" class="cart-value-section">
+                    <span class="cart-value-label">Total value for <span id="total_items"></span> items:</span>
+                    <span  class="cart-value-desc" ><span id="ScHeader-total_value-{{sc_header_data.guid}}">{{sc_header_data.total_value}}</span> <span id="total_cart_currency"> {{requester_currency}}</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<!--    <div id="total_value" class="d-flex justify-content-end item-table-cart-value-section mr-2">-->
+<!--        <p>Total for <span id="total_items"></span> items: <span id="ScHeader-total_value-{{sc_header_data}}" class="item-table-total-cart-value">{{total_val}}</span> <span>{{requester_currency}}</span> </p>-->
+<!--    </div>-->
+</div>
+
+<!-- pop up to delete an item from your current shopping cart. -->
+<div id="delete_popup" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Please Confirm</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <p>You are about to delete an item from your current shopping cart. Are you sure?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" class="btn btn-primary" name="delete" onclick="delete_cart_item()"><i class="fas fa-trash-alt"></i> delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'ProductDetailPopup/basic_product_detail_popup.html' %}
+
+<div class="card sc-completion-item-detail card-shadow-2" id="id_display_item_detail" style="display:none;">
+    {% for itm in itm_det %}
+    <div class="hg_class_prod_desc card-body">
+        <div class="prev-next-btn-group">
+            <button class="btn btn-round" onclick="item_detail_previous(this)">
+                <i id="{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
+            </button>
+            <span class="item-description">Item - {{ forloop.counter }} - {{itm.description}}</span>
+            <button class="btn btn-round" onclick="item_detail_next(this)">
+                <i id="{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#item_basic_information" class="sub-tab active">
+                <div class="sub-tab-link text-size-small">
+                    <i class="material-icons">info</i><span> Basic Details</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_accountng_details" class="sub-tab">
+                <div class="sub-tab-link text-size-small">
+                    <i class="material-icons-outlined"> account_balance_wallet </i><span> Accounting Details</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_notes_and_attachments" class="sub-tab">
+                <div class="sub-tab-link text-size-small">
+                    <i class="material-icons-outlined">description</i><span> Notes & Attachments</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_approval_process_overview" class="sub-tab" id="item_approval_overview">
+                <div class="sub-tab-link text-size-small" onclick="open_item_details(event, 'approval_process_summary')">
+                    <i class="material-icons">check_circle </i><span> Approval Process Overview</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_supplier_details" class="sub-tab">
+                <div class="sub-tab-link text-size-small">
+                    <i class="material-icons">local_shipping</i><span> Supplier Details</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_shipping_address_details" class="sub-tab">
+                <div class="sub-tab-link text-size-small">
+                    <i class="fas fa-address-card"></i><span> Shipping Address Details</span>
+                </div>
+            </li>
+            <li data-tab-target="#item_efrom_details" class="sub-tab" id="eform_tab">
+                <div class="sub-tab-link text-size-small">
+                    <i class="material-icons">list_alt</i><span> eForm Details</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="item_basic_information" data-tab-content class="active">
+                <div class="m-4">
+                    {% for itm in itm_det %}
+                    <div class="hg_class_item_data">
+                        <div class="d-flex justify-content-end">
+                            <span class="badge help-text-badge help-text-alpha-numeric-special"></span>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col">
+                                <h4>Identification</h4>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Description</label>
+                                    <div class="col-8">
+                                        <input class="form-control call_off-{{itm.call_off}}-description" type="text" name="{{itm.description}}"
+                                            value="{{itm.description}}" id="ScItem-description-{{itm.guid}}" onchange="update_description(this.id);" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Product Category</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control call_off-{{itm.call_off}}-prod_cat" name="{{itm.cust_prod_cat_id}}" value="{{itm.cust_prod_cat_id}}"
+                                            id="ScItem-prod_cat_id-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <h5 class="h4">Organization</h4>
+                                        <div class="form-group row">
+                                            <label class="col-4 col-form-label">Company Code</label>
+                                            <div class="col-8">
+                                                <input type="text" class="form-control" name="{{itm.comp_code}}"
+                                                    value="{{itm.comp_code}}" id="ScItem-comp_code-{{itm.guid}}" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-4 col-form-label">Purchasing Organization</label>
+                                            <div class="col-8">
+                                                <input type="text" class="form-control" name="{{itm.purch_org}}"
+                                                    value="{{itm.purch_org}}" id="ScItem-purch_org-{{itm.guid}}" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-4 col-form-label">Purchasing Group</label>
+                                            <div class="col-8">
+                                                <select name="{{itm.purch_grp}}" id="ScItem-purch_grp-{{itm.guid}}" class="form-control" disabled>
+                                                    {% for pgrp in pgrp_list %}
+                                                    {% if pgrp.item_num == itm.item_num %}
+                                                    <option>{{pgrp.purch_grp}}</option>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <h4>Further Properties</h4>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Supplier Product Number</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{itm.int_product_id}}"
+                                                value="{{itm.int_product_id}}" id="ScItem-supp_prod_num-{{itm.guid}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Required on</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{itm.required_on}}"
+                                                value="{{itm.required_on|date:'Y-m-d'}}" id="ScItem-required_on-{{itm.guid}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">UNSPSC</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{itm.prod_cat_id}}" value="{{itm.prod_cat_id}}"
+                                                id="ScItem-unspsc-{{itm.guid}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Contract no.</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{itm.ctr_num}}"
+                                                value="{{itm.ctr_num}}" id="ScItem-supplier_contact-{{itm.guid}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Contract Name</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control " name="{{itm.ctr_name}}"
+                                                value="{{itm.ctr_name}}" id="ScItem-supplier_name-{{itm.guid}}" disabled>
+                                        </div>
+                                    </div>
+                                    {% if itm.silent_po %}
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Silent PO</label>
+                                        <div class="col-8">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="{{itm.silent_po}}"
+                                                    id="ScItem-silent_po-{{itm.guid}}_check" checked disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Silent PO</label>
+                                        <div class="col-8">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="{{itm.silent_po}}"
+                                                    id="ScItem-silent_po-{{itm.guid}}" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <h4>Currency, Values and Delivery Date</h4>
+
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Price/Currency/Price Unit</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.price}}" value="{{itm.price}}" id="ScItem-price-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.currency}}" value="{{itm.currency}}" id="ScItem-currency-{{itm.guid}}" disabled>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.price_unit}}" value="{{itm.price_unit}}" id="ScItem-price_unit-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+
+                                {% if itm.call_off == "01"%}
+                                <span id="product_id-{{forloop.counter}}-{{itm.int_product_id}}-{{itm.lead_time}}-{{itm.price}}" hidden></span>
+
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Quantity/Unit</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control call_off-{{itm.call_off}}-quantity" name="{{itm.catalog_qty}}" value="{{itm.catalog_qty}}"
+                                            id="ScItem-catalog_qty-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.unit}}" value="{{itm.unit}}" id="ScItem-unit-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Quantity/Unit</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control call_off-{{itm.call_off}}-quantity check_number" name="{{itm.quantity}}" value="{{itm.quantity}}" id="ScItem-quantity-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.unit}}" value="{{itm.unit}}" id="ScItem-cat_unit-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Total Item Value </label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" name="{{itm.value}}" value="{{itm.value}}" id="ScItem-value-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Incoterm/location</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.incoterm}}" value="{{itm.incoterm}}" id="ScItem-incoterm-{{itm.guid}}" disabled>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="{{itm.incoterm_loc}}" value="{{itm.incoterm_loc}}" id="ScItem-incoterm_loc-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Goods/Services Recipient </label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_product_name" name="{{itm.goods_recep}}" value="{{itm.goods_recep}}" id="ScItem-goods_recep-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                {% if itm.call_off == '03' %}
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Lead Time </label>
+                                    <div class="col-8">
+                                        <input type="number" min="1" class="form-control pr_lead_time " name="{{itm.lead_time}}" value="{{itm.lead_time}}" id="ScItem-lead_time-{{itm.guid}}" onchange="update_delivery_date('on_lead_time_change', this.id)" disabled>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Delivery Date </label>
+                                    <div class="col-8">
+                                        <input type="date" class="form-control read_only_field" name="{{itm.item_del_date}}" value="{{itm.item_del_date|date:'Y-m-d'}}" id="ScItem-item_del_date-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Goods Marking</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_special_char" name="{{itm.goods_marking}}" value="{{itm.goods_marking}}" id="ScItem-goods_marking-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Payment Terms </label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_number" name="{{itm.payment_term}}" value="{{itm.payment_term}}" id="ScItem-payment_term-{{itm.guid}}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="item_accountng_details" data-tab-content >
+                <div class="m-4">
+                    {% for sc_acc in acc_det %}
+                    <div class="hg_class_sc_acc_details">
+        
+                        <div class="row">
+                            <div class="col-6">
+                                <h4>Accounting Details</h4>
+                                <div>
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Number </label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{sc_acc.acc_item_num}}"
+                                                   value="{{sc_acc.acc_item_num}}" id="ScAccounting-acc_item_num-{{sc_acc.guid}}" disabled>
+                                        </div>
+                                    </div>
+        
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Percentage </label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="{{sc_acc.dist_perc}}"
+                                                   value="{{sc_acc.dist_perc}}" id="ScAccounting-dist_perc-{{ sc_acc.guid }}" disabled>
+                                        </div>
+                                    </div>
+        
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Account Assignment Category </label>
+                                        <div class="col-8">
+                                            <select class="form-control check_multiple_account_asign_type" id="ScAccounting-acc_cat-{{ sc_acc.guid }}"
+                                                    onchange="display_acc_val(this)" class="hg_modal_select_field" disabled>
+                                                {% for acc_values in acc_append_desc %}
+                                                {% if acc_values.account_assign_cat == sc_acc.acc_cat %}
+                                                <option value="{{acc_values.account_assign_cat}}">{{acc_values.append_val}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+        
+                                                {% for acc_values in acc_append_desc %}
+                                                {% if acc_values.account_assign_cat != sc_acc.acc_cat %}
+                                                <option value="{{acc_values.account_assign_cat}}">{{acc_values.append_val}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+        
+                                    <div id="id_cost_center{{ forloop.counter }}">
+                                        <div class="form-group row">
+                                            <label class="col-4 col-form-label">Cost Center </label>
+                                            <div class="col-8" id="input_costcenter{{forloop.counter}}">
+                                                {% if sc_acc.cost_center %}
+                                                {% for acc_values in acc_value_append %}
+                                                {% if acc_values.account_assign_value == sc_acc.cost_center %}
+                                                <input type="text" id="ScAccounting-cost_center-{{ sc_acc.guid }}" class="hg_modal_select_field form-control" name="CC" value="{{acc_values.append_val}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                    <div id="id_asset{{ forloop.counter }}" style="display:none;">
+                                        <div class="form-group row">
+                                            <label class="col-4 col-form-label">Asset </label>
+                                            <div class="col-8" id="input_asset{{forloop.counter}}">
+                                                {% if sc_acc.asset_number %}
+                                                {% for acc_values in acc_value_append %}
+                                                {% if acc_values.account_assign_value == sc_acc.asset_number %}
+                                                <input type="text" id="ScAccounting-asset_number-{{ sc_acc.guid }}" class="hg_modal_select_field form-control" name="AS" value="{{acc_values.append_val}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div id="id_int_ord{{ forloop.counter }}" style="display:none;">
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">Internal Order </label>
+                                        <div class="col-8" id="input_intorder{{forloop.counter}}">
+                                            {% if sc_acc.internal_order %}
+                                            {% for acc_values in acc_value_append %}
+                                            {% if acc_values.account_assign_value == sc_acc.internal_order %}
+                                            <input type="text" id="ScAccounting-internal_order-{{ sc_acc.guid }}" class="hg_modal_select_field form-control" name="OR" value="{{acc_values.append_val}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div id="id_wbs{{ forloop.counter }}" style="display:none;">
+                                    <div class="form-group row">
+                                        <label class="col-4 col-form-label">WBS </label>
+                                        <div class="col-8" id="input_wbs{{forloop.counter}}">
+                                            {% if sc_acc.wbs_ele %}
+                                            {% for acc_values in acc_value_append %}
+                                            {% if acc_values.account_assign_value == sc_acc.wbs_ele %}
+                                            <input type="text" id="ScAccounting-wbs_ele-{{ sc_acc.guid }}" class="hg_modal_select_field form-control" name="WBS" value="{{acc_values.append_val}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">General Ledger Account </label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" value="{{sc_acc.gl_acc_num_desc}}" id="ScAccounting-gl_acc_num-{{ sc_acc.guid }}" class="hg_modal_select_field" disabled>
+                                    </div>
+                                </div>
+        
+                                <!--                        <div class="form-group row" id="id_generic_acc_ass{{ forloop.counter }}">-->
+                                <!--                            <label class="col-4 col-form-label">General Ledger Description: </label>-->
+                                <!--                            <div class="col-8">-->
+                                <!--                                {% for gl_acc_append in gl_acc_value_append %}-->
+                                <!--                                {% if gl_acc_append.account_assign_value == sc_acc.gl_acc_num %}-->
+                                <!--                                <input type="text" class="form-control" value="{{gl_acc_append.append_val}}" id="ScAccounting-gl_acc_num-{{ sc_acc.guid }}" class="hg_modal_select_field" disabled onclick="open_change_gl_account_modal(this.id);">-->
+                                <!--                                {% endif %}-->
+                                <!--                                {% endfor %}-->
+                                <!--                            </div>-->
+                                <!--                        </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="item_notes_and_attachments" data-tab-content >
+                <div class="m-4">
+                    <div class="d-flex justify-content-end">
+                        <span class="badge help-text-badge help-text-alpha-numeric-special"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h4>Notes</h4>
+                            <div class="card">
+                                <div>
+                                    <div class="action-item-notes__buttons-section">
+                                        <button class="note_type add-note-internal" onclick="sup_int_note_tab(event, 'id_int_tab_content')">Internal Note</button>
+                                        <button class="note_type add-note-external" onclick="sup_int_note_tab(event, 'id_supp_tab_content')">Supplier Note</button>
+                                    </div>
+                
+                                    <div id="id_supp_tab_content" class="hg_sup_int_note">
+                                        {% for supp_note in supp_notes %}
+                                        <div id="intbtn{{ forloop.counter }}" class="hg_tabContent hg_supp_note_content action-item-notes__textarea">
+                
+                                            <textarea class="add_notes_textarea" id="Notes-note_text-{{ supp_note.guid }}-S" rows="4" disabled>{{supp_note.note_text}}</textarea>
+                
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                
+                                    <div id="id_int_tab_content" class="hg_sup_int_note" style="display:none">
+                                        {% for int_note in int_notes %}
+                                        <div id="supbtn{{ forloop.counter }}" class="hg_tabContent hg_int_note_content action-item-notes__textarea" style="display:none;">
+                
+                                            <textarea class="add_notes_textarea" id="Notes-note_text-{{int_note.guid}}-I" rows="4" disabled>{{int_note.note_text}}</textarea>
+                
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <h4>Attachments</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    {% if sc_attachements %}
+                                    {% for items in itm_det %}
+                
+                                    <div id="attachments-{{ forloop.counter }}" class="hg_tabContent hg_attachment_content action-item-notes__textarea">
+                
+                                        {% for attachments in  sc_attachments %}
+                
+                                        {% if attachments.item_guid == items.guid %}
+                                        <table class="table mt-2">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>File</th>
+                                                <th class="hg_is_hidden" hidden>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="hg_attachment_table_tbody item_level_attachment-{{forloop.counter}}" id="attachment_tbody_id-{{forloop.counter}}">
+                
+                                            <tr id="available_attachments-{{attachments.attachment_guid}}">
+                                                <td><a href="{% url 'eProc_Notes_Attachments:attach_download' %}?path={{attachments.file_path}}">{{attachments.attachment_name}}</a>
+                                                </td>
+                                                <td>{% if attachments.type == 'I' %} Internal Use{% else %} External Use{% endif %}</td>
+                                                <td class="check_special_char">{{attachments.file_name}}</td>
+                                                <td class="hg_is_hidden" hidden>
+                                                    <i id="{{forloop.parentloop.counter}}-{{attachments.attachment_guid}}-{{attachments.item_guid}}"
+                                                       onclick="delete_attachments(this)" class="fas fa-trash-alt attachment-icon"></i>
+                                                </td>
+                                            </tr>
+                
+                                            </tbody>
+                                        </table>
+                
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="hg_class_attachement">
+                                        <p class="p-3 bg-light text-dark">No attachments available</p>
+                                    </div>
+                                    {% endif%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+        
+                    <br>
+        
+                    
+                </div>
+            </div>
+            <div id="item_approval_process_overview" data-tab-content >
+                <div class="m-4">
+                    <div id="id_dynamic"></div>
+                    <div style="overflow: auto;">
+                        {% include 'Workflow/manager_detail.html' %}
+                    </div>
+                </div>
+            </div>
+            <div id="item_supplier_details" data-tab-content >
+                <div class="m-4">
+                    {% for item_detail in itm_det %}
+                    <div class="hg_supplier_class">
+                        <div class="row">
+                            <div class="col-6">
+                                {% if item_detail.call_off == "01" %}
+                                <h4 class="mt-3">Supplier Details</h4>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Supplier ID</label>
+                                    {% for supplier in supplier_data %}
+                                    {% if supplier.supp_id == item_detail.supplier_id %}
+                                    <div class="col-8">
+                                        <input type="text" name="{{item_detail.supplier_id}}" value="{{supplier.supp_desc}}"
+                                               id="ScItem-supplier_id-{{item_detail.guid}}" class="form-control" disabled>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {% if not item_detail.supplier_id %}
+                                    <div class="col-8">
+                                        <input type="text" class="supplier_input form-control" name="{{item_detail.supplier_id}}"
+                                               value="{{item_detail.supplier_id}}" class="form-control" disabled>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% elif item_detail.call_off == "03" %}
+                                <h4 class="mt-3">Supplier Details</h4>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Supplier ID</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_supplier" value="{{item_detail.supplier_id}}" id="ScItem-supplier_id-{{item_detail.guid}}-drop" class="hg_modal_select_field"  onclick="open_change_supplier_modal(this.id);" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Preferred supplier</label>
+                                    <div class="col-8">
+                                        <!-- <input type="text" class="form-control check_supplier" value="{{item_detail.pref_supplier}}" id="ScItem-pref_supplier-{{item_detail.guid}}-drop" class="hg_modal_select_field" onclick="open_change_supplier_modal(this.id);" disabled> -->
+
+                                        {% for supplier in supplier_data %}
+                                        {% if supplier.supp_id == item_detail.pref_supplier %}
+                                        <input type="text" class="supplier_input form-control" name="{{item_detail.pref_supplier}}"
+                                               value="{{supplier.supp_desc}}" id="pref_supplier-{{item_detail.guid}}-drop" disabled>
+                                        {% endif %}
+                                        {% endfor %}
+                                       <!-- {% if not item_detail.pref_supplier %}
+                                       <input type="text" class="supplier_input form-control" name="{{item_detail.supplier_id}}"
+                                              value="{{item_detail.supplier_id}}" disabled></span>
+                                       {% endif %} -->
+                                    </div>
+                                </div>
+                                {% elif item_detail.call_off == "Limit" %}
+                                <h4 class="mt-3">Supplier Details</h4>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Supplier ID</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_supplier" value="{{item_detail.pref_supplier}}" id="ScItem-pref_supplier-{{item_detail.guid}}-drop" class="hg_modal_select_field"  onclick="open_change_supplier_modal(this.id);" disabled>
+                                    </div>
+                                </div>
+                                {% elif item_detail.call_off == '02' %}
+                                <h4 class="mt-3">Supplier Details</h4>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Supplier ID</label>
+                                    <div class="col-8">
+                                        {% for supplier in supplier_data %}
+                                        {% if supplier.supp_id == item_detail.supplier_id %}
+                                        <input type="text" class="form-control" value="{{supplier.supp_desc}}" id="ScItem-supplier_id-{{item_detail.guid}}-drop-ft" class="hg_modal_select_field"  onclick="open_change_supplier_modal(this.id);">
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="item_shipping_address_details" data-tab-content >
+                <div class="m-4">
+                    <div class="d-flex justify-content-end">
+                        <span class="badge help-text-badge help-text-alpha-numeric-special"></span>
+                    </div>
+                    {% for del_addrs in del_addr %}
+                    <div class="hg_class_del_addrs">
+                        <h4 class="mt-3">Address Details</h4>
+                        <div class="row">
+                            <div class="col">
+                                <div style="display: none;">
+                                    <input type="text" class="address_number_check" value="{{del_addrs.address_number}}" hidden>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Name</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_product_name" name="{{del_addrs.name1}}"
+                                               value="{{del_addrs.name1}}" id="ScAddresses-name1-{{ del_addrs.guid }}" disabled>
+                                    </div>
+        
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">C/O</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_product_name" name="{{del_addrs.name2}}"
+                                               value="{{del_addrs.name2}}" id="ScAddresses-name2-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Fax Number</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_phone_number" name="{{del_addrs.fax_number}}"
+                                               value="{{del_addrs.fax_number}}" id="ScAddresses-fax_number-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Street</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_address" name="{{del_addrs.street}}"
+                                               value="{{del_addrs.street}}" id="ScAddresses-street-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Area</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_address" name="{{del_addrs.area}}"
+                                               value="{{del_addrs.area}}" id="ScAddresses-area-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Landmark</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_address" name="{{del_addrs.landmark}}"
+                                               value="{{del_addrs.landmark}}" id="ScAddresses-landmark-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">City</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_city" name="{{del_addrs.city}}"
+                                               value="{{del_addrs.city}}" id="ScAddresses-city-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+        
+                            </div>
+                            <div class="col">
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Postal Code</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_postal_code" name="{{del_addrs.postal_code}}"
+                                               value="{{del_addrs.postal_code}}" id="ScAddresses-postalcode-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Region</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_region" name="{{del_addrs.region}}"
+                                               value="{{del_addrs.region}}" id="ScAddresses-region-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Country Code</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_city" name="{{del_addrs.country_code}}"
+                                               value="{{del_addrs.country_code}}" id="ScAddresses-country_code-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <!-- <div class="form-group row">
+                                    <label class="col-4 col-form-label">Language</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" name="{{del_addrs.language_id}}"
+                                               value="{{del_addrs.language_id}}" id="ScAddresses-language_id-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div> -->
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Mobile Number</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_mobile_number" name="{{del_addrs.mobile_number}}"
+                                               value="{{del_addrs.mobile_number}}" id="ScAddresses-mobile_number-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Telephone Number</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control check_phone_number" name="{{del_addrs.telephone_number}}"
+                                               value="{{del_addrs.telephone_number}}" id="ScAddresses-telephone_number-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Email</label>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" name="{{del_addrs.email}}"
+                                               value="{{del_addrs.email}}" id="ScAddresses-email-{{ del_addrs.guid }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+        
+                    <div class="d-flex justify-content-end">
+                        <button  id="change_shipping_address_button" data-toggle="modal" data-target="#ChngShipAddr" class="btn btn-primary"
+                                 hidden><i class="far fa-edit"></i> Change Shipping Address</button>
+                    </div>
+                </div>
+            </div>
+            <div id="item_efrom_details" data-tab-content >
+                <div class="m-4">
+                    {% for items in item_dictionary_list %}
+                    <div id="display_eform-{{items.guid}}-{{ forloop.counter0 }}" class="hg_class_eform" style="display:none;">
+                        <div class="card-header">
+                            <span class="h5">Additional eForm Data</span>
+                        </div>
+                        <div class="card-body">
+                            {% if items.call_off == '02'%}
+                            {% if items.eform_id %}
+                            {% for eform_details in items.eform_data %}
+                            <div style="padding-bottom:5px;">
+                                <span class="h6">{{eform_details.eform_field_name}}:&nbsp;&nbsp;</span><span>{{eform_details.eform_field_data}}</span>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ############################################################################################################################################### -->
+        
+    </div>
+</div>
+
+<!--  Supplier data process data details - Start -->

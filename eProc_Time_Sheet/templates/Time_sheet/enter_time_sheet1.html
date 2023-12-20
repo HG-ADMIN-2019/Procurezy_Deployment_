@@ -1,0 +1,194 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} project management {% endblock %}
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+<style>
+.toggle {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  height: auto;
+  width: 7.5rem;
+  margin: auto;
+  cursor: pointer;
+}
+.toggle-input {
+  display: none;
+  margin: 0;
+}
+.toggle-off,
+.toggle-on {
+  height: 1.8125rem;
+  width: 1.8125rem;
+  color: rgba(46, 45, 44, 0.1);
+  vertical-align: top;
+  text-align: center;
+  line-height: 1.8125rem !important;
+}
+.toggle-input:checked + .toggle-controller.default-success {
+  border: 0.125rem solid rgba(108, 211, 61, 0.75);
+  background: rgba(108, 211, 61, 0.375);
+}
+.toggle-input:checked + .toggle-controller.default-success:after {
+  left: 1.5625rem;
+}
+.toggle-controller.default-success {
+  position: relative;
+  display: inline-block;
+  height: 1.5625rem;
+  width: 3.125rem;
+  border: 0.125rem solid rgba(46, 45, 44, 0.05);
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  -moz-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
+  background: rgba(46, 45, 44, 0.025);
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-controller.default-success:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+  display: block;
+  height: 1.5625rem;
+  width: 1.5625rem;
+  -webkit-border-radius: 1.5625rem;
+  -moz-border-radius: 1.5625rem;
+  border-radius: 1.5625rem;
+  -webkit-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  -moz-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
+  background: white;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.toggle-off.active {color:red;}
+.toggle-on.active {color:blue;}
+
+#alert-message {
+    color: red;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid red;
+}
+
+</style>
+<div>
+    <div>
+        <div>
+            <h1 class="h2">Enter Timesheet</h1>
+        </div>
+        <hr color="#ffa500">
+        <div id="timesheet">
+            <div id="select_project">
+                <form>{% csrf_token %}
+    <span id="week_number" hidden>{{week_number}}</span>
+    <label for="choose_project">Select project to enter timesheet:</label>
+    <select id="choose_project" class="form-control form-control-sm" onchange="showProjectDetails()">
+        {% for project in project_details %}
+        <option value="{{project.project_id}}" data-desc="{{project.project_desc}}" data-start="{{project.start_date}}" data-end="{{project.end_date}}" {% if project.project_id == default_project_id %}selected{% endif %}>{{project.project_id}}</option>
+        {% endfor %}
+    </select>
+</form>
+            </div>
+            <br>
+            <br>
+            <div id="project_det_div" style="display:none;">
+                <h1>Project Details</h1>
+                <table class="table">
+                    <tr>
+                        <th>Project Id</th>
+                        <td id="project_id"></td>
+                    </tr>
+                    <tr>
+                        <th>Project Description</th>
+                        <td id="project_desc"></td>
+                    </tr>
+                    <tr>
+                        <th>Project Validity</th>
+                        <td id="project_val"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <br>
+            <br>
+            <div id="timesheet_entries" style="display:none;">
+                <h1>Timesheet Entries</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Project ID</th>
+                            <th>Username</th>
+                            <th>Calendar ID</th>
+                            <th>Project Category</th>
+                            <th>Effort</th>
+                            <th>Effort Day</th>
+                            <th>Effort Date</th>
+                            <th>Effort Week</th>
+                            <th>Effort Year</th>
+                            <th>Effort Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project_effort in project_efforts %}
+                        <tr>
+                            <td>{{ project_effort.project_id }}</td>
+                            <td>{{ project_effort.username }}</td>
+                            <td>{{ project_effort.calender_id }}</td>
+                            <td>{{ project_effort.project_category }}</td>
+                            <td>{{ project_effort.effort }}</td>
+                            <td>{{ project_effort.effort_day }}</td>
+                            <td>{{ project_effort.effort_date }}</td>
+                            <td>{{ project_effort.effort_week }}</td>
+                            <td>{{ project_effort.effort_year }}</td>
+                            <td>{{ project_effort.effort_description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+function showProjectDetails() {
+    // Get selected project from dropdown
+    const select_project = document.getElementById('choose_project');
+    const selected_option = select_project.options[select_project.selectedIndex];
+    const project_id = selected_option.value;
+    const project_desc = selected_option.getAttribute('data-desc');
+    const project_start = selected_option.getAttribute('data-start');
+    const project_end = selected_option.getAttribute('data-end');
+
+    // Update project details section with selected project info
+    document.getElementById('project_id').textContent = project_id;
+    document.getElementById('project_desc').textContent = project_desc;
+    document.getElementById('project_val').textContent = project_start + ' - ' + project_end;
+
+    // Show project details section
+    document.getElementById('project_det_div').style.display = 'block';
+    document.getElementById('timesheet_entries').style.display = 'block';
+  }
+
+  // Call showProjectDetails() on page load to display default project details
+  document.addEventListener('DOMContentLoaded', showProjectDetails);
+
+</script>
+
+{% endblock %}

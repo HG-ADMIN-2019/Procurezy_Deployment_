@@ -1,0 +1,53 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+<head>
+    <title> {% block title %} Home {% endblock %} </title>
+
+    <!-- you need to include the ShieldUI CSS and JS assets in order for the TreeView widget to work -->
+<link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/light-bootstrap/all.min.css" />
+<script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
+
+<script type="text/javascript">
+    jQuery(function ($) {
+        $("#treeview").shieldTreeView();
+    });
+</script>
+</head>
+
+<body class="hg_home_bg">
+<!-- Home page start (SC-HP-US01: Upon successful logging in, user should be able to see the home page of the application) -->
+<div id="homeOuter" style="margin-top:20px; overflow:hidden;">
+    <form name="LimitForm" method="post">
+        {% csrf_token %}
+        {{data}}
+
+        <div class="container-fluid" style="margin-left:45px; width:97%;">
+            <div class="jumbotron bg-white">
+                <h2>Shopping Cart Home</h2>
+                <hr class="my-4">
+                <p>Welcome to Shopping Cart Application</p>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Home page end -->
+
+
+<script>
+    function closeRight() {
+        document.getElementById('id01').style.display='none',
+        document.getElementById('limit').style.width="90%",
+        document.getElementById('closebn').style.display='none'
+        document.getElementById('disbn').style.display='block'
+    }
+
+    function disRight() {
+        location.reload();
+    }
+
+</script>
+</body>
+{% endblock %}

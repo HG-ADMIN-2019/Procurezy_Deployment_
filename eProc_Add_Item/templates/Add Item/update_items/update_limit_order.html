@@ -1,0 +1,480 @@
+
+
+<form method="post" id="limit_order_update_form">
+    {% csrf_token %}
+    <div class="alert alert-danger display-none" id="limit_form_errors" role="alert"></div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="id_description">Item Name:<span class="hg_required"></span></label>
+            <input type="text" class="form-control form-control-sm" maxlength="40" id="id_description" required />
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="upl_prod_cat">Product Category:<span class="hg_required"></span></label>
+            <select id="upl_prod_cat" class="form-control form-control-sm selectpicker" data-live-search="true" required>
+                {% for product_cat in product_category %}
+                <option value="{{product_cat.prod_cat_id}}" id="{{product_cat.prod_cat_id}}">{{product_cat.prod_cat_id}} - {{product_cat.category_desc}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+   
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="currency">Currency:<span class="hg_required"></span></label>
+            <select id="currency" class="form-control form-control-sm selectpicker" data-live-search="true">
+                {% for currencies in currency %}
+                <option id="{{currencies.currency_id}}" value="{{currencies.currency_id}}">{{currencies.currency_id}} - {{currencies.description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div class="form-group col-md-3">
+            <label for="overall_limit">Overall Limit:<span class="hg_required"></span></label>
+            {{ limit_form.overall_limit }}
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="expected_value">Expected Value:<span class="hg_required"></span></label>
+            {{ limit_form.expected_value }}
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="req">Required:<span class="hg_required"></span></label>
+            <select name="date_req" id="req" onchange="hide_date();" class="form-control form-control-sm" required>
+                <option value="Between" id="Between">Between</option>
+                <option value="From" id="From">From</option>
+                <option value="On" id="On">On</option>
+            </select>
+        </div>
+    
+        <div id="frm_dat" class="form-group col-md-3">
+            <label for="StartDate">From Date:<span class="hg_required"></span></label>
+            <input type="date" id="StartDate" name="start_date" value="" class="form-control form-control-sm"
+                min="{{ date_today|date:'Y-m-d' }}" max="9999-12-12" />
+        </div>
+    
+        <div id="to_dat" class="form-group col-md-3">
+            <label for="EndDate">To Date<span class="hg_required"></span></label>
+            <input type="date" id="EndDate" name="end_date" value="" class="form-control form-control-sm"
+                min="{{ date_today|date:'Y-m-d' }}" max="9999-12-12" />
+        </div>
+
+        <div id="on_dat" class="form-group col-md-3">
+            <label for="OnDate">On Date:<span class="hg_required"></span></label>
+            <input type="date" id="OnDate" value="" name="on_date" class="form-control form-control-sm"
+                min="{{ date_today|date:'Y-m-d' }}" max="9999-12-12">
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="required_label">Supplier:<span class="hg_required"></span></label>
+            <select id="upl_supp_id" required class="form-control form-control-sm selectpicker" data-live-search="true">
+                {% for supp_info in supplier_details %}
+                <option value="{{supp_info.0}}" id="{{supp_info.0}}">{{supp_info.1}}&nbsp;{{supp_info.2}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="follow_up_action">Follow-Up Actions:<span class="hg_required"></span></label>
+            <select id="follow_up_actions" class="form-control form-control-sm" required>
+                <option value="Invoice & Confirmation Only" id="Invoice & Confirmation Only">Invoice & Confirmation Only
+                </option>
+                <option value="Confirmation Only" id="Confirmation Only">Confirmation Only</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+        <button type="button" class="btn btn-primary" id="update_limit_item"><i class="fas fa-save"></i> save</button>
+    </div>
+</form>
+
+<script>
+
+function check_for_special_char(string) {
+    if (/^[a-zA-Z0-9- ]*$/.test(string) == false) {
+        return false
+    } else {
+        return true;
+    }
+}
+
+    // Function to hide and display date in update limit order form on click of update button
+    $(document).ready(function () {
+        required = $("#req").val();
+        var from_date = document.getElementById("frm_dat");
+        var to_date = document.getElementById("to_dat");
+        var on_date = document.getElementById("on_dat");
+
+        if (required == 'From') {
+            from_date.style.display = "block";
+            to_date.style.display = "none";
+            on_date.style.display = "none";
+        }
+
+        if (required == 'On') {
+            on_date.style.display = "block";
+            from_date.style.display = "none";
+            to_date.style.display = "none";
+        }
+
+        if (required == 'Between') {
+            on_date.style.display = "none";
+            from_date.style.display = "block";
+            to_date.style.display = "block";
+        }
+
+        if (required == 'None') {
+            on_date.style.display = "none";
+            from_date.style.display = "none";
+            to_date.style.display = "none";
+        }
+    });
+
+    // Start date and End date validation in update limit order page
+    $("#EndDate").change(function () {
+        var startDate = document.getElementById("StartDate").value;
+        var endDate = document.getElementById("EndDate").value;
+
+        if ((Date.parse(endDate) < Date.parse(startDate))) {
+            //document.getElementById("limit_form_errors").innerHTML = messageConstants["JMSG030"]
+             
+                var msg = "JMSG030";
+                var msg_type ;
+              msg_type = message_config_details(msg);
+              $("#error_msg_id").prop("hidden", false)
+
+              if(msg_type.message_type == "ERROR"){
+                    display_message("error_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "WARNING"){
+                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+              }
+              else if(msg_type.message_type == "INFORMATION"){
+                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+              }
+            $('#limit_form_errors').show();
+            $('#update_pop_up').scrollTop(0);
+            document.getElementById("EndDate").value = "";
+        } else {
+            document.getElementById("limit_form_errors").innerHTML = "None";
+        }
+    });
+
+    let is_first_step = "{{is_first_step}}"
+
+    if (is_first_step == 'True') {
+        update_url = "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}"
+    } else {
+        update_url = "{% url 'eProc_Doc_Details:update_saved_item' %}"
+    }
+
+    
+    var update_item_details = {};
+
+    $('#update_limit_item').click(function(){
+        o_limit = $('#id_overall_limit').val();
+        e_limit = $('#id_expected_value').val();
+        item_name = $('#id_description').val();
+        product_category = document.getElementById("upl_prod_cat").value
+        product_category_text = $("#upl_prod_cat option:selected").text()
+        currency_id = document.getElementById("currency").value
+        supplier = document.getElementById("upl_supp_id").value
+        follow_up_actions = document.getElementById("follow_up_actions").value
+        start_date = $('#StartDate').val();
+        end_date = $('#EndDate').val();
+        on_date = $('#OnDate').val();
+        required = document.getElementById("req").value
+
+        // Start of limit order validations
+        if (item_name.length < 3) {
+               
+                    var msg = "JMSG028";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                  var display = msg_type.messages_id_desc;
+                 document.getElementById("limit_form_errors").innerHTML = display;
+
+            $('#limit_form_errors').show();
+            $('#update_pop_up').scrollTop(0);
+            return false
+        }
+
+        is_valid = check_for_special_char(item_name)
+        if (!is_valid) {
+                  var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+                    var msg = "JMSG003";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                  document.getElementById("limit_form_errors").innerHTML = display5+ "Item Name";
+
+
+            $('#limit_form_errors').show();
+            $('#update_pop_up').scrollTop(0);
+            return false;
+        }
+
+        if (o_limit == '' || e_limit == '') {
+                 
+                    var msg = "JMSG007";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                  document.getElementById("limit_form_errors").innerHTML = display5+ "overall limit or expected value";
+
+            $('#limit_form_errors').show();
+            $('#update_pop_up').scrollTop(0);
+            return false
+        }
+        if (parseFloat(e_limit) > parseFloat(o_limit)) {
+               
+                    var msg = "JMSG031";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                 document.getElementById("limit_form_errors").innerHTML = display5
+
+            $('#limit_form_errors').show();
+            $('#update_pop_up').scrollTop(0);
+            return false
+        }
+
+
+        if (required == 'Between') {
+            if (start_date == '' || end_date == '') {
+                 var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+                    var msg = "JMSG005";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                 document.getElementById("limit_form_errors").innerHTML = display5+ "From and To Date";
+
+                $('#limit_form_errors').show();
+                $('#update_pop_up').scrollTop(0);
+                return false
+            }
+        } else if (required == 'From') {
+            if (start_date == '') {
+               var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+                    var msg = "JMSG005";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                  document.getElementById("limit_form_errors").innerHTML = display5+ "From Date";
+
+                $('#limit_form_errors').show();
+                $('#update_pop_up').scrollTop(0);
+                return false
+            }
+        } else {
+            if (on_date == '') {
+               var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+                    var msg = "JMSG005";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                   var display5 = msg_type.messages_id_desc;
+                  document.getElementById("limit_form_errors").innerHTML = display5+ "On Date"
+
+                $('#limit_form_errors').show();
+                $('#update_pop_up').scrollTop(0);
+                return false
+            }
+        }
+
+        item_data = {
+            guid: update_item_guid,
+            overall_limit: o_limit,
+            expected_value: e_limit,
+            description: item_name,
+            prod_cat: product_category,
+            currency: currency_id,
+            supplier_id: supplier,
+            follow_up_action: follow_up_actions,
+            required: required,
+            start_date: start_date,
+            end_date: end_date,
+            item_del_date: on_date,
+            call_off: '04'
+        };
+
+        if (is_first_step != 'True') {
+            index_of_item_guid = rendered_item_guid.indexOf(update_item_guid)
+            accounting_guid = rendered_acc_guid[index_of_item_guid]
+            item_data['account_assignment_category'] = (document.getElementById('ScAccounting-acc_cat-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['account_assignment_value'] = (document.getElementById('ScAccounting-acc_val-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['sc_header_guid'] = GLOBAL_HEADER_GUID
+        }
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            url: update_url,
+            data: JSON.stringify(item_data),
+            success: function (response) {
+                $('#update_modal_popup').modal('hide')
+                var manager_icon = '';
+                if (is_first_step == 'True'){
+                    update_item_details_in_first_step(response)
+                } else {
+                    update_item_at_saved_cart(response.item_details)
+                    update_item_details[update_item_guid] = response.item_details
+                    check_shopping_cart('check', 'sc_data', response.item_details.acc_type, response.item_details.acc_value)
+                }
+            },
+            error: function (response) {
+                $('#limit_form_errors').html(response.responseJSON.error_message)
+                $('#limit_form_errors').show();
+                $('#update_pop_up').scrollTop(0);
+            },
+        });
+
+    });
+
+
+    // remove bootstrap alert classes on close
+$('#update_pop_up').on('hidden.bs.modal', function (e) {
+    $('#limit_form_errors').hide();
+})
+
+const update_item_details_in_first_step = (response) => {
+    document.getElementById("desc_" + guid).innerHTML = item_name
+    document.getElementById("supp_" + guid).innerHTML = supplier
+    document.getElementById("limit_item_name").innerHTML = item_name
+    document.getElementById("limit_o_limit").innerHTML = response.item_value
+    document.getElementById("limit_currency").innerHTML = currency_id
+    document.getElementById("limit_supp_id").innerHTML = supplier
+    document.getElementById("limit_prod_cat").innerHTML = product_category_text
+    document.getElementById("limit_e_value").innerHTML = e_limit
+    document.getElementById("follow_up_act").innerHTML = follow_up_actions
+    document.getElementById("total_cart_value").innerHTML = response.item_value
+    document.getElementById("overall_limit").innerHTML = response.item_value
+
+    if (required == 'On') {
+        document.getElementById("required_limit").innerHTML = "On"
+        document.getElementById("required_limit_dates").innerHTML = on_date
+    } else if (required == 'Between') {
+        document.getElementById("required_limit").innerHTML = "From - To:"
+        document.getElementById("required_limit_dates").innerHTML = start_date + "-" + end_date
+    } else {
+        document.getElementById("required_limit").innerHTML = "From"
+        document.getElementById("required_limit_dates").innerHTML = start_date
+    }
+}
+
+const update_item_at_saved_cart = (item_details) => {
+    $('#desc-' + update_item_guid).html(item_details.description)
+    
+    $('#supp-' + update_item_guid).html('By - ' + item_details.pref_supplier)
+    $('#overall_limit-' + update_item_guid).html(item_details.value)
+
+    // update_more_info
+    $('#limit_item_name').html(item_details.description)
+    $('#limit_o_limit').html(item_details.overall_limit)
+    $('#limit_currency').html(item_details.currency)
+    $('#limit_supp_id').html(item_details.pref_supplier)
+    $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html(item_details.total_sc_value)
+    $('#limit_prod_cat').html(item_details.prod_cat + ' - ' + item_details.prod_cat_desc)
+    $('#limit_e_value').html(item_details.expected_value)
+    $('#follow_up_act').html(item_details.follow_up_action)
+    if (required == 'On') {
+        document.getElementById("required_limit").innerHTML = "On"
+        document.getElementById("required_limit_dates").innerHTML = on_date
+        document.getElementById('del_date-limit-' + update_item_guid).innerHTML = 'limit-' + on_date
+    } else if (required == 'Between') {
+        document.getElementById("required_limit").innerHTML = "From - To:"
+        document.getElementById("required_limit_dates").innerHTML = start_date + "-" + end_date
+        document.getElementById('del_date-limit-' + update_item_guid).innerHTML = 'limit-' + start_date
+    } else {
+        document.getElementById("required_limit").innerHTML = "From"
+        document.getElementById("required_limit_dates").innerHTML = start_date
+        document.getElementById('del_date-limit-' + update_item_guid).innerHTML = 'limit-' + start_date
+    }
+    }
+
+</script>

@@ -1,0 +1,143 @@
+   {% load static %}
+
+   <style>
+       .popup-vertical-scroll {
+            max-height:60vh;
+            overflow-y:auto;
+            padding: 0rem 1.5rem;
+            width: auto;
+       }
+   </style>
+   <!--modal popup to upload the csv file-->
+    <div class="modal fade" id="id_data_upload">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Data Upload</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div>
+                        <p id="id_error_msg_upload" class="alert alert-danger error" hidden></p>
+                    </div>
+                    <div><label> Upload a file</label></div>
+                    <input type="file" id="id_file_data_upload" name="file">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" onclick="cancel_upload()"><i class="fas fa-times"></i> cancel</button>
+                    <button id="popup_save"  class="btn btn-primary" onclick="valid_popup()"><i class="fas fa-save"></i> Upload File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup to upload the csv file-->
+
+    <!--save confirmation popup-->
+    <div class="modal fade" id="id_save_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to save?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" id="id_popup_save" onclick="popup_save_data()" class="btn btn-primary"><i class="fas fa-save"></i> yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of save confirmation popup-->
+
+    <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" onclick="main_table_delete()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of delete confirmation popup-->
+
+    <!--    don't delete popup -->
+    <div class="modal fade" id="delete_not_possible">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>Please maintain at least one record before deleting.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"  onclick="display_popup()" > Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   <!-------------------------------------end of delete--------------------------->
+
+
+    <!--      valid confirm popup-->
+    <div class="modal fade" id="valid_upload">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                 <div class="modal-header">
+                    <h5 class="modal-title">Information</h5>
+                 </div>
+                <div class="modal-body">
+                    <p>Only valid records will be uploaded to backend</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" class="btn btn-primary"  onclick="onclick_display_csv_data()" > Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--   end of valid confirm popup-->
+
+   <!--      delete confirm popup-->
+    <div class="modal fade" id="dependency_delete">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title">Information</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>This deletion will also remove associated entries in the spending limits table. Proceed with the deletion?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                     <button type="button" onclick="main_table_delete()" class="btn btn-primary"><i class="fas fa-check"></i> Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--   end of delete confirm popup-->
+
+    <script src="{% static 'scripts/configuration_common_scripts.js' %}"></script>
+

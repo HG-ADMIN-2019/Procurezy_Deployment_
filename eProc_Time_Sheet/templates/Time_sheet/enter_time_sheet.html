@@ -1,0 +1,63 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Enter timesheet {% endblock %}
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+
+<div>
+    <div>
+        <div>
+            <h1 class="h2">Enter timesheet</h1>
+        </div>
+        <hr color="#FFA500">
+        <div id="timesheet">
+            <div id="select_project">
+                <form>{% csrf_token %}
+                    <span id="week_number" hidden>{{week_number}}</span>
+                    <label for="choose_project">Select project to enter timesheet:</label>
+                    <select id="choose_project" class="form-control form-control-sm">
+                        <option value="">Select</option>
+                        {% for projects in project_details %}
+                        <option value="{{projects.project_id}}">{{projects.project_desc}}</option>
+                        {% endfor %}
+                    </select>
+                    <div style="margin-top: 30px;" class="text-center">
+                        <button type="button" id="get_project_detail_btn" class="btn btn-primary"
+                            data-url="{% url 'eProc_Time_Sheet:get_project_details' %}"
+                            onclick="get_project_details()">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div id="project_det_div" style="display:none;">
+                <h1>Project Details</h1>
+                <table class="table">
+                    <tr>
+                        <th>Project Id</th>
+                        <td id="project_id"></td>
+                    </tr>
+                    <tr>
+                        <th>Project Description</th>
+                        <td id="project_desc"></td>
+                    </tr>
+                    <tr>
+                        <th>Project Validity</th>
+                        <td id="project_val"></td>
+                    </tr>
+                </table>
+                <div id="card_details">
+                    {% include 'Time_sheet/enter_time_sheet.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <span id="display_timesheet_buttons"></span>
+    <button data-url="{% url 'eProc_Time_Sheet:save_timesheet_data' %}" id="save_timesheet_btn"
+            onclick="save_timesheet_data()" class="btn btn-primary hg_hide_display_mode" hidden>Save</button>
+    <button class="btn btn-primary" onclick="get_project_details()" id="display_current_week" hidden>Current Week</button>
+</div>
+    </div>
+</div>
+{% endblock %}
+

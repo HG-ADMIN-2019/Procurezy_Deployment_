@@ -1,0 +1,485 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	// font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+    background-color: #e9ecef ! important;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+
+    .table thead th {
+        text-transform: capitalize;
+    } 
+}
+
+a {
+    color: initial;
+    text-decoration: none;
+}
+
+.hg_wrapper {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #DcDcDc;
+}
+
+// Datatable export to excel buttons
+.datatableBtn.col .dt-buttons{
+    float: right;
+}
+
+.datatableBtn.col .dataTables_filter{
+    float: right;
+}
+
+// alternate colored rows for tables
+table.hg-striped-table tbody tr:nth-child(even) {
+    background-color: #eee;
+}
+
+@mixin space-in-between {
+    display: flex; 
+    justify-content: space-between;
+}
+
+// search headers styles
+.search_header {
+    @include space-in-between
+}
+
+.header-space-between {
+    @include space-in-between
+}
+
+.elements-space-between {
+    @include space-in-between
+}
+
+// search form adavance search div
+.advanced-search-collapse .form-check {
+    padding-top: 2.5rem;
+}
+
+.ip-form-clear-filters {
+    color: $blue-primary; 
+    background-color: transparent;
+    border: none;
+}
+
+.button-search-users {
+    // display: flex; 
+    // align-items: flex-end;
+    margin-top: 1.75rem;
+}
+
+.hg-mt-2rem{
+	 margin-top: 2rem;
+}
+
+
+.hg_subtext_color {
+    color:$subtext-color-light;
+}
+
+@mixin selectpicker-search-dropdown{
+    background-color: white;
+    border: 1px solid #ced4da;
+}
+
+#requisition_form button.btn.dropdown-toggle.btn-light{
+    @include selectpicker-search-dropdown;
+}
+
+#limit_form button.btn.dropdown-toggle.btn-light{
+    @include selectpicker-search-dropdown;
+}
+
+#formbuilder_form button.btn.dropdown-toggle.btn-light{
+    @include selectpicker-search-dropdown;
+}
+
+#free_text_form_submit button.btn.dropdown-toggle.btn-light{
+    @include selectpicker-search-dropdown;
+}
+
+// to be reviewed
+.hg_head1 {
+    font-size:30px;
+}
+// to be reviewed
+.hg_scw_sb {
+    width:100%;
+    text-align:center;
+    margin-bottom: 2rem;
+}
+// to be reviewed
+.hg_gb_btn {
+    height: 25px;
+    width: 80px;
+    padding: 6px !important;
+    margin-top:20px;
+}
+
+
+.page-heading {
+    font-size: 2rem;
+}
+
+.sc-status-header {
+    width: 100%;
+    display: flex;
+    padding: 25px 20px 30px;
+    background: #FFFFFF;
+
+    .sc-status-page-title {
+        flex: 0.65;
+        padding: 5px;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sc-status-img-container {
+        flex: 2;
+        padding: 5px;
+    
+        .sc-status-img {
+            max-width:70%;
+        }
+    }
+}
+
+
+
+// SC 2nd step and My order doc details edit button for shipping address start
+//  SC 2nd step and My order doc details edit button for account assignment category start
+.hg_button_edit {
+    background-color: #F0F8FF; 
+    color: $blue-primary;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    overflow: hidden;
+    font-weight: 500;
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: small;
+
+    &:hover {
+        background-color: #d6ecff;
+    }
+
+    &:active {
+        background-color: #d6ecff;
+    }
+}
+
+.badge_display_approval_link {
+    background-color: #F0F8FF; 
+
+    a {
+        color: $blue-primary !important;
+     }
+}
+
+.badge_primary_acc {
+    background-color: #f8d7da;
+    color: #c91c2e;
+}
+
+.hg_display_inline {
+    display: inline;
+}
+
+@mixin display-flex-end {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.elements-align-right {
+    @include display-flex-end;
+}
+
+.button-workflow-user {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    width: 140px;
+    margin-top: .35rem;
+
+    &:hover {
+        color: orange;
+    }
+}
+
+// SC 2nd step and My order doc details edit button for shipping address end
+//  SC 2nd step and My order doc details edit button for account assignment category end
+// to be reviewed
+.hg_required:after {
+    content: "*";
+    color: red;
+}
+
+.required-fields{
+    color: red;
+}
+
+/* SC2nd step and My orders page - CSS for Allowed valid characters label */
+.badge.badge_valid_text_label {
+    background-color: #F0F8FF; 
+    color: $blue-primary;
+    margin: 0 15px 15px;
+    padding: 10px;
+    font-size: smaller;
+}
+
+.badge.generic-help-text-badge, .badge.star-search-help-text-badge {
+    background-color: #F0F8FF; 
+    color: $blue-primary;
+    padding: 8px;
+    font-size: x-small;
+}
+
+// Help text badge 
+.badge {
+    &.help-text-badge {
+        background-color: #F0F8FF; 
+        color: $blue-primary;
+        padding: 8px;
+        font-size: x-small;
+    }
+}
+
+/* Document Search, Document details page - Workflow status CSS pill */
+
+.badge_status_await_approval {
+    background-color: #fff3cd;
+    color: rgb(255, 129, 45);
+
+}
+
+.badge_status_save{
+    background-color: #c1f4fd;
+    color: #147a8b;
+}
+
+.badge_status_approved {
+    background-color: #d4edda; 
+    color: #47a83b;
+}
+
+.badge_status_purch_wrkl {
+    background-color: #E5E1F9;
+    color: #7363d1;
+}
+
+.badge_status_rejected {
+    background-color: #f8d7da;
+    color: #c91c2e;
+}
+
+.badge_custom_pill_primary {
+    background-color: #F0F8FF;
+    color: $blue-primary;
+}
+
+// search results count card style to be reviewed
+.card.results-card{
+    background-color:#EAEAEA; 
+    border: none;
+}
+
+
+.multiple_select button{
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    height: calc(1.5em + .75rem + 2px);
+}
+
+// Sc 2nd step, my orders doc-details and completion page action dropdown css
+.action_dropdown{
+    &.dropdown:hover>.dropdown-menu {
+        display: block;
+    }
+    // revisit
+    .dropdown-menu .dropdown-item {
+        cursor: pointer;
+    }
+
+}
+
+// hr tag custom style
+.hg_heading_hrborder {
+    border: 1px solid #FFCC6B;
+    width: 100%;
+    background-color: #FFCC6B;
+}
+
+.link-highlight {
+    color: $blue-primary;
+}
+
+.display-none {
+    display: none;
+}
+
+.display-block{
+    display: block;
+}
+
+.product-config-img {
+    border: 1px solid #e9ecef; 
+    height: 50px; 
+    width: 50px; 
+    border-radius: 5px;
+}
+
+.mep-form {
+
+    &_wrapper {
+        padding: 1.5rem;
+        width: 100%;
+    }
+}
+
+.badge-button-green {
+    background-color: #d4edda; 
+
+    a {
+        color: #47a83b !important;
+    }
+}
+
+.badge-button-purple {
+    background-color: #E5E1F9;
+    a {
+        color: #7363d1 !important;
+    }
+}
+
+.badge-button-red {
+    background-color: #f8d7da;
+    a {
+        color: #c91c2e !important;
+    }
+}
+
+.badge-button-blue {
+    background-color: #F0F8FF; 
+    a {
+        color: $blue-primary !important;
+    }
+}
+
+.card-shadow-1 {
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+}
+
+.header-card-alert {
+
+    .header-card-alert__body {
+        display: flex;
+    }
+
+    .material-icons {
+        margin-right: 1rem;
+    }
+}
+
+// item overview change action button 
+.hg_button_round {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; 
+    font-size: 20px;
+
+    .material-icons-outlined {
+        font-size: 20px;
+    }
+}
+
+// Section to display change action icon, eform View Additional details button in sc 1st, 2nd, my orders, sc completion
+.desc-section-bottom {
+    display: flex; 
+    flex-direction: row; 
+    gap: 5px;
+    margin-top: 1rem;
+}
+
+table th {
+    text-transform: capitalize !important;
+}
+
+
+.item-action-icon-section {
+    display: flex; 
+    gap: 5px;
+
+    & > span {
+        cursor: pointer;
+    }
+
+    .item-action-icons {
+        color: $grey-primary;
+        
+        &:hover {
+            color: $blue-primary;
+        }
+    }
+}

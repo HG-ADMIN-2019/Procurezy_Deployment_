@@ -1,0 +1,343 @@
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+{% load static %}
+    <style>
+   .chat-bar-collapsible {
+    position: fixed;
+    bottom: 0;
+    right: 10px;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    z-index: 9;
+}
+
+.collapsible {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 350px;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    border-radius: 10px 10px 0px 0px;
+    border: 3px solid white;
+    border-bottom: none;
+}
+
+.content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
+}
+
+.full-chat-block {
+    width: 350px;
+    background: white;
+    text-align: center;
+    overflow: auto;
+    scrollbar-width: none;
+    height: max-content;
+    transition: max-height 0.2s ease-out;
+}
+
+.outer-container {
+    min-height: 500px;
+    bottom: 0%;
+    position: relative;
+}
+
+.chat-container {
+    max-height: 500px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    scroll-behavior: smooth;
+    hyphens: auto;
+}
+
+.chat-container::-webkit-scrollbar {
+    display: none;
+}
+
+.chat-bar-input-block {
+    display: flex;
+    float: left;
+    box-sizing: border-box;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    background-color: rgb(235, 235, 235);
+    border-radius: 10px 10px 0px 0px;
+    padding: 10px 0px 10px 10px;
+}
+
+.chat-bar-icons {
+    display: flex;
+    justify-content: space-evenly;
+    box-sizing: border-box;
+    width: 25%;
+    float: right;
+    font-size: 20px;
+}
+
+#chat-icon:hover {
+    opacity: .7;
+}
+
+/* Chat bubbles */
+
+#userInput {
+    width: 75%;
+}
+
+.input-box {
+    float: left;
+    border: none;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    color: #000;
+    background-color: white;
+    outline: none
+}
+
+.userText {
+    color: white;
+    font-family: Helvetica;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: right;
+    clear: both;
+}
+
+.userText span {
+    line-height: 1.5em;
+    display: inline-block;
+    background: #007bff;
+    padding: 10px;
+    border-radius: 8px;
+    border-bottom-right-radius: 2px;
+    max-width: 80%;
+    margin-right: 10px;
+    animation: floatup .5s forwards
+}
+.userText  a{
+    line-height: 1.5em;
+    padding: 5px;
+    border-radius: 8px;
+    border-bottom-right-radius: 2px;
+    max-width: 80%;
+    margin-right: 10px;
+    animation: floatup .5s forwards
+    color: blue;
+}
+
+.botText {
+    color: #000;
+    font-family: Helvetica;
+    font-weight: normal;
+    font-size: 16px;
+    text-align: left;
+}
+.botTextSub {
+    color: #000;
+    font-family: Helvetica;
+    font-weight: normal;
+    font-size: 16px;
+    text-align: left;
+    margin-left: 25px;
+    animation: floatup .5s forwards;
+}
+
+.botText span {
+    line-height: 1.5em;
+    display: inline-block;
+    background: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+    border-bottom-left-radius: 2px;
+    max-width: 80%;
+    margin-left: 10px;
+    animation: floatup .5s forwards
+}
+.botText a {
+    line-height: 1.5em;
+<!--    background: #e0e0e0;-->
+    padding: 10px;
+    border-radius: 8px;
+    border-bottom-left-radius: 2px;
+    max-width: 80%;
+    margin-left: 10px;
+    animation: floatup .5s forwards;
+    color: blue;
+}
+
+@keyframes floatup {
+    from {
+        transform: translateY(14px);
+        opacity: .0;
+    }
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+@media screen and (max-width:600px) {
+    .full-chat-block {
+        width: 100%;
+        border-radius: 0px;
+    }
+    .chat-bar-collapsible {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+    }
+    .collapsible {
+        width: 100%;
+        border: 0px;
+        border-top: 3px solid white;
+        border-radius: 0px;
+    }
+}
+html {
+    scroll-behavior: smooth;
+    font-family: Helvetica, sans-serif, Arial;
+}
+
+body {
+    margin: 0 auto;
+    background-color: #222;
+}
+
+<!--test-->
+.box{
+  border:1px solid #334478;
+  width:400px;
+  height:50px;
+  background:#f7a8a5;
+  margin-top:3px;
+  /* Default All Divs Are Hidden*/
+  display:none;
+}
+#panel a{
+  display:block;
+  font-size:15px;
+  margin-left:15px;
+}
+.box p{
+  text-align:left;
+}
+
+
+    </style>
+
+    <!-- CHAT BAR BLOCK -->
+    <div id="bot_popup_id" class="chat-bar-collapsible" style="display:none;">
+            <button id="chat-button" type="button" class="collapsible">Chat with us!
+                <i id="chat-icon" style="color: #fff;" class="close remove_upload_data" onclick="close_window();">&times;</i>
+            </button>
+        <div class="content">
+            <div class="full-chat-block">
+                <!-- Message Container -->
+                <div class="outer-container">
+                    <div class="chat-container">
+                        <!-- Messages -->
+                        <div id="chatbox">
+                            <h5 id="chat-timestamp"></h5>
+                            <p id="botStarterMessage" class="botText"><span>Loading...</span></p>
+                            <div id="first_msg" hidden>
+                                <div id="panel">
+                                  <p class="botText"><span>
+                                    Please click on any of the following keywords!
+                                  </span></p>
+                                  <div class="box">
+                                    <p>
+
+                                    </p>
+                                  </div>
+                                  <a class="botText" href="#">
+                                    Products/Services
+                                  </a>
+                                  <div class="box" id="first_div">
+                                    <p  class="botText botTextSub">
+                                        <a href="{% url 'eProc_Shopping_Cart:cart-details' %}" target="_blank">Search for Products/services</a>
+                                    </p>
+                                      <p class="botText botTextSub"> <a href="{% url 'eProc_Shopping_Cart:cart-details' %}" target="_blank">Freetext</a></p>
+                                      <p class="botText botTextSub"><a href="{% url 'eProc_Shopping_Cart:cart-details' %}" target="_blank">Purchase Requisition</a></p>
+                                  </div>
+
+                                  <a class="botText" href="#">Personalization
+                                  </a>
+                                  <div class="box">
+                                    <p class="botText botTextSub">
+                                       <a href="{% url 'eProc_User_Settings:personal_settings_display' %}" target="_blank"> User settings</a>
+                                    </p>
+                                    <p class="botText botTextSub">
+                                      <a href="{% url 'eProc_User_Settings:purchase_settings' %}" target="_blank">Purchase settings</a>
+                                    </p>
+                                  </div>
+                                  <a class="botText" href="{% url 'eProc_Doc_Search_and_Display:search_shopping_carts' %}" target="_blank">
+                                   My Orders
+                                  </a>
+                                  <a class="botText" href="#">
+                                    Application Help
+                                  </a>
+                                  <div class="box">
+                                    <p class="botText botTextSub"><a class="botText" href="#">
+                                        Documentation</a>
+                                    </p>
+                                      <p class="botText botTextSub" style="margin-left: 45px;">
+                                          <a  href="#" target="_blank">- User Manual</a>
+                                      </p>
+                                      <p class="botText botTextSub"><a class="botText" href="#">Video References</a></p>
+                                      <p class="botText botTextSub" style="margin-left: 45px;">
+                                         <a href="#" target="_blank"> - SC Creation</a>
+                                      </p>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User input box -->
+                        <div class="chat-bar-input-block">
+                            <div id="userInput">
+                                <input id="textInput" class="input-box" type="text" name="msg"
+                                    placeholder="Tap 'Enter' to send a message">
+                                <p></p>
+                            </div>
+
+                            <div class="chat-bar-icons">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="sendButton()">send</button>
+                            </div>
+                        </div>
+
+                        <div id="chat-bar-bottom">
+                            <p></p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+<script src="{% static 'scripts/chat-bot.js' %}"></script>
+<script>
+
+$(function() {
+    //Show Default First div is Active
+    $("#panel .box").hide();
+    $("#first_div").show();
+    $("#panel a").click(function() {
+        $("#panel .box").hide(400);
+        $(this).next(".box").show("slow");
+    });
+});
+</script>
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->

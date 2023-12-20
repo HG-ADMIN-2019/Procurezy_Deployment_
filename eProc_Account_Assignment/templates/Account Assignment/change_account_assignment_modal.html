@@ -1,0 +1,445 @@
+  {% load static %}
+   <!-- Start of Change Account assignment category pop up-->
+        <div class="modal fade" id="change_acc_cat">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Change Account Assignment</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div>
+                            <div id="acc_cat_field_div">
+                                <div class="form-group">Select Account Assignment Category <strong>(Primary)</strong> <br>
+                                    <select id="select_acc_type" onchange="select_acc();" class="form-control">
+                                        {% for acc in acc_desc_append_list %}
+                                        <option value="{{acc.account_assign_cat}}">{{acc.account_assign_cat_desc}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        {% if 'CC' in account_assign_cat_list %}
+                                        <div class="row mt-2">
+                                            <div class="col-4">Cost Center</div>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control account_assignment_secondary" id="CC" value="" disabled>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary" onclick="search_acc_value(this, 'CC')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if 'AS' in account_assign_cat_list %}
+                                        <div class="row mt-2">
+                                            <div class="col-4">Asset</div>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control account_assignment_secondary" id="AS" value="" disabled>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary" onclick="search_acc_value(this, 'AS')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if 'WBS' in account_assign_cat_list %}
+                                        <div class="row mt-2">
+                                            <div class="col-4">WBS Element</div>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control account_assignment_secondary" id="WBS" value="" disabled>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary" onclick="search_acc_value(this, 'WBS')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if 'OR' in account_assign_cat_list %}
+                                        <div class="row mt-2">
+                                            <div class="col-4">Internal Order</div>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control account_assignment_secondary" id="OR" value="" disabled>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary" onclick="search_acc_value(this, 'OR')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group mt-3" id="gl_acc_change_id">Please Select GL Account<br>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="select_gl_acc_num" value="{{ default_gl_account.0.default_gl_account_number }} - {{ default_gl_account.0.default_gl_account_description }}" disabled>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" onclick="search_gl_acc_value();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" onclick="change_account_assignment_category();"><i class="fa fa-check" aria-hidden="true"></i> save</button>
+                                </div>
+                            </div>
+
+                            <!-- Change account assignment category values sub-modal popup -->
+                            <div class="display-none" id="acc_table_div">
+                                <h5>Select Account Assignment values</h5>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table class="table acc_cat_datatable" id="acc_table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Select</th>
+                                                    <th id="acc_assign_type"></th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody id="acc_assignment_tbody">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" onclick="document.getElementById('acc_table_div').style.display='none'; document.getElementById('acc_cat_field_div').style.display='block';"><i class="fas fa-angle-left"></i> go back</button>
+                                    <button class="btn btn-primary" onclick="add_acc_value();"><i class="fa fa-check" aria-hidden="true"></i> add account assignment</button>
+                                </div>
+                            </div>
+
+                            <!-- Change GL account values sub-modal popup -->
+                            <div class="display-none" id="gl_acc_table_div">
+                                <h5>Search For GL Account Values</h5>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table class="table gl_acc_datatable" id="gl_acc_table">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>GL Account Values</th>
+                                            </tr>
+
+                                            </thead>
+                                            <tbody id="gl_acc_tbody">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" onclick="document.getElementById('gl_acc_table_div').style.display='none'; document.getElementById('acc_cat_field_div').style.display='block';"><i class="fas fa-angle-left"></i> go back</button>
+                                    <button class="btn btn-primary" onclick="add_gl_acc_value();"><i class="fa fa-check" aria-hidden="true"></i> add gl account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Change Account assignment category pop up-->
+
+<script>
+
+
+// Function to change account category values on select of account category type
+function select_acc() {
+    //var selected_acc = document.getElementById('select_acc_type').value
+    //var split_acc = selected_acc.split(" ");
+    //var acc_type = split_acc[0];
+    var acc_type = document.getElementById('select_acc_type').value
+    var item_currency = '{{requester_currency}}'
+    {% if is_document_detail %}
+    var item_prod_cat = $('#prod_cat_id-'+rendered_item_guid[parseInt(edit_row_index)-1]).text();
+    console.log(rendered_item_guid[parseInt(edit_row_index)-1])
+    var item_total_value = $('#ScIem-value-'+rendered_item_guid[parseInt(edit_row_index)-1]).text();
+    {% endif %}
+    {% if is_second_step %}
+    var item_prod_cat = $('#prod_cat_'+edit_account_assignment_cat).text();
+    console.log(sc_item_guid[parseInt(edit_account_assignment_cat)-1])
+    var item_total_value = $('#item_value_'+sc_item_guid[parseInt(edit_account_assignment_cat)-1]).text();
+    {% endif %}
+    var acc_assign_value_field_class = document.getElementsByClassName('account_assignment_secondary');
+
+    $('#select_gl_acc_num').empty();
+    var default_company_code = rendered_default_company_code
+    // $('#change_acc_cat').modal('hide')
+     $('#hg_loader').modal('show');
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Account_Assignment:change_acc_assignment_cat' %}",
+        data: {
+            'acc_type': acc_type,
+            'default_company_code':default_company_code,
+            'item_prod_cat':item_prod_cat,
+            'item_total_value':item_total_value,
+            'item_currency':item_currency,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (response) {
+            default_acc_value = response.acc_value
+
+            for(i=0; i<acc_assign_value_field_class.length; i++){
+                acc_assign_value_field_id = acc_assign_value_field_class[i].id;
+
+                if(acc_type !=  acc_assign_value_field_id){
+                    document.getElementById(acc_assign_value_field_id).value = ''
+                } else {
+                    document.getElementById(acc_assign_value_field_id).value = default_acc_value
+                }
+            }
+            console.log(response.default_gl_account)
+            $('#select_gl_acc_num').val(response.default_gl_account);
+
+            $('#hg_loader').modal('hide');
+            $('#change_acc_cat').modal('show')
+        }
+    })
+}
+function update_accounting_popup_data(acc_asg_cat,acc_asg_cat_value,gl_acc_value){
+    // based on item acc type,put option in first place
+    var html_option_default = '';
+    $('#select_acc_type option[value="' + acc_asg_cat.acc + '"]').remove()
+    html_option_default = '<option value="'+ acc_asg_cat.acc +'" selected>' + acc_asg_cat.acc_desc + '</option>'
+    $("#select_acc_type").prepend(html_option_default);
+    $("#select_acc_type")[0].options[0].selected = true;
+
+    var acc_assign_value_field_class = document.getElementsByClassName('account_assignment_secondary');
+    for(i=0; i<acc_assign_value_field_class.length; i++)
+    {
+        acc_assign_value_field_id = acc_assign_value_field_class[i].id;
+        if(acc_asg_cat.acc !=  acc_assign_value_field_id)
+        {
+            document.getElementById(acc_assign_value_field_id).value = ''
+        }
+        else
+        {
+            document.getElementById(acc_assign_value_field_id).value = acc_asg_cat_value
+        }
+    }
+    $('#select_gl_acc_num').val(gl_acc_value)
+
+}
+var Global_ACC = '';
+
+// Function to search account assignment values in Change account assignment category pop up
+function search_acc_value(obj, acc_cat){
+    $('.acc_cat_datatable').DataTable().destroy()
+
+    Global_ACC = acc_cat;
+    var default_company_code = rendered_default_company_code
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Account_Assignment:search_acc_value' %}",
+        data: {
+            'acc_type': acc_cat,
+            'default_company_code':default_company_code,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (response) {
+            $('#acc_assignment_tbody').empty()
+            $('#acc_assign_type').empty()
+            array = response.append_acc_value_desc
+            var tbody_content = ''
+            $.each(array, function (index, acc_value) {
+                tbody_content += '<tr><td><input type="radio" name="select_value"></td><td>'+ acc_value.attribute_values_description +'</td></tr>'
+            });
+            $('#acc_assignment_tbody').append(tbody_content)
+            if (acc_cat == 'CC'){
+                $('#acc_assign_type').html('Cost Center value')
+            }else if (acc_cat == 'WBS'){
+                $('#acc_assign_type').html('WBS value')
+            }else if (acc_cat == 'AS'){
+                $('#acc_assign_type').html('Asset value')
+            }else if (acc_cat == 'OR'){
+                $('#acc_assign_type').html('Internal Order value')
+            }
+            datatable_sort_filter('acc_cat_datatable');
+            document.getElementById('acc_table_div').style.display = 'block'
+            document.getElementById('acc_cat_field_div').style.display = 'none'
+        }
+    })
+}
+
+// function to add selected acc-values in Change account assignment category pop up
+function add_acc_value(){
+    var acc_values = '';
+    $("#acc_table TBODY TR").each(function() {
+        var row = $(this);
+        var check = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+        if (check){
+            acc_values = row.find("TD").eq(1).text();
+        }
+    });
+
+    if (Global_ACC == 'CC'){
+        document.getElementById('CC').value = acc_values
+    } else if (Global_ACC == 'WBS'){
+        document.getElementById('WBS').value = acc_values
+    } else if (Global_ACC == 'AS'){
+        document.getElementById('AS').value = acc_values
+    } else if (Global_ACC == 'OR'){
+        document.getElementById('OR').value = acc_values
+    }
+
+    document.getElementById('acc_table_div').style.display='none';
+    document.getElementById('acc_cat_field_div').style.display='block';
+}
+
+function search_gl_acc_value(){
+    var item_num = parseInt(GLOBAL_SELECT_ITEM_NUM)
+    var item_detail = GLOBAL_ITEM_DETAIL_LIST[item_num-1]
+    var acc_cat = document.getElementById('select_acc_type').value;
+    var acc_asg_cat = acc_cat.split(' - ')[0]
+    item_detail.acc = acc_asg_cat
+    $.ajax({
+	url: "{% url 'eProc_Account_Assignment:gl_acc_detail' %}",
+	type: "post",
+	data: item_detail,
+	success: function (response) {
+		$('#gl_acc_tbody').empty()
+		var gl_acc_table_list = '';
+		$.each(response.gl_acc_details, function(i, value) {
+		    gl_acc_table_list += '<tr><td><input type="radio" name="select_value"></td><td>'+ value.attribute_values_description +'</td></tr>'
+
+		});
+		$('#gl_acc_tbody').append(gl_acc_table_list)
+		datatable_sort_filter('gl_acc_datatable');
+		document.getElementById('gl_acc_table_div').style.display = 'block'
+		document.getElementById('acc_cat_field_div').style.display = 'none'
+
+        }
+    });
+
+
+
+}
+
+function add_gl_acc_value(){
+    selected_gl_acc_value = ''
+    $("#gl_acc_table TBODY TR").each(function(){
+        var row = $(this);
+        var check = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+        if (check){
+            selected_gl_acc_value = row.find("TD").eq(1).text();
+            console.log(selected_gl_acc_value)
+        }
+    })
+    document.getElementById('select_gl_acc_num').value = selected_gl_acc_value
+    document.getElementById('gl_acc_table_div').style.display = 'none'
+    document.getElementById('acc_cat_field_div').style.display = 'block'
+}
+
+function datatable_sort_filter(class_name) {
+    setTimeout(function() {
+        $('.' + class_name).DataTable( {
+        "scrollY": "200px",
+        "scrollCollapse": true,
+        } );
+    }, 500);
+}
+</script>
+
+{% if is_second_step %}
+<script src="{% static 'scripts/change_acct_assign_modal_sc2nd_step.js' %}"> </script>
+  <script>
+      function trigger_wf_acc(acc_cat, acc_val,item_detail,total_value,requester_user_name,rendered_default_company_code){
+    acc_cat = acc_cat.split(" - ")[0]
+    acc_val = acc_val.split(" - ")[0]
+    var trigger_data = {
+            'requester_user_name': requester_user_name,
+            'acc_default':acc_cat,
+            'acc_default_val':acc_val,
+            'default_company_code':rendered_default_company_code,
+            'item_details':item_detail,
+            'total_value':total_value
+        }
+    $('#hg_loader').modal('show');
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Shopping_Cart:ajax_trigger_wf' %}",
+        data: JSON.stringify(trigger_data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            check_manager_detail(response)
+            document.getElementById('sc_error_msg').style.display = 'none';
+            if(response.error_message){
+                $('#sc_error_msg').html(response.error_message);
+                document.getElementById('sc_success_messages').style.display = 'none';
+                document.getElementById('sc_error_msg').style.display = 'block';
+            }
+            if (response.gl_acc_list){
+                $.each(response.gl_acc_list, function(i, value) {
+                    var row_count = i+1
+                    document.getElementById("gl_acc_val_" + row_count).innerHTML = value
+                });
+            }
+            $('#hg_loader').modal('hide');
+        }
+    });
+
+}
+  </script>
+{% endif %}
+
+{% if is_document_detail %}
+
+<script src="{% static 'scripts/change_acct_assign_modal_doc_details.js' %}"> </script>
+
+<script>
+function trigger_wf_acc(acc_cat, acc_val,item_detail,total_value,requester_user_name,rendered_default_company_code){
+    acc_cat = acc_cat.split(" - ")[0]
+    acc_val = acc_val.split(" - ")[0]
+    var trigger_data = {
+            'requester_user_name': requester_user_name,
+            'acc_default':acc_cat,
+            'acc_default_val':acc_val,
+            'default_company_code':rendered_default_company_code,
+            'item_details':item_detail,
+            'total_value':total_value
+        }
+    $('#hg_loader').modal('show');
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Shopping_Cart:ajax_trigger_wf' %}",
+        data: JSON.stringify(trigger_data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            check_manager_detail(response)
+            document.getElementById('sc_error_msg').style.display = 'none';
+            if(response.error_message){
+                $('#sc_error_msg').html(response.error_message);
+                document.getElementById('sc_success_messages').style.display = 'none';
+                document.getElementById('sc_error_msg').style.display = 'block';
+            }
+            if (response.gl_acc_list){
+                $.each(response.gl_acc_list, function(i, value) {
+                    document.getElementById('ScAccounting-gl_acc_num-' + rendered_acc_guid[i]).innerHTML = value
+                });
+            }
+            $('#hg_loader').modal('hide');
+        }
+    });
+
+}
+
+</script>
+{% endif %}

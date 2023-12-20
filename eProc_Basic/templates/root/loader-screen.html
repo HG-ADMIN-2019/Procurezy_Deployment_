@@ -1,0 +1,71 @@
+<style>
+    .loader-screen-container {
+        display: none;
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.75);
+        background-repeat: no-repeat;
+        z-index: 9999;
+        top: 0;
+        bottom: 0;
+    }
+
+    .loader-screen {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .loader-message {
+        color: white;
+        font-size: 24px;
+        font-weight: 400;
+    }
+
+    .loader-animation {
+        height: 100px;
+        width: 100px;
+        border: 15px solid #83878e;
+        border-top-color: #1168ff;
+        border-radius: 50%;
+        animation: spin 1.5s infinite linear;
+    }
+
+    @keyframes spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #loader_screen_container.show {
+        display: block;
+    }
+
+    body.loader-show {
+        height: 100vh;
+        overflow-y: hidden;
+    }
+
+</style>
+
+<div class="loader-screen-container" id="loader_screen_container">
+    <div class="loader-screen">
+        <div class="loader-animation"></div>
+        <p class="loader-message">Please Wait...</p> 
+    </div>
+</div>
+
+<script>
+    function OpenLoaderPopup() {
+        document.getElementById('loader_screen_container').classList.add('show');
+        $('body').addClass('loader-show');
+    }
+
+    function CloseLoaderPopup(){
+        $('body').removeClass('loader-show');
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        document.getElementById('loader_screen_container').classList.remove('show');
+    }
+</script>

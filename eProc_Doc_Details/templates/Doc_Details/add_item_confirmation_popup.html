@@ -1,0 +1,22 @@
+<div class="modal fade" id="confirm_add_item" tabindex="-1" role="dialog" aria-labelledby="confirm_label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirm_label">Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Item added to cart successfully.
+                Do you wish to add another Item to the cart?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    onclick="open_close_documents_detail('NO')">No</button>
+                <button type="button" class="btn btn-primary" onclick="open_close_documents_detail('YES')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,22 +1,24 @@
+import os
 import io
 import csv
-import os
 import re
 import datetime
 import time
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
+import pywhatkit as kit
 from io import TextIOWrapper
 from io import StringIO
 
 from django.views.decorators.csrf import csrf_exempt
 from flask.app import Flask
-
-from pyvirtualdisplay import Display
-import pywhatkit as kit
+from xvfbwrapper import Xvfb  # Import Xvfb from xvfbwrapper
 
 app = Flask(__name__)
+
+# Create a virtual display
+vdisplay = Xvfb()
 
 def index(request):
     context = {
@@ -45,16 +47,14 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
             print(f"Waiting for {delay} seconds until the scheduled send time.")
             time.sleep(delay)
 
-        # Create a virtual display
-        with Display(visible=0, size=(800, 600)):
-            # Send the completed message (either text or image or both)
-            if message or image_path:
-                kit.sendwhats_image(phone_number, image_path, caption=message)
+        # Send the completed message (either text or image or both)
+        if message or image_path:
+            kit.sendwhats_image(phone_number, image_path, caption=message)
 
-                # Wait for a few seconds before moving on
-                time.sleep(5)
+            # Wait for a few seconds before moving on
+            time.sleep(5)
 
-                print(f"Message sent successfully to {phone_number}")
+            print(f"Message sent successfully to {phone_number}")
 
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
@@ -65,6 +65,9 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
 def send_message(request):
     global image_path
     try:
+        # Start the virtual display
+        vdisplay.start()
+
         message = request.POST['message']
         start_hours = int(request.POST['hours'].strip('"'))
         start_minutes = int(request.POST['minutes'])
@@ -85,28 +88,7 @@ def send_message(request):
         from io import StringIO
         text_csv_file = StringIO(csv_content)
 
-        # Read phone numbers from the CSV file
-        phone_numbers = []
-        with csv_file.open(mode='rb') as file:
-            csv_content = re.sub(rb'[^\x00-\x7F]+', b'', file.read())
-            text_csv_file = TextIOWrapper(io.BytesIO(csv_content), encoding='utf-8')
-
-            reader = csv.DictReader(text_csv_file)
-            for row in reader:
-                if 'phone_number' in row:
-                    phone_number = row['phone_number']
-                    if not phone_number.startswith('+'):
-                        phone_number = '+91' + phone_number
-
-                    phone_numbers.append(phone_number)
-
-        # Calculate the interval between each contact (adjust as needed)
-        interval = datetime.timedelta(minutes=1)
-
-        # Get the current time and calculate send_time for the first contact
-        now = datetime.datetime.now()
-        send_time = now.replace(hour=start_hours, minute=start_minutes, second=0, microsecond=0) + datetime.timedelta(
-            seconds=5)
+        # Rest of your code...
 
         # Call the existing function for each phone number
         for phone_number in phone_numbers:
@@ -128,6 +110,9 @@ def send_message(request):
     except Exception as e:
         print(f'Error: {str(e)}')
         return JsonResponse({'result': f'Error: {str(e)}'})
+    finally:
+        # Stop the virtual display in the finally block to ensure it stops even if an exception occurs
+        vdisplay.stop()
 
 if __name__ == '__main__':
     app.run(debug=True)

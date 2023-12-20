@@ -16,6 +16,15 @@ from flask.app import Flask
 from pyvirtualdisplay import Display  # Import the Display class from pyvirtualdisplay
 
 app = Flask(__name__)
+display_var = os.environ.get('DISPLAY', None)
+
+# Create a virtual display only if DISPLAY is available
+if display_var:
+    display = Display()
+    display.start()
+else:
+    display = None
+    print("DISPLAY environment variable not set. Skipping virtual display.")
 
 def index(request):
     context = {

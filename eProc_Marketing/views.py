@@ -29,11 +29,6 @@ def index(request):
 
 def send_whatsapp_message(phone_number, message, image_path, send_time):
     try:
-        import pygetwindow as gw
-
-        # Set pyautogui to use the pygetwindow backend
-        gw._PyGetWindowBackend = gw._PyGetWindowCtypesBackend
-
         # Check if either message or image is missing
         if not message and not image_path:
             print("Both message and image are missing. Nothing to send.")

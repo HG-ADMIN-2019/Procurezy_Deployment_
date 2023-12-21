@@ -13,7 +13,7 @@ function hideModal() {
     $('#Detgl_Modal').modal('hide');
 }
 
-//onclick of upload button display id_data_upload popup and set GLOBAL_ACTION button value
+//onclick of upload button display id_data_upload popup and set GLOBAL_ACTION button valu
 function onclick_upload_button() {
     GLOBAL_ACTION = "detgl_upload"
     display_button();

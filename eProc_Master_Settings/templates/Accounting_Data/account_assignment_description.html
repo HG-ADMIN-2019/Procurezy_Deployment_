@@ -590,10 +590,10 @@ function new_row_data() {
         var invalid_count = 0;
         del_ind = ''
         $("#id_popup_table TBODY TR").each(function() {
-            $('#id_popup_table').DataTable().destroy();
-            var row = $(this);
-            accdesc_dic = {}
-            //*************** reading data from the pop-up ***************
+                $('#id_popup_table').DataTable().destroy();
+                var row = $(this);
+                accdesc_dic = {}
+                //*************** reading data from the pop-up ***************
                 accdesc_dic.account_assign_value = row.find("TD").eq(3).find("select option:selected").val();
                 accdesc_dic.description = row.find("TD").eq(4).find('input[type="text"]').val();
                 accdesc_dic.account_assign_cat = row.find("TD").eq(2).find("select option:selected").val();
@@ -805,7 +805,7 @@ function new_row_data() {
     }
 
      // on click add icon display the row in to add the new entries
-    function add_popup_row() {
+        function add_popup_row() {
         $("#error_msg_id").css("display", "none")
         basic_add_new_html = '';
         var display_db_data = '';

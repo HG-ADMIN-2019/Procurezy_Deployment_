@@ -670,7 +670,7 @@ function account_assignment_value_find(company_num) {
 
 
 
-//***********************************88
+//***********************************
 function company_dropdwn_change(row){
     row.find("TD").eq(3).find("select").empty()
     row.find("TD").eq(4).find("select").empty()

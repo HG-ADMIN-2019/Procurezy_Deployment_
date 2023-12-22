@@ -163,32 +163,33 @@
                         </thead>
 
                         <tbody id="catalog_tbody">
-                        {% for catalog_detail in catalog_query %}
-                        <tr id="{{catalog_detail.catalog_guid}}">
-                            <td>{{catalog_detail.catalog_id}}</td>
-                            <td>{{catalog_detail.description}}</td>
-                            <td>{{catalog_detail.name}}</td>
-                            <td>{{catalog_detail.prod_type}}</td>
-                            <td><span class="badge badge-pill badge-button-purple"> <a id="{{catalog_detail.catalog_guid}}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>
-                            <td><span class="badge badge-pill badge-button-green"><a id="{{catalog_detail.catalog_id}}-ASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)"   href="#">Assign <i class="fas fa-link"></i></a> </span> </td>
-                            <td><span class="badge badge-pill badge-button-red"><a id="{{catalog_detail.catalog_id}}-UNASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Unassign <i class="fas fa-unlink"></i></a> </span> </td>
-                            <td><span class="badge badge-pill badge-button-blue"><a id="{{catalog_detail.catalog_id}}-VIEW" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">View <i class="fa fa-eye" aria-hidden="true"></i></a></span>  </td>
-                            <td>
-                                <label class="switch">
-                                    <label class="toggle">
-                                        {% if catalog_detail.is_active_flag %}
-                                        <input type="checkbox" id="{{catalog_detail.catalog_id}}-ACTIVATE" class="toggle-input" checked>
-                                        {% else %}
-                                        <input type="checkbox" id="{{catalog_detail.catalog_id}}-DEACTIVATE" class="toggle-input">
-                                        {% endif %}
-                                        <div class="toggle-controller default-success"></div>
+                         {% for catalog_detail, catalog_val in data %}
+                            <tr id="{{catalog_detail.catalog_guid}}">
+                                <td>{{catalog_detail.catalog_id}}</td>
+                                <td>{{catalog_detail.description}}</td>
+                                <td>{{catalog_detail.name}}</td>
+                                <td>{{catalog_detail.prod_type}}</td>
+                                <td><span class="badge badge-pill badge-button-purple"> <a id="{{catalog_detail.catalog_guid}}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>
+                                <td><span class="badge badge-pill badge-button-green"><a id="{{catalog_detail.catalog_id}}-ASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)"   href="#">Assign <i class="fas fa-link"></i></a> </span> </td>
+                                <td><span class="badge badge-pill badge-button-red"><a id="{{catalog_detail.catalog_id}}-UNASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Unassign <i class="fas fa-unlink"></i></a> </span> </td>
+                                <td><span class="badge badge-pill badge-button-blue"><a id="{{catalog_detail.catalog_id}}-VIEW" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">View <i class="fa fa-eye" aria-hidden="true"></i></a></span>  </td>
+                                <td>
+                                    <label class="switch">
+                                        <label class="toggle">
+                                            {% if catalog_detail.is_active_flag %}
+                                            <input type="checkbox" id="{{catalog_detail.catalog_id}}-ACTIVATE" class="toggle-input" checked>
+                                            {% else %}
+                                            <input type="checkbox" id="{{catalog_detail.catalog_id}}-DEACTIVATE" class="toggle-input">
+                                            {% endif %}
+                                            <div class="toggle-controller default-success"></div>
+                                        </label>
                                     </label>
-                                </label>
-                            </td>
-                            <td><i class="material-icons hg-icon-blue-primary  {% if catalog_detail.catalog_transaction %} hg-delete-icon-disabled  {% endif %}" title="Delete Form" id="{{catalog_detail.catalog_id}}-{{catalog_detail.catalog_transaction}}"
-                                   onclick="get_form_id_to_delete(this.id)" >delete_outline</i>
-                            </td>
-                        </tr>
+                                </td>
+                                <td><i class="material-icons hg-icon-blue-primary  {% if catalog_val.catalog_transaction  %} hg-delete-icon-disabled  {% endif %}"
+                                       title="Delete Form" id="{{catalog_val.catalog_id }}-{{catalog_val.catalog_transaction}}"
+                                       onclick="get_form_id_to_delete(this.id)" >delete_outline</i>
+                                </td>
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>

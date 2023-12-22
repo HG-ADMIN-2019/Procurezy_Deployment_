@@ -309,16 +309,12 @@ def check_acc_assign_values_data(ui_data, status):
                 else:
                     invalid_count = invalid_count + 1
         else:
-            from_val = datetime.strptime(acc_value['valid_from'], "%d-%m-%Y")
-            to_val = datetime.strptime(acc_value['valid_to'], "%d-%m-%Y")
             if django_query_instance.django_existence_check(AccountingData,
                                                             {'del_ind': False,
                                                              'client': global_variables.GLOBAL_CLIENT,
                                                              'account_assign_value': acc_value['account_assign_value'],
                                                              'company_id': acc_value['company_id'],
                                                              'account_assign_cat': acc_value['account_assign_cat'],
-                                                             'valid_from': from_val,
-                                                             'valid_to': to_val
                                                              }):
                 duplicate_count = duplicate_count + 1
             elif django_query_instance.django_existence_check(AccountingData,

@@ -3,6 +3,7 @@ var validate_add_attributes = [];
 var main_table_low_value = [];
 var used_acc_ass_cat = [];
 var aav={};
+var main_table_data = {};
 
 //hide the myModal popup: Implemented Dependency delete purpose
 function hideModal() {

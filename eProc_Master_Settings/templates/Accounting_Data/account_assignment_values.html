@@ -832,7 +832,6 @@
         });
     }
 
-    // on click add icon display the row in to add the new entries
     function add_popup_row() {
         $('#save_id').show();
         on_page_load_dropdown();
@@ -844,20 +843,48 @@
             $("#id_error_msg").html("");
         });
         if (GLOBAL_ACTION == "aav_upload") {
-            basic_add_new_html = '<tr><td><input type="checkbox" required></td>'+
-            '<td><select class="form-control" id="company_dropdw" onchange="GetUnusedAccAssCat(this)">' + company_dropdwn + '</select></td>'+
-            '<td><select class="form-control" id="acc_ass_val_dropdw">' + acc_ass_dropdwn + ' </select></td>'+
-            '<td><input class="form-control check_number" type="number" minlength="4" maxlength="40" name="Account Assignment Value" required></td>'+
-            '<td><input class="form-control formatDate" type="text"  name="valid_from" required></td>'+
-            '<td><input class="form-control formatDate" type="text"  name="Valid To Date" required></td>'+
-            '<td hidden><input value=""></td>'+
-            '<td class="class_del_checkbox"><input type="checkbox" required></td>'+
-            '<td class="class_del_checkbox1" hidden><input type="checkbox" required></td></tr>';
-            $('#id_popup_tbody').append(basic_add_new_html);
-            DatePicker();
-            $(".class_del_checkbox").prop("hidden", false);
-            $("#id_del_ind_checkbox").prop("hidden", false);
-            table_sort_filter('id_popup_table');
+            OpenLoaderPopup();
+        var data = {'table_name':'AccountingData'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_aac_data = response.upload_data_acccat
+                rendered_company_data = response.upload_company_data
+                display_tb_data() // Read data from the main table
+                on_page_load_dropdown();
+<!--                acc_value_dropdown()-->
+                basic_add_new_html = '<tr><td><input type="checkbox" required></td>'+
+                '<td><select class="form-control" id="company_dropdw" onchange="GetUnusedAccAssCat(this)">' + company_dropdwn + '</select></td>'+
+                '<td><select class="form-control" id="acc_ass_val_dropdw">' + acc_ass_dropdwn + ' </select></td>'+
+                '<td><input class="form-control check_number" type="number" minlength="4" maxlength="40" name="Account Assignment Value" required></td>'+
+                '<td><input class="form-control formatDate" type="text"  name="valid_from" required></td>'+
+                '<td><input class="form-control formatDate" type="text"  name="Valid To Date" required></td>'+
+                '<td hidden><input value=""></td>'+
+                '<td class="class_del_checkbox"><input type="checkbox" required></td>'+
+                '<td class="class_del_checkbox1" hidden><input type="checkbox" required></td></tr>';
+                $('#id_popup_tbody').append(basic_add_new_html);
+                DatePicker();
+                $(".class_del_checkbox").prop("hidden", false);
+                $("#id_del_ind_checkbox").prop("hidden", false);
+                table_sort_filter('id_popup_table');
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop( "hidden", false );
+<!--                GLOBAL_ACTION = button.value-->
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#aav_Modal').modal('show');
+                new_row_data();   // Add a new row in popup
+                table_sort_filter('id_popup_table');
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#delete_data").prop("hidden", true);
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+
         }
         else{
             new_row_data();   // Add a new row in popup}

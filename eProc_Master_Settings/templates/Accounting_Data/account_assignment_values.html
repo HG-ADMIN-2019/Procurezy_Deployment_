@@ -594,24 +594,24 @@
             var d2=new Date(accval_dic.valid_to); //yyyy-mm-dd
           if(accval_dic.del_ind == '0'){
             if (d2< d1){
-                get_message_details("JMSG017"); // Get message details
-                var display4 = msg_type.messages_id_desc;
-                document.getElementById("id_error_msg_aav_code").innerHTML = display4;
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                count = count + 1;
+                    get_message_details("JMSG017"); // Get message details
+                    var display4 = msg_type.messages_id_desc;
+                    document.getElementById("id_error_msg_aav_code").innerHTML = display4;
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    count = count + 1;
             } else {
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
             }
             //*************** checking for max length for aav code (max length = 2) ***************
             if (accval_dic.account_assign_value < 0) {
-                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                row_color_highlight_empty(row);
-                $("#id_error_msg_country_length").prop("hidden",false);
-                error_message = ui_messeges("JMSG002")// Get message details
-                var display8 = error_message;
-                document.getElementById("id_error_msg_aav_length").innerHTML = display8+ "Account assignment value";
-                $("#id_check_special_character_messages").prop("hidden",false);
-                count = count +1;
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_country_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_length").innerHTML = display8+ "Account assignment value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
             }
             //*************** checking for empty records for item_from_value id  (max length = 2) ***************
             else if(accval_dic.account_assign_value.length == 0 || /\s/.test(accval_dic.account_assign_value)) {
@@ -646,21 +646,31 @@
                     $("#id_check_special_character_messages").prop("hidden",false);
                     count = count +1;
             }
+            else if(accval_dic.valid_from > accval_dic.valid_to) {
+                    $(row.find("TD").eq(4).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_aav_code").prop("hidden",false);
+                    error_message = ui_messeges("JMSG017")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_code").innerHTML = display8;
+                    $("#id_check_special_character_messages").prop("hidden", false);
+                    count = count +1;
+              }
             //*************** checking for special characters for aav code ***************
             else if (format_aav.test(accval_dic.account_assign_value)) {
-                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                row_color_highlight_special(row);
-                $("#id_error_msg_aav_code").prop("hidden",false);
-                error_message = ui_messeges("JMSG003")// Get message details
-                var display4 = error_message;
-                document.getElementById("id_error_msg_aav_name").innerHTML = display4+ "Account assignment value";
-                $("#id_check_special_character_messages").prop("hidden",false);
-                count = count +1;
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_special(row);
+                    $("#id_error_msg_aav_code").prop("hidden",false);
+                    error_message = ui_messeges("JMSG003")// Get message details
+                    var display4 = error_message;
+                    document.getElementById("id_error_msg_aav_name").innerHTML = display4+ "Account assignment value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
             } else {
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
-                row_color_no_highlight(row);
-                $(row).css("border", "");
-<!--                $("#id_delete_duplicate").hide()-->
+                    $(row.find("TD").eq(5).find('input[type="text"]')).css("border", "1px solid #ced4da");
+                    row_color_no_highlight(row);
+                    $(row).css("border", "");
+    <!--                $("#id_delete_duplicate").hide()-->
             }
             if(aav_code_check.includes(compare)){
                  $(row).css("border", "#f8d7da");
@@ -692,8 +702,8 @@
                 $(row).css("border", "");
                 $("#id_delete_duplicate").hide()
             }
-            aav_code_check.push(accval_dic.account_assign_value)
-            main_table_low_value.push(accval_dic.account_assign_value)
+            aav_code_check.push(compare)
+            main_table_low_value.push(compare)
             table_sort_filter_popup_pagination('id_popup_table');
           }
           if(flag == 0){

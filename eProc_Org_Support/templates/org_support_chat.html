@@ -133,7 +133,14 @@
             $("#save_cancel_btn_chat").hide();
             $("#edit_id_chat").show();
             $(".hg_edit_display_mode").prop("disabled", true);
-            setTimeout(function(){$('#myModalChat').modal('hide');},5000)
+            $("#select_id").prop( "hidden", true );
+            $("#username_inp").prop( "hidden", false );
+<!--            setTimeout(function(){-->
+<!--                $("#select_id").prop( "hidden", true );},1000)-->
+<!--            setTimeout(function(){-->
+<!--                $("#username_inp").prop( "hidden", false );},1000)-->
+            setTimeout(function(){
+                $('#myModalChat').modal('hide');},5000)
             }
         });
     }

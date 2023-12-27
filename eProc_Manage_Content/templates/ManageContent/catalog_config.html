@@ -187,7 +187,7 @@
                                 </td>
                                 <td>
                                     <i class="material-icons hg-icon-blue-primary {% if catalog_detail.catalog_transaction %} hg-delete-icon-disabled {% endif %}"
-                                        title="Delete Form" id="{{catalog_detail.catalog_id}}-{{catalog_detail.catalog_transaction}}" > delete_outline </i>
+                                        title="Delete Form" id="{{catalog_detail.catalog_id}}-{{catalog_detail.catalog_transaction}}" onclick="get_form_id_to_delete(this.id)" > delete_outline </i>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -251,6 +251,28 @@
             <div class="modal-footer">
                 <button class="btn btn-outline-primary" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
                 <button class="btn btn-primary" onclick="save_catalog()" ><i class="fas fa-save"></i> save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Delete button Confirmation popup-->
+<div class="modal fade" id="confirm_delete_pop_up" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You are about to delete form "<span id="form_id_del"></span>". Are you sure?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="delete_form()">Delete</button>
             </div>
         </div>
     </div>
@@ -487,6 +509,41 @@
             $('#'+GLOBAL_CATALOG_GUID).find("TD").eq(2).text(data[0].name);
             $('#'+GLOBAL_CATALOG_GUID).find("TD").eq(3).text(data[0].product_type);
         }
+    }
+
+    // Onclick Delete button conformation popup
+    function get_form_id_to_delete(element) {
+        var delete_id = element.split('-')
+        const transaction_flag = ["False", "false"];
+        if(transaction_flag.includes(delete_id[1]) ){
+            delete_form_id = delete_id[0]
+            document.getElementById("form_id_del").innerHTML = delete_id[0];
+            $('#confirm_delete_pop_up').modal('show')
+        }
+    }
+
+    // Function to delete freetext form
+    function delete_form() {
+        var catalog_info = {'catalog_id': [delete_form_id], 'catalog_action': 'DELETE'};
+        $('#confirm_delete_pop_up').modal('hide');
+        data = {'data':catalog_info}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Manage_Content:save_catalog_db' %}",
+            data:JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                Response;
+                display_product_data(Response.product_info);
+                $('#success_msg_id').text(Response[1])
+                $("#error_msg_div").prop("hidden",false)
+                message_display_time();
+                CloseLoaderPopup();
+            }
+        });
+
     }
 
     function get_assign_unassign_products(assign_unassign_id){

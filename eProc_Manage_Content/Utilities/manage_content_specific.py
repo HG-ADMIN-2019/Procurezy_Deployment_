@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 
 from Majjaka_eProcure import settings
+from eProc_Attributes.models.org_attribute_models import OrgAttributesLevel
 from eProc_Basic.Utilities.constants.constants import CONST_PRODUCT_SPECIFICATION, CONST_CATALOG_CALLOFF, \
     CONST_FREETEXT_CALLOFF, \
     CONST_SEARCH_COUNT, CONST_VARIANT_WITHOUT_PRICING, CONST_CATALOG_ITEM_VARIANT, CONST_DROPDOWN_DATA_TYPE, \
@@ -131,7 +132,24 @@ def get_catalog_filter_list(filter, query_count):
     """
     catalog_details = django_query_instance.django_filter_query_with_entry_count(Catalogs, filter, ['catalog_id'], None,
                                                                                  int(query_count))
+    catalog_details = get_catalog_values(catalog_details)
 
+    return catalog_details
+
+
+def get_catalog_values(catalog_details):
+    """
+
+    :param catalog_details:
+    :return
+    """
+    for catalog_detail in catalog_details:
+        catalog_detail['catalog_transaction'] = False
+        if django_query_instance.django_existence_check(OrgAttributesLevel,
+                                                        {'low': catalog_detail['catalog_id'],
+                                                         'client': global_variables.GLOBAL_CLIENT,
+                                                         'del_ind': False}):
+            catalog_detail['catalog_transaction'] = True
     return catalog_details
 
 

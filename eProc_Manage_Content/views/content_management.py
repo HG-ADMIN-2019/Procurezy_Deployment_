@@ -90,35 +90,15 @@ def product_and_service_config(request):
                   'ManageContent/product_details_config.html', context)
 
 
-def get_catalog_values():
-    """
-
-    :return
-    """
-    catalogs_list = list(CatalogGenericMethods.catalog_list())
-    for catalog_detail in catalogs_list:
-        catalog_detail['catalog_transaction'] = False
-        if django_query_instance.django_existence_check(OrgAttributesLevel,
-                                                        {'low': catalog_detail['catalog_id'],
-                                                         'client': global_variables.GLOBAL_CLIENT,
-                                                         'del_ind': False}):
-            catalog_detail['catalog_transaction'] = True
-        catalog_detail['encrypted_catalog_id'] = encrypt(catalog_detail['catalog_id'])
-    return catalogs_list
-
-
 def catalog_config(request):
     """
 
     """
     update_user_info(request)
     catalog_query = []
-    data = []
     if request.method == 'GET':
         filter_query = {'client': global_variables.GLOBAL_CLIENT, 'del_ind': False}
         catalog_query = get_catalog_filter_list(filter_query, 10)
-        filter_catalog_id = get_catalog_values()
-        data = zip(catalog_query, filter_catalog_id)
     elif request.is_ajax():
         catalog_details = JsonParser().get_json_from_req(request)
         product_details_query = catalog_search(**catalog_details)
@@ -130,7 +110,6 @@ def catalog_config(request):
         'is_slide_menu': True,
         'is_content_mgmnt_active': True,
         'catalog_query': catalog_query,
-        'data': data
     }
     return render(request,
                   'ManageContent/catalog_config.html', context)

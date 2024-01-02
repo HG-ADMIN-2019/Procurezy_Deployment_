@@ -173,6 +173,22 @@ def save_catalog_to_db(catalog_data):
                                                                            'catalog_id__in': catalog_id},
                                                                           None,
                                                                           None)
+    elif catalog_data['catalog_action'] == 'DELETE':
+        catalog_id = catalog_data.get('catalog_id')
+        django_query_instance.django_filter_delete_query(Catalogs,
+                                                         {'client': global_variables.GLOBAL_CLIENT,
+                                                          'catalog_id__in': catalog_id})
+        remaining_catalogs = django_query_instance.django_filter_query(Catalogs,
+                                                                       {'client': global_variables.GLOBAL_CLIENT},
+                                                                       None,
+                                                                       None)
+        if remaining_catalogs:
+            for catalog_detail in remaining_catalogs:
+                catalog_detail['catalog_transaction'] = django_query_instance.django_existence_check(OrgAttributesLevel,
+                                                                                                     {'low': catalog_detail['catalog_id'],
+                                                                                                      'client': global_variables.GLOBAL_CLIENT,
+                                                                                                      'del_ind': False})
+            catalog_data_response = get_catalog_values(remaining_catalogs)
     else:
         for data in catalog_data['catalog_data']:
             catalog_dictionary = {'catalog_guid': guid_generator(),
@@ -540,14 +556,14 @@ def save_products_specifications(product_specification_data):
     return product_info_id
 
 
-def get_product_info_id(product_spec_list,product_id):
+def get_product_info_id(product_spec_list, product_id):
     """
 
     """
-    product_info_id = [product_spec['product_info_id'] for product_spec in product_spec_list if product_spec['product_id'] == product_id]
+    product_info_id = [product_spec['product_info_id'] for product_spec in product_spec_list if
+                       product_spec['product_id'] == product_id]
     if product_info_id:
         product_info_id = product_info_id[0]
     else:
         product_info_id = None
-    return  product_info_id
-
+    return product_info_id

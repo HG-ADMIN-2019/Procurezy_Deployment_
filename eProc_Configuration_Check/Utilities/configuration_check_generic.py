@@ -2382,7 +2382,11 @@ def check_determine_gl_acc_data(ui_data, status):
                     delete_count += 1
                     valid_data_list.append(glaccount_detail)
                 else:
-                    invalid_count += 1
+                    if status == 'UPLOAD':
+                        delete_count += 1
+                        valid_data_list.append(glaccount_detail)
+                    else:
+                        invalid_count += 1
         else:
             if django_query_instance.django_existence_check(DetermineGLAccount, {
                 'prod_cat_id': glaccount_detail['prod_cat_id'],

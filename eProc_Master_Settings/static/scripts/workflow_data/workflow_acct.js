@@ -60,7 +60,7 @@ function read_popup_data() {
     $("#id_popup_table TBODY TR").each(function() {
         var row = $(this);
         wfacc = {};
-        wfacc.del_ind = row.find("TD").eq(10).find('input[type="checkbox"]').is(':checked');
+        wfacc.del_ind = row.find("TD").eq(9).find('input[type="checkbox"]').is(':checked');
         wfacc.company_id = row.find("TD").eq(1).find('select[type="text"]').val();
         wfacc.account_assign_cat = row.find("TD").eq(2).find('select[type="text"]').val();
         wfacc.acc_value = row.find("TD").eq(3).find('select[type="text"]').val();

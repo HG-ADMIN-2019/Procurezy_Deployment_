@@ -97,7 +97,7 @@ function delete_duplicate() {
         item_to_value = row.find("TD").eq(7).find('input[type="number"]').val();
         currency_id = row.find("TD").eq(8).find("select option:selected").val();
         checked_box = row.find("TD").eq(10).find('input[type="checkbox"]').is(':checked');
-        var compare = prod_cat_id + '-' + company_id + '-' + account_assign_cat + '-' + gl_acc_num
+        var compare = prod_cat_id + '-' + company_id + '-' + account_assign_cat + '-' + gl_acc_num + '-' + currency_id
         if (checked_box) {
          // Keep rows with the checkbox checked
            del_ind = '1';
@@ -147,7 +147,7 @@ function read_popup_data() {
         detgl.item_to_value = row.find("TD").eq(7).find('input[type="number"]').val();
         detgl.currency_id = row.find("TD").eq(8).find("select option:selected").val();
         detgl.det_gl_acc_guid = row.find("TD").eq(9).find('input[type="text"]').val();
-        var compare = detgl.prod_cat_id + '-' + detgl.company_id + '-' + detgl.account_assign_cat +'-'+ detgl.gl_acc_num
+        var compare = detgl.prod_cat_id + '-' + detgl.company_id + '-' + detgl.account_assign_cat +'-'+ detgl.gl_acc_num +'-'+ detgl.currency_id
         if (detgl == undefined) {
             detgl.prod_cat_id = row.find("TD").eq(1).find('input[type="text"]').val();
         }
@@ -194,7 +194,7 @@ function get_main_table_data_upload() {
         main_attribute.item_from_value = row.find("TD").eq(6).html();
         main_attribute.item_to_value = row.find("TD").eq(7).html();
         main_attribute.currency_id = row.find("TD").eq(8).html();
-        var detgl_compare = main_attribute.prod_cat_id + '-' + main_attribute.company_id + '-' + main_attribute.account_assign_cat +'-'+ main_attribute.gl_acc_num
+        var detgl_compare = main_attribute.prod_cat_id + '-' + main_attribute.company_id + '-' + main_attribute.account_assign_cat +'-'+ main_attribute.gl_acc_num +'-'+ main_attribute.currency_id
         main_table_low_value.push(detgl_compare);
     });
     table_sort_filter('display_basic_table');

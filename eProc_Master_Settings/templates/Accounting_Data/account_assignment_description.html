@@ -199,7 +199,7 @@
 
         language_dropdwn = '';
         $.each(rendered_language_data, function (i, item) {
-            language_dropdwn += '<option value="' + item.language_id + '">' + item.description + '</option>'
+            language_dropdwn += '<option value="' + item.language_id + '">' + item.language_id + '</option>'
         });
         acc_ass_val_dropdwn = '';
         $.each(rendered_accasscat_values, function (i, item) {
@@ -365,17 +365,17 @@ function new_row_data() {
                                 var language_id_list = '';
                                 $.each(rendered_language_data, function(i, item){
                                     if( value.language_id == item.language_id){
-                                        language = '<option value="' + item.language_id + '">' + item.description + '</option>';
+                                        language = '<option value="' + item.language_id + '">' + item.language_id + '</option>';
                                     }else{
-                                        language_list += '<option value="' + item.language_id + '">' + item.description + '</option>';
+                                        language_list += '<option value="' + item.language_id + '">' + item.language_id + '</option>';
                                     }
                                     language_id_list = language + language_list
                                 });
                                 if(account_assign_array.includes(value.account_assign_value)){
-                                    edit_basic_data += '<tr ><td><input class="input" type="checkbox" required></td><td><select class="form-control">value ="' + value.company_id + '"'+company_id_list+'</select></td><td><select  class="form-control" id="acc_ass_dropdwn"></select></td><td><select  class="form-control" id="acc_ass_val_dropdw">value ="' + value.account_assign_value + '"'+assignment_value_id_list+' </select></td><td><input class="form-control" type="text" value="' + value.description + '"  maxlength="255" onkeypress="return /[a-z ]/i.test(event.key)" style="text-transform:uppercase" </td><td><select class="form-control" type="text"><option value ="' + value.language_id + '"'+language_id_list+'>'+value.language_id+'</option></select></td><td hidden><input class="form-control" type="text" value="" ></td><td input class="input" type="checkbox">' + del_ind + '</td><td hidden>1</td></tr>';
+                                    edit_basic_data += '<tr ><td><input class="input" type="checkbox"  required></td><td><select class="form-control">value ="' + value.company_id + '"'+company_id_list+'</select></td><td><select class="form-control">value ="' + value.account_assign_cat + '"' + aac_data_id_list + ' </select></td><td><select  class="form-control" id="acc_ass_val_dropdw">value ="' + value.account_assign_value + '"'+assignment_value_id_list+'</select></td><td><input class="form-control" type="text" value="' + value.description + '"  maxlength="255" onkeypress="return /[a-z ]/i.test(event.key)" style="text-transform:uppercase" </td><td><select class="form-control" type="text"><option value ="' + value.language_id + '"language_id_list>'+value.language_id+'</option></select></td><td hidden><input class="form-control" type="text" value="" ></td><td input class="input" type="checkbox">' + del_ind + '</td></tr>';
                                 }
                                 else{
-                                    edit_basic_data += '<tr ><td><input class="input" type="checkbox"  required></td><td><select class="form-control">value ="' + value.company_id + '"'+company_id_list+'</select></td><td><select class="form-control">value ="' + value.account_assign_cat + '"' + aac_data_id_list + ' </select></td><td><select  class="form-control" id="acc_ass_val_dropdw">value ="' + value.account_assign_value + '"'+assignment_value_id_list+'</select></td><td><input class="form-control" type="text" value="' + value.description + '"  maxlength="255" onkeypress="return /[a-z ]/i.test(event.key)" style="text-transform:uppercase" </td><td><select class="form-control" type="text"><option value ="' + value.language_id + '"language_id_list>'+value.language_id+'</option></select></td><td hidden><input class="form-control" type="text" value="" ></td><td input class="input" type="checkbox">' + del_ind + '</td><td hidden>0</td></tr>';
+                                    edit_basic_data += '<tr ><td><input class="input" type="checkbox"  required></td><td><select class="form-control">value ="' + value.company_id + '"'+company_id_list+'</select></td><td><select class="form-control">value ="' + value.account_assign_cat + '"' + aac_data_id_list + ' </select></td><td><select  class="form-control" id="acc_ass_val_dropdw">value ="' + value.account_assign_value + '"'+assignment_value_id_list+'</select></td><td><input class="form-control" type="text" value="' + value.description + '"  maxlength="255" onkeypress="return /[a-z ]/i.test(event.key)" style="text-transform:uppercase" </td><td><select class="form-control" type="text"><option value ="' + value.language_id + '"language_id_list>'+value.language_id+'</option></select></td><td hidden><input class="form-control" type="text" value="" ></td><td input class="input" type="checkbox">' + del_ind + '</td></tr>';
                                     invalid_acc_assn.push(value.account_assign_value)
                                 }
                             });

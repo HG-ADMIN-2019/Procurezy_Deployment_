@@ -76,6 +76,10 @@
 }
 .toggle-off.active {color:red;}
 .toggle-on.active {color:blue;}
+.hg-icon-blue-primary.hg-delete-icon-disabled {
+  cursor: not-allowed;
+  color: #a9a9a9;
+}
 
 </style>
 <div class="container-fluid">
@@ -567,7 +571,7 @@
                             </label>
                         </td>
                         <td>
-                            <i class="material-icons hg-icon-blue-primary ${hg_delete_icon_disabled} " title="Delete Form" id="'+catalog_detail.catalog_id+'-'+catalog_detail.catalog_transaction +'" onclick="get_form_id_to_delete(this.id)">delete_outline</i>
+                            <i class="material-icons hg-icon-blue-primary ${hg_delete_icon_disabled} " title="Delete Form" id="${catalog_detail.catalog_id}-${catalog_detail.catalog_transaction}" onclick="get_form_id_to_delete(this.id)">delete_outline</i>
                         </td>'+
                     </tr>`;
                 });

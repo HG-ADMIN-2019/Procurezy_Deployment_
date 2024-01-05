@@ -1320,8 +1320,7 @@ class MasterSettingsSave:
                 wfacc_db_list.append(wfacc_db_dictionary)
             else:
                 django_query_instance.django_update_query(WorkflowACC,
-                                                          {'workflow_acc_guid': wfacc_detail[
-                                                              'workflow_acc_guid'],
+                                                          {
                                                            'acc_value': wfacc_detail['acc_value'],
                                                            'company_id': wfacc_detail['company_id'],
                                                            'app_username': wfacc_detail['app_username'],
@@ -1334,8 +1333,7 @@ class MasterSettingsSave:
                                                            'currency_id': wfacc_detail[
                                                                'sup_currency_id'],
                                                            'client': self.client},
-                                                          {'workflow_acc_guid': wfacc_detail[
-                                                              'workflow_acc_guid'],
+                                                          {
                                                            'acc_value': wfacc_detail['acc_value'],
                                                            'company_id': wfacc_detail['company_id'],
                                                            'app_username': wfacc_detail['app_username'],
@@ -1348,8 +1346,8 @@ class MasterSettingsSave:
                                                                'sup_currency_id'],
                                                            'workflow_acc_changed_at': self.current_date_time,
                                                            'workflow_acc_changed_by': self.username,
-                                                           'del_ind': wfacc_detail['del_ind'],
                                                            'client': OrgClients.objects.get(client=self.client),
+                                                           'del_ind': wfacc_detail['del_ind'],
                                                            })
         if wfacc_db_list:
             bulk_create_entry_db(WorkflowACC, wfacc_db_list)

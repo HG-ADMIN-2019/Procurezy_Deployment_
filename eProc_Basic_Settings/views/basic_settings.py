@@ -602,11 +602,7 @@ def remove_invalid_workflowacc(convertion_list):
                                                                         {'del_ind': False,
                                                                          'account_assign_value': conversion[
                                                                              'acc_value']}):
-                            # Check for existence of Username
-                            if django_query_instance.django_existence_check(AccountingData,
-                                                                            {'del_ind': False,
-                                                                             'account_assign_value': conversion[
-                                                                                 'sup_acc_value']}):
+
                                 # Check for existence of Username
                                 if django_query_instance.django_existence_check(UserData,
                                                                                 {'del_ind': False,

@@ -634,7 +634,7 @@
                 detgl_code_dic.del_ind = '0'
             }
             detgl_list.push(detgl_code_dic)
-            var compare = detgl_code_dic.prod_cat_id + '-' + detgl_code_dic.company_id + '-' + detgl_code_dic.account_assign_cat + '-' + detgl_code_dic.gl_acc_num
+            var compare = detgl_code_dic.prod_cat_id + '-' + detgl_code_dic.company_id + '-' + detgl_code_dic.account_assign_cat + '-' + detgl_code_dic.gl_acc_num + '-' + detgl_code_dic.currency_id
             get_main_table_data();
             var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
           if(detgl_code_dic.del_ind == '0'){

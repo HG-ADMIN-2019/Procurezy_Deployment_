@@ -227,24 +227,24 @@ function delete_duplicate() {
         valid_to = row.find("TD").eq(5).find('input[type="text"]').val();
         checked_box = row.find("TD").eq(6).find('input[type="checkbox"]').is(':checked')
         address_compare = address_number +'-'+ address_type+'-'+ company_id
-       // Only proceed if address_number && address_type && company_id are not empty
-     if (checked_box) {
-            // Keep rows with the checkbox checked
-            del_ind = '1';
-     } else {
-            del_ind = '0';
-      if (address_number && address_type && company_id && valid_from && valid_to) {
-        if (address_type_code_check.includes(address_compare)) {
-            $(row).remove();
-        }
-        address_type_code_check.push(address_compare);
-        main_table_low_value = get_main_table_data_upload(); //Read data from main table
-        if (main_table_low_value.includes(address_compare)) {
-            $(row).remove();
-        }
-        main_table_low_value.push(address_compare);
-      }
-     }
+         // Only proceed if address_number && address_type && company_id are not empty
+         if (checked_box) {
+                // Keep rows with the checkbox checked
+                del_ind = '1';
+         } else {
+                del_ind = '0';
+              if (address_number && address_type && company_id && valid_from && valid_to) {
+                    if (address_type_code_check.includes(address_compare)) {
+                        $(row).remove();
+                    }
+                    address_type_code_check.push(address_compare);
+                    main_table_low_value = get_main_table_data_upload(); //Read data from main table
+                    if (main_table_low_value.includes(address_compare)) {
+                        $(row).remove();
+                    }
+                    main_table_low_value.push(address_compare);
+              }
+         }
     })
     table_sort_filter_popup('id_popup_table')
     check_data()

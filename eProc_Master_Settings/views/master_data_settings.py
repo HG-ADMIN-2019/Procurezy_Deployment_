@@ -754,6 +754,10 @@ def extract_spendlimit_template(request):
     return response
 
 
+# import csv
+# from django.http import HttpResponse
+# from datetime import datetime
+
 def extract_address_type_data(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Address Types.CSV"'
@@ -771,16 +775,19 @@ def extract_address_type_data(request):
     address_type_data = query_update_del_ind(address_type)
 
     for addresstypedata in address_type_data:
+        # Format the date strings using strftime
+        valid_from = addresstypedata['valid_from'].strftime('%d-%m-%Y')
+        valid_to = addresstypedata['valid_to'].strftime('%d-%m-%Y')
+
         address_type_info = [addresstypedata['address_type'],
                              addresstypedata['address_number'],
                              addresstypedata['company_id'],
-                             addresstypedata['valid_from'],
-                             addresstypedata['valid_to'],
+                             valid_from,
+                             valid_to,
                              addresstypedata['del_ind']]
         writer.writerow(address_type_info)
 
     return response
-
 
 def extract_address_type_template(request):
     response = HttpResponse(content_type='text/csv')

@@ -594,7 +594,7 @@
             address_type_dic.address_number = row.find("TD").eq(3).find('select option:selected').val();
             address_type_dic.address_type = row.find("TD").eq(2).find('select option:selected').val();
             address_compare = address_type_dic.address_number +'-'+ address_type_dic.address_type+'-'+ address_type_dic.company_id
-            checked_box = row.find("TD").eq(6).find('input[type="checkbox"]').is(':checked')
+            checked_box = row.find("TD").eq(7).find('input[type="checkbox"]').is(':checked')
             if (checked_box){
                 address_type_dic.del_ind = '1'
             }

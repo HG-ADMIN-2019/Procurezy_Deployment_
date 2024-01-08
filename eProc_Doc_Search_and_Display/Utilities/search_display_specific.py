@@ -408,12 +408,13 @@ class DocumentSearch:
             if '*' in document_number:
                 scname_match = re.search(r'[0-9]+', document_number)
                 if document_number[0] == '*' and document_number[-1] == '*':
-                    search_criteria['doc_number__in'] = document_number
-                    search_criteria['doc_number__icontains'] = scname_match.group(0)
-                elif document_number[0] == '*':
+                    if scname_match:
+                        search_criteria['doc_number__in'] = document_number
+                        search_criteria['doc_number__icontains'] = scname_match.group(0)
+                elif document_number[0] == '*' and scname_match:
                     search_criteria['doc_number__in'] = document_number
                     search_criteria['doc_number__iendswith'] = scname_match.group(0)
-                else:
+                elif scname_match:
                     # search_criteria['doc_number__in'] = document_number
                     search_criteria['doc_number__istartswith'] = scname_match.group(0)
             else:

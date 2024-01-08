@@ -120,8 +120,8 @@ function read_popup_data() {
     $("#id_popup_table TBODY TR").each(function () {
         var row = $(this);
         addresstype = {};
-        addresstype.del_ind = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
-        addresstype.address_guid = row.find("TD").eq(7).find('input').val();
+        addresstype.del_ind = row.find("TD").eq(7).find('input[type="checkbox"]').is(':checked');
+        addresstype.address_guid = row.find("TD").eq(8).find('input').val();
         addresstype.address_number = row.find("TD").eq(3).find('select option:selected').val();
         addresstype.address_type = row.find("TD").eq(2).find('select option:selected').val();
         addresstype.company_id = row.find("TD").eq(1).find('select option:selected').val();

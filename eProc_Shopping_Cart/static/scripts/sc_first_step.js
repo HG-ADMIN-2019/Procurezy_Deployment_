@@ -28,12 +28,13 @@ $('#add_favourite_cart').submit(function (e){
             $('#fav_name_success_message').html(response.success_message);
             $('#fav_name_success_message').show();
             $("#favourite_sc_button").find('.material-icons').html("favorite").css("color", "red");
+            CloseLoaderPopup();
         } else if (response.error_message) {
             $('#fav_name_error_message').html(response.error_message);
             $('#fav_name_error_message').show();
+            CloseLoaderPopup();
         }
     }
-
 });
 
 function onclick_fav_sc(){

@@ -17,7 +17,7 @@
         <!--Search form goes here-->
         <div class="card card-shadow-1">
             <div class="card-body">
-                <form method="POST" action="{% url 'eProc_Doc_Search_and_Display:search_shopping_carts' %}">
+                <form method="POST" action="{% url 'eProc_Doc_Search_and_Display:search_shopping_carts' %}" id="docSearchForm">
                     {% csrf_token %}
                     {{ sform.non_field_errors }}
     
@@ -67,8 +67,8 @@
     
                     <div class="elements-space-between">
                         <div>
-                            <button class="btn btn-outline-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i> reset</button>
-                            <button class="btn btn-primary" type="submit" title="Please click to get the search details!" id="search_button_id"><i class="fas fa-search"></i> search</button>    
+                            <button class="btn btn-outline-primary" type="reset" value="Reset" id="resetButton"><i class="fas fa-sync-alt"></i> reset</button>
+                            <button class="btn btn-primary" type="submit" title="Please click to get the search details!" id="search_button_id"><i class="fas fa-search"></i> search</button>
                         </div>
                         <div>
                             <span class="badge star-search-help-text-badge"></span>
@@ -88,7 +88,7 @@
 
         <!--    To Display Header Details only if there are any results-->
         {% if t_count > 0 %}
-        <div>
+        <div id="table-container">
 
             <table class="my-orders-results-table table_sort_filter_pagination" >
                 <thead>
@@ -264,8 +264,36 @@
     var selected_status_value = {{inp_status | safe}}
 
     $(document).ready(function () {
+        // Check if there is stored form data and populate the form fields
+        var storedFormData = localStorage.getItem('formData');
+        if (storedFormData) {
+            var formData = JSON.parse(storedFormData);
+            $('#id_document_type').val(formData.documentType);
+            $('#id_document_number').val(formData.documentNumber);
+            $('#id_time_frame').val(formData.timeFrame);
+            $('#id_document_name').val(formData.documentName);
+            $('#id_document_status').val(formData.documentStatus);
+        }
+        localStorage.removeItem('formData');
+
+    });
+
+    // Loader implementation on search button
+    $('#search_button_id').click(function () {
+        OpenLoaderPopup();
+        var formData = {
+            documentType: $('#id_document_type').val(),
+            documentNumber: $('#id_document_number').val(),
+            timeFrame: $('#id_time_frame').val(),
+            documentName: $('#id_document_name').val(),
+            documentStatus: $('#id_document_status').val()
+        };
+        localStorage.setItem('formData', JSON.stringify(formData));
+        $('#hg_loader').modal('show');
+    });
+
     // display shop role sub menu in nav bar
-        
+    $(document).ready(function () {
         var default_value = '{{my_order_default|safe}}'
         var doc_type = $('#id_doc_type').val()
         display_status(doc_type)
@@ -285,19 +313,62 @@
         else{
             $('#supplier').hide();
         }
-        var value = saved
-        $("#status_dropdown").find("option").show().not("option[value*='" + value + "']").hide();
+<!--        var value = saved-->
+<!--        $("#status_dropdown").find("option").show().not("option[value*='" + value + "']").hide();-->
     });
-function display_status(doc_type){
-    if(doc_type == 'DOC01'){
-        $("#sc_status_div").css("display", "block")
-        $("#po_status_div").css("display", "none")
-    }
-    else if (doc_type == 'DOC02'){
-        $("#po_status_div").css("display", "block")
-        $("#sc_status_div").css("display", "none")
-    }
-}
-</script>
 
+    function display_status(doc_type){
+        if(doc_type == 'DOC01'){
+            $("#sc_status_div").css("display", "block")
+            $("#po_status_div").css("display", "none")
+        }
+        else if (doc_type == 'DOC02'){
+            $("#po_status_div").css("display", "block")
+            $("#sc_status_div").css("display", "none")
+        }
+    }
+
+    // Add event listeners to the buttons
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("search_button_id").addEventListener("click", showTableAndPagination);
+        document.querySelector("button[type='reset']").addEventListener("click", resetFields);
+    });
+
+    // Function to hide the table and pagination controls
+    function hideTableAndPagination() {
+        document.getElementById("table-container").style.display = "none";
+    }
+
+    // Function to show the table and pagination controls
+    function showTableAndPagination() {
+        document.getElementById("table-container").style.display = "block";
+    }
+
+    function resetFields() {
+        // Reset specific input fields
+        $('#id_document_name').val('');
+        $('#id_document_number').val('');
+
+        // Reset specific dropdowns to their default values
+        resetDropdownToDefault("Document Type", "defaultTypeValue");
+        resetDropdownToDefault("Time Frame", "defaultTimeFrameValue");
+        resetDropdownToDefault("Document Status", "defaultStatusValue");
+        localStorage.removeItem('formData');
+        $('form').submit();
+    }
+
+    // Function to reset a dropdown to its default value based on the label text
+    function resetDropdownToDefault(labelText, defaultValue) {
+        var dropdown = $("label:contains('" + labelText + "')").next("select");
+        dropdown.val(defaultValue || dropdown.find("option:first").val());
+    }
+
+    // Listen for the "Reset" button click
+    $('#resetButton').click(function (e) {
+         OpenLoaderPopup();
+        e.preventDefault();
+        resetFields();
+    });
+
+</script>
 {% endblock %}

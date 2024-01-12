@@ -912,7 +912,7 @@ function select_goods_reciever() {
         document.getElementById('receiver').innerHTML = reciever_name
         $('#receiver').addClass(response.user_name)
     }
-
+    CloseLoaderPopup();
 }
 
 // Order shopping cart function ajax call

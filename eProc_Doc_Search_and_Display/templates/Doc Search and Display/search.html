@@ -346,8 +346,8 @@
 
     function resetFields() {
         // Reset specific input fields
-        $('#id_document_name').val('');
-        $('#id_document_number').val('');
+        $('#{{ sform.doc_num.id_for_label }}').val('');
+        $('#{{ sform.SCName.id_for_label }}').val('');
 
         // Reset specific dropdowns to their default values
         resetDropdownToDefault("Document Type", "defaultTypeValue");

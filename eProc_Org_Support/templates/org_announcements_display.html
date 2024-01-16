@@ -319,21 +319,48 @@
         table_sort_filter_basic("qwsqwsqws")
     });
 
-function saveDataToLocalStorage() {
-    // Check if the search button was clicked
-    if (event && event.type === 'submit') {
-        localStorage.setItem("announcement_subject", document.getElementById("input_announcement_subject").value);
-        localStorage.setItem("announcement_status", document.getElementById("select_announcement_status").value);
-        localStorage.setItem("priority", document.getElementById("select_priority").value);
-    } else {
-        // Clear localStorage values if the search button was not clicked
+
+// Function to save current dropdown values to localStorage
+    function saveDataToLocalStorage() {
+        // Get the current values in the dropdowns
+        var announcementSubject = document.getElementById("input_announcement_subject").value;
+        var announcementStatus = document.getElementById("select_announcement_status").value;
+        var priority = document.getElementById("select_priority").value;
+
+        // Save the current values to localStorage
+        localStorage.setItem("announcement_subject", announcementSubject);
+        localStorage.setItem("announcement_status", announcementStatus);
+        localStorage.setItem("priority", priority);
+    }
+
+    // Call the function to load saved values when the page loads
+    function loadSavedDataFromLocalStorage() {
+        // Check if there are saved values in localStorage
+        var savedSubject = localStorage.getItem("announcement_subject");
+        var savedStatus = localStorage.getItem("announcement_status");
+        var savedPriority = localStorage.getItem("priority");
+
+        // Set dropdown values to saved values if available, otherwise use defaults
+        document.getElementById("input_announcement_subject").value = savedSubject || "";
+        document.getElementById("select_announcement_status").value = savedStatus || "";
+        document.getElementById("select_priority").value = savedPriority || "";
+    }
+
+    // Load saved values on page load
+    loadSavedDataFromLocalStorage();
+
+    // Clear saved values and set defaults on revisiting the tab
+    window.addEventListener("focus", function() {
         localStorage.removeItem("announcement_subject");
         localStorage.removeItem("announcement_status");
         localStorage.removeItem("priority");
-    }
-}
 
-
+        // Set defaults
+        document.getElementById("input_announcement_subject").value = "";
+        document.getElementById("select_announcement_status").value = "Active";
+        document.getElementById("select_priority").value = "High";
+<!--        clearFilters();-->
+    });
     //Function to set input fields from localStorage
     function setFieldsFromLocalStorage() {
         document.getElementById("input_announcement_subject").value = localStorage.getItem("announcement_subject");

@@ -370,5 +370,32 @@
         resetFields();
     });
 
+// Code for * in Document Number field
+document.addEventListener('DOMContentLoaded', function () {
+    var docNumInput = document.getElementById('{{ sform.doc_num.id_for_label }}');
+
+    docNumInput.addEventListener('input', function (event) {
+        var currentValue = event.target.value;
+
+        // Check if the '*' character is present in the input
+        if (currentValue.includes('*')) {
+            // If '*' is found, remove it from the input
+            event.target.value = currentValue.replace('*', '');
+        }
+    });
+});
+
+// Use * as a wild card search criteria (eg. Apple - App*, *ple, *ppl*) in Document Name input field
+document.addEventListener('DOMContentLoaded', function () {
+    var docNameInput = document.getElementById('{{ sform.SCName.id_for_label }}');
+    docNameInput.addEventListener('input', function (event) {
+        var currentValue = event.target.value;
+        if (currentValue.includes('*')) {
+            var regexValue = currentValue.replace(/\*/g, '.*');
+        }
+    });
+});
+
+
 </script>
 {% endblock %}

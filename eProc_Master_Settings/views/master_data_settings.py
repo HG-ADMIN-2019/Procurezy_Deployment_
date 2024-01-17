@@ -146,7 +146,7 @@ def render_aav_data(request):
 
 def extract_aav_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Account Assingment Values.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Account Assignment Values.CSV"'
 
     writer = csv.writer(response)
 
@@ -171,7 +171,7 @@ def extract_aav_data(request):
 
 def extract_accdesc_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Account Assingment Description.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Account Assignment Descriptions.CSV"'
 
     writer = csv.writer(response)
 
@@ -197,7 +197,7 @@ def extract_accdesc_data(request):
 
 def extract_cusprodcat_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Customer Product Category.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Customer UNSPSC Codes.CSV"'
 
     writer = csv.writer(response)
 
@@ -222,7 +222,7 @@ def extract_cusprodcat_data(request):
 
 def extract_cusprodcat_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Customer Product Category Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Customer UNSPSC Codes Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -233,7 +233,7 @@ def extract_cusprodcat_template(request):
 
 def extract_cusprodcatdesc_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Customer Product Category Description.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Customer UNSPSC Code Descriptions.CSV"'
 
     writer = csv.writer(response)
 
@@ -261,7 +261,7 @@ def extract_cusprodcatdesc_data(request):
 
 def extract_cusprodcatdesc_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Customer Product Category Description Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Customer UNSPSC Code Descriptions Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -272,7 +272,7 @@ def extract_cusprodcatdesc_template(request):
 
 def extract_workflowschema_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Work_Flow_Schema.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Work Flow Schemas.CSV"'
 
     writer = csv.writer(response)
 
@@ -298,7 +298,7 @@ def extract_workflowschema_data(request):
 
 def extract_workflowaccount_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="WORK FLOW ACCOUNTING.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Workflows.CSV"'
 
     writer = csv.writer(response)
 
@@ -333,7 +333,7 @@ def extract_workflowaccount_data(request):
 
 def extract_workflowacct_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Work Flow Acct Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Workflows Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -650,7 +650,7 @@ def address(request):
 
 def extract_approverlimit_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Approval Limit.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Approval Limits.CSV"'
 
     writer = csv.writer(response)
 
@@ -673,7 +673,7 @@ def extract_approverlimit_data(request):
 
 def extract_approverlimitval_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Approval Limit Value.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Approval Limit Values.CSV"'
 
     writer = csv.writer(response)
 
@@ -697,7 +697,7 @@ def extract_approverlimitval_data(request):
 
 def extract_spendlimit_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="SPEND LIMIT.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Spending Limits.CSV"'
 
     writer = csv.writer(response)
 
@@ -721,7 +721,7 @@ def extract_spendlimit_data(request):
 
 def extract_spendlimitval_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Spend Limit Value.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Spending Limit Values.CSV"'
 
     writer = csv.writer(response)
 
@@ -745,7 +745,7 @@ def extract_spendlimitval_data(request):
 
 def extract_spendlimit_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Spend Limit.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Spending Limits.CSV"'
 
     writer = csv.writer(response)
 
@@ -760,7 +760,7 @@ def extract_spendlimit_template(request):
 
 def extract_address_type_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Address Types.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Address Types.CSV"'
 
     writer = csv.writer(response)
 
@@ -791,7 +791,7 @@ def extract_address_type_data(request):
 
 def extract_address_type_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Address Types Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Address Types Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -802,7 +802,7 @@ def extract_address_type_template(request):
 
 def extract_approver_type_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Approver Types.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Approval Types.CSV"'
 
     writer = csv.writer(response)
 
@@ -824,7 +824,7 @@ def extract_approver_type_data(request):
 
 def extract_glaccount_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="DETERMINE GL ACCOUNT.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain General Ledger Accounts.CSV"'
 
     writer = csv.writer(response)
 
@@ -860,7 +860,7 @@ def extract_glaccount_data(request):
 
 def extract_glaccount_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Determine GL Account Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain General Ledger Accounts Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -873,7 +873,7 @@ def extract_glaccount_template(request):
 def extract_pgrp_data(request):
     client = getClients(request)
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Group.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Groups.CSV"'
 
     writer = csv.writer(response)
 
@@ -897,7 +897,7 @@ def extract_pgrp_data(request):
 
 def extract_pgrp_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Group Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Groups Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -908,7 +908,7 @@ def extract_pgrp_template(request):
 
 def extract_porg_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Organisation.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Organizations.CSV"'
 
     writer = csv.writer(response)
 
@@ -933,7 +933,7 @@ def extract_porg_data(request):
 
 def extract_porg_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Organisation Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Purchasing Organizations Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -962,7 +962,7 @@ def upload_prod_cat_images(request):
 
 def extract_orgcompany_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="OrgCompany.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Companies.CSV"'
 
     writer = csv.writer(response)
 
@@ -987,7 +987,7 @@ def extract_orgcompany_data(request):
 
 def extract_address_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Address.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Addresses.CSV"'
 
     writer = csv.writer(response)
 
@@ -1364,7 +1364,7 @@ def work_flow_accounting(request):
 
 def extract_incoterms_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Incoterms.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain INCO Terms.CSV"'
 
     writer = csv.writer(response)
 
@@ -1384,7 +1384,7 @@ def extract_incoterms_data(request):
 
 def extract_payterms_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Payment_terms_desc.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Payment Term Descriptions.CSV"'
 
     writer = csv.writer(response)
 
@@ -1409,7 +1409,7 @@ def extract_payterms_data(request):
 
 def extract_payterm_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Payterm_desc_template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Payment Term Descriptions.CSV"'
 
     writer = csv.writer(response)
 
@@ -1420,7 +1420,7 @@ def extract_payterm_template(request):
 
 def extract_spendlimitval_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Spend Limit Value Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Spending Limit Values Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1430,7 +1430,7 @@ def extract_spendlimitval_data_template(request):
 
 def extract_accdesc_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Account Assingment Description Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Account Assignment Descriptions Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1441,7 +1441,7 @@ def extract_accdesc_data_template(request):
 
 def extract_aav_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Account Assingment Values Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Account Assignment Values Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1451,7 +1451,7 @@ def extract_aav_data_template(request):
 
 def extract_address_data_Template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Address Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Addresses Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1465,7 +1465,7 @@ def extract_address_data_Template(request):
 
 def extract_approverlimit_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Approval Limit Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Approval Limits Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1475,7 +1475,7 @@ def extract_approverlimit_data_template(request):
 
 def extract_approverlimitval_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Approval Limit Value Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Approval Limit Values Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1485,7 +1485,7 @@ def extract_approverlimitval_data_template(request):
 
 def extract_orgcompany_data_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="OrgCompany Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Companies Template.CSV"'
 
     writer = csv.writer(response)
 

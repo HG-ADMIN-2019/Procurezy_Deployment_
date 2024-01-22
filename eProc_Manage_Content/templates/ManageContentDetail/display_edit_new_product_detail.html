@@ -82,70 +82,81 @@
 
                                         <div class="form-group">
                                             <label for="product_name">Product Name</label> <span class="hg_required"></span>
-                                            <input type="text" class="form-control input-disable-class check_special_char" id="prd_desc" placeholder="Eg. Notebook PC" required maxlength="225">
+                                            <input type="text" class="form-control mandatory_fields input-disable-class check_special_char" id="prd_desc" placeholder="Eg. Notebook PC" required maxlength="225">
+                                            <span id="err_prd_desc" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="product_name">Product Description</label> <span class="hg_required"></span>
-                                            <textarea rows="4" id = "prd_lng_txt" class="form-control input-disable-class check_special_char" required maxlength="1000"></textarea>
+                                            <textarea rows="4" id = "prd_lng_txt" class="form-control mandatory_fields input-disable-class check_special_char" required maxlength="1000"></textarea>
+                                            <span id="err_prd_lng_txt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="product_price">Price</label> <span class="hg_required"></span>
-                                                <input type="number" class="form-control input-disable-class" id="prd_prc" required>
+                                                <input type="number" class="form-control mandatory_fields input-disable-class" id="prd_prc" required>
+                                                <span id="err_prd_prc" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="product_currency">Currency</label> <span class="hg_required"></span>
-                                                <select class="form-control input-disable-class  selectpicker" data-live-search="true" id="pfm_currency_list" name="currencies" required>
+                                                <select class="form-control mandatory_fields input-disable-class  selectpicker" data-live-search="true" id="pfm_currency_list" name="currencies" required>
                                                     <option value="">Please select Currency</option>
                                                     {% for currency in currency_desc %}
                                                     <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_currency_list" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
-                                                <select name="units_l" class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_units_list" required>
+                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_units_list" required>
                                                     <option value="">Please select unit of measure</option>
                                                     {% for unit in unit_desc %}
                                                     <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_units_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prs_unit">Price Unit</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_prs_unit" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_prs_unit" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_prs_unit" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_unspsc_list">Product Category(UNSPSC)</label> <span class="hg_required"></span>
-                                                <input type="text" placeholder="Click to select product category" class="form-control input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required>
+                                                <input type="text" placeholder="Click to select product category" class="form-control mandatory_fields input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required>
+                                                <span id="err_pfm_unspsc_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_lead" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_lead" class="form-control mandatory_fields input-disable-class" required>
                                                 <small id="leadtimelHelp" class="form-text text-muted">In number of days</small>
+                                                <span id="err_prd_lead" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Minimum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_qnt" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_mini_qnt" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_mini_qnt" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_value">Minimum Order Value</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_value" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_mini_value" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_mini_value" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_max_qnt">Maximum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_max_qnt" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_max_qnt" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_max_qnt" class="error_message" hidden></span>
                                             </div>
 
                                         </div>
@@ -187,7 +198,8 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mnf">Manufacturer</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_mnf" class="form-control input-disable-class check_special_char" required>
+                                                <input type="text" id="prd_mnf" class="form-control mandatory_fields input-disable-class check_special_char" required>
+                                                <span id="err_prd_mnf" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-4">
@@ -280,35 +292,39 @@
 
                                         <div class="form-group">
                                             <label for="pro_type"> Product type</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class" id="pro_type" name="prod_types" required>
+                                            <select class="form-control mandatory_fields input-disable-class" id="pro_type" name="prod_types" required>
                                                 <option value="01"> 01 Product</option>
                                                 <option value="02"> 02 Service</option>
                                             </select>
+                                            <span id="err_pro_type" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="prd_qnt"> Quantity Available</label>
-                                            <input type="text" id="prd_qnt" class="form-control input-disable-class check_number" >
+                                            <label for="prd_qnt"> Quantity Available</label> <span class="hg_required"></span>
+                                            <input type="text" id="prd_qnt" class="form-control hg_edit_display_mode mandatory_fields input-disable-class check_number" placeholder="Enter Quantity" required>
+                                            <span id="err_prd_qnt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_country_list" name="countries_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_country_list" name="countries_l" required>
                                                 <option value="">Please select Country of Origin</option>
                                                 {% for country in country_desc %}
                                                 <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <span id="err_pfm_country_list" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_language_list" name="Language_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_language_list" name="Language_l" required>
                                                 <option value="">Please select Product Language</option>
                                                 {% for language in language_desc %}
                                                 <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <span id="err_pfm_language_list" class="error_message" hidden></span>
                                         </div>
 
                                     </div>
@@ -333,7 +349,8 @@
 
                                         <div class="form-group">
                                             <label for="pfm_supplier_list">Supplier Details</label> <span class="hg_required"></span>
-                                            <input name="suppliers" type="text" placeholder="Please select supplier" class="form-control input-disable-class" id="pfm_supplier_list" required>
+                                            <input name="suppliers" type="text" placeholder="Please select supplier" class="form-control hg_edit_display_mode mandatory_fields input-disable-class" id="pfm_supplier_list" required>
+                                            <span id="err_pfm_supplier_list" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
@@ -692,6 +709,7 @@
 <!-- End of Select supplier popup -->
 
 <script>
+var is_valid = true;
 
 $(document).ready(function(){
     $('#nav_menu_items').remove();
@@ -732,6 +750,32 @@ function triggerFileUpload(id) {
     }
 
 }
+
+    $(".mandatory_fields").on("input", function () {
+    var currentValue = $(this).val().trim();
+    var errorSpan = $(this).next('.error_message');
+
+    if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+        errorSpan.prop('hidden', false);
+        errorSpan.text("Please enter valid value");
+    } else {
+        errorSpan.prop('hidden', true);
+    }
+});
+
+$("#save_product_details").on("click", function () {
+    // Iterate over each mandatory field and trigger the input event
+    $(".mandatory_fields").each(function () {
+        $(this).trigger("input");
+    });
+
+    // Check if there are no visible error messages, then proceed with saving the form
+    var errorsExist = $(".error_message:visible").length > 0;
+    if (!errorsExist) {
+        // Additional logic for saving the form if needed
+        console.log('Form submitted successfully.');
+    }
+});
 
 function loadFile1(event) {
     $('#image-upload-errors').html('');

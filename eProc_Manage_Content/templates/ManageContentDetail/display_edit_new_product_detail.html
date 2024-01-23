@@ -100,7 +100,7 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="product_currency">Currency</label> <span class="hg_required"></span>
-                                                <select class="form-control mandatory_fields input-disable-class  selectpicker" data-live-search="true" id="pfm_currency_list" name="currencies" required>
+                                                <select class="form-control mandatory_fields input-disable-class  selectpicker custom-select" data-live-search="true" id="pfm_currency_list" name="currencies" required>
                                                     <option value="">Please select Currency</option>
                                                     {% for currency in currency_desc %}
                                                     <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
@@ -113,7 +113,7 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
-                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_units_list" required>
+                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_units_list" required>
                                                     <option value="">Please select unit of measure</option>
                                                     {% for unit in unit_desc %}
                                                     <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
@@ -135,9 +135,9 @@
                                                 <span id="err_pfm_unspsc_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_lead" class="form-control mandatory_fields input-disable-class" required>
+                                                <label for="prd_lead">Lead Time </label><span class="hg_required"></span>
                                                 <small id="leadtimelHelp" class="form-text text-muted">In number of days</small>
+                                                <input type="number" id="prd_lead" class="form-control mandatory_fields input-disable-class" required>
                                                 <span id="err_prd_lead" class="error_message" hidden></span>
                                             </div>
                                         </div>
@@ -264,7 +264,8 @@
                                                     <img id="image-preview3" class="upload-img-style">
                                                 </div>
                                             </div>
-                                            <small class="form-text text-muted"> Application help text - supported image type</small>
+                                            <small class="form-text text-muted"> Supported images types - jpg, jpeg, png, bmp, tif, tiff or gif </small>
+                                            <small class="form-text text-muted"> Supported Image size - less than 200KB  </small>
                                         </div>
                                     </div>
 
@@ -307,7 +308,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
-                                            <select class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_country_list" name="countries_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_country_list" name="countries_l" required>
                                                 <option value="">Please select Country of Origin</option>
                                                 {% for country in country_desc %}
                                                 <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
@@ -318,7 +319,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
-                                            <select class="form-control mandatory_fields input-disable-class selectpicker" data-live-search="true" id="pfm_language_list" name="Language_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_language_list" name="Language_l" required>
                                                 <option value="">Please select Product Language</option>
                                                 {% for language in language_desc %}
                                                 <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
@@ -354,9 +355,10 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="pfm_supplier_prod_num">Supplier Product Number</label><span class="hg_required"></span>
-                                            <input type="text" id="pfm_supplier_prod_num" class="form-control input-disable-class check_special_char" required>
-                                            <small class="form-text text-muted help-text-alpha-numeric"> Valid characters are  A-Z a-z 0-9 </small>
+                                            <label for="pfm_supplier_prod_num">Supplier Product Number</label>
+                                            <span class="hg_required"></span><small class="form-text text-muted help-text-alpha-numeric"> Valid characters are  A-Z a-z 0-9 </small>
+                                            <input type="text" id="pfm_supplier_prod_num" class="form-control mandatory_fields input-disable-class check_special_char" required>
+                                            <span id="err_pfm_supplier_prod_num" class="error_message" hidden></span>
                                         </div>
 
                                     </div>
@@ -752,16 +754,16 @@ function triggerFileUpload(id) {
 }
 
     $(".mandatory_fields").on("input", function () {
-    var currentValue = $(this).val().trim();
-    var errorSpan = $(this).next('.error_message');
+        var currentValue = $(this).val().trim();
+        var errorSpan = $(this).next('.error_message');
 
-    if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
-        errorSpan.prop('hidden', false);
-        errorSpan.text("Please enter valid value");
-    } else {
-        errorSpan.prop('hidden', true);
-    }
-});
+        if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+            errorSpan.prop('hidden', false);
+            errorSpan.text("Please enter valid value");
+        } else {
+            errorSpan.prop('hidden', true);
+        }
+    });
 
 $("#save_product_details").on("click", function () {
     // Iterate over each mandatory field and trigger the input event
@@ -775,6 +777,27 @@ $("#save_product_details").on("click", function () {
         // Additional logic for saving the form if needed
         console.log('Form submitted successfully.');
     }
+
+    // Add change event to remove error message when a value is selected
+    $(".custom-select").on("change", function () {
+        var errorSpan = $(this).next('.error_message');
+        errorSpan.prop('hidden', true);
+    });
+
+    // Iterate over each dropdown with class .custom-select and check if it is empty
+        $(".custom-select").each(function () {
+            var currentValue = $(this).val();
+            var errorSpan = $(this).next('.error_message');
+
+            // If the dropdown is empty, show red border and error message
+            if (currentValue === "") {
+                errorSpan.prop('hidden', false);
+                errorSpan.text('Please select a value.');
+            } else {
+                // If the dropdown has a value, hide the error message
+                errorSpan.prop('hidden', true);
+            }
+        });
 });
 
 function loadFile1(event) {

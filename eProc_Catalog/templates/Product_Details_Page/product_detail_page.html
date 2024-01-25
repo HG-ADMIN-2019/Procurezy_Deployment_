@@ -97,7 +97,7 @@ input::-webkit-inner-spin-button {
                                     </div>
                                     <div class="box2">
                                         <div class="input-group">
-                                            <div class="input-group-prepend">
+                                                <div class="input-group-prepend">
                                                 <button type="button" class="quantity-left-minus btn btn-light btn-lg" onclick="on_change_quantity('DECREMENT')"  data-type="minus" data-field=""><i class="fas fa-minus"></i></button>
                                             </div>
                                             <input type="text" value="1" maxlength="6" oninput="this.value = this.value.slice(0, 6).replace(/\D/g, ''); check_quantity(this); on_change_quantity('INPUT')" id="catalog_quantity" name="catalog_quantity" class="form-control product-quantity-input"  style="height: auto;">
@@ -108,10 +108,10 @@ input::-webkit-inner-spin-button {
                                         </div>
                                     </div>
                                    <div class="box3">
-                                        <button type="button" class="btn btn-primary btn-add-product btn-lg" onclick="add_catalog_popup()"> add to cart <i class="material-icons"> add_shopping_cart </i></button>
+                                        <button type="button" class="btn btn-primary btn-add-product btn-lg" onclick="add_catalog('INPUT')"> add to cart <i class="material-icons"> add_shopping_cart </i></button>
                                    </div>
                                 </div>
-
+                                <div id="error-message" style="color: red;"></div>
                                 <div class="product-detail-section__addtocart-bottom">
                                     <div>
                                         <span>Minimum Order Quantity: {{prod_detail.quantity_min}}</span>
@@ -505,24 +505,23 @@ function inRange(x, min, max) {
 
 
 var quantity_flag = true
-
 function on_change_quantity(action){
-
     var range = 0
     var min  = 0
     var range_flag = false
     quantity_flag = true
     var quantity_range = 0
     var price_percentage = 0
+    var errorMessageContainer = document.getElementById('error-message');
     quantity = document.getElementById("catalog_quantity").value
-    if(!quantity){
+    if(quantity == 'NaN'){
         quantity = 1
         document.getElementById("catalog_quantity").value = quantity
     }
-    if(parseInt(quantity) == 0){
-        quantity = 1
-        document.getElementById("catalog_quantity").value = quantity
-    }
+<!--    if(quantity == '0' || quantity == ""){-->
+<!--         errorMessageContainer.textContent = 'Please enter Minimum Order Quantity: 1';-->
+<!--         return;-->
+<!--    }-->
     if (action == 'INCREMENT'){
         quantity = parseInt(quantity)+1;
     }
@@ -534,11 +533,11 @@ function on_change_quantity(action){
         }
     }
     if (quantity_flag){
+        errorMessageContainer.textContent = '';
         if(GLOBAL_QUANTITY.length != 0){
             quantity_range = get_price_range(quantity)
         }
         //var without_discount = GLOBAL_BASE_PRICE
-        console.log(without_discount)
         if(GLOBAL_QUANTITY.length != 0){
             price_percentage = get_percentage_by_quantity(quantity_range)
         }
@@ -555,7 +554,6 @@ function on_change_quantity(action){
             GLOBAL_BASE_PRICE = GLOBAL_BASE_PRICE*(100 - parseFloat(price_percentage))/100
         }
         var item_price = GLOBAL_BASE_PRICE
-        console.log(item_price)
             $('.selected-vwap').each(function() {
                 var select_value = this.id
                 var select_value_split = select_value.split('-')
@@ -578,11 +576,25 @@ function on_change_quantity(action){
                        '<div class="discount-perc-text badge badge-pill badge_status_approved"><span>'+ price_percentage +'</span><span>% off</span></div>'
                 $("#id_discount_section").append(text);
            }
-
-           console.log(item_price)
             $("#id_price").text(item_total_price);
     }
 }
+
+// Function to ADD TO CART from veiw product details pop up
+function add_catalog(INPUT){
+    var errorMessageContainer = document.getElementById('error-message');
+    quantity = document.getElementById("catalog_quantity").value
+    if(!quantity || parseInt(quantity) == 0){
+        errorMessageContainer.textContent = 'Please enter Minimum Order Quantity: 1';
+    } else {
+        errorMessageContainer.textContent = '';
+    }
+    if(parseInt(quantity) > 0){
+        errorMessageContainer.textContent = '';
+        add_catalog_popup();
+    }
+}
+
 // Function to ADD TO CART from veiw product details pop up
 function add_catalog_popup(){
     event.preventDefault();
@@ -695,9 +707,14 @@ function get_eform_ui_detail(eform_config_guid,eform_pricing_guid){
     return eform_detail
 }
 
-function check_quantity(detail){
-    if(!detail.value){
-        $('#'+detail.id).val('1');
+function check_quantity(detail) {
+    var inputValue = parseInt(detail.value, 10);
+    var errorMessageContainer = document.getElementById('error-message');
+
+    if (isNaN(inputValue) || inputValue <= 0) {
+        errorMessageContainer.textContent = 'Please enter Minimum Order Quantity: 1';
+    } else {
+        errorMessageContainer.textContent = '';
     }
 }
 

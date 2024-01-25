@@ -596,7 +596,26 @@
     </div>
 </div>
 <!-- End Create New Variant field Popup -->
-
+ <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="variant_option_delete(this)" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <!-- Start Create New specification field Popup -->
 <div class="modal fade" id="create_product_spec_popup" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -1203,7 +1222,7 @@ function create_prod_variant_table(eform_data_new) {
         // variant_option_section.append(line_seperator);
 
         // Create a div to display variant option name and functional button group
-        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" onclick="variant_option_delete(this)"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
+        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
 
         // Create <table> element
         var create_tbl = document.createElement("table");
@@ -1542,10 +1561,12 @@ $("#table_id_product_discount").on('click','.row-delete-btn',function(){
 
 
 function variant_option_delete(obj) {
+    $('#id_delete_confirm_popup').modal('show');
     var id = obj.id;
     var get_index = id.split('-')[1];
     eform_data_new.splice(get_index, 1)
     create_prod_variant_table(eform_data_new);
+    $('#id_delete_confirm_popup').modal('hide');
 }
 
 function create_product_discount_popup(){

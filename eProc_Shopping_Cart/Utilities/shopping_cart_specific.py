@@ -122,7 +122,8 @@ class AuthorizationLevel:
         slide_menu = dict.fromkeys([CONST_WORK_OVERVIEW, CONST_USER_SETTINGS, CONST_APPL_SETTINGS, CONST_SHOPPING,
                                     CONST_SHOPPING_PLUS, CONST_GOODS_RECEIPTS, CONST_APPROVALS, CONST_PURCHASING,
                                     CONST_ADMIN_TOOL, CONST_SYSTEM_SETTINGS, CONST_CONTENT_MANAGEMENT,
-                                    CONST_TIME_SHEET, CONST_SOM, CONST_SHOPPER_ASSIST, CONST_SC_SOURCING], False)
+                                    CONST_TIME_SHEET, CONST_SOM, CONST_SHOPPER_ASSIST, CONST_SC_SOURCING,
+                                    CONST_Archiving], False)
 
         auth_feature = self.get_auth_level_id(auth_level)
         for auth_feature_value in auth_feature:
@@ -138,7 +139,7 @@ class AuthorizationLevel:
              CONST_FORM_BUILDER, CONST_ORG_MODEL, CONST_CONFIRMATION, CONST_CANCELLATION, CONST_RETURN_DELIVERY,
              CONST_WORK_FLOW_ITEMS, CONST_PRODUCT_AND_SERVICE_CONFIG, CONST_CATALOG_CONFIG, CONST_BASIC_SETTINGS,
              CONST_CONFIG_HOME, CONST_APPLICATION_MONITOR, CONST_PROJECTS, CONST_EFFORTS, CONST_SUB_SOM,
-             CONST_SC_GROUPING, CONST_RFQ],
+             CONST_SC_GROUPING, CONST_RFQ, CONST_SEARCH],
             False)
         auth_feature = self.get_auth_level_id(auth_level)
         for auth_feature_value in auth_feature:

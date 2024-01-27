@@ -604,6 +604,10 @@ table th {
   background-color: #e3848e;
 }
 
+#sidenav__listitem-Archiving .sidenav__icon-container {
+  background-color: #e3848e;
+}
+
 .navbar-exist {
   padding-top: 7.3rem;
 }

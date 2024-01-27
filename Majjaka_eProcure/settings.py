@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'eProc_Projects',
     'eProc_Supplier_Order_Management',
     'eProc_Rfq',
+    'eProc_Archiving',
     # 'eProc_Marketing',
 ]
 

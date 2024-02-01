@@ -6,7 +6,8 @@ from django.http import Http404
 # from eProc_Configure_Comp_Code.models import CompanyGrpUser, CompanyCodeGrp
 from Majjaka_eProcure import settings
 from eProc_Archiving.models import arch_ScHeader, ConfHeader, arch_PoHeader, arch_PoItem, arch_ScItem, ConfItem, \
-    arch_SupplierSearch, ConfAccounting, arch_PoApproval, arch_PoAccounting, arch_ScAccounting
+    arch_SupplierSearch, ConfAccounting, arch_PoApproval, arch_PoAccounting, arch_ScAccounting, arch_ScApproval, \
+    arch_CompanyCodeGrp, arch_CompanyGrpUser
 from eProc_Basic.Utilities.functions.get_db_query import getClients
 from eProc_Configuration.models.application_data import CompanyGrpUser, CompanyCodeGrp
 
@@ -67,11 +68,11 @@ def arch_get_hdr_data(request, doc_type, doc_num, from_date, to_date, supplier, 
                 supp_list = arch_SupplierSearch.get_suppid_by_first_name(supplier)
                 supplier_match = re.search(r'[a-zA-Z0-9]+', supplier)
                 if supplier[0] == '*' and supplier[-1] == '*':
-                    supp_query = Q(supplier_id__in=supp_list) | Q(supplier_id__icontains=supplier_match.group(0))
+                    supp_query |= Q(supplier_id__in=supp_list) | Q(supplier_id__icontains=supplier_match.group(0))
                 elif supplier[0] == '*':
-                    supp_query = Q(supplier_id__in=supp_list) | Q(supplier_id__iendswith=supplier_match.group(0))
+                    supp_query |= Q(supplier_id__in=supp_list) | Q(supplier_id__iendswith=supplier_match.group(0))
                 else:
-                    supp_query = Q(supplier_id__in=supp_list) | Q(supplier_id__istartswith=supplier_match.group(0))
+                    supp_query |= Q(supplier_id__in=supp_list) | Q(supplier_id__istartswith=supplier_match.group(0))
             else:
                 supp_list = arch_SupplierSearch.get_suppid_by_first_name(supplier)
                 supp_list.append(supplier)
@@ -81,12 +82,11 @@ def arch_get_hdr_data(request, doc_type, doc_num, from_date, to_date, supplier, 
                 user_list = UserData.get_usrid_by_first_name(created_by)
                 creater_match = re.search(r'[a-zA-Z0-9]+', created_by)
                 if created_by[0] == '*' and created_by[-1] == '*':
-                    creator_query = Q(created_by__in=user_list) | Q(created_by__contains=creater_match.group(0))
+                    creator_query |= Q(created_by__in=user_list) | Q(created_by__contains=creater_match.group(0))
                 elif created_by[0] == '*':
-                    creator_query = Q(created_by__in=user_list) | Q(created_by__endswith=creater_match.group(0))
+                    creator_query |= Q(created_by__in=user_list) | Q(created_by__endswith=creater_match.group(0))
                 else:
-                    creator_query = Q(created_by__in=user_list) | Q(created_by__startswith=creater_match.group(0))
-                # args_list['created_by__contains'] = created_by.group(0)
+                    creator_query |= Q(created_by__in=user_list) | Q(created_by__startswith=creater_match.group(0))
             else:
                 user_list = UserData.get_usrid_by_first_name(created_by)
                 user_list.append(created_by)
@@ -96,11 +96,11 @@ def arch_get_hdr_data(request, doc_type, doc_num, from_date, to_date, supplier, 
                 user_list = UserData.get_usrid_by_first_name(requester)
                 requester_match = re.search(r'[a-zA-Z0-9]+', requester)
                 if requester[0] == '*' and requester[-1] == '*':
-                    requester_query = Q(requester__in=user_list) | Q(requester__icontains=requester_match.group(0))
+                    requester_query |= Q(requester__in=user_list) | Q(requester__icontains=requester_match.group(0))
                 elif requester[0] == '*':
-                    requester_query = Q(requester__in=user_list) | Q(requester__iendswith=requester_match.group(0))
+                    requester_query |= Q(requester__in=user_list) | Q(requester__iendswith=requester_match.group(0))
                 else:
-                    requester_query = Q(requester__in=user_list) | Q(requester__istartswith=requester_match.group(0))
+                    requester_query |= Q(requester__in=user_list) | Q(requester__istartswith=requester_match.group(0))
             else:
                 user_list = UserData.get_usrid_by_first_name(requester)
                 user_list.append(requester)
@@ -117,10 +117,10 @@ def get_cocode_list(login_username, client):
     :param login_username:
     :return:
     """
-    cmp_grp = list(CompanyGrpUser.objects.filter(username=login_username, client=client, del_ind=False).values_list(
+    cmp_grp = list(arch_CompanyGrpUser.objects.filter(username=login_username, client=client, del_ind=False).values_list(
         'company_grp_id', flat=True))
     co_code_list = list(
-        CompanyCodeGrp.objects.filter(company_grp_id__in=cmp_grp, client=client, del_ind=False).values_list(
+        arch_CompanyCodeGrp.objects.filter(company_grp_id__in=cmp_grp, client=client, del_ind=False).values_list(
             'company_code_id', flat=True))
     return co_code_list
 
@@ -210,10 +210,11 @@ class arch_GetAttachments:
 
     def get_attachments(self, request, hdr_guid):
         client = getClients(request)
+        print("Client:", client)
         self.po_attachments = []
         hdr_obj = arch_PoHeader()
         objid = hdr_obj.get_objid_by_guid(hdr_guid)
-        attach_dir = settings.ATTACH_PATH + '/' + str(client) + '/Attachments'
+        attach_dir = os.path.join(settings.MEDIA_ROOT, settings.ATTACH_PATH, str(client), 'Attachments')
 
         attach_file_path = None
         if os.path.exists(attach_dir):
@@ -232,7 +233,8 @@ class arch_GetAttachments:
 
         if attach_file_path is not None and os.path.isdir(attach_file_path):
             self.get_all_files(attach_file_path)
-
+        print("Attachment directory path:", attach_file_path)
+        print("PO Attachments:", self.po_attachments)
         return self.po_attachments
 
     # Get all files inside the attachments and popdf's
@@ -247,19 +249,19 @@ class arch_GetAttachments:
                     self.get_all_files(subfile_path)  # Recursively call get_all_files for subdirectories
 
     # Get POPDF files by Header guid
-    def get_popdf(self, request, hdr_guid):
+    def arch_get_popdf(self, request, hdr_guid):
         file_set = set()  # Use a set to store unique file names
         file_list = []
         objid = arch_PoHeader.get_objid_by_guid(hdr_guid)
         client = getClients(request)  # To get the logged-in user's client
 
-        # Ensure that the client is converted to a string before concatenating
-        pdf_path = settings.ATTACH_PATH + '/' + str(client) + '/POPDF/PO_' + objid
+        # Construct the pdf_path similar to attachment path
+        pdf_path = os.path.join(settings.MEDIA_ROOT, settings.ATTACH_PATH, str(client), 'POPDF', 'PO_' + objid)
 
         if os.path.exists(pdf_path):
             directory = os.listdir(pdf_path)
             for files in directory:
-                fname = pdf_path + '/' + files
+                fname = os.path.join(pdf_path, files)
                 fname = fname.replace('&', '%26')
 
                 # Check for duplicates before adding to the list
@@ -267,5 +269,7 @@ class arch_GetAttachments:
                     pdf = (fname, files)
                     file_list.append(pdf)
                     file_set.add(files)
-
+        print("PDF directory path:", pdf_path)
+        print("POPDF List:", file_list)
         return file_list
+

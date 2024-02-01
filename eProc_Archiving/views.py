@@ -3,12 +3,13 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http.response import Http404, HttpResponse
+from django.http.response import Http404, HttpResponse, FileResponse
 from django.shortcuts import render
+from django.utils.encoding import smart_str
 
-from eProc_Archiving.Utilites.doc_search_specific import arch_get_hdr_data, get_cocode_filter, arch_GetAttachments, \
-    get_doc_details
-from eProc_Archiving.forms.search_forms import ExtSearch, SearchForm
+from eProc_Archiving.Utilites.doc_search_specific import arch_get_hdr_data, get_cocode_filter, \
+    get_doc_details, arch_GetAttachments
+from eProc_Archiving.forms.search_forms import ExtSearch1, SearchForm1, ExtSearch1, SearchForm1
 from eProc_Archiving.models import ConfHeader, ConfAccounting, arch_ScItem, arch_ScAccounting, arch_ScApproval, \
     arch_PoHeader, arch_PoItem, arch_PoAccounting, arch_PoApproval, ConfItem, arch_ScHeader
 from eProc_Basic.Utilities.functions.get_db_query import getUsername, getClients
@@ -30,10 +31,10 @@ def docsearch(request):
     if request.method == 'POST':
         request.session['search-persons-post'] = request.POST
     if request.method == 'POST':
-        if settings.SEARCH_FORM == 'X':
-            search_form = ExtSearch(request.POST)
+        if settings.SEARCH_FORM1 == 'X':
+            search_form = ExtSearch1(request.POST)
         else:
-            search_form = SearchForm(request.POST)
+            search_form = SearchForm1(request.POST)
         if search_form.is_valid():
             inp_doc_type = request.POST.get('doc_type')
             inp_doc_num = request.POST.get('doc_num')
@@ -56,31 +57,36 @@ def docsearch(request):
             result = get_cocode_filter(client, login_username, header_guid, inp_doc_type)
 
             total_number_results = len(result)
+
             if result:
                 page = request.GET.get('page', 1)
+
                 # Pagination for search results
                 paginator = Paginator(result, 10)
-                try:
-                    result = paginator.page(page)
-                except PageNotAnInteger:
-                    result = paginator.page(1)
-                except EmptyPage:
-                    result = paginator.page(paginator.num_pages)
-                    # Handling the Number of Page Numbers to be displayed
-                    index = paginator.page_range.index(result.number)
-                    max_index = len(paginator.page_range)
-                    start_index = index - 3 if index >= 3 else 0
-                    end_index = index + 3 if index <= max_index - 3 else max_index
-                    page_range = paginator.page_range[start_index:end_index]
+
+                if paginator.count > 0:
+                    try:
+                        result = paginator.page(page)
+                    except PageNotAnInteger:
+                        result = paginator.page(1)
+                    except EmptyPage:
+                        result = paginator.page(paginator.num_pages)
+                        # Handling the Number of Page Numbers to be displayed
+                        index = paginator.page_range.index(result.number)
+                        max_index = len(paginator.page_range)
+                        start_index = index - 3 if index >= 3 else 0
+                        end_index = index + 3 if index <= max_index - 3 else max_index
+                        page_range = paginator.page_range[start_index:end_index]
+
                 t_count = len(result)
 
             else:
                 result = 'No results found'
     else:
-        if settings.SEARCH_FORM == 'X':
-            search_form = ExtSearch()
+        if settings.SEARCH_FORM1 == 'X':
+            search_form = ExtSearch1()
         else:
-            search_form = SearchForm()
+            search_form = SearchForm1()
 
     return render(request, 'search.html', {'inc_nav': True,
                                            'inc_footer': True,
@@ -104,6 +110,7 @@ def get_sc_po_data(request):
 
 @login_required
 def m_det_meth(request, type, guid):
+    print(f"Type: {type}, GUID: {guid}")
     appr_data = {}
     doc_data = get_doc_details(type, guid)
     hdr_data = doc_data.get('hdr_data', None)
@@ -111,7 +118,7 @@ def m_det_meth(request, type, guid):
     acc_data = doc_data.get('acc_data', None)
     if type == 'CONF':
         show_appr = False
-
+        print(f"GUID: {guid}")
     else:
         appr_data = doc_data.get('appr_data', None)
 
@@ -140,16 +147,27 @@ def downloadpdf(request, type, fname):
 
 # To download attachments
 @login_required
-def downloadattach(request):
+def arch_downloadattach(request):
     path = request.GET['path']
-    return download(path)
+    print("File path:", path)
+    try:
+        return download(path)
+    except Exception as e:
+        print("Error:", e)
+        raise
+
 
 
 def download(path):
     file_path = os.path.join(settings.MEDIA_ROOT, path)
+    print("Full file path:", file_path)
+
     if os.path.exists(file_path):
-        stream = open(path, 'rb')
-        return FileResponse(stream, as_attachment=True, filename=os.path.basename(path))
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename={smart_str(os.path.basename(file_path))}'
+            return response
+
     raise Http404
 
 
@@ -248,3 +266,28 @@ def get_doc_det_by_doc_num(request, doc_type, doc_number):
             'inc_nav': True,
         }
         return render(request, 'document_number_details.html', context)
+
+
+# @login_required
+# def downloadattach(request):
+#     path = request.GET['path']
+#     return download(path)
+
+
+# Documents page function
+@login_required
+def arch_attachmentspage(request, guid):
+    obj = arch_GetAttachments()
+    attachments_list = obj.get_attachments(request, guid)
+    popdf_list = obj.arch_get_popdf(request, guid)
+
+    # Add these print statements
+    print("Attachments List:", attachments_list)
+    print("POPDF List:", popdf_list)
+
+    return render(request, 'attachments.html', {'inc_nav': True,
+                                                'inc_footer': True,
+                                                'is_slide_menu': True,
+                                                'is_home_active': False,
+                                                'attachments': attachments_list,
+                                                'popdf': popdf_list})

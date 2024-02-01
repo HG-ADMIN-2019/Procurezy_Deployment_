@@ -266,7 +266,8 @@ class arch_PoHeader(models.Model):
 
 class arch_PoItem(models.Model):
     guid = models.CharField(db_column='GUID', primary_key=True, max_length=32)
-    header_guid = models.ForeignKey('arch_PoHeader', models.DO_NOTHING, db_column='HEADER_GUID', blank=False, null=False)
+    header_guid = models.ForeignKey('arch_PoHeader', models.DO_NOTHING, db_column='HEADER_GUID', blank=False,
+                                    null=False)
     po_item_num = models.CharField(db_column='PO_ITEM_NUM', max_length=10, blank=True, null=True,
                                    verbose_name='Line Number')
     sc_num = models.CharField(db_column='SC_NUM', max_length=10, blank=True, null=True, verbose_name='SC Number')
@@ -576,3 +577,41 @@ class ConfAccounting(models.Model):
     # Get accounting data by item guid
     def get_acc_data_by_guid(self, itm_guid):
         return ConfAccounting.objects.filter(item_guid__in=itm_guid).order_by('acc_item_num')
+
+
+class arch_CompanyGrpUser(models.Model):
+    """
+    Contains company code description
+    """
+    company_grp_user_guid = models.CharField(db_column='COMPANY_GUID', primary_key=True, max_length=32)
+    company_grp_id = models.CharField(db_column='COMPANY_GRP_ID', max_length=20, null=False)
+    username = models.CharField(db_column='USERNAME', max_length=16, null=False)
+    client = models.ForeignKey('eProc_Configuration.OrgClients', db_column='Client', on_delete=models.PROTECT,
+                               null=False)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        db_table = "MSS_COMP_CODE_GRP_USER"
+        managed = True
+
+    def __str__(self):
+        return self.company_grp_id
+
+
+class arch_CompanyCodeGrp(models.Model):
+    """
+    Contains company code description
+    """
+    company_grp_guid = models.CharField(db_column='COMPANY_GUID', primary_key=True, max_length=32)
+    company_grp_id = models.CharField(db_column='COMPANY_GRP_ID', max_length=20, null=False)
+    company_code_id = models.CharField(db_column='COMPANY_CODE_ID', max_length=20, null=False)
+    client = models.ForeignKey('eProc_Configuration.OrgClients', db_column='Client', on_delete=models.PROTECT,
+                               null=False)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        db_table = "MSS_COMP_CODE_GRP"
+        managed = True
+
+    def __str__(self):
+        return self.company_grp_id

@@ -1,0 +1,61 @@
+<!--Display details of a Document-->
+<!--including base.html page-->
+{% extends 'root/base.html' %}
+{% load static %}
+<!--Extra stylesheet for attachments page-->
+
+{% block title %} Attachments and PO-Preview {% endblock %}
+
+{% block maincontent %}
+<br>
+<br>
+<br>
+<h1>&nbsp;&nbsp;&nbsp;Attachments and PO-Preview</h1>
+<div class="det-at-div">
+    <table class="det-at-tbl">
+        <!--Token required while using POST method-->
+        {% csrf_token %}
+        <tr>
+            <td  title="Attachments">
+                <span>&nbsp;Attachments</span>
+            </td>
+            <td title="Po-Preview">
+                <span>&nbsp;PO-Preview</span>
+                <button style="float:right" onclick="up_hide_div()" title="Click to go to parent directory!"><img src="{% static 'img/uparrow.png'%}" ></button>
+            </td>
+        </tr>
+        <tr>
+            <!--Print all attachments-->
+            <td id="attach_col">
+                {% for attach in attachments %}
+                <img src="{% static 'img/file.png'%}" style="border:none; width:15px; height:15px; padding-top:8px;">
+                <a class="po-attach" href="{% url 'eProc_Archiving:attach_download1' %}?path={{ attach.0 }}"  title="Click to Download">{{ attach.1 }}</a>
+                </br>
+                {% endfor %}
+            </td>
+            <!--Print all POPDFS-->
+            <td id="popdf_col">
+                {% for file in popdf %}
+                <!--If file is directory get list of files inside directory otherwise download the file-->
+                <img src="{% static 'img/file.png'%}" style="border:none; width:15px; height:15px; padding-top:8px;">
+                <a class="po-attach" href="{% url 'eProc_Archiving:attach_download1' %}?path={{ file.0 }}" title="Click to Download">{{ file.1 }}</a>
+                <img src="{% static 'img/folder.png'%}" >
+                <a  class="po-attach" onclick="get_pdf('{{ file.0 }}')"  href="javascript:void(0);">{{file.1 }}</a>
+                </br>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+</div>
+<!--Section to keep track of directory structure of POPDFs(is hidden)-->
+<div style="display:none" id="up-hide-div">
+</div>
+<script>
+<!--    / Directory level count /-->
+<!--    var no_of_hide=0;-->
+</script>
+{% if inc_footer %}
+{% include 'root/footer.html' %}
+{% endif %}
+
+{% endblock %}

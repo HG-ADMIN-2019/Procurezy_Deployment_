@@ -1046,7 +1046,7 @@ const create_fields = () => {
 
     if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
         var error_flag = false;
-        
+
         $("#table_id_vo_wo_iobp TBODY TR").each(function() {
             var row = $(this);
             var vo_table_data = {};
@@ -1057,7 +1057,7 @@ const create_fields = () => {
             if (vo_table_data.option_value == '') {
                 error_flag = true;
             }
-            
+
             table_data.push(vo_table_data);
         });
 
@@ -1069,7 +1069,7 @@ const create_fields = () => {
             eform_data_new.push(variant_option_data)
             create_prod_variant_table(eform_data_new);
         }
-        
+
 
     } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
         var error_flag = false;

@@ -91,6 +91,16 @@
             </a>
         </li>
         {% endif %}
+        {% if slide_menu.Archiving %}
+        <li class="sidenav__listitem {% if is_Archiving_active %} sidenav__listitem-active {% endif %}" title="Archiving" id="sidenav__listitem-Archiving">
+            <a href="{% url 'eProc_Archiving:docsearch' %}">
+                <div>
+                    <div class="sidenav__icon-container"><i class="far fa-clock fa-lg" ></i></div>
+                </div>
+                <p class="hg_link_text">Archiving</p>
+            </a>
+        </li>
+        {% endif %}
 
 
         {% if slide_menu.ADMIN_TOOL %}

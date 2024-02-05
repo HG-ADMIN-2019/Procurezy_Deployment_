@@ -18,7 +18,7 @@ class SearchForm1(forms.Form):
         label='Select Document Type',
         choices=doc_types,
         widget=forms.Select(
-            attrs={"onchange": 'docchanged(this.value)', "class": "form-control", "style": "width:101%"}),
+            attrs={"onchange": 'docchanged(this.value)', "class": "form-control", "style": "margin-left:20px"}),
     )
     doc_num = forms.IntegerField(
         label=mark_safe('Enter Document Number'),
@@ -29,14 +29,14 @@ class SearchForm1(forms.Form):
         widget=forms.TextInput(attrs={"class": "form-control", }),
     )
     from_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'style': 'width:15%'}),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-left:72px'}),
         label=mark_safe('From Date'),
         required=False,
         initial=date.today().replace(day=1, month=1, year=2018),
     )
     to_date = forms.DateField(
 
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-left:8px'}),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         label='To Date',
         required=False,
         initial=date.today()
@@ -128,11 +128,11 @@ class ExtSearch1(SearchForm1):
         label='Creator',
         required=False,
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control", 'style': 'margin-left:125px'}),
     )
     requester = forms.CharField(
         label='Requester',
         required=False,
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control", 'style': 'margin-left:107px'}),
     )

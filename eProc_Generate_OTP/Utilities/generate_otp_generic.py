@@ -5,7 +5,7 @@ from eProc_Basic.Utilities.functions.guid_generator import random_int
 from eProc_Basic.Utilities.functions.messages_config import *
 from eProc_Basic.Utilities.messages.messages import MSG055, MSG0122
 from eProc_Generate_OTP.models import OtpGenerator
-from twilio.rest import Client
+#from twilio.rest import Client
 django_query_instance = DjangoQueries()
 
 

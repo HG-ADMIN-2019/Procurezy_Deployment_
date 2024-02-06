@@ -1,0 +1,886 @@
+<!--Display details of a Document-->
+
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Details of the Document {% endblock %}
+
+{% block maincontent %}
+<!--Display header based on document type-->
+
+{% if hdr_det.0.status == 'SAVED' %}
+<div class="sc-status-header">
+    <div class="sc-status-page-title">
+        <h5 id="shopping_cart_mode">Display Shopping Cart</h5>
+        <p class="hg_subtext_color" id="p_tag_head">Please check your shopping cart details before you send it for approval.</p>
+    </div>
+
+    <div class="sc-status-img-container">
+        <img src="{% static 'images/Status-bar2.png'%}" class="sc-status-img" id="status_bar">
+
+    </div>
+    
+</div>
+{% endif %}
+
+<div class="container-fluid">
+
+    <div id="button" class="mo-doc-button-container">
+        <h3>Shopping Cart #{{hdr_det.0.doc_number}}</h3>
+        <div class="d-flex">
+            <div class="mo-doc-button-group__saved">
+                <button id="delete_sc" class="btn btn-outline-danger editable_mode" data-toggle="modal" data-target="#delete_saved_sc"><i class="far fa-trash-alt"></i> Delete</button>
+                <button type="button" class="btn btn-outline-primary" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+                <button class="btn btn-primary" id="add_approver_note_btn" data-toggle="modal" data-target="#add_approver_note"><i class="fa fa-plus" aria-hidden="true"></i> approver note</button>
+                <button id="id_check_sc" onclick="check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value);" class="btn btn-primary editable_mode"><i class="fa fa-check" aria-hidden="true"></i> Check</button>
+                <button id="id_save_sc" class="btn btn-primary editable_mode"><i class="fa fa-save" aria-hidden="true"></i> Save</button>
+    
+                {% if sc_appr and sc_completion %}
+                <button id="id_order_sc" class="btn btn-primary editable_mode"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> send to purchasing team</button>
+                {% endif %}
+        
+                {% if sc_appr.0.app_id != 'Auto' and not sc_completion %}
+                <button id="id_order_sc" class="btn btn-primary editable_mode"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> submit for approval</button>
+                {% endif %}
+        
+                {% if sc_appr.0.app_id == 'Auto' and not sc_completion %}
+                <button id="id_order_sc" class="btn btn-primary editable_mode"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> place order</button>
+                {% endif %}
+        
+                {% if sc_header_data.status == 'SAVED'%}
+                <button type="button" id="id_edit_sc" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+                {% endif %}
+            </div>
+    
+            {% if is_approval_preview %}
+            {% if eligible_approver_flag %}
+
+            <div class="mo-doc-button-group__approval" id="approval_buttons_group">
+                <button type="button" class="btn btn-secondary d-inline-flex"><span class="material-icons-outlined">info</span> Inquire</button>
+                <button class="btn btn-danger reject-btn" onclick="ApprovalResponseButton(this);" id="APPROVER_REJECTED-{{hdr_det.0.guid}}-{{hdr_det.0.doc_number}}"><i class="fas fa-times"></i> Reject</button>
+                <button class="btn btn-success approve-btn" onclick="ApprovalResponseButton(this);" id="APPROVER_APPROVED-{{hdr_det.0.guid}}-{{hdr_det.0.doc_number}}"><i class="fas fa-check"></i> Approve</button>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
+    
+    
+    <div class="mo-doc-body-wrapper">
+
+        <div class="mo-doc-header">
+            <div class="card card-shadow-1">
+                <div class="card-body mo-doc-header__doc-details" id="header_div">
+                    {% for hdr in hdr_det %}
+                    <input id="header_guid" value="{{ hdr.guid }}" hidden>
+
+                    <div class="row">
+                        <div class="col-md">
+                            <span class="po-header-label">Document Name</span><br>
+                            <span class="po-header-desc">{{ hdr.description }} <span type="button" class="badge badge-primary editable_mode" id="edit_shopping_cart_name" onclick="edit_sc_name()"><i class="fas fa-edit"></i></span></span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Document Number</span><br>
+                            <span class="po-header-desc">{{ hdr.doc_number }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Created On</span><br>
+                            <span class="po-header-desc">{{ hdr.created_at }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Created By</span><br>
+                            <span class="po-header-desc">{{ requester_first_name }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Status</span><br>
+                            {% if hdr.status == 'APPROVED' %}
+                            <span class="badge badge-pill badge_status_approved status-pill">APPROVED</span>
+                            {% elif hdr.status == 'SAVED' %}
+                            <span class="badge badge-pill badge_status_save status-pill">SAVED</span>
+                            {% elif hdr.status == 'REJECTED' %}
+                            <span class="badge badge-pill badge_status_rejected status-pill">REJECTED</span>
+                            {% elif hdr.status == 'PURCHASER_WORKLIST' %}
+                            <span class="badge badge-pill badge_status_purch_wrkl status-pill">IN PURCHASER's WORK LIST</span>
+                            {% elif hdr.status == 'AWAITING_APPROVAL' %}
+                            <span class="badge badge-pill badge_status_await_approval status-pill">WAITING FOR APPROVAL</span>
+                            {% endif %}
+                            <span class="badge badge-pill badge_status_approved" style="display: none;" id="badge_status_approved">APPROVED</span>
+                            <span class="badge badge-pill badge_status_rejected" style="display: none;" id="badge_status_rejected">REJECTED</span>
+                            <span class="po-header-desc">{{po_header_details.0.created_at}}</span>
+                        </div>
+                    </div>
+
+                    <span hidden id="requester_hidden_span">{{hdr.requester}}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        
+            <div class="mo-doc-header__alerts-wrapper">
+                <div id="sc_warning_messages" class="alert alert-warning display-none"   role="alert"></div>
+                <div id="sc_error_msg" class="alert alert-danger display-none"  role="alert"></div>
+                <div id="sc_success_messages" class="alert alert-success display-none" ></div>
+            </div>
+        </div>
+        <!-- General Data card section -->
+        <div class="elements-space-between mt-4 mr-2 ml-2 mb-3" hidden>
+
+            <div>
+                <h6 class="mb-3" hidden>Shop on Behalf of: <input class="" type="text" id="shopping_cart_requester" value="{{requester}}" disabled ></h6>
+
+                <h6 class="mb-3" hidden>Silent PO: <input type="checkbox" id="silent_PO" name="silent_PO" value="silent_PO" ></h6>
+            </div>
+        
+        </div>
+
+        <div class="mb-4">
+            <div class="row no-gutters">
+                <div class="col-lg mr-2 ml-2">
+                    <!-- Shipping address card -->
+                    {% include 'Ship To Bill To Address/display_address_card.html' %}
+                </div>
+
+                <div class="col-lg mr-2 ml-2">
+                    <!-- Account assignment card -->
+                    {% include 'Account Assignment/account_assignment_display_card.html' %}
+                </div>
+            </div>
+
+        </div>
+
+        <!--  Item overview card section  -->
+        <div class="card mb-4 mr-2 ml-2 card-shadow-1">
+            <div class="card-body elements-space-between">
+                <h4>Cart Overview</h4>
+
+                {% for items in itm_det %}
+                {% if items.call_off != '04' %}
+                <div class="btn-group" id="add_id" hidden>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                            <i class="fa fa-plus" aria-hidden="true"></i> add new item 
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" onclick="add_item_to_saved_cart('01')">Catalog</a>
+                            <a class="dropdown-item" onclick="add_item_to_saved_cart('01')">Free Text</a>
+                            <a class="dropdown-item" onclick="add_item_to_saved_cart('03')">Requisition</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div>
+                {% include 'Doc_Details/my_order_item_detail.html' %}
+            </div>
+        </div>
+
+        <!--  Approval Process overview card section  -->
+        <div class="mr-2 ml-2">
+            <div class="card card-shadow-1" id="approval_process_overview">
+                <div class="card-body">
+                    <h4>Approval Process Overview</h4>
+                    <div>
+                        <div id="id_dynamic"></div>
+                        {% include 'Workflow/manager_detail.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Start of POP-UP Section -->
+
+<!-- Start of Change Account assignment category pop up-->
+{% include 'Account Assignment/change_account_assignment_modal.html' %}
+<!-- End of Change Account assignment category pop up-->
+
+<!--start of change shipping address pop-up-->
+{% include 'Ship To Bill To Address/change_shipping_address_modal.html'  %}
+<!--end of change shipping address pop-up-->
+
+{% include 'Shopping_Cart/change_goods_receiver_modal/change_goods_receiver.html' %}
+
+<!--start of edit default shipping address pop up-->
+{% include 'Ship To Bill To Address/edit_shipping_address.html' %}
+<!--end of edit default shipping address pop-up-->
+
+<!--  start of manager detail pop up-->
+{% include 'Workflow/manager_detail_modal.html' %}
+
+
+<!--start of display & edit shopping cart name-->
+<div class="modal fade" id="edit_sc_name_window">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Shopping Cart Name</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div><input type="text" id="sc_name_input" value="" class="form-control check_sc_name"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="submitSCname()"><i class="fa fa-check"
+                        aria-hidden="true"></i> save </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end of display & edit shopping cart name-->
+
+<!--start of Add approver note pop-up -->
+<div class="modal fade" id="add_approver_note">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Approver Note</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <textarea class="form-control hg_is_disabled" id="approver_text" rows="4" disabled>{{appr_notes.note_text}}</textarea>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary editable_mode" id="save_approver_note" data-dismiss="modal"><i class="fa fa-check" aria-hidden="true"></i> save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--start of approve reject popup window -->
+<div class="modal fade" id="approve_reject_popup_window">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Response to approval request</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success popup_window_approve" id="APPROVER_APPROVED-{{hdr_det.0.guid}}-{{hdr_det.0.doc_number}}" data-dismiss="modal" style="display: none;" onclick="approve_status(this)"><i class="fa fa-check" aria-hidden="true"></i> Approve</button>
+                <button type="button" class="btn btn-danger popup_window_reject" id="APPROVER_REJECTED-{{hdr_det.0.guid}}-{{hdr_det.0.doc_number}}" data-dismiss="modal" style="display: none;" onclick="approve_status(this)"><i class="fa fa-times" aria-hidden="true"></i> Reject</button>
+                <button type="button" class="btn btn-outline-primary" id="" data-dismiss="modal"> Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- end of Add approver note pop-up -->
+{{ item_detail_list |json_script:"item_detail_list" }}
+<!-- End of POP-UP Section -->
+<script src="{% static 'scripts/my_order_doc_details.js' %}"></script>
+    
+<script>
+
+    var GLOBAL_SELECT_ITEM_NUM = '';
+    var GLOBAL_ITEM_DETAIL_LIST = JSON.parse(document.getElementById('item_detail_list').textContent);
+    var document_detail_mode = "{{is_document_detail}}";
+    var doc_number_encrypted = "{{doc_number_encrypted}}";
+    var my_order_doc_detail = '{{sc_completion_flag}}';
+
+    $(document).ready(function () {
+        
+        var item_count = parseInt("{{item_count}}");
+        for(i=1; i<=item_count; i++){
+            document.getElementById("intbtn"+i).style.display = "block";
+        }
+        // total_value_of_item_converted = {{total_value_of_item_converted|safe}}
+        // get_update_converted_value_class = document.getElementsByClassName('update_converted_value');
+        // for(j = 0; j < get_update_converted_value_class.length; j++) {
+        //     get_update_converted_value_class[j].innerHTML = total_value_of_item_converted[j].toFixed(2)
+        // }
+        $('#shopping_cart_requester').val($('#requester_hidden_span').html());
+    });
+
+    // Purchase worklist flag
+    var purch_worklist_flag = {{ sc_completion | length | safe }};
+
+
+    var rendered_header_level_acc_guid = [];
+    var rendered_header_level_addr = '{{header_level_addr.guid|safe}}';
+    var rendered_item_total_value = [];
+    var rendered_item_guid = [];
+    var rendered_item_call_off = [];
+    var rendered_item_total = [];
+    var rendered_acc_guid = [];
+    var rendered_addr_guid = [];
+    var internal_supplier_error_itemNumber = []
+    var rendered_supp_note = [];
+    var rendered_int_note = [];
+    var rendered_int_details = [];
+    var rendered_supplier_note_details = [];
+    var rendered_address_guid_details = [];
+    var rendered_default_company_code = '{{default_company_code|safe}}'
+    {% for items in itm_det %}
+    rendered_item_total_value.push('{{items.value|safe}}')
+    rendered_item_guid.push('{{items.guid|safe}}')
+    rendered_item_total.push('{{items.value|safe}}')
+    rendered_item_call_off.push('{{items.call_off|safe}}')
+    {% endfor %}
+
+    {% for sc_acc in acc_det %}
+    rendered_acc_guid.push('{{sc_acc.guid|safe}}')
+    {% endfor %}
+
+    {% for sc_addr in addr_det %}
+    var address_dictionary = {'item_address_guid':'{{sc_addr.guid|safe}}', 'item_guid': '{{sc_addr.item_guid|safe}}'}
+    rendered_addr_guid.push('{{sc_addr.guid|safe}}')
+    rendered_address_guid_details.push(address_dictionary)
+    {% endfor %}
+
+    {% for supp_note in supp_notes %}
+    var supplier_note_dictionary = {'note_guid':'{{supp_note.guid|safe}}', 'item_guid':'{{supp_note.item_guid|safe}}'}
+        rendered_supp_note.push('{{supp_note.guid|safe}}');
+        rendered_supplier_note_details.push(supplier_note_dictionary);
+    {% endfor %}
+
+    // create dictionary containing notes 
+    {% for int_note in int_notes %}
+    var int_note_dictionary = {'note_guid':'{{int_note.guid|safe}}', 'item_guid':'{{int_note.item_guid|safe}}'}
+        rendered_int_note.push('{{int_note.guid|safe}}');
+        rendered_int_details.push(int_note_dictionary);
+    {% endfor %}
+
+    {% for header_acc in header_acc_detail %}
+        rendered_header_level_acc_guid.push('{{header_acc.guid|safe}}');
+    {% endfor %}
+
+    // Store  header Guid and company code in global variable
+    var GLOBAL_SC_CO_CODE = '{{sc_header_data.co_code}}';
+    var GLOBAL_HEADER_GUID = "{{sc_header_data.guid}}";
+    var GLOBAL_DOCUMENT_NUMBER = "{{sc_header_data.doc_number}}";
+    var GLOBAL_REQUESTER_USER_NAME = '{{receiver_name|safe}}';
+
+    //  ########################### Start of setting highest account assignment category and value ###############################################################
+    // store rendered highest item guid in global variable
+    var GLOBAL_HIGHEST_ITEM_GUID = '{{highest_item_guid|safe}}';
+
+    // add class to
+    $("#ScIem-value-" + GLOBAL_HIGHEST_ITEM_GUID).addClass('hg_dummy_highest_item');
+
+    // Assign Highest item value's row in table
+    var GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(GLOBAL_HIGHEST_ITEM_GUID) + 1;
+    var highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    var highest_item_change_acc_value = (document.getElementById('ScAccounting-acc_val-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    // ###################################### End of setting highest account assignment category and value ############################################################
+
+
+    var cart_length = {{ itm_det.count }};
+    var GLOBAL_HEADER_LEVEL_ACC_GUID = '{{header_level_acc_guid|safe}}';
+    var GLOBAL_HEADER_LEVEL_ADDR_GUID = '{{header_level_addr.guid|safe}}';
+    var total_items = parseInt('{{item_count}}');
+
+    // Attachment path url
+    var attachment_path_url = "{% url 'eProc_Notes_Attachments:attach_download' %}?path=";
+    var previous_attachment;    
+
+    // on click of check button
+    function check_shopping_cart(type, sc_data, acc_default, acc_default_val) {
+        OpenLoaderPopup();
+        $('#sc_error_msg').hide()
+        $('#sc_success_messages').hide();
+        $('#sc_error_msg').html('');
+        var error_messages = '';
+        var check_sc_data = '';
+        if (type != 'approval_workflow') {
+            check_sc_data = get_data_for_check()
+        }
+        var total_val = $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).text();
+        data = {
+            'acc_default': highest_item_acc_asgn_cat,
+            'acc_default_val': highest_item_change_acc_value,
+            'total_val': total_val,
+            'check_sc_data': check_sc_data,
+            'type': type,
+            'requester': $('#shopping_cart_requester').val(),
+            'sc_header_guid': GLOBAL_HEADER_GUID,
+            'check_type':'sc_completion'
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Shopping_Cart:check_shopping_cart' %}",
+            data: JSON.stringify(data),
+            success: function (response) {
+                manager_detail = response.manager_detail.length
+                GLOBAL_MANAGER_DETAIL = response.approver_id;
+
+                sc_errors = response.sc_error
+                error_messages += check_ui_errors_warnings(error_messages);
+                if (sc_errors.length == 0 && manager_detail != 0 && internal_supplier_error_itemNumber.length == 0) {
+                    $('#sc_error_msg').html('');
+                            
+                                var msg = "JMSG042";
+                                var msg_type ;
+                              msg_type = message_config_details(msg);
+                              $("#error_msg_id").prop("hidden", false)
+
+                              if(msg_type.message_type == "ERROR"){
+                                    display_message("error_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "WARNING"){
+                                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "INFORMATION"){
+                                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+                              }
+                              var display = msg_type.messages_id_desc;
+                              $('#sc_success_messages').html(display);
+
+                    $('#sc_success_messages').show();
+                    if (type == 'order' && manager_detail != 0) {
+                        $('#sc_error_msg').hide()
+                        save_my_order_doc_detail('order')
+                    }
+                } else {
+                    $('#sc_success_messages').hide();
+                    if (type == 'order') {
+                         
+                            var msg = "JMSG043";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type == "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                          var display = msg_type.messages_id_desc;
+                          error_messages += display;
+
+                    }
+                    for (i = 0; i < sc_errors.length; i++) {
+                        dict_obj = sc_errors[i]
+                        for (var key in dict_obj) {
+                            error_messages += 'Error at item ' + key + ': ' + dict_obj[key] + '<br>'
+                        }
+                    }
+
+                    $('#sc_error_msg').html(error_messages);
+                    $('#sc_error_msg').show();
+                }
+                if (type == 'save') {
+                    save_shopping_cart_ajax(sc_data)
+                }
+                GLOBAL_MANAGER_DETAIL = response.approver_id;
+                $('#div_manager_detail').empty();
+                var manager_icon = '';
+                $('#id_dynamic').empty();
+                if (response.manager_detail) {
+                    $.each(response.manager_detail, function (i, item) {
+                        double_angular = '<div class="workflow-overview__next-icon-container"><i class="fas fa-angle-double-right fa-3x"></i></div>';
+                        manager_icon += '' + double_angular + '<div class="workflow-overview__user-icon-container"><div class="workflow-user-bg workflow-inactive"><i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i></div><button type="button" class="button-workflow-user">' + item.first_name + '</button></div>';
+                    });
+                }
+                if (response.msg_info) {
+                    // error_msg = '<br><br><span style="color:red;">' + response.msg_info + '</span>'
+                    $('#sc_error_msg').append(response.msg_info)
+                    $('#sc_error_msg').show()
+                }
+                $('#div_manager_detail').append(manager_icon);
+                if(type == 'check'){
+                    // $('#hg_loader').modal('hide');
+                }
+                CloseLoaderPopup();
+            }
+        });
+
+    }
+
+    function save_shopping_cart_ajax(sc_data) {
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Doc_Details:update_sc' %}",
+            data: sc_data,
+            success: function (response) {
+                success_message = 'Shopping cart ' + response.sc_details[1] + ' with number ' + response.sc_details[0] + ' saved successfully'
+                $('#sc_success_messages').html(success_message);
+                $('#sc_success_messages').show();
+                CloseLoaderPopup();
+            },
+            cache: false,
+            processData: false,
+            contentType: false,
+            error: function (data) {
+                sc_detail = document.getElementById("sc_details");
+                sc_detail.style.display = 'none';
+                try {
+                    document.getElementById("sc_error_msg").innerHTML = data.responseJSON.error_ms
+                } catch {
+                    document.getElementById("sc_error_msg").innerHTML = 'An error occurred'
+                }
+                $('#sc_error_msg').show()
+            }
+        })
+    }
+    
+
+    function save_my_order_doc_detail(type) {
+        var sc_item_dictionary = {};
+        array_index = 0;
+        data = new FormData();
+        var item_number;
+
+        for (i = 1; i < (total_items + 1); i++) {
+            last_index_attachments = parseInt(sessionStorage.getItem('last_added_file_number_doc_detail-' + i))
+            // for(j=0;j<final_attachment_array.length; j++){
+            var j = 1;
+            while (j <= last_index_attachments) {
+                if (j > last_index_attachments) {
+                    break;
+                }
+                check_for_file = "attachment_data" + i + '_' + j;
+                if (indexed_db_keys.includes(check_for_file)) {
+                    attachment_object = final_attachment_array[array_index]
+                    if (typeof attachment_object != 'undefined') {
+                        file_base64 = attachment_object.dataUrl
+                        if (typeof file_base64 != 'undefined') {
+                            file_number = j
+                            atta_name = attachment_object.attachment_name
+                            data.append('attachment' + i + '_' + file_number, dataURLtoFile(file_base64, attachment_object.file_name))
+                            data.append("file_extension" + i + '_' + j, attachment_object.file_extension_id)
+                            data.append("attachment_type" + i, attachment_object.type)
+                            data.append("attachment_name" + i, attachment_object.attachment_name)
+                            data.append('no_attachments' + i, attachment_object.no_attachments)
+                            data.append('item_guid' + i, attachment_object.item_guid)
+                        }
+                    }
+                }
+                else {
+                    array_index--
+                }
+                array_index++
+                j++
+            }
+            data.append('last_index_attachments' + i, last_index_attachments)
+        }
+        data.append('doc_number', $('#document_number').html())
+        data.append('header_guid', GLOBAL_HEADER_GUID)
+        data.append('total_items', total_items)
+
+        var nochange_flag = false
+        is_attachments = false
+        if (final_attachment_array.length > 0) {
+            is_attachments = true;
+            data.append('is_attachments', 'True')
+        }
+
+
+        var nochange_flag = false
+        $(".sc_field_change").each(function () {
+            nochange_flag = true;
+            var sc_id = $(this).attr("id");
+            var field_value = $(this).html();
+
+            try {
+                dbname = sc_id.split('-')
+            } catch (e) {
+                dbname = 'Invalid'
+            }
+            // for text area tag val to get the content
+            if (dbname[0] === 'Notes') {
+                field_value = $(this).val();
+            }
+            if (dbname[0] === 'ScAccounting') {
+                if (dbname[1] === 'acc_cat') {
+                    acc_val = field_value.split(' - ')[0]
+                    switch (acc_val) {
+                        case "CC":
+                            acc_value = "ScAccounting-cost_center-" + dbname[2];
+                            break;
+                        case "WBS":
+                            acc_value = "ScAccounting-wbs_ele-" + dbname[2];
+                            break;
+                        case "OR":
+                            acc_value = "ScAccounting-internal_order-" + dbname[2];
+                            break;
+                        case "AS":
+                            acc_value = "ScAccounting-asset_number-" + dbname[2];
+                            break;
+                        default:
+                    }
+                    if (sc_item_dictionary[acc_value] === undefined) {
+                        acc_val_desc = $("#ScAccounting-acc_val-" +dbname[2]).html();
+                        acc_val = acc_val_desc.split(' - ');
+                        sc_item_dictionary[acc_value] = acc_val[0];
+                    }
+                }
+                field_split_value = field_value.split(' - ');
+                field_value = field_split_value[0];
+            }
+                if (sc_id != undefined) {
+                    if (sc_id !== 'ship_address') {
+                    sc_item_dictionary[sc_id] = field_value;
+                }
+            }
+
+            data.append('update', JSON.stringify(sc_item_dictionary))
+            data.append('sc_total_value', $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html())
+        });
+        data.append('sc_total_value', $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html())
+        if(type == 'order'){
+            nochange_flag = true;
+        }
+        data.append('type', type)
+        data.append('purch_worklist_flag', purch_worklist_flag)
+        data.append('manger_detail' , JSON.stringify(GLOBAL_MANAGER_DETAIL))
+        if (!jQuery.isEmptyObject(update_item_details)){
+            nochange_flag = true
+            data.append('update_item_details', JSON.stringify(update_item_details))
+        };
+        if (!jQuery.isEmptyObject(update_eform_details)){
+            nochange_flag = true
+            data.append('update_eform_details', JSON.stringify(update_eform_details))
+        };
+        if (nochange_flag || is_attachments) {
+            console.log(GLOBAL_MANAGER_DETAIL)
+            OpenLoaderPopup();
+            data.append('requester', $('#shopping_cart_requester').val())
+            $.ajax({
+                url: "{% url 'eProc_Doc_Details:update_sc' %}",
+                type: "post",
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if(!jQuery.isEmptyObject(response.document_detail)){
+                        if(type == 'save'){
+                            message_type = 'saved'
+                        } else {
+                            message_type = 'ordered'
+                        }
+                        success_message = 'Shopping cart ' + response.document_detail.sc_name + ' with number ' + response.document_detail.document_number + ' ' + message_type +' successfully'
+                        $('#sc_success_messages').html(success_message);
+                        $('#sc_success_messages').show();
+                        $("#status_bar").attr("src", "{% static 'images/Status-bar3.png'%}");
+                        scroll_top();
+                    }
+                    db.close();
+                    var req = indexedDB.deleteDatabase('store_attachments_document_details');
+                    req.onsuccess = function () {
+                        sessionStorage.clear();
+                        url = location.href.split('/')
+                        url.pop()
+                        url.push('display')
+                        url = url.join('/')
+                        location.href = url
+                    };
+                    req.onerror = function () {
+                        console.log("Couldn't delete database");
+                    };
+                    req.onblocked = function () {
+                        db.close();
+                    };
+                    CloseLoaderPopup();
+                },
+                cache: false,
+                processData: false,
+                contentType: false,
+            });
+        }
+    }
+
+    //==================================== START SC COMPLETION ======================================================================
+
+
+    $("#id_edit_sc").on("click", function () {
+        OpenLoaderPopup();
+        get_attachment_data().then((value) => null)
+        on_click_sc_completion = true;
+
+        var delivery_dates = new Array()
+        td_id = $('td[id^="del_date-"]')
+        for (i = 0; i < td_id.length; i++) {
+            delivery_dates.push(td_id[i].id)
+        }
+        update_date_requirements = {}
+        update_date_requirements['header_guid'] = GLOBAL_HEADER_GUID
+        update_date_requirements['delivery_dates'] = delivery_dates
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Doc_Details:update_delivery_date' %}",
+            data: JSON.stringify(update_date_requirements),
+            success: function (response) {
+
+                $.each(response.updated_date, function (key, value) {
+                    $('#' + key).text(value);
+                });
+                $.each(response.updated_currency, function (key, value) {
+                    $('#ScIem-value-' + key).text(value);
+                });
+                $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).text(response.total_value_sc);
+                document_edit_mode();
+                CloseLoaderPopup();
+            },
+            error: function (response) {
+
+            }
+        })
+
+    });
+
+    // function ajax_update_date_requirements(data) {
+    //     urlLink = "{% url 'eProc_Doc_Details:update_delivery_date' %}";
+    //     let result = AjaxCallAPI(urlLink, data);
+    //     return result;
+    // }
+
+
+    // Ajax call to delete attachments
+    function ajax_delete_attachments (data) {
+        urlLink = "{% url 'eProc_Doc_Details:delete_attachments' %}";
+        let result = AjaxCallAPIBasic(urlLink, data);
+        return result;
+    }
+
+    //binds to onchange event of your input field
+    $('.File').bind('change', function () {
+
+        attachment_size = "{{attachment_size}}"
+        attachment_extensions_array = "{{ attachment_extension|safe }}"
+        attachment_size_in_bytes = parseInt(attachment_size) * 1000000
+        total_size = []
+        for (i = 0; i < this.files.length; i++) {
+            file_name = this.files[i].name.split('.')
+            file_extensions = file_name.slice(-1)[0].toUpperCase()
+            if(!attachment_extensions_array.includes(file_extensions)){
+                document.getElementById(this.id).value = '';
+                 
+                    var msg = "JMSG045";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                  var display = msg_type.messages_id_desc;
+
+                  document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = display
+
+            } else {
+                document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = ""
+            }
+            total_size.push(this.files[i].size);
+        }
+        max_number_of_file_attached = total_size.reduce((pv, cv) => pv + cv, 0);
+        if (max_number_of_file_attached > attachment_size_in_bytes) {
+            document.getElementById(this.id).value = '';
+               
+                    var msg = "JMSG041";
+                    var msg_type ;
+                  msg_type = message_config_details(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                    var display = msg_type.messages_id_desc;
+                   document.getElementById('attachment_error' + this.id.substr(-1)).innerHTML = display + attachment_size+' MB '
+
+        }
+
+    });
+    
+
+    // Function to change goods receiver
+    function ChangeGoodsReciever() {
+        $('#ChangeGoodsReceiver').modal('show');
+        $( "#search_receiver" ).autocomplete({
+        source: "{% url 'eProc_Doc_Details:auto_complete_goods_receiver' %}",
+
+        });
+    }
+
+    /* ajax call to update goods receiver */    
+    function ajax_update_goods_reciever (data) {
+        urlLink = "{% url 'eProc_Doc_Details:update_user_name' %}";
+        let result = AjaxCallAPIBasic(urlLink, data);
+        return result;
+    }
+
+    function ajax_approve_status(data) {
+        urlLink = "{% url 'eProc_Workflow:save_appr_status' %}";
+        let status = AjaxCallAPI(urlLink, data);
+        return status;
+    }
+
+    const ajax_approve_status_url = "{% url 'eProc_Workflow:save_appr_status' %}";
+
+
+    // Function to approve/ reject sc's
+    function approve_status(value){
+        OpenLoaderPopup();
+        var manage_multi_status = {}
+        manage_multi_status['status'] = value.id;
+
+        $.ajax({
+            type: 'POST',
+            url: ajax_approve_status_url,
+            data: JSON.stringify(manage_multi_status),
+            success: function (response) {
+                    $('#approve_reject_popup_window').modal('hide');
+                    location.reload();
+            }, 
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function ApprovalResponseButton(decision) {
+        var button_id = decision.id.split('-');
+        var approval_response = button_id[0];
+
+        if(approval_response == 'APPROVER_APPROVED'){
+            $('.popup_window_approve').show();
+            $('.popup_window_reject').hide();
+        } else if(approval_response == 'APPROVER_REJECTED'){
+            $('.popup_window_approve').hide();
+            $('.popup_window_reject').show();
+        }
+
+        $('#approve_reject_popup_window').modal('show');
+    }
+
+</script>
+
+{% endblock %}

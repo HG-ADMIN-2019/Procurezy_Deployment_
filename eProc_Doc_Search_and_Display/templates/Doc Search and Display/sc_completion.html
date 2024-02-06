@@ -1,0 +1,178 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Majjaka eProcure - Purchaser Cockpit {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+
+    <div class="mep-form_wrapper">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Shopping Assist</h3>
+        </div>
+
+        <!--Search form goes here-->
+        <div class="card card-shadow-1  mb-3">
+            <div class="card-body">
+                <form method="POST" id="sc_completion_frm" action="{% url 'eProc_Doc_Search_and_Display:sc_completion_doc_search' %}">
+                    {% csrf_token %}
+    
+                    <div class="row">
+                        <div class="col-md">
+                            <label>Shopping Cart Name: </label>
+                            <input type="text" class="form-control check_alphastar_no_space validate_fields" id="description" name="description">
+                             <span id="err_scname" class="error_message" hidden></span>
+                        </div>
+                        <div class="col-md">
+                            <label>Shopping Cart Number:</label>
+                            <input type="text" class="form-control check_number_search validate_fields" name="doc_number" id="doc_number">
+                             <span id="err_doc_num" class="error_message" hidden></span>
+                        </div>
+    
+                        <div class="col-md">
+                            <label>Created By:</label>
+                            <input type="text" class="form-control check_for_search validate_fields" id="changed_by" name="changed_by">
+                             <span id="err_changed_by" class="error_message" hidden></span>
+                        </div>
+    
+                        <div class="col-md">
+                            <label>Select Time Frame:</label>
+                            <select name="created_at" id="created_at" class="multiple_select form-control" multiple data-selected-text-format="count" data-actions-box="true">
+                                <option value="Today" selected>Today</option>
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <br/>
+
+                    <div class="elements-space-between">
+                        <div>
+                            <button class="btn btn-outline-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i> &nbsp;Clear Filter</button>
+<!--                            <input type="reset" value="Clear filters" class="ip-form-clear-filters">-->
+                            <button class="btn btn-primary" type="submit" title="Please click to get the search details!" onclick="set_values()" id="search_button_id"><i class="fas fa-search"></i> &nbsp;search </button>
+                        </div>
+                        <div>
+                            <span class="badge help-text-badge help-text-star-search"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3 mb-3">
+            {% if count > 0  %}
+                <h6 class="text-muted">Total number of results found: {{ count }}</h6>
+            {% else %}
+                <h6 class="text-muted">No results found.</h6>
+            {% endif %}
+        </div>
+
+        {% if count > 0 %}
+        {% if sc_header_details %}
+        <div class="card mt-5" id="search_result">
+        <table class="table_sort_filter_pagination sc_completion_table">
+            <thead>
+                <tr>
+                    <td>
+                        <div class="row h6 text-muted p-2" >
+                            <div class="col">Cart Name</div>
+                            <div class="col">SC Number</div>
+                            <div class="col">Total Value</div>
+                            <div class="col">Created On</div>
+                            <div class="col">Created By</div>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hdr,encrypted_guid in sc_header_details %}
+                <tr>
+                    <td class="pb-2">
+                        <div class="card sc_completion_card_list">
+                            <div class="card-body">
+                                <div class="row h6">
+                                    <div class="col"><a href="{% url 'eProc_Doc_Details:doc_details' sc_completion_flag doc_type encrypted_guid 'display' 'sc_completion'  %}" target="_blank">{{ hdr.description }}</a></div>
+                                    <div class="col"><a href="{% url 'eProc_Doc_Details:doc_details' sc_completion_flag doc_type encrypted_guid 'display' 'sc_completion'  %}" target="_blank">{{ hdr.doc_number }}</a></div>
+                                    <div class="col">{{hdr.total_value}} {{ hdr.currency }}</div>
+                                    <div class="col">{{hdr.created_at}}</div>
+                                    <div class="col">{{hdr.created_by}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+      {% endif %}
+      {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'scripts/sc_completion_search.js' %}"></script>
+<script>
+    var form_method = '{{form_method|safe}}';
+    var sc_header_details = '{{sc_header_details|safe}}';
+    $("body").on("keypress keyup blur change", ".validate_fields", function (event) {
+         var temp = document.getElementsByClassName('validate_fields');
+        var get_value = event.currentTarget.value;
+        var count = get_value.split('**').length - 1;
+        for (var i = 0; i<temp.length; i++) {
+            var count = get_value.split('**').length - 1;
+            if((count>=1)|| (get_value == '*'))
+            {
+            var display_id = event.currentTarget.nextElementSibling.id;
+            $('#'+display_id).prop('hidden', false);
+            document.getElementById(display_id).style.display = "block";
+            event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+            }
+            else{
+                  var display_id = event.currentTarget.nextElementSibling.id;
+                $('#'+display_id).prop('hidden', true);
+                document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+            }
+        }
+    });
+    $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var temp = document.getElementsByClassName('validate_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(!(temp[i].value == '') || !(temp[i].value == null)){
+                data = temp[i].value;
+                var count = data.split('**').length - 1;
+                if((count >= 1) || (data == '*')){
+                    var display_id = temp[i].nextElementSibling.id;
+                    $('#'+display_id).prop('hidden', false);
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = "Please enter valid value";
+                    valid = false;
+                }
+            }
+        }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
+    });
+    $('form').on('reset',function (e) {
+        e.preventDefault();
+        localStorage.clear();
+        $('#description').val("");
+        $('#doc_number').val("");
+        $('#changed_by').val("");
+        $(".error_message").prop("hidden", true);
+        document.getElementById("created_at").value = 'Today';
+        $("select[id=created_at]").val('Today');
+        $('#sc_completion_frm')[0].submit();
+});
+
+</script>
+
+{% endblock %}

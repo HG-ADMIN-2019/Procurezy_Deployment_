@@ -1,0 +1,573 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Purchasing Organizations (Master Settings) {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+
+    <div class="configuration-table_wrapper">
+
+        <div class="elements-space-between">
+            <h3>Maintain Purchasing Organizations</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Template" onclick="location.href='{% url 'eProc_Master_Settings:extract_porg_template' %}'"type="button">
+                    <i class="fas fa-download"></i> template
+                </button>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Master_Settings:extract_porg_data' %}'"type="button">
+                    <i class="fas fa-download"></i> extract data
+                </button>
+                <button class="btn btn-outline-primary modal_upload" id="id_upload_redirect_data"  title="Upload" value="purchase_org_upload"  onclick="onclick_upload_button();" type="button">
+                    <i class="fas fa-cloud-upload-alt"></i> upload data
+                </button>
+                <button class="btn btn-primary " id="id_add_data" value="ADD" title="Add Purchasing organisation" data-toggle="modal"  onclick="onclick_add_button(this);">
+                    <i class="fa fa-plus"></i> add purchasing organization
+                </button>
+                 <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span id="success_msg_id"></span></div>
+            <!--   display basic country table-->
+            <div class="table-container">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button();">
+                        <i class="far fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger  btn-sm"  title="Delete" id="id_delete_data" value="purchase_org_delete" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-primary  btn-sm" title="Copy" id="id_copy_data" value="COPY" onclick="onclick_copy_button()" style="display:none;" >
+                        <i class="fa fa-copy"></i> Copy
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;"  value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel"  id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_purchase_org_table table table-bordered custom-table">
+                    <thead id="id_purchase_org_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox"  hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                             </th>
+                            <th>Purchase Organization</th>
+                            <th>Description </th>
+                            <th>Object id</th>
+                            <th hidden>guid</th> 
+                            <th hidden>del_ind</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_purchase_org_tbody">
+                        {% for pgorg in purchasing_org %}
+                            <tr >
+                                <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                                <td>{{pgorg.porg_id}}</td>
+                                <td>{{pgorg.description}}</td>
+                                <td>{{pgorg.object_id}}</td>
+                                <td hidden>{{pgorg.porg_guid}}</td> 
+                                <td hidden>del_ind</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--modal popup for Add,copy,update and upload-->
+    <!-- The Modal -->
+    <div class="modal fade" id="Porg_Modal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title">Maintain Purchasing Organization</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> add new row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash"></i> delete
+                            </button>
+                        </div>    
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_porg_id" ></p>
+                            <p id="id_error_msg_description" ></p>
+                            <p id="id_error_msg_porgid_length" ></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                            <thead>
+                                <tr>
+                                    <th id="header_select">Select</th>
+                                    <th>Purchase Organization</th>
+                                    <th>Description </th>
+                                    <th hidden>guid</th> 
+                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody id="id_popup_tbody">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" title="Delete" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button id="id_check_data" style="display:none;" class="btn btn-primary" title="Check" type="button" onclick="check_data()"><i class="fas fa-check"></i> check</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+    {{ purchasing_org|json_script:"purchasing_org" }}
+<script>
+    var basic_settings = '{{basic_settings|safe}}';
+    var rendered_orgporg_data = JSON.parse(document.getElementById('purchasing_org').textContent);
+    var messages_list = {{messages_list|safe}};
+    var Tablename = uiConstants["CONST_TABLENAME_PURORG"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants[ 'PORG_ID', 'DESCRIPTION','OBJECT_ID','del_ind']
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, porg_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else{
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#Porg_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var add_basic_data = '';
+                var porg_data_array =  porg_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':porg_data,'table_name':'OrgPorg','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_orgporg_data = Response[0];
+                        display_basic_db_data();
+                        $('#Porg_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        $("#id_check_data").prop("hidden", true);
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message) {
+                display_error_message(error_message)
+            } 
+        }      
+        table_sort_filter('id_popup_table');    
+    }
+    
+    //onclick of data Upload copy data to modal pop-up
+    function onclick_display_csv_data() {
+        $("#valid_upload").modal('hide');
+        $("#id_delete_duplicate").hide()
+        $("#id_check_success_messages").empty();
+        $("#id_check_error_messages").empty();
+        $("#id_check_success_messages").prop("hidden", true);
+        $("#id_check_error_messages").prop("hidden", true);
+        $("#id_check_special_character_messages").prop("hidden", true);
+        $("#error_msg_id").css("display", "none")
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        formdata = new FormData();
+        attached_file = $('#id_file_data_upload').prop('files')[0]
+        if(attached_file == undefined){
+           display_file_select_error(); // Display error message if no file is selected
+        }
+        else {
+            file_extension = (attached_file.name).split(".")[1]
+            file_extension = file_extension.toUpperCase();
+            if(file_extension == 'CSV'){
+                formdata.append("file_attach", attached_file);
+                formdata.append("Tablename",Tablename);
+                formdata.append("appname",appname);
+                $('#id_data_upload').modal('hide');
+                $('#id_popup_tbody').empty();
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Basic_Settings:data_upload' %}",
+                    data: formdata,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(response) {
+                        if(response.error_message){
+                            $("#id_error_msg_upload").prop("hidden",false)
+                            document.getElementById("id_error_msg_upload").innerHTML = response.error_message;
+                            document.getElementById("id_error_msg_upload").style.color = "Red";
+                            $('#id_data_upload').modal('show');
+                        }
+                        else {
+                            var pgroup_data_array = response.valid_data_list;
+                            var edit_basic_data = '';
+                            var del_ind = '';
+                            var dropdown_values = [];
+                            $("#id_popup_tbody").empty();
+                            $.each(response.valid_data_list, function (i, value) {
+                                 del_ind = '<td>' + value.del_ind + '</td>'
+                                if (value.del_ind == 1) {
+                                    del_ind=' <input type="checkbox" value="' + value.del_ind + '" checked>'
+                                }
+                                else {
+                                    del_ind= '<input type="checkbox" value="' + value.del_ind + '" required>'
+                                }
+
+                                 edit_basic_data += '<tr ><td class="class_select_checkbox"><input type="checkbox" required></td><td><input type="text" class="form-control check_alpha_no_space" value="' + value.porg_id + '" maxlength="8" onkeypress="return /[a-z 0-9]/i.test(event.key)" required></td><td><input type="text" class="form-control check_only_character" value="' + value.description + '" maxlength="100" onkeypress="return /[a-z ]/i.test(event.key)" required></td><td hidden><input type="text" value=""></td><td>' + del_ind + '</td></tr>';
+
+                            });
+                            $('#id_popup_tbody').append(edit_basic_data);                           
+                            $( "#id_del_ind_checkbox").prop( "hidden", false );
+                            $( "#header_select").prop( "hidden", false );
+                            $( ".class_del_checkbox").prop( "hidden", false );
+                            $('#Porg_Modal').modal('show');
+                            $('#id_data_upload').modal('hide');
+                            document.getElementById("id_del_add_button").style.display = "block";
+                            $('#id_check_data').show();
+                            $("#id_check_data").prop("hidden", false);
+                            $("#save_id").prop("hidden", true);
+                            table_sort_filter('id_popup_table')
+                        }
+                        CloseLoaderPopup();
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                });    
+            }
+            else {
+                display_file_select_error(); // Display error message for file selection except .csv
+            }
+        }
+    }
+
+    //delete the selected row in db................
+    var main_table_pgorg_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_pgorg_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        $("#display_basic_table TBODY TR").each(function () {
+        var row = $(this);
+        var pgorg_arr_obj ={};
+        pgorg_arr_obj.del_ind = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+        if(pgorg_arr_obj.del_ind) {
+            pgorg_arr_obj.porg_id = row.find("TD").eq(1).html();
+            pgorg_arr_obj.description = row.find("TD").eq(2).html();
+            pgorg_arr_obj.company_id = row.find("TD").eq(3).html();
+            pgorg_arr_obj.object_id = row.find("TD").eq(4).html();
+            pgorg_arr_obj.porg_guid = row.find("TD").eq(5).html();
+            main_table_pgorg_checked.push( pgorg_arr_obj);
+        }
+    });
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_pgorg_checked,'table_name':'OrgPorg','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+            data : JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_orgporg_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, porg) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(porg, function (i, item) {
+            if ((item.porg_id.length == 0)|| (item.description.length == 0)) {
+                $('#Porg_Modal').modal('show');
+                error_message = ui_messeges("JMSG002") // Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if(no_duplicate_value == 'Y'){
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                }
+                else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001") // Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //check function restricting special char and diaplay the data count of csv file
+    function check_data() {
+        $("#id_delete_duplicate").hide()
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_check_success_messages").empty()
+        $("#id_check_error_messages").empty()
+        $("#id_check_success_messages").prop("hidden",true)
+        $("#id_check_error_messages").prop("hidden",true)
+        $("#id_check_special_character_messages").prop("hidden",true)
+        document.getElementById("id_error_msg_porg_id").innerHTML = "";
+        document.getElementById("id_error_msg_description").innerHTML = "";
+        document.getElementById("id_error_msg_porgid_length").innerHTML = "";
+        count = 0;
+        flag = 0;
+        var purchaseorg_array = new Array
+        var DB_array = new Array
+        var purchaseorg_list = new Array
+        var purchaseorg_check = new Array
+        del_ind = ''
+        $("#id_popup_table TBODY TR").each(function() {
+            $('#id_popup_table').DataTable().destroy();
+            var row = $(this);
+            purchaseorg_dic = {}
+            //*************** reading data from the pop-up ***************
+            purchaseorg_dic.description = row.find("TD").eq(2).find('input[type="text"]').val();
+            purchaseorg_dic.porg_id = row.find("TD").eq(1).find('input').val();
+            checked_box = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked')
+                if (checked_box){
+                    purchaseorg_dic.del_ind = '1'
+                }
+                else{
+                    purchaseorg_dic.del_ind = '0'
+                }
+            purchaseorg_list.push(purchaseorg_dic)
+            get_main_table_data(); //Read data from main table
+            var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+            var format1 = /^[A-Za-z0-9]{2,}$/;
+            if(purchaseorg_dic.del_ind == '0') {
+                //*************** checking for empty records for porg code ***************
+                if(purchaseorg_dic.porg_id.length == 0 || /\s/.test(purchaseorg_dic.porg_id)){
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_porgid_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_porgid_length").innerHTML = display8+ "Purchase org Code";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+                }
+                //*************** checking for minimum length for porg code (max length = 2) ***************
+                else if(purchaseorg_dic.porg_id.length == 1){
+                        $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                        row_color_highlight_empty(row);
+                        $("#id_error_msg_porgid_length").prop("hidden",false);
+                        error_message = ui_messeges("JMSG113")// Get message details
+                        var display8 = error_message;
+                        document.getElementById("id_error_msg_porgid_length").innerHTML = display8+ "Purchase org Code";
+                        $("#id_check_special_character_messages").prop("hidden",false);
+                        count = count +1;
+                }
+                //*************** checking for special characters for porg code ***************
+                else if(format.test(purchaseorg_dic.porg_id)){
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_special(row);
+                    $("#id_error_msg_porg_id").prop("hidden",false);
+                    error_message = ui_messeges("JMSG003")// Get message details
+                    var display4 = error_message;
+                    document.getElementById("id_error_msg_porg_id").innerHTML = display4+ "Purchase org Code";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+                }
+                else{
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                    row_color_no_highlight(row);
+                    $(row).css("border", "");
+                    $("#id_delete_duplicate").hide()
+                }
+                //*************** checking for empty records for porg name*************
+                if(purchaseorg_dic.description.length == 0){
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_description").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_description").innerHTML = display8+ "Purchase org Name";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+                }
+                //*************** checking for special characters for porg name ***************
+                else if(format.test(purchaseorg_dic.description)){
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_special(row);
+                    $("#id_error_msg_description").prop("hidden",false);
+                    error_message = ui_messeges("JMSG003")// Get message details
+                    var display3 = error_message;
+                    document.getElementById("id_error_msg_description").innerHTML = display3+ "Purchase org Name";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+                }
+                else if(purchaseorg_check.includes((purchaseorg_dic.porg_id))){
+                     $(row).css("border", "#f8d7da");
+                     row_color_highlight(row);
+                     $("#id_check_error_messages").prop("hidden",false);
+                     var display7 = ui_messeges("JMSG001");
+                     document.getElementById("id_check_error_messages").innerHTML = display7;
+                     $("#save_id").prop("hidden", true);
+                     $("#id_delete_duplicate").show()
+                     $("#id_check_data").prop("hidden", false);
+                     count = count +1;
+                     flag = flag + 1;
+                }
+                else if(main_table_low_value.includes((purchaseorg_dic.porg_id))){
+                     $(row).css("border", "#f8d7da");
+                     row_color_highlight(row);
+                     $("#id_check_error_messages").prop("hidden",false);
+                     var display7 = ui_messeges("JMSG001");
+                     document.getElementById("id_check_error_messages").innerHTML = display7;
+                     $("#save_id").prop("hidden", true);
+                     $("#id_delete_duplicate").show()
+                     $("#id_check_data").prop("hidden", false);
+                     count = count +1;
+                     flag = flag + 1;
+                }
+                else{
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                    row_color_no_highlight(row);
+                    $(row).css("border", "");
+                    $("#id_delete_duplicate").hide()
+                }
+                 purchaseorg_check.push(purchaseorg_dic.porg_id)
+                 main_table_low_value.push(purchaseorg_dic)
+                 table_sort_filter_popup_pagination('id_popup_table');
+            }
+            if(flag == 0){
+                $("#id_delete_duplicate").hide()
+            }
+            else{
+                $("#id_delete_duplicate").show()
+            }
+            if(count == 0){
+                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "none");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+            }
+        });
+        //*************** shows save button if there are no errors(special characters and max length) ***************
+        if (count == 0) {
+            $("#id_delete_duplicate").hide()
+            $('#id_popup_table').DataTable().destroy();
+            $("#id_popup_table").find("input,button,textarea,select").attr("disabled", "disabled");
+            document.getElementById("id_del_add_button").style.display = "none";
+            $("#save_id").prop("hidden", false);
+            $("#id_check_data").prop("hidden", true);
+            if (purchaseorg_list == 0) {
+                $("#save_id").prop("hidden", true);
+            }
+            popup_data_dict = {'data_list': purchaseorg_list}
+            OpenLoaderPopup();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration_Check:check_purchaseorg' %}",
+                data: JSON.stringify(popup_data_dict),
+                success: function(response) {
+                     table_sort_filter_popup_pagination('id_popup_table')
+                     $("#id_check_special_character_messages").prop("hidden", false);
+                     if (count == 0) {
+                        $("#id_check_special_character_messages").prop("hidden", true);
+                     }
+                    var message = ''
+                    update_check_message(response.messages)
+                    CloseLoaderPopup();
+                }
+            });
+        }
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var Porg_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            Porg_dic = {}
+            Porg_dic.porg_id = row.find("TD").eq(1).find('input').val();
+            Porg_check.push(Porg_dic.porg_id);
+            jQuery.grep(Porg_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+        });
+    }
+
+</script>
+<script src="{% static 'scripts/organisational_data/purchase_org.js' %}"></script>
+
+{% endblock %}

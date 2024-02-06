@@ -1,0 +1,779 @@
+{% load static %}
+<style>
+    .po-header-label {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+    .po-header-desc {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .sub-tabs .sub-tab-link.text-size-x-small {
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+</style>
+<div class="mo-items-table">
+
+    <div class="table-responsive-lg">
+        <!--  Defining table for displaying cart items in 1st step of shopping cart wizard  -->
+        <table id="cart_details" class="table mo-item-table">
+            <thead class="thead-light">
+            <tr>
+                <!-- <th class="item_checkbox"></th> -->
+                <th hidden>item call _off1</th>
+                <th hidden>guid</td>
+                <th>No</th>
+                <th>Item</th>
+                <th hidden>item call _off2</td>
+                <th style="width: 20%;">Description</th>
+                <th>Call-Off</th>
+                <th>Delivery Date</th>
+                <th>Price Unit</th>
+                <th>Unit</th>
+                <th>Price Per Unit</th>
+                <th>Total</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+
+            </thead>
+
+            <!--   Looping over the sc_items to get items    -->
+            {% for items in item_dictionary_list %}
+            <tr id="{{items.guid}}">
+                <!-- <td><input onchange="checkbox_onchange(this)" type="checkbox" name="select_item" id="select_item-{{items.call_off}}-{{items.guid}}-{{items.eform_id}}-{{forloop.counter}}" ></td> -->
+                <!--                <td><input onchange="checkbox_onchange(this)" type="checkbox" name="select_item" id="select_item-{{items.call_off}}-{{items.guid}}-{% if items.call_off == 'Freetext' %}{% if  items.eform %}eform{% endif %}{% endif %}-{{forloop.counter}}"></td>-->
+                <td hidden>{{items.call_off}}</td>
+                <td hidden class="{{items.guid}}">{{items.guid}}</td>
+                <td id="prod_cat_id-{{items.guid}}" hidden>{{items.prod_cat_id}}</td>
+                <td scope="row" class="hg_scw_ti  update_item_count" id="item_number-{{items.guid}}">
+                    {{ forloop.counter }}</td>
+                <td>
+                    <a href="#" onclick="view_detail('{{ items.int_product_id}}','{{items.guid}}')">
+                        <img class="sc-item-table__item-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{items.image_url}}">
+                    </a>
+                </td>
+                <td id="guid" hidden>{{ items.call_off }} </td>
+                <td>
+                    <div class="desc-section-top">
+                        <div id="desc-{{items.guid}}">
+                            {% if items.call_off == '01'%}
+                            <a href="#" onclick="view_detail('{{ items.int_product_id}}','{{items.guid}}')">{{ items.description }}</a>
+                            {% else %}
+                            <a  >{{ items.description }}</a>
+                            {% endif %}
+                        </div>
+                        {% if items.call_off == '01' or items.call_off == '02' or items.call_off == '03' %}
+                        <div class="mo-item-table__supplier-desc" >by - <span id="supp-{{items.guid}}" hidden>{{ items.supplier_id }}</span><span >{{ items.supplier_desc }}</span></div>
+                        {% else %}
+                        <div class="mo-item-table__supplier-desc" id="supp-{{items.guid}}">by - {{ items.pref_supplier }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Section to display change action icon, eform View Additional details button -->
+                    <div class="desc-section-bottom">
+                        {% if items.eform_id %}
+                        {% if items.call_off == '04' or items.call_off == '02' or items.call_off == '03' %}
+                        <button class="hg_button_edit" onclick="display_eform('{{items.guid}}','{{ forloop.counter }}')"> View Additional details</button>
+                        {% endif %}
+                        {% endif %}
+                        <button type="button" class="hg_button_round notes badge_status_await_approval" id="notes_added-{{items.guid}}" title="Notes Added" {% if items.supplier_note_existence_flag or items.internal_note_existence_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                            <i class="material-icons-outlined">description</i>
+                        </button>
+
+                        <button type="button" class="hg_button_round attachment badge_status_purch_wrkl" id="attachment_added-{{items.guid}}" title="Attachments Added" {% if items.attachment_existence_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                            <i class="material-icons-outlined">attach_file</i>
+                        </button>
+
+                        <button type="button" class="hg_button_round ship-address badge_status_save" id="shippingAddress_added-{{items.guid}}" title="Shipping Address Changed" {% if items.address_change_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                            <i class="material-icons-outlined">local_shipping</i>
+                        </button>
+
+                        <button type="button" class="hg_button_round acct-det badge_status_approved" id="accounting_added-{{items.guid}}" title="Cost objects changed" {% if items.accounting_change_flag %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                            <i class="material-icons-outlined">account_balance_wallet</i>
+                        </button>
+
+                    </div>
+                </td>
+                <td>{{ items.call_off }}</td>
+                <td id="del_date-{{items.guid}}">{% if items.call_off == '04' %}-{% if items.item_del_date %}<span id="del_date-limit-{{items.guid}}" style="display: none;">limit-{{items.item_del_date|date:"Y-m-d"}}</span>{% else %}<span id="del_date-limit-{{items.guid}}" style="display: none;">limit-{{items.start_date|date:"Y-m-d"}}</span>{% endif %}{% else %}{{ items.item_del_date|date:"Y-m-d" }}{% endif %}</td>
+                <td id="price_unit-{{items.guid}}">{{ items.price_unit }}</td>
+                <td id="unit-{{items.guid}}">
+                    {% if items.call_off == '04' %}-{% else %}{{ items.unit_desc }}{% endif %}</td>
+                <td><span id="ScIem-price-{{items.guid}}"
+                          class="hg_total_value">{% if items.call_off == '04' %}-{% else %}{{ items.price }}</span>&nbsp;&nbsp;&nbsp;/&nbsp<span
+                        id="currency-{{items.guid}}">{{items.currency}}</span>{% endif %}</td>
+                <td>{% if items.call_off == '04' %}<span id="overall_limit-{{items.guid}}"
+                                                         class="hg_item_total_value">{{items.value}}</span>{% else %} <span
+                        id="ScIem-value-{{items.guid}}"
+                        class="hg_item_total_value update_converted_value">{{items.value}}</span>&nbsp;{% endif %}/&nbsp;{{request.user.currency_id}}
+                </td>
+                <td>
+                    {% if items.call_off == '01' %}
+                    <span id="product_id-{{forloop.counter}}-{{items.int_product_id}}-{{items.lead_time}}-{{items.price}}" hidden></span>
+                    <span id="item_quantity-{{items.guid}}">{{ items.catalog_qty }}</span>
+                    {% else %}
+                    <span id="item_quantity-{{items.guid}}">{{ items.quantity }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="item-action-icon-section">
+                        <span title="Delete Item" onclick="get_item1('{{items.guid}}')" class="editable_mode">
+                            <i class="material-icons item-action-icons">delete_outline</i>
+                        </span>
+                        <span title="Update Item" onclick="update('{{ forloop.counter }}', '{{ items.call_off }}', '{{items.guid}}')" class="editable_mode">
+                            <i class="fas fa-edit item-action-icons"></i>
+                        </span>
+                        <div class="action_dropdown dropdown">
+                            <a  type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons action_dropdown-icon item-action-icons">more_vert</i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+
+                                <a class="dropdown-item notes-{{ forloop.counter }}"
+                                   onclick="showSection(this, 'notes-{{ forloop.counter }}')">Notes</a>
+                                <a class="dropdown-item attachments-{{ forloop.counter }}"
+                                   onclick="showSection(this, 'attachments-{{ forloop.counter }}')">Attachments</a>
+                                <a class="dropdown-item shipAddress-{{ forloop.counter }}"
+                                   onclick="showSection(this, 'shipAddress-{{ forloop.counter }}')">Shipping Address</a>
+                                <a class="dropdown-item accoutingData-{{ forloop.counter }}"
+                                   onclick="showSection(this, 'accoutingData-{{ forloop.counter }}')">Cost
+                                    Assignment</a>
+                                {% if items.related_documents %}
+                                <a class="dropdown-item related_documents{{ forloop.counter }}"
+                                   onclick="showSection(this, 'related_documents-{{ forloop.counter }}')">Related
+                                    Documents</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+
+            <!--start of hideable section containing sc item action -->
+            <tr class="item-table-action__section">
+                <td colspan="14" id="item_info_tr-{{forloop.counter}}" hidden>
+
+                    <div id="display_eform-{{items.guid}}" style="display:none;">
+                        <div class="card-header item-table-action__header">
+                            <span>Additional eForm Data</span>
+                            <span onclick="display_eform('{{items.guid}}','{{forloop.counter}}');">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            {% if items.call_off == '01' or items.call_off == '02'%}
+                            {% if items.eform_id %}
+                            {% for eform_details in items.eform_data %}
+                            <div style="padding-bottom:5px;">
+                                <span class="h6">{{eform_details.eform_field_name}}:&nbsp;&nbsp;</span><span>{{eform_details.eform_field_data}}</span>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!--start of hidable content which lets the user add notes -->
+                    <div id="notes-{{ forloop.counter }}" class="item{{ forloop.counter }}" style="display: none;">
+                        <div class="card item-table-action__item-notes">
+                            <div class="card-header item-table-action__header">
+                                <span>Notes</span>
+                                <span onclick="closeAttachSection(this, 'notes-{{ forloop.counter }}')">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </div>
+
+                            <div>
+                                <div class="action-item-notes__buttons-section">
+                                    <button id="internalbutton{{ forloop.counter }}" class="notes_button{{ forloop.counter }} intbtn{{ forloop.counter }} add-note-internal " onclick="selectNoteType(this)">For Internal Use</button>
+                                    <button id="supplierbutton{{ forloop.counter }}" class="notes_button{{ forloop.counter }} supbtn{{ forloop.counter }} add-note-external" onclick="selectNoteType(this)">For Supplier Use</button>
+                                </div>
+
+                                <div id="intbtn{{ forloop.counter }}" class="tabContent{{ forloop.counter }} action-item-notes__textarea">
+                                    {% for int_note in int_notes %}
+                                    {% if int_note.item_guid == items.guid %}
+                                    <textarea maxlength="1000" id="Notes-note_text-{{int_note.guid}}-I" rows="4" class="hg_is_disabled sc_notes add_notes_textarea" disabled>{{int_note.note_text}}</textarea>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+
+                                <div id="supbtn{{ forloop.counter }}" class="tabContent{{ forloop.counter }} action-item-notes__textarea" style="display: none;">
+                                    {% for supp_note in supp_notes %}
+                                    {% if supp_note.item_guid == items.guid %}
+                                    <div>
+                                        <textarea maxlength="1000" id="Notes-note_text-{{supp_note.guid}}-S" rows="4" class="hg_is_disabled sc_notes add_notes_textarea" disabled>{{supp_note.note_text}}</textarea>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                                <div>
+                                    <span class="badge badge_valid_text_label"> Valid characters are A-Z a-z 0-9</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end of hideable content which lets the user add notes -->
+
+                    <!-- start of hideable content which lets the user add attachments -->
+                    <div id="attachments-{{ forloop.counter }}" class="item{{ forloop.counter }}" style="display: none">
+                        <div class="card">
+                            <div class="card-header item-table-action__header">
+                                <span>Attachments</span>
+                                <span onclick="closeAttachSection(this, 'attachments-{{ forloop.counter }}')">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </div>
+    
+                            <div class="card-body">
+                                <div class="elements-space-between">
+                                    <div class="form-check form-check-inline hg_is_hidden add-attachment-section" hidden>
+                                        <form class="form-group" method="post" enctype="multipart/form-data">
+    
+                                            <div id="attachment_error{{ forloop.counter }}" class="hg_error"></div>
+    
+                                            <label><b>Type:</b></label><br>
+                                            <input class="form-check-input" type="radio" name="attachment_type" id="internal{{ forloop.counter }}">
+                                            <label for="internal{{ forloop.counter }}">For internal use </label>
+                                            <input class="form-check-input" type="radio" name="attachment_type" id="external{{ forloop.counter }}">
+                                            <label for="external{{ forloop.counter }}">For external use </label><br>
+    
+                                            <label for="attachment_data-{{forloop.counter}}">File:</label><br>
+                                            <input type="file" class="form-control-file File" id="attachment_data-{{forloop.counter}}" multiple><br>
+    
+                                            <label for="attachment_name{{ forloop.counter }}">Name:</label>
+                                            <input type="text" class="form-control File attachment-input-name" id="attachment_name{{ forloop.counter }}" placeholder="Name"><br>
+    
+                                            <button class="btn btn-primary" type="button" id="upload-attachment_data-{{forloop.counter}}-{{items.guid}}" onclick="upload_attachments(this.id)"><i class="fas fa-upload"></i> UPLOAD</button>
+    
+                                        </form>
+                                        <span id="get_text_value"></span>
+                                        <hr>
+                                    </div>
+    
+                                    <div id="added_attachments_display-{{forloop.counter}}" class="attachment-added-section">
+                                        <div class="view-attachments-header">
+                                            <span class="h6">View Attachments</span>
+                                        </div>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>File</th>
+                                                <th class="hg_is_hidden" hidden>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="hg_attachment_table_tbody item_level_attachment-{{forloop.counter}}" id="attachment_tbody_id-{{forloop.counter}}">
+                                            {% for attachments in  sc_attachements%}
+                                            {% if attachments.item_guid == items.guid %}
+                                            <tr id="available_attachments-{{attachments.attachment_guid}}">
+                                                <td><a
+                                                        href="{% url 'eProc_Notes_Attachments:attach_download' %}?path={{attachments.file_path}}">{{attachments.attachment_name}}</a>
+                                                </td>
+                                                <td>{% if attachments.type == 'I' %} Internal Use{% else %} External
+                                                    Use{% endif %}</td>
+                                                <td>{{attachments.file_name}}</td>
+                                                <td class="hg_is_hidden" hidden>
+                                                    <i id="{{forloop.parentloop.counter}}-{{attachments.attachment_guid}}-{{attachments.item_guid}}"
+                                                       onclick="delete_attachments(this)" class="fas fa-trash-alt attachment-icon"></i>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+
+                    <!--end of hideable content which lets the user add attachments -->
+
+                    <!-- start of hideable content which lets the user change shipping address -->
+                    <div id="shipAddress-{{ forloop.counter }}" class="item{{ forloop.counter }}" style="display: none;">
+                        <div class="card">
+                            {% for addr in addr_det %}
+                            {% if addr.item_guid_id == items.guid %}
+                            <div class="card-header item-table-action__header">
+                                <span>Shipping Address</span>
+                                <span onclick="closeAttachSection(this, 'shipAddress-{{ forloop.counter }}')">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </div>
+    
+                            <div class="card-body">
+                                <span id="ScAddresses-address_number-{{ addr.guid }}" class="check_address_number" hidden>{{ addr.address_number }}</span>
+                                <span id="ScAddresses-street-{{ addr.guid }}">{{ addr.street }},</span><br>
+                                <span id="ScAddresses-area-{{ addr.guid }}">{{ addr.area }},</span><br>
+                                <span id="ScAddresses-landmark-{{ addr.guid }}">{{ addr.landmark }},</span><br>
+                                <span id="ScAddresses-city-{{ addr.guid }}" class="hg_display_inline">{{ addr.city }}</span> - <span class="hg_display_inline" id="ScAddresses-postal_code-{{ addr.guid }}">{{ addr.postal_code }}</span><br>
+                                <span id="ScAddresses-region-{{ addr.guid }}">{{ addr.region }}</span><br>
+    
+                                {% if shipping_address_flag == '1'  %}
+                                <button class="btn btn-primary hg_is_hidden" onclick="change_item_address(this.id, {{forloop.counter}})" id="change_address-{{addr.guid}}" hidden><i class="far fa-edit"></i> Change Shipping Address</button>
+                                {% elif shipping_address_flag == '0' %}
+                                <button class="btn btn-secondary hg_is_hidden"  id="change_address-{{addr.guid}}"  disabled><i class="far fa-edit" ></i> Change Shipping Address</button>
+                                {% endif %}
+                                {% if edit_address_flag == '1'  %}
+                                <button class="btn btn-primary hg_is_hidden" onclick="edit_item_address(this.id, {{forloop.counter}})" id="edit_address_{{forloop.counter}}" hidden><i class="far fa-edit"></i> Edit Current Shipping Address</button>
+                                {% elif edit_address_flag == '0' %}
+                                <button class="display-none"  id="edit_address_{{forloop.counter}}" ><i class="far fa-edit"></i> Edit Current Shipping Address</button>
+                                {% endif %}
+    
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            <div class="mo-reciever">
+                                <span class="h6">Receiver: </span> <span id="ScItem-goods_recep-{{ items.guid }}">{{ items.goods_recep }}</span>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                    <!-- end of hideable content which lets the user change shipping assignment -->
+
+                    <!-- start of hideable content which lets the user change cost assignment -->
+                    <div id="accoutingData-{{ forloop.counter }}" style="display: none;" class="item{{ forloop.counter }}">
+                        <div class="card">
+                            {% for acc in acc_det %}
+                            {% if acc.item_guid_id == items.guid %}
+                            <div class="card-header item-table-action__header">
+                                <span>Account assignment category</span>
+                                <span onclick="closeAttachSection(this, 'accoutingData-{{ forloop.counter }}')">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </div>
+    
+                            <div class="card-body">
+                                <div>
+                                    <span class="h6">Account Assignment Category :</span>
+                                    <span id=ScAccounting-acc_cat-{{acc.guid}} class="change_account_type">
+                                        {{acc.acc_desc}}
+                                    </span><br>
+                                    <span id="id_acc_title-{{acc.guid}}" class="h6">
+                                        {% if acc.acc_cat in 'CC' %}
+                                        Cost Center:
+                                        {% elif acc.acc_cat == 'AS' %}
+                                        Asset:
+                                        {% elif acc.acc_cat == 'WBS' %}
+                                        WBS:
+                                        {% elif acc.acc_cat == 'OR' %}
+                                        Internal Order:
+                                        {% endif %}
+                                    </span>
+                                    <span id="change_acc_value_{{ forloop.counter }}">
+                                        <span id=ScAccounting-acc_val-{{acc.guid}} class="check_account_assignment_values">
+                                            {{acc.acc_value_desc.attribute_values_description}}
+                                        </span>
+                                    </span> <br>
+                                    <div id="secondary_accounting-{{acc.guid}}"></div>
+                                    <span class="h6">GL Account Number: </span><span id="ScAccounting-gl_acc_num-{{acc.guid}}">{{ acc.gl_account_value_desc }}</span>
+                                    <br><br>
+    
+                                    {% if acct_assignment_category == '1' %}
+                                    <button class="btn btn-primary hg_is_hidden" id="change_accounting_data-item-{{acc.guid}}" onclick="changeAccCat(this.id,{{forloop.counter}})" hidden><i class="far fa-edit"></i> Change account assignment</button>
+                                    {% elif acct_assignment_category == '0' %}
+                                    <button class="btn btn-secondary" id="change_accounting_data-item-{{acc.guid}}"  disabled><i class="far fa-edit"></i> Change account assignment</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                    <!-- end of hideable content which lets the user change shipping address -->
+                    <div id="related_documents{{ forloop.counter }}" style="display:none;" class="item{{ forloop.counter }}">
+                        <div class="card">
+                            <div class="card-header item-table-action__header">
+                                <span>History</span>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th>Name</th>
+                                        <th>Document Number</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Net Value</th>
+                                        <th>Currency</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for related_document in items.related_documents%}
+                                    {% if related_document.sc_item_guid_id == items.guid %}
+                                    <tr>
+                                        <td>{{related_document.document}}</td>
+                                        <td>{{related_document.po_name}}</td>
+                                        <td><a href="{% url 'eProc_Purchase_Order:po_doc_details' related_document.encrypt_header_guid %}" target="_blank">{{ related_document.document_number }}</a></td>
+                                        <td>{{related_document.status}}</td>
+                                        <td>{{related_document.created_at|date:'Y-m-d'}}</td>
+                                        <td>{{related_document.quantity}}</td>
+                                        <td>{{related_document.unit}}</td>
+                                        <td>{{related_document.price}}</td>
+                                        <td>{{related_document.currency}}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </td>
+            </tr>
+
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <!-- Pop-Up to delete single item in shopping cart -->
+    <div class="modal fade" id="delete_item_popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You are about to delete an item from your current shopping cart. Are you sure?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="delete_cart_item()"><i class="fas fa-trash-alt"></i> delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-Up to delete complete shopping cart -->
+    <div class="modal fade" id="delete_saved_sc">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Please Confirm</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    You are about to delete your current shopping cart. Are you sure?
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="delete_sc()"><i class="fas fa-trash-alt"></i> delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_modal_popup" id="update-popUp-button" hidden>
+        Display Update Modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="update_modal_popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Update Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">{% csrf_token %}
+                        <div class="hg_error_field">
+                        </div>
+                        <div id="update_forms">
+                            <div id="update_limit_form" style="display:none;">
+                                {% include 'Add Item/update_items/update_limit_order.html' %}
+                            </div>
+                            <div id="update_pr_form" style="display:none;">
+                                {% include 'Add Item/update_items/update_purch_req.html' %}
+                            </div>
+                            <div id="update_freetext_form" style="display:none;">
+                                {% include 'Add Item/update_items/update_free_text.html' %}
+                            </div>
+                            <div id="update_catalog_form" style="display: none;">
+                                {% include 'Add Item/update_items/update_catalog_item.html' %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- div to display limit order details  -->
+
+    <div style="display: none;" class="card" id="limit_order_detail_section">
+        <div class="card-header call-off-header-section">
+            <span>Limit order details</span>
+            <span onclick="document.getElementById('limit_order_detail_section').style.display='none'"><i class="fas fa-times"></i></span>
+        </div>
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col">
+                    <label for="" class="call-off-form-label">Item Name :</label>
+                    <span id="limit_item_name"></span><br>
+
+                    <label for="" class="call-off-form-label">Value Limit :</label>
+                    <span id="limit_o_limit"></span><br>
+
+                    <label for="" class="call-off-form-label">Currency :</label>
+                    <span id="limit_currency"></span><br>
+
+                    <label for="" class="call-off-form-label">Supplier :</label>
+                    <span id="limit_supp_id"></span><br>
+                </div>
+
+                <div class="col">
+
+                    <label for="" class="call-off-form-label">Product Category :</label>
+                    <span id="limit_prod_cat">{{limit_item.prod_cat}}{{prod_desc}}</span><br>
+
+                    <label for="" class="call-off-form-label">Expected Value :</label>
+                    <span id="limit_e_value">{{limit_item.expected_value}}</span><br>
+
+                    <label for="" class="call-off-form-label">Required :</label>
+                    <span id="required_limit"></span> <span id="required_limit_dates"></span><br>
+
+                    <label for="" class="call-off-form-label">Follow-Up Actions :</label>
+                    <span id="follow_up_act"></span><br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart value section -->
+    <div class="row no-gutters justify-content-end">
+        <div class="col-lg-4">
+            <div class="card cart-value-card">
+                <div class="card-body">
+                    <div class="cart-value-section">
+                        <span class="cart-value-label">Total Value (Net)</span>
+                        <span class="cart-value-desc" ><span id="actual_price">{{actual_price}}</span> {{request.user.currency_id}}</span>
+                    </div>
+                    <div class="cart-value-section">
+                        <span class="cart-value-label">Total Discount</span>
+                        <span class="cart-value-desc" >- <span id="discount_value">{{discount_value}}</span> {{request.user.currency_id}}</span>
+                    </div>
+<!--                    <div class="cart-value-section">-->
+<!--                        <span class="cart-value-label">Total Tax</span>-->
+<!--                        <span class="cart-value-desc" > + <span id="tax_value">{{tax_value}}</span> {{request.user.currency_id}}</span>-->
+<!--                    </div>-->
+    
+                    <hr>
+                    <div id="total_value" class="cart-value-section">
+                        <span class="cart-value-label">Total value for <span id="total_items">{{ itm_det|length }}</span> items </span>
+                        <span  class="cart-value-desc" ><span id="ScHeader-total_value-{{sc_header_data.guid}}">{{sc_header_data.total_value}}</span> <span id="total_cart_currency"> {{request.user.currency_id}}</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Limit order display div ends -->
+    
+    <!--    <div id="total_value" class="d-flex justify-content-end item-table-cart-value-section mr-3">-->
+    <!--        <p>Total for <span id="total_items">{{ itm_det|length }}</span> items: <span id="ScHeader-total_value-{{sc_header_data.guid}}" class="item-table-total-cart-value">{{sc_header_data.total_value}}</span> <span>{{request.user.currency_id}}</span></p>-->
+
+    <!--    </div>-->
+</div>
+
+{% include 'ProductDetailPopup/basic_product_detail_popup.html' %}
+<script src="{% static 'scripts/my_order_item_details.js' %}"></script>
+
+<script>
+
+var rendered_call_off = [];
+// Display limit order details
+{% for data in itm_det %}
+    follow_up_action = "{{data.ir_gr_ind_limi}}"
+    on_date = "{{data.item_del_date}}"
+    from_date = "{{data.start_date}}"
+    end_date = "{{ data.end_date }}"
+
+    // Based on the date displays relevant fields in UI
+    if (on_date != "None") {
+        document.getElementById("required_limit").innerHTML = "On"
+        document.getElementById("required_limit_dates").innerHTML = on_date
+    } else if (on_date == "None" && end_date == "None") {
+        document.getElementById("required_limit").innerHTML = "From"
+        document.getElementById("required_limit_dates").innerHTML = from_date
+    } else {
+        document.getElementById("required_limit").innerHTML = "From - To"
+        document.getElementById("required_limit_dates").innerHTML = from_date + "-" + end_date
+    }
+
+    document.getElementById("limit_item_name").innerHTML = "{{data.description}}"
+    document.getElementById("limit_o_limit").innerHTML = "{{data.overall_limit}}"
+    document.getElementById("limit_currency").innerHTML = "{{data.currency}}"
+    document.getElementById("limit_supp_id").innerHTML = "{{data.pref_supplier}}"
+    document.getElementById("limit_prod_cat").innerHTML = "{{data.prod_cat}}-{{prod_cat_desc}}"
+    document.getElementById("limit_e_value").innerHTML = "{{data.expected_value}}"
+
+    if (follow_up_action) {
+        document.getElementById("follow_up_act").innerHTML = "Invoice and Confirmation Only";
+    } else {
+        document.getElementById("follow_up_act").innerHTML = "Confirmation Only";
+    }
+{% endfor %}
+
+
+
+// Display limit order details
+{% for data in cart_items %}
+    follow_up_action = "{{data.ir_gr_flag}}"
+    on_date = "{{data.item_del_date}}"
+    from_date = "{{data.start_date}}"
+    end_date = "{{ data.end_date }}"
+
+    // Based on the date displays relevant fields in UI
+    if (on_date != "None") {
+        document.getElementById("required_limit").innerHTML = "On"
+        document.getElementById("required_limit_dates").innerHTML = on_date
+    } else if (on_date == "None" && end_date == "None") {
+        document.getElementById("required_limit").innerHTML = "From"
+        document.getElementById("required_limit_dates").innerHTML = from_date
+    } else {
+        document.getElementById("required_limit").innerHTML = "From - To"
+        document.getElementById("required_limit_dates").innerHTML = from_date + "-" + end_date
+    }
+
+    document.getElementById("limit_item_name").innerHTML = "{{data.description}}"
+    document.getElementById("limit_o_limit").innerHTML = "{{data.overall_limit}}"
+    document.getElementById("limit_currency").innerHTML = "{{data.currency}}"
+    document.getElementById("limit_supp_id").innerHTML = "{{data.supp_id}}"
+    document.getElementById("limit_prod_cat").innerHTML = "{{data.prod_cat}}-{{prod_desc}}"
+    document.getElementById("limit_e_value").innerHTML = "{{data.expected_value}}"
+
+    if (follow_up_action) {
+        document.getElementById("follow_up_act").innerHTML = "Invoice and Confirmation Only";
+    } else {
+        document.getElementById("follow_up_act").innerHTML = "Confirmation Only";
+    }
+{% endfor %}
+
+
+// Ajax call to delete an entire sc or an cart item in mod 
+function ajax_my_order_delete_sc(data) {
+    urlLink = "{% url 'eProc_Shopping_Cart:edit_saved_shopping_cart' %}";
+    let result = AjaxCallAPIBasic(urlLink, data);
+    location.reload();
+    return result;
+}
+
+const delete_my_order_sc_item_url = "{% url 'eProc_Shopping_Cart:edit_saved_shopping_cart' %}";
+
+
+{% for item in itm_det %}
+rendered_call_off.push('{{item.call_off|safe}}');
+{% endfor %}
+
+
+function ajax_update_item_data(data) {
+    urlLink = "{% url 'eProc_Shopping_Cart:update_item' %}";
+    let result = AjaxCallAPIBasic(urlLink, data);
+    return result;
+}
+
+// Function to display eform data for freetext item if configured
+var display_action = 1;
+function display_eform(item_guid,item_num) {
+    guid = item_guid
+    display_action = 1;
+    if (display_action == 1) {
+        document.getElementById('item_info_tr-'+item_num).hidden = false;
+        $("#display_eform-" + item_guid).toggle();
+        //$.ajax({
+//            type: 'POST',
+//            url: "{% url 'eProc_Shopping_Cart:eform_data' %}",
+//            data: {
+//                'guid': guid,
+//                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+//            },
+//            success: function (response) {
+//                var tbody_guid = 'display_eform-' + guid
+//                $('#' + tbody_guid).empty();
+//                var content_data = ''
+//                var content = '<h1>Eform Details</h1>';
+//                if (response.form_field1) {
+//                    content_data += '<div style="text-align:left;padding-left:20px;">' + '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field1 + ':' + '</b></span>' + '<span>' + response.form_field1_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field2) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field2 + ':' + '</b></span>' + '<span>' + response.form_field2_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field3) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field3 + ':' + '</b></span>' + '<span>' + response.form_field3_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field4) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field4 + ':' + '</b></span>' + '<span>' + response.form_field4_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field5) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field5 + ':' + '</b></span>' + '<span>' + response.form_field5_value + '</span>' + '</div>' + '</div>'
+//                }
+//                if (response.form_field6) {
+//                    content_data += '<div style="text-align:left; position:relative; bottom:105px; left:1000px;">' + '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field6 + ':' + '</b></span>' + '<span>' + response.form_field6_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field7) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field7 + ':' + '</b></span>' + '<span>' + response.form_field7_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field8) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field8 + ':' + '</b></span>' + '<span>' + response.form_field8_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field9) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field9 + ':' + '</b></span>' + '<span>' + response.form_field9_value + '</span>' + '</div>'
+//                }
+//                if (response.form_field10) {
+//                    content_data += '<div style="padding-bottom:5px;">' + '<b><span>' + response.form_field10 + ':' + '</b></span>' + '<span>' + response.form_field10_value + '</span>' + '</div>' + '</div>'
+//                }
+//                content += '<tr><td>' + content_data + '</td></tr>'
+//                $('#' + tbody_guid).append(content);
+//                $("#display_eform-" + guid).toggle();
+//                //document.getElementById("display_eform-"+guid).style.display="block";
+//            }
+//        })
+        display_action = 2
+    } else {
+        document.getElementById("display_eform-" + guid).style.display = "none"
+        display_action = 1
+    }
+}
+//###############################start of view catalog images #########################################################
+var GLOBAL_PRODUCT_ID = '';
+var GLOBAL_ONCLICK_ITEM_GUID = '';
+var GLOBAL_QUANTITY = '';
+
+</script>

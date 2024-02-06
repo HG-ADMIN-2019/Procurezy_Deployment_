@@ -1,0 +1,55 @@
+<!--Login page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Majjaka Shop Login {% endblock %}
+
+{% block maincontent %}
+
+<div class="container-flex h-100">
+    <div class="row no-gutters h-100 majjaka-login-screen">
+        <div class="col-lg-8 majjaka-login-screen__frame-left">
+            <div class="login-screen-image-container">
+                <img src="/static/images/logo_black_no_bg_new.png" id="majjaka-brand-logo">
+            </div>
+        </div>
+        <div class="col-lg-4 majjaka-login-screen__frame-right">
+            <div class="login_page_content">
+                {% block user_login_frame %}
+
+                {% endblock %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'eProc_Basic:terms_of_use' %}" target="_blank " class="font-weight-500 font-size-smaller">Terms of use </a> | <a href="{% url 'eProc_Basic:private_policy' %}" target="_blank " class="font-weight-500 font-size-smaller"> Privacy policy</a>
+                </div>
+            </div>
+
+            <div class="login_page_logo">
+                <img src="/static/images/logo_white_no_bg.png" class="img-fluid" alt="">
+            </div>
+
+            <div class="admin-loader-screen-container" id="admin-loader_screen_container">
+                <div class="admin-loader-screen">
+                    <div class="admin-loader-animation"></div>
+                    <p class="admin-loader-message"></p> 
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function OpenVerifyAdminLoaderPopup() {
+        document.getElementById('admin-loader_screen_container').classList.add('show');
+        $('.majjaka-login-screen__frame-right').addClass('loader-show');
+    }
+
+    function CloseVerifyAdminLoaderPopup(){
+        $('.majjaka-login-screen__frame-right').removeClass('loader-show');
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        document.getElementById('admin-loader_screen_container').classList.remove('show');
+    }
+</script>
+
+{% endblock %}
+
+

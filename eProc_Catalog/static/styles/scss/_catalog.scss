@@ -1,0 +1,235 @@
+@mixin catalog-results-img-container {
+    height: 8.5rem;
+    width: 8.5rem;
+}
+
+@mixin catalog-results-img {
+    border: 1px solid #ddd; 
+    width:100%; 
+    height:100%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.list-header-text {
+    font-size: 17px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.list-body-text {
+    margin-left: 1rem;
+    font-size: 16px;
+    font-style: normal;
+    cursor: pointer;
+}
+
+.products-catalog {
+
+    .products-catalog__selection-tab {
+        padding-left: 1rem;
+    }
+
+    .quick_links_catalog {
+        padding-top: 6rem;
+    }
+
+    /* Style the tab */
+    .hg_tab {
+        overflow: hidden;
+
+        button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            transition: 0.3s;
+            font-size: 17px;
+            display: flex;
+            color: $nav-link-color;
+            align-items: center;
+
+            /* Change background color of buttons on hover */
+            &:hover {
+                background-color: #e2e2e2;
+                border-bottom: #e2e2e2;
+            }
+            
+            .btn-text {
+                font-size: 20px;
+                font-weight: 500;
+            }
+
+            i {
+                margin-right: 0.5rem;
+            }
+
+            /* Create an active/current tablink class */
+            &.active {
+                border-bottom: solid 5px $nav-link-active-color;
+                color: $nav-link-active-color;
+            }
+        }
+    }
+
+    .products-catalog-header {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        background-color: white;
+        margin-bottom: 2rem;
+
+        &__section {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 50%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        &__text {
+            text-align:center;
+        }
+
+        &__search-input-group {
+            padding: 2px; 
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem; 
+            display: flex;
+
+            input[type='text'] {
+                border: none;
+            }
+        }
+
+        .sfps-button {
+            display: flex;
+        }
+
+    }
+    
+    
+}
+
+.product-selection-tabcontent {
+    display: none;
+    padding: 1rem;
+    margin-bottom: 10px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+/* Fade in tabs */
+@_webkit_keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+.product-selection-card {
+    cursor: pointer;
+
+    .embed-responsive.embed-responsive-1by1{
+        background-color: silver;
+    }
+
+    .product-selection-img{
+        width:100%; 
+        height: 100%; 
+        object-fit: contain;
+    }   
+
+    .card-body {
+        padding: .5rem;
+    }
+}
+
+.product-results-catalog__section {
+    margin-bottom:25px;
+
+    .card-body.product-results-catalog__card-header {
+        padding-bottom: 0.5rem;
+        border-bottom: solid 1px #ddd;
+    }
+}
+
+.product-results-catalog__fliter-card {
+    &.card {
+        top: 8rem;
+    }
+}
+
+// Product type catalog results & Product type freetxt results 
+.product-results-catalog__results-card {
+    margin-bottom:25px;
+
+    .card-body {
+        border-bottom: solid 1px #ddd;
+    }
+
+    .product-results-catalog__img-container,
+    .product-results-freetext__img-container {
+        @include catalog-results-img-container;
+    }
+
+    .product-results-catalog__img,
+    .product-results-freetext__img {
+        @include catalog-results-img;
+    }
+
+    .product-results-catalog__price {
+        margin-top: 7%;
+    }
+
+    .product-results-catalog__quantity {
+        text-align: right; 
+        padding: 5%;
+
+        .quanity-input-field {
+            border: 1px solid #a3a3a3; 
+            width: 30%; 
+            border-radius: .3rem; 
+            text-align: center;
+        }
+    }
+
+    .product-results-catalog__add-button,
+    .product-results-freetext__button {
+        text-align: right; 
+        padding: 5%;
+    }
+
+}
+
+.prod_service_search_modal {
+    top: 212px !important;
+    left:30px;
+
+    .modal-dialog {
+        max-width: 732px;
+        left: 3rem;
+    }
+}
+
+.product-results-details-section {
+    padding-left: 1.25rem;
+}
+
+a.prod-classification-select-link {
+    color: initial;
+    text-decoration: none;
+} 
+
+.prod-classification-select-link.active {
+    font-weight: 700;
+    color: $blue-primary;
+}
+
+.catalog-table-results-list {
+    width:100%;
+}

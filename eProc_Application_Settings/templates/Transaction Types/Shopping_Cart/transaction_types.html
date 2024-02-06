@@ -1,0 +1,264 @@
+<style>
+    .hg_num_range_popup {
+        display: none;
+        width: 300px;
+        height: 300px;
+
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        margin: auto;
+    }
+</style>
+
+<div id="sc_trans_type" class="hg_main hg_application_main" style="display: none;">
+    <div>
+        <h1 style="vertical-align: middle;">Define Transaction Type for Shopping Cart</h1>
+        <hr class="hg_heading_hrborder">
+    </div>
+    <div id="edit_trans_div" class="hg_button_bottom_padding" style="display: block;">
+        <button class="btn btn-primary" onclick="edit_sc_trans_type()"><i class="fas fa-edit" id="edit" title="Edit"></i>
+            edit</button>
+    </div>
+
+    <div id="add_delete_line_trans_div" style="display: none;" class="hg_button_bottom_padding">
+        <button class="btn btn-primary" onclick="sc_trans_type_new_line();"><i class="fa fa-plus"
+                aria-hidden="true" id="add_line" title="Add Line"></i> add</button>
+        <button class="btn btn-primary" onclick="delete_transaction_types()"><i class="fa fa-trash" aria-hidden="true"
+                title="Delete Line" id="delete_line"></i> delete</button>
+    </div>
+
+
+    <div class="hg_table_app_align">
+        <form style="padding-top:20px;" method="POST" id="sc_trans_type_form">{% csrf_token %}
+            <span id="sc_trans_success" class="hg_success"></span>
+            <span id="sc_trans_errors" class="hg_error"></span>
+            <table id="trans_type_sc" class="table table-striped">
+                <thead>
+                    <tr id="tr_head_trans_type" >
+                        <th scope="col" >Document Type</th>
+                        <th scope="col" >Transaction Type</th>
+                        <th scope="col" >Description</th>
+                        <th scope="col">Sequence</th>
+                        <th scope="col" >Active/Inactive</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_sc_trans_type">
+
+
+
+                </tbody>
+            </table>
+
+            <div id="sc_trans_type_edit_buttons" class="hg_cancel_save_button_align" style="display:none;">
+                <button type="button" class="btn btn-primary" onclick="display_trans_type()"><i
+                        class="fas fa-times"></i> cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> save</button>
+            </div>
+
+        </form>
+    </div>
+    <div style="display:none;">
+        <select id="select_sequence">
+
+        </select>
+    </div>
+    <div style="display:none;">
+        <select id="select_status">
+            <option value="" id="status">Select</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+    </div>
+</div>
+
+
+
+<script>
+    // Array to store transaction types data to display and edit
+    var sc_trans_type_array = []
+
+    // Function to add new row to sc transaction type table
+    function sc_trans_type_new_line() {
+        sequence = document.getElementById("select_sequence").innerHTML
+        status = document.getElementById("select_status").innerHTML
+        newRowContent = '<tr>' + '<td><input type="checkbox"></td>' + '<td><input class="hg_input_box_width" type="text" value="DOC01" readonly></td>' + '<td><input class="hg_input_box_width" type="text" name="trans_type" required></td>' + '<td><input class="hg_input_box_width" type="text" name="description" <required></required></td>' + '<td>' + '<select name="edit_sequence" required>' + sequence + '</select>' + '</td>' + '<td>' + '<select name="edit_status" required>' + status + '</select>' + '</td>' + '<td hidden><input class="hg_input_box_width" type="text" value=""></td>' + '</tr>'
+        $("#trans_type_sc tbody").append(newRowContent);
+    }
+
+
+    // Function to get transaction type from DB and displays it in display mode and appends data to sc_trans_type_array
+    function get_transaction_type() {
+        sc_trans_type_array = []
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Configuration:get_transaction_type' %}",
+            success: function (response) {
+                console.log("response",response);
+                content = '';
+                available_sequence_trans = '<option value="">Select</option>';
+                $.each(response, function (key, value) {
+                    if (value['model'] == 'eProc_Configuration.TransactionTypes') {
+                        sc_trans_type_dict = {}
+                        sc_trans_type_dict.document_type = value.fields.document_type
+                        sc_trans_type_dict.transaction_type = value.fields.transaction_type
+                        sc_trans_type_dict.description = value.fields.description
+                        sc_trans_type_dict.sequence = value.fields.sequence
+                        sc_trans_type_dict.active_inactive = value.fields.active_inactive
+                        sc_trans_type_dict.guid = value.pk
+                        sc_trans_type_array.push(sc_trans_type_dict)
+                        content += '<tr class="hg_pagen">';
+                        content += '<td>' + value.fields.document_type + '</td>';
+                        content += '<td>' + value.fields.transaction_type + '</td>';
+                        content += '<td>' + value.fields.description + '</td>';
+                        content += '<td>' + value.fields.sequence + '</td>';
+                        if (value.fields.active_inactive) {
+                            content += '<td>' + 'Active' + '</td>';
+                        } else {
+                            content += '<td>' + 'Inactive' + '</td>';
+                        }
+                        content += '</tr>';
+                    } else {
+                        available_sequence_trans += '<option value="' + value.fields.sequence + '">' + value.fields.sequence + '</option>'
+                    }
+                });
+                $('#select_sequence').empty();
+                $('#select_sequence').append(available_sequence_trans);
+                $('#tbody_sc_trans_type').empty();
+                $('#tbody_sc_trans_type').append(content);
+                hide_content_divs()
+                document.getElementById("sc_trans_type").style.display = "block";
+            },
+        })
+    }
+
+    // Function to display available transaction types in editable mode
+    function edit_sc_trans_type() {
+        sequence = document.getElementById("select_sequence").innerHTML
+        status = document.getElementById("select_status").innerHTML
+        select_sequence = document.getElementsByName("edit_sequence")
+        select_status = document.getElementsByName("edit_status")
+        body_content = '';
+        th_data = '<th>Select</th> <th>Document Type</th> <th>Transaction Type</th> <th>Description</th> <th>Sequence</th> <th>Active/Inactive</th>'
+        $('#tr_head_trans_type').empty();
+        $('#tr_head_trans_type').append(th_data);
+        $.each(sc_trans_type_array, function (index, data) {
+            body_content += '<tr>' + '<td><input type="checkbox"></td><td><input class="hg_input_box_width" type="text" value="' + data['document_type'] + '" required readonly></td><td><input class="hg_input_box_width" type="text" value="' + data['transaction_type'] + '" required></td><td><input class="hg_input_box_width" type="text" value="' + data['description'] + '" required></td><td>' + '<select name="edit_sequence" required>' + sequence + '</select>' + '</td>' + '<td>' + '<select name="edit_status" required>' + status + '</select>' + '</td>' + '<td hidden><input class="hg_input_box_width" type="text" value="' + data['guid'] + '"></td></tr>'
+        });
+        $('#tbody_sc_trans_type').empty();
+        $('#tbody_sc_trans_type').append(body_content);
+        $.each(sc_trans_type_array, function (index, data) {
+            selected_status = data['active_inactive']
+            selected_sequence = data['sequence']
+            select_sequence[index].value = selected_sequence
+            if (selected_status) {
+                select_status[index].value = "true"
+            } else {
+                select_status[index].value = "false"
+            }
+        });
+        document.getElementById('sc_trans_type_edit_buttons').style.display = 'block';
+        document.getElementById('add_delete_line_trans_div').style.display = 'block';
+        document.getElementById('edit_trans_div').style.display = 'none';
+    }
+
+    // Function to collect data from UI and send it to Backend
+    $('#sc_trans_type_form').submit(function (e) {
+        e.preventDefault();
+        get_drop_down_seq = document.getElementsByName("edit_sequence")
+        get_drop_down_status = document.getElementsByName("edit_status")
+        var sc_transaction_types = new Array();
+
+        $("#trans_type_sc tbody tr").each(function (index) {
+            var row = $(this);
+            var available_transaction_types = {};
+            transaction_type = row.find("td:eq(2) input[type='text']").val();
+            is_valid = check_for_special_char(transaction_type)
+            if (!is_valid) {
+                        
+                            var msg = "JMSG003";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type[0] == "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc[0])
+                          }
+                          else if(msg_type.message_type[0] == "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc[0])
+                          }
+                          else if(msg_type.message_type[0] == "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc[0])
+                          }
+                      var display4 = msg_type.messages_id_desc[0];
+                    document.getElementById("sc_trans_errors").innerHTML = display4+ "Transaction Type";
+
+            } else {
+                //document.getElementById("sc_trans_errors").innerHTML = ''
+            }
+            available_transaction_types.document_type = row.find("td:eq(1) input[type='text']").val();
+            available_transaction_types.transaction_type = transaction_type
+            available_transaction_types.description = row.find("td:eq(3) input[type='text']").val();
+            available_transaction_types.sequence = get_drop_down_seq[index].value
+            available_transaction_types.status = get_drop_down_status[index].value
+            available_transaction_types.guid = row.find("td:eq(6) input[type='text']").val();
+            sc_transaction_types.push(available_transaction_types);
+        });
+
+        data = JSON.stringify(sc_transaction_types)
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Configuration:edit_create_transaction_types' %}",
+            data: data,
+            success: function (response) {
+                document.getElementById("sc_trans_success").innerHTML = response.message
+                sc_trans_type_array = []
+                for (i = 0; i < sc_transaction_types.length; i++) {
+                    sc_trans_type_array.push(sc_transaction_types[i])
+                }
+                display_trans_type()
+            }
+        })
+
+    });
+
+    // Function to display transaction type in non editable mode
+    function display_trans_type() {
+        th_data = '<th>Document Type</th> <th>Transaction Type</th> <th>Description</th> <th>Sequence</th> <th>Active/Inactive</th>'
+        $('#tr_head_trans_type').empty();
+        $('#tr_head_trans_type').append(th_data);
+        body_content = ''
+        $.each(sc_trans_type_array, function (index, data) {
+            status = ''
+            if (data.status) {
+                status = 'Active'
+            } else {
+                status = 'Inactive'
+            }
+            body_content += '<tr>';
+            body_content += '<td>' + data.document_type + '</td>';
+            body_content += '<td>' + data.transaction_type + '</td>';
+            body_content += '<td>' + data.description + '</td>';
+            body_content += '<td>' + data.sequence + '</td>';
+            body_content += '<td>' + status + '</td>';
+            body_content += '</tr>';
+        });
+        $('#tbody_sc_trans_type').empty();
+        $('#tbody_sc_trans_type').append(body_content);
+        document.getElementById('sc_trans_type_edit_buttons').style.display = 'none';
+        document.getElementById('add_delete_line_trans_div').style.display = 'none';
+        document.getElementById('edit_trans_div').style.display = 'block';
+    }
+
+    setInterval(function () {
+        document.getElementById('sc_trans_success').innerHTML = ''
+    }, 5000);
+
+    // Function to delete rows from UI
+    function delete_transaction_types() {
+        application_settings_delete_Row('trans_type_sc')
+    }
+</script>

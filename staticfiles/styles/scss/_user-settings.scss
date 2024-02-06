@@ -1,0 +1,53 @@
+.user-roles__header {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+}
+.user-roles__table thead td {
+    font-weight: 600;
+}
+
+.user-roles__table tbody td {
+    display: flex;
+    align-items: center;
+}
+
+.user-roles__icons {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.user-roles__icons.user-role__icon-shop {
+    background-color: #d4edda;
+    color: #47a83b;
+}
+
+.user-roles__icons.user-role__icon-admin {
+    background-color: #E5E1F9;
+    color: #7363d1;
+}
+
+.user-roles__icons.user-role__icon-manager {
+    background-color: #d1e9ff;
+    color: #007bff;
+}
+
+.user-roles__icons.user-role__icon-purchaser {
+    
+    background-color: #fff3cd;
+    color: rgb(255, 129, 45);
+}
+
+.user-roles__icons.user-role__icon-other {
+    background-color: #cacaca;
+    color: #868686;
+}
+
+.user-roles__icons.user-role__icon-shop-plus {
+    background-color: #c1f4fd;
+    color: #147a8b;
+}

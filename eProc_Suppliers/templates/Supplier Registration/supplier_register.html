@@ -1,0 +1,309 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Register a new Supplier {% endblock %}
+
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between">
+            <h3>Supplier Registration</h3>
+            <div></div>
+        </div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#basic_data_tab" class="sub-tab active">
+                <div class="sub-tab-link">
+                    <i class="fas fa-info-circle"></i><span> Basic Data</span>
+                </div>
+            </li>
+        </ul>
+
+
+        <div class="card card-margin">
+
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#basic_data_tab">Basic Data</a>
+                    </li>
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" data-toggle="tab" href="#org_data_tab">Organizational data</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" data-toggle="tab" href="#buisness_doc_tab">Business Document</a>-->
+<!--                    </li>-->
+                </ul>
+            </div>
+                
+            <div class="tab-content">
+
+                <div id="basic_data_tab" class="tab-pane active p-3" >
+
+                    <!-- Display the success message upon successful registration-->
+                    <div>
+                        {% if messages %}
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                            <div class="{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <form method="POST" id="configform">
+                        {% csrf_token %}
+                        
+                        <!-- Display the eror messages during registration -->
+                        {% if supplier_form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field in supplier_form %} 
+                                    {% if field.errors %}
+                                    {{ field.label }}: {{ field.errors|striptags }} <br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!--    Basic Data      -->
+                        <div class="card">
+                            <h5 class="card-header">Basic Data</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Supplier Id:</label><span ></span><br>
+                                        {{ supplier_form.supplier_id }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Supplier Type:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.supp_type }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Registration Number</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.registration_number }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Name 1:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.name1 }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Name 2:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.name2 }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Currency:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.currency_id }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Language:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.language_id }}
+                                    </div>
+                                    
+                                    <div class="form-group col-md">
+                                        <label> Country code:</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.country_code }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> City</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.city }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Street:</label><br>
+                                        {{ supplier_form.street }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Postal code</label><span class="hg_required"></span><br>
+                                        {{ supplier_form.postal_code }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Upload Supplier Image:</label><br>
+                                        {{ supplier_form.supplier_image }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <br>
+
+                        <!-- Contact information  -->
+                        <div class="card">
+                            <h5 class="card-header">Contact information</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> E-mail:</label><span class="hg_required"></span><br>
+                                        
+                                        {{ supplier_form.email }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Landline:</label><br>
+                                        {{ supplier_form.landline }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Mobile Number:</label><br>
+                                        
+                                        {{ supplier_form.mobile_num }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Fax:</label><br>
+                                        {{ supplier_form.fax }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br>
+                        <!-- Extended data -->
+                        <div class="card">
+                            <h5 class="card-header">Extended data</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Search Term 1:</label><br>
+                                        {{ supplier_form.search_term1 }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Search Term 2:</label><br>
+                                        {{ supplier_form.search_term2 }}
+                                    </div>
+                                </div>    
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Working days:</label><br>
+<!--                                        {{ supplier_form.working_days }}-->
+                                        <select type="text" class="multiple_select form-control "  id="working_days_id" name="working_days" multiple data-selected-text-format="count" data-actions-box="true" title='Select...' >
+                                            <option value="1">Sunday</option> <option value="2">Monday</option> <option value="3">Tuesday</option> <option value="4">Wednesday</option> <option value="5">Thursday</option> <option value="6">Friday</option> <option value="7">Saturday</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Duns number:</label><br>
+                                        {{ supplier_form.duns_number }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Output Medium: </label>
+                                        {{ supplier_form.output_medium }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br>
+                        <!-- Additional Contact -->
+                        <div class="card">
+                            <h5 class="card-header">Additional Contact</h5>
+                            <div class="card-body">
+                                <div class="row">
+
+                                    <div class="form-group col-md">
+                                        <label> E-mail 2:</label>
+                                        {{ supplier_form.email2 }}
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> E-mail 3:</label>
+                                        {{ supplier_form.email3 }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label> E-mail 4:</label>
+                                        {{ supplier_form.email4 }}
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label> E-mail 5:</label>
+                                        {{ supplier_form.email5 }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        
+                        <div class="d-flex justify-content-end">
+                            <div>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">reset</button>
+                                <!-- <button class="btn btn-primary" type="reset">Reset</button> -->
+                                <button class="btn btn-primary" type="submit" title="Click here to Register" ><i class="fas fa-check"></i> register</button>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="hg_spacer2"> &nbsp; </div>
+    </div>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+                Are you sure you want to reset the form?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">no</button>
+                <button type="button" class="btn btn-primary" id="supplier_form_reset">yes</button>
+            </div>
+
+        </div>
+    </div>
+</div> 
+
+<script>
+
+function purch_org_add_new_line() {
+    var porg_list = {{purch_org|safe}}
+    var porg_opt = ''
+    for( let porg = 0; porg < porg_list.length; porg++ ) {
+        porg_opt += '<option> '+ porg_list[porg] +' </option>'
+    }
+    var currency_list = {{currency_id|safe}}
+    var currency_opt = ''
+    for ( let curr=0; curr < currency_list.length; curr++ ){
+        currency_opt += '<option> '+ currency_list[curr] +' </option>'
+    }
+    var payterm_list = {{payterm_list|safe}}
+    var payterm_opt = ''
+    for ( let payterm=0; payterm < payterm_list.length; payterm++ ){
+        payterm_opt += '<option> '+ payterm_list[payterm] +' </option>'
+    }
+    var incoterm_list = {{incoterm_list|safe}}
+    var incoterm_opt = ''
+    for ( let incoterm=0; incoterm < incoterm_list.length; incoterm++ ){
+        incoterm_opt += '<option> '+ incoterm_list[incoterm] +' </option>'
+    }
+    newOrgRow = '<tr> <td><select class="form-control" ><option selected="true" disabled="disabled"> Select </option>'+porg_opt+'</select></td> <td><select class="form-control" ><option selected="true" disabled="disabled"> Select </option>'+currency_opt+'</select></td> <td><select class="form-control" ><option selected="true" disabled="disabled"> Select </option>'+payterm_opt+'</select></td> <td><select class="form-control" ><option selected="true" disabled="disabled"> Select </option>'+incoterm_opt+'</select></td> <td><input type="checkbox"></td> <td><input type="checkbox"></td> <td><input type="checkbox"></td> <td><input type="checkbox"></td> <td><input type="checkbox"></td><td><input type="checkbox"></td></tr>'
+    $("#add_new_purch_org").append(newOrgRow);
+}
+
+function ajax_save_supplier_org_details(data) {
+    let urlLink = "{% url 'eProc_Suppliers:supplier_registration' %}"
+    AjaxCallAPI(urlLink, data)
+}
+</script>
+
+<script src="{% static 'scripts/supplier-register.js' %}"></script>
+{% endblock %}
+

@@ -1,0 +1,58 @@
+
+**** Trace file opened at 2020-11-04 16:19:35.289062 UTC+05:30 (India Standard Time), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: E:\Present Working Python Projects\Git Code\Majjaka_eProc_Boot_strap, Program: python
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 69 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-CBFD3A6, IP address: 192.168.145.17, IPv6 address: fe80::f051:b4f7:756f:3370
+
+2020-11-04 16:19:35.339676 [01320] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+2020-11-04 16:19:36.345069 [01320] >> Error entry
+	[Handle: 1887083090864	ConvID: 90916866	SysID: S07	SysNr: 00	Target: DEVE7S	User: IBXSVD	Mandant: 110	Language: 	Codepage: 4103]
+	RfcABAPMessageException: Key: , Code: RFC_ABAP_MESSAGE, Message: Name or password is incorrect (repeat logon)
+
+**** Trace file opened at 2020-11-04 16:19:54.602522 UTC+05:30 (India Standard Time), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: E:\Present Working Python Projects\Git Code\Majjaka_eProc_Boot_strap, Program: python
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 69 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-CBFD3A6, IP address: 192.168.145.17, IPv6 address: fe80::f051:b4f7:756f:3370
+
+2020-11-04 16:19:54.648589 [15636] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-11-04 16:20:15.607078 UTC+05:30 (India Standard Time), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: E:\Present Working Python Projects\Git Code\Majjaka_eProc_Boot_strap, Program: python
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 69 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-CBFD3A6, IP address: 192.168.145.17, IPv6 address: fe80::f051:b4f7:756f:3370
+
+2020-11-04 16:20:15.675360 [13980] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-11-04 16:53:21.959085 UTC+05:30 (India Standard Time), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: E:\Present Working Python Projects\Git Code\Majjaka_eProc_Boot_strap, Program: python
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 69 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-CBFD3A6, IP address: 192.168.145.17, IPv6 address: fe80::f051:b4f7:756f:3370
+
+2020-11-04 16:53:22.004750 [17148] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-11-04 16:53:35.098963 UTC+05:30 (India Standard Time), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: E:\Present Working Python Projects\Git Code\Majjaka_eProc_Boot_strap, Program: python
+ Hardware: PC with Windows NT 4x AMD64 Level 6 (Mod 69 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-CBFD3A6, IP address: 192.168.145.17, IPv6 address: fe80::f051:b4f7:756f:3370
+
+2020-11-04 16:53:35.147205 [02320] >> Info entry
+	Searching for config file sapnwrfc.ini
+

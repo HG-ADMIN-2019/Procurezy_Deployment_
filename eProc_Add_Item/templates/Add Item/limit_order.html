@@ -1,0 +1,260 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Limit Order {% endblock %}
+{% block maincontent %}
+
+
+<!-- Limit order form start -->
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div>
+            <form method="post" class="myForm" id="limit_form">
+                <div class="d-flex justify-content-between">
+                    <h3>Limit Order Item</h3>
+                    <div>
+                        <button class="btn btn-outline-primary" type="reset"><i class="fas fa-sync-alt" title="Reset"></i> reset</button>
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-shopping-cart" title="Shopping Cart"></i> add to cart</button>
+                    </div> 
+                </div>
+
+                <hr>
+
+                <p class="text-muted">
+                    To create a limit order, complete the fields below and place the limit item with value limit and time period in the shopping cart. 
+                    Goods receipts and/or invoices for this item are allowed up to the specified value limit and within the specified time period. 
+                    The expected value should be lower or equal to the value limit. Note that fields marked with an * are mandatory.
+                </p>
+               
+                {% csrf_token %}
+                <div class="alert alert-danger display-none" id="limit_errors" role="alert" ></div>
+                <div class="alert alert-warning" id="warning_messages" style="display: none;" role="alert"></div>
+    
+                <div class="card mt-4 card-shadow-1">
+                    <div class="card-body">
+                        <h5 class="card-title">Describe your limit item</h5>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="item name">Item Name</label> <span class="hg_required"></span>
+                                {{ limit_form.item_name }}   
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="prod_cat_limit">Product Category</label> <span class="hg_required"></span>
+                                <input type="text" placeholder="Please select product category" class="form-control" id="prod_cat_limit" onkeydown="return false;">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="id_currency">Currency</label> <span class="hg_required"></span>
+                                <select required data-live-search="true"  class="form-control selectpicker" id="id_currency" required>
+                                    <option value="">Please select Currency</option>
+                                    {% for currencies in currency %}
+                                    <option value="{{currencies}}">{{currencies}} - {{currencies.description}} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+    
+                <div class="card mt-3 card-shadow-1"> 
+                    <div class="card-body">
+                        <h5 class="card-title">Enter limit item details</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Overall limit</label> <span class="hg_required"></span>
+                                {{ limit_form.overall_limit }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Expected value</label> <span class="hg_required"></span>
+                                {{ limit_form.expected_value }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3 card-shadow-1">
+                    <div class="card-body">
+                        <h5 class="card-title">When is it required?</h5>
+
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6">
+                                <label for="id_required">Required</label> <span class="hg_required"></span>
+                                <select name="required" id="id_required" class="form-control"
+                                    onchange="required_onchange()">
+                                    <option value="">Select</option>
+                                    <option value="Between">Between</option>
+                                    <option value="On">On</option>
+                                    <option value="From">From</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-md-3 required_date display-none" id="div_from_date">
+                                <label for="id_from_date">From</label> <span class="hg_required"></span>
+                                <input type="date" class="form-control" name="from_date" id="id_from_date">
+                            </div>
+
+                            <div class="form-group col-md-3 required_date display-none" id="div_to_date"> 
+                                <label for="id_to_date">To Date</label> <span class="hg_required"></span>
+                                <input type="date" class="form-control" name="to_date" id="id_to_date"> 
+                            </div>
+
+                            <div class="form-group col-md-3 required_date display-none" id="div_on_date"> 
+                                <label for="id_on_date">On Date</label> <span class="hg_required"></span>
+                                <input type="date" class="form-control" name="on_date" id="id_on_date">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row no-gutters">
+                    <div class="col mr-2">
+                        
+                        <div class="card mt-3 card-shadow-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Who is the supplier ?</h5>
+                                
+                                <div class="form-group">
+                                    <label for="supp_id_limit">Supplier</label> <span class="hg_required"></span>
+                                    <input type="text" placeholder="Please select supplier" class="form-control" id="supp_id_limit">  
+                                </div> 
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col ml-2">
+                        <div class="card mt-3 card-shadow-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Follow-Up Actions</h5>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="follow_up_actions"
+                                                    id="Invoice & Confirmation Only" value="Invoice & Confirmation Only">
+                                                <label class="form-check-label" for="Invoice & Confirmation Only">
+                                                    Invoice & Confirmation Only
+                                                </label>
+                                            </div>
+                                        </div>              
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="follow_up_actions"
+                                                    id="Confirmation Only" value="Confirmation Only">
+                                                <label class="form-check-label" for="Confirmation Only">
+                                                    Confirmation Only
+                                                </label>
+                                            </div>
+                                        </div>                               
+                                    </div>
+                                </div>
+            
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    
+</div>
+    <!-- Limit order form end -->
+
+
+<!--Select Product category popup -->
+{% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
+<!-- end Select Product category popup-->
+
+<!-- Select supplier popup -->
+{% include 'Shopping_Cart/select_supplier_modal/select_supplier.html' %}
+<!-- End of Select supplier popup -->
+
+<script src="{% static 'scripts/limit_order.js' %}"></script>
+
+<script>
+
+    // Limit order save function
+    $('#limit_form').submit(function (e) {
+        e.preventDefault();
+        OpenLoaderPopup();
+        item_name = document.getElementById("id_item_name").value
+        prod_cat = (document.getElementById("prod_cat_limit").value).split(' - ')[0]
+        currency = document.getElementById("id_currency").value
+        overall_limit = document.getElementById("id_overall_limit").value
+        expected_value = document.getElementById("id_expected_value").value
+        required = document.getElementById("id_required").value
+        from_date = document.getElementById("id_from_date").value
+        to_date = document.getElementById("id_to_date").value
+        on_date = document.getElementById("id_on_date").value
+        follow_up_action = $('input[name="follow_up_actions"]:checked').val();
+
+        // Form validations for limit if errors display's relevant messages
+        is_valid = limit_item_validation(item_name, prod_cat, currency, supplier_id, follow_up_action, required, from_date, to_date, on_date, overall_limit, expected_value);
+        if (is_valid != true) {
+            document.getElementById('limit_errors').innerHTML = is_valid;
+            $('#limit_errors').show()
+            scroll_top()
+            return false;
+        } else {
+            $('#limit_errors').hide()
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}",
+            data: JSON.stringify({
+                description: item_name,
+                prod_cat: prod_cat,
+                currency: currency,
+                overall_limit: overall_limit,
+                expected_value: expected_value,
+                required: required,
+                start_date: from_date,
+                end_date: to_date,
+                item_del_date: on_date,
+                supplier_id: supplier_id,
+                follow_up_action: follow_up_action,
+                call_off: '04'
+            }),
+            success: function (response) {
+                $('#limit_form').trigger("reset");
+                counter = document.getElementById('cart_counter').innerHTML
+                document.getElementById('limit_errors').innerHTML = '';
+                CloseLoaderPopup();
+                item_added_to_cart_success_popup();
+                $('#cart_counter').html(parseInt(counter) + 1)
+                supplier_id = ''
+            },
+            error: function (response) {
+                document.getElementById('warning_messages').innerHTML = response.responseJSON.error;
+                $('#warning_messages').show()
+                scroll_top()
+            }
+        })
+    });
+
+
+
+    // Limit order ajax save function
+    // function ajax_submit_limit_form(data) {
+    //     urlLink = "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}";
+    //     let result = AjaxCallAPI(urlLink, data);
+    //     return result;
+    // }
+
+    
+</script>
+
+{% endblock %}

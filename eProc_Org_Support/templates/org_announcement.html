@@ -1,0 +1,283 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Organizational Announcements Details (Admin Tool) {% endblock %}
+
+{% block maincontent %}
+
+<div class="container-fluid">
+    <form method="POST" id="org_announcement_form" name="org_announcement_form">
+        {% csrf_token %}
+
+        <div class="mep-form_wrapper">
+
+            <div class="elements-space-between">
+                <h3>Organizational Announcement Details</h3>
+                <div>
+                    <div id="org_save_button">
+                        <button class="btn btn-primary" type="button" title="Click here to Register" onclick="save_announcement_data();"><i class="fas fa-check"></i>  save</button>
+                    </div>
+                    <div id="org_edit_button" class="display-none">
+                        <button type="button" class="btn btn-primary" onclick="edit_org_announcement_data();"><i class="far fa-edit"></i> edit</button>
+                    </div>
+                    <div id="update_saved_data" class="display-none">
+                        <button type="button" name="save_org_data" class="btn btn-primary" onclick="update_saved_announcement();"><i class="fas fa-check"></i> save</button>
+                        <button type="button" class="btn btn-primary" onclick="cancel_announcement_details();"><i class="fas fa-times"></i> cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!--Register type drop down-->
+            <div id="id_error_msg" class="alert alert-danger display-none" role="alert"></div>
+
+            <!-- Display the success message upon successful registration-->
+            <div>
+                {% if messages %}
+                {% for message in messages %}
+                <div class="{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Add Organizational Announcement form-->
+            <div class="alert alert-success display-none" id="org_announcement_update_success" role="alert"> </div>
+            <!--    Basic Data      -->
+
+            <div class="card card-shadow-1">
+
+                <div class="card-body">
+                    <h5 class="card-title">Organizational Announcement</h5>
+                    <div class="row">
+                        <input value="{{announcement_details.unique_announcement_id}}"
+                            id="announcement_guid" hidden>
+
+                        <input type="text" id="announcement_id"
+                            value="{{announcement_details.announcement_id}}" hidden>
+
+                        <div class="form-group col-md">
+                            <label> Title</label><span class="hg_required"></span><br>
+                            <input type="text" class="form-control hg_edit_display_mode check_special_char"
+                                id="announcement_subject"
+                                value="{{announcement_details.announcement_subject}}" required>
+                            <small class="form-text text-muted">Valid characters are A-Z a-z 0-9</small>
+                        </div>
+
+                        <div class="form-group col-md">
+                            <label> Description</label><span class="hg_required"></span><br>
+                            <input type="text" name="announcement_desc" id="announcement_desc"
+                                class="form-control hg_edit_display_mode check_special_char"
+                                value="{{announcement_details.announcement_description}}" required>
+                            <small class="form-text text-muted">Valid characters are A-Z a-z 0-9</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Status</label><br>
+                            <select name="status" id="status" class="form-control hg_edit_display_mode">
+                                {% for status in status_dropdown_values %}
+                                <option value="{{status.field_type_id}}">{{status.field_type_id}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md">
+                            <label> Priority</label><br>
+                            <select name="priority" id="priority" class="form-control hg_edit_display_mode">
+                                {% for priority in priority_dropdown_values %}
+                                <option value="{{priority.field_type_id}}">{{priority.field_type_id}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> From Date</label><span class="hg_required"></span><br>
+                            <input type="date" class="form-control hg_edit_display_mode" name="from_date"
+                                id="from_date" value="{{from_date}}" required>
+                        </div>
+
+                        <div class="form-group col-md">
+                            <label> To Date</label><span class="hg_required"></span><br>
+                            <input type="date" class="form-control hg_edit_display_mode" name="to_date"
+                                id="to_date" value="{{to_date}}" required>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="hg_spacer2"> &nbsp; </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Are you sure you want to reset the form?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary"
+                    id="announcement_form_reset">Yes</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#nav_menu_items').remove();
+        $("body").css("padding-top", "4rem");
+
+    });
+
+    function cancel_announcement_details() {
+        $(".hg_edit_display_mode").prop("disabled", true);
+        document.getElementById('update_saved_data').style.display = 'none'
+        document.getElementById('org_edit_button').style.display = 'block'
+    }
+
+    function edit_org_announcement_data() {
+        $('#org_announcement_update_success').hide();
+        $(".hg_edit_display_mode").prop("disabled", false);
+        document.getElementById('org_edit_button').style.display = 'none'
+        document.getElementById('update_saved_data').style.display = 'block'
+    }
+
+    // Validation function
+    const save_announcement_form_validation = (sub, desc, from_date, to_date) => {
+        var is_valid = true
+        var save_form_errors = ''
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (sub == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Announcement Subject";
+        }
+        else if (desc == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Announcement Description";
+        }
+        else if (from_date == '') {
+            if ((Date.parse(to_date) < Date.parse(from_date)) == false) {
+                is_valid = false
+                save_form_errors += messageConstants["JMSG007"] + "Announcement From Date";
+            }
+        }
+        else if (to_date == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Announcement To Date";
+        }
+
+
+        return is_valid, save_form_errors
+    }
+
+function save_announcement_data() {
+  var sub_val = $('#announcement_subject').val();
+  var desc_val = $('#announcement_desc').val();
+  var from_date_val = $('#from_date').val();
+  var to_date_val = $('#to_date').val();
+
+  is_save_form_valid = save_announcement_form_validation(sub_val, desc_val, from_date_val, to_date_val)
+  if (is_save_form_valid != '') {
+    $('#id_error_msg').html(is_save_form_valid)
+    $('#id_error_msg').show()
+    scroll_top();
+    return
+  }
+
+  var from_date = new Date(from_date_val);
+  var to_date = new Date(to_date_val);
+
+  if (from_date > to_date) {
+    $('#id_error_msg').html("From date cannot be greater than to date.")
+    $('#id_error_msg').show()
+    scroll_top();
+    return;
+  }
+
+  var form_data = {
+    announcement_id: document.getElementById('announcement_id').value,
+    announcement_subject: document.getElementById('announcement_subject').value,
+    announcement_description: document.getElementById('announcement_desc').value,
+    status: document.getElementById('status').value,
+    priority: document.getElementById('priority').value,
+    announcement_from_date: document.getElementById('from_date').value,
+    announcement_to_date: document.getElementById('to_date').value,
+    announcement_guid: document.getElementById('announcement_guid').value,
+  };
+
+  OpenLoaderPopup();
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'eProc_Org_Support:org_announcement_save' %}",
+    data: JSON.stringify(form_data),
+    success: function (response) {
+      document.getElementById('org_announcement_update_success').innerHTML = response.message;
+      $('#id_error_msg').hide();
+      $('#org_announcement_update_success').show();
+      $('html, body').animate({ scrollTop: 0 }, 'slow');
+      document.getElementById('announcement_guid').value = response.updated_guid;
+      document.getElementById('org_save_button').style.display = 'none';
+      document.getElementById('org_edit_button').style.display = 'block';
+      $(".hg_edit_display_mode").prop("disabled", true);
+      CloseLoaderPopup();
+    }
+  });
+}
+
+
+    function update_saved_announcement() {
+
+        var form_data = {};
+        form_data = {
+            announcement_id: document.getElementById('announcement_id').value,
+            announcement_subject: document.getElementById('announcement_subject').value,
+            announcement_description: document.getElementById('announcement_desc').value,
+            status: document.getElementById('status').value,
+            priority: document.getElementById('priority').value,
+            announcement_from_date: document.getElementById('from_date').value,
+            announcement_to_date: document.getElementById('to_date').value,
+            announcement_guid: document.getElementById('announcement_guid').value,
+        }
+        OpenLoaderPopup();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Org_Support:update_org_announcement_details' %}",
+            data: JSON.stringify(form_data),
+            success: function (response) {
+                document.getElementById('org_announcement_update_success').innerHTML = response.message;
+                $('#id_error_msg').hide();
+                $('#org_announcement_update_success').show();
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                cancel_announcement_details();
+                CloseLoaderPopup();
+            }
+        });
+
+    }
+
+</script>
+{% endblock %}

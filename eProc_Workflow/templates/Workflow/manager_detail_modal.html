@@ -1,0 +1,41 @@
+{% load static %}
+<div class="modal fade" id="manager-detail-popup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Financial Approval</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="">
+            <table class="table table-bordered" id="manager_detail_table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Approval Type</th>
+                        <th scope="col">Step Number</th>
+                        <th scope="col">Process Level Status</th>
+                        <th scope="col">Approval Status</th>
+                        <th scope="col">Approver</th>
+                        <th scope="col">Processed On</th>
+                        <th scope="col">Received On</th>
+                    </tr>
+                </thead>
+                <tbody id="manager_detail_body">
+    
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="{% static 'scripts/manager-details.js' %}"></script>
+<script>
+
+function ajax_get_manager_detail(data) {
+    urlLink = "{% url 'eProc_Doc_Search:get_sc_app_data' %}";
+    AjaxCallAPI(urlLink, data);
+}
+
+</script>

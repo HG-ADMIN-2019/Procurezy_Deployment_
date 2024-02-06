@@ -1,0 +1,155 @@
+:root {
+    --sidenav-width: 65px;
+}
+
+$sidenav-width:65px;
+
+// spacing given to body if sliding menu is required 
+.sidenav-exist {
+    margin-left: 65px; 
+    transition: 0.3s;
+}
+
+/* New CSS */
+.sidenav {
+    height: 100%;
+    width: var(--sidenav-width);
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    background-color: $sidenav-color-dark!important;
+    overflow: hidden;
+    transition: all 0.3s;
+    border-right: 1px solid black;
+
+    .sidenav__expand {
+        padding: .5rem 0 .5rem 1.5rem;
+        color: $white-plain;
+        z-index: 99;
+        cursor: pointer;  
+        margin: 1rem 0;
+    }
+
+    .sidenav__icon-container {
+        height: 40px;
+        width:  40px;
+        padding: 7px;
+        color: $white-plain;
+        border-radius: 4px;
+        text-align: center;
+        box-shadow: 3px 3px 5px 1px rgba(0, 0, 0, 0.25);
+    }
+
+    .sidenav__list {
+        display: flex;
+        flex-direction: column;
+
+        a {
+            text-decoration: none;
+        }
+    }
+
+    &__listitem {
+        list-style: none;
+        transition: all 200ms ease-in-out;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        padding: 0.5rem 0.5rem;
+
+        a {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        a p{
+            color: #bbbbbb;
+            font-size: 1.2rem;
+            margin-bottom: 0;
+            animation: SideNavOpen 250ms ease-in-out both;
+        }
+
+        .hg_link_text {
+            display: none;
+            white-space: nowrap;
+        }
+
+        &:hover {
+            background-color: $sidenav-color-dark-hover;
+
+            p {
+                color: $white-plain;
+            }
+        }
+    }
+
+    .hg_close_button {
+        display: none;
+
+        .hg_adjust_image_open_nav {
+            margin: 0 0 0 10px;
+        }
+    }
+
+}
+
+.sidenav-show {
+    width: calc(var(--sidenav-width) + 295px);
+}
+
+.sidenav__listitem-active {
+    background-color: $sidenav-color-dark-hover;
+    border-left: 3px solid $white-plain;
+
+    .hg_link_text {
+        color: $white-plain;
+    }
+}
+
+
+
+@keyframes SideNavOpen {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+#sidenav__listitem-home .sidenav__icon-container {
+    background-color: $icon-home;
+}
+
+#sidenav__listitem-shop .sidenav__icon-container {
+    background-color: $icon-shop;
+}
+
+#sidenav__listitem-purchase .sidenav__icon-container {
+    background-color: $icon-purchase;
+}
+
+#sidenav__listitem-admintool .sidenav__icon-container {
+    background-color: $icon-admintool;
+}
+
+#sidenav__listitem-orgmodel .sidenav__icon-container {
+    background-color: $icon-orgmodel;
+}
+
+#sidenav__listitem-approvals .sidenav__icon-container {
+    background-color: $icon-approvals;
+}
+
+#sidenav__listitem-personalize .sidenav__icon-container {
+    background-color: $icon-personalize;
+}
+
+#sidenav__listitem-config .sidenav__icon-container {
+    background-color: $icon-personalize;
+}
+
+#sidenav__listitem-settings .sidenav__icon-container {
+    background-color: $icon-settings;
+}
+
+#sidenav__listitem-contentmgmt .sidenav__icon-container {
+    background-color: $icon-contentmgmt;
+}

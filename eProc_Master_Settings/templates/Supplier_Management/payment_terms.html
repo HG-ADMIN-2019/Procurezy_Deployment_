@@ -1,0 +1,373 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Payment Terms (Master Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Payment Terms</h3>
+            <div>
+                <button class="btn btn-primary" title="Add Payment Term" type="button" id="id_add_data" value="ADD" data-toggle="modal" data-target="#payment_term_Modal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> Add Payment Term
+                </button>
+
+                  <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn  btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button()">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" title= "DELETE" value="Delete" style="display:none;" onclick="onclick_delete_button()">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel" id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>                
+                <!--   display basic Payterm term table-->
+                <table id="display_basic_table" class="class_basic_country_table table table-bordered custom-table">
+                    <thead id="id_payment_term_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox"  hidden>
+                                <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th>Payment Term</th>
+                            <th hidden>del_ind</th>
+                            <th hidden>Guid</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_payment_term_tbody">
+                        {% for data in payment_term_data %}
+                        <tr>
+                            <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                            <td>{{ data.payment_term_key}}</td>
+                            <td hidden>del_ind</td>
+                            <td hidden>{{ data.payment_term_guid}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="payment_term_Modal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Payment Term</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" type="button" title="Add New Row" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')"><i class="fa fa-trash" aria-hidden="true" title="Delete Line"></i> delete</button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages"
+                            class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_payment_term_key"></p>
+                            <p id="id_error_msg_description"></p>
+                            <p id="id_error_msg_description_length"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                                <tr>
+                                    <th id="header_select">Select</th>
+                                    <th>Payment Term</th>
+                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                    <th hidden>Guid</th>
+                                </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" title="Delete" id="id_delete_duplicate" style="display:none;" type="button"
+                        onclick="delete_duplicate()"><i class="fas fa-check"></i> delete duplicates
+                    </button>
+                    <button class="btn btn-primary" title="Check" id="id_check_data" style="display:none;" type="button"
+                        onclick="check_data()"><i class="fas fa-check"></i> check
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Delete" id="delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" onclick="hideModal()">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{{ payment_term_data|json_script:"payment_term_data" }}
+<script>
+    var basic_settings = '{{basic_settings|safe}}';
+    var rendered_payment_term_data = JSON.parse(document.getElementById('payment_term_data').textContent);
+    var messages_list = {{messages_list|safe}};
+    var payment_term_data_array = {}
+    var main_table_payment_term_value = [];
+    var payment_term = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_COUNTRY"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_COUNTRY"]
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes,payment_term)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else{
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                // compare main table and pop up for duplicate values
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#payment_term_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var add_basic_data = '';
+                var payment_term_data_array = payment_term_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':payment_term_data,'table_name':'Payterms','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+                    data:JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (Response) {
+                        rendered_payment_term_data = Response[0];
+                        display_basic_db_data();
+                        $('#payment_term_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message) {
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    //onclick of cancel display the table in display mode............
+    function display_basic_db_data() {
+        $('#display_basic_table').DataTable().destroy();
+        $('#id_payment_term_tbody').empty();
+        var edit_basic_data = '';
+        $.each(rendered_payment_term_data, function (i, item) {
+            edit_basic_data += '<tr><td class="class_select_checkbox"><input class="checkbox_check" onclick="valueChanged()" type="checkbox" required></td>' +'<td>' + item.payment_term_key + '</td>' +'<td hidden> <input type="checkbox"</td>' +'<td hidden>' + item.payment_term_guid + '</td></tr>';
+        });
+        $('#id_payment_term_tbody').append(edit_basic_data);
+        $("#hg_select_checkbox").prop("hidden", true);
+        $(".class_select_checkbox").prop("hidden", true);
+        $('input:checkbox').removeAttr('checked');
+        $('#id_edit_data').show();
+        $('#id_cancel_data').hide();
+        $('#id_delete_data').hide();
+        $('#id_copy_data').hide();
+        $('#id_update_data').hide();
+        $('#id_save_confirm_popup').modal('hide');
+        $('#id_delete_confirm_popup').modal('hide');
+        $('#id_check_all').hide();
+        table_sort_filter('display_basic_table');
+    }
+
+    // Onclick delete Button
+    function onclick_delete_button() {
+        $("#error_msg_id").css("display", "none");
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        GLOBAL_ACTION = "DELETE";
+        var edit_basic_data = "";
+        var guid = '';
+        main_table_checked = [];
+        get_row_data("#display_basic_table"); // Function call to get the selected row data
+        display_button(); // Call the display_button function to show/hide the buttons
+        var data = {'data': main_table_checked, 'table_name': 'Payterms', 'action': GLOBAL_ACTION };
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_delete_flags' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(Response) {
+                var docTypeArray = Response.delete_flags; // Get the delete_flags array from the response
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                var j = 0; // Index for docTypeArray
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        if (j < docTypeArray.length && docTypeArray[j] === false) {
+                            check = '<input type="checkbox" disabled>';
+                            $('#delete_data').prop('disabled', true);
+                        } else {
+                            check = '<input type="checkbox" onclick="enableDeleteButton()">';
+                            $('#delete_data').prop('disabled', true);
+                        }
+                        j++; // Move to the next index in docTypeArray
+                        edit_basic_data +=
+                            `<tr>
+                                <td>${check}</td>
+                                <td><input class="form-control" type="number"  maxlength="20" name="prodid" value="${row.cells[1].innerHTML}" disabled></td>
+                                <td class="class_del_checkbox" hidden><input type="checkbox" required></td>
+                                <td hidden><input required></td>
+                            </tr>`;
+                    }
+                }
+                CloseLoaderPopup();
+                $('#id_popup_tbody').append(edit_basic_data);
+                $("#header_select").prop( "hidden", false );
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#payment_term_Modal').modal('show');
+                table_sort_filter('id_popup_table');
+            },
+        });
+    }
+
+    //delete the selected row in db................
+    var main_table_payment_term_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_checked=[];
+        $('#display_basic_table').DataTable().destroy();
+        get_row_data("#id_popup_table");
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_checked,'table_name':'Payterms','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_payment_term_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, payment_term) {
+        var add_attr_duplicates = false;
+        var error_message = '';
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y';
+        $.each(payment_term, function (i, item) {
+            if ((payment_term.payment_term_key.length == 0) || (payment_term.payment_term_key.length > 4)) {
+                $('#payment_term_Modal').modal('show');
+                error_message = ui_messeges("JMSG002"); // Get message details
+                no_duplicate_value = 'N';
+                return [no_duplicate_value, error_message];
+            }
+        });
+            if (no_duplicate_value == 'Y') {
+                $.each(validate_add_attributes, function (index, value) {
+                    if ($.inArray(value, add_attr_unique_list) == -1) {
+                        add_attr_unique_list.push(value);
+                    } else {
+                        if ($.inArray(value, common) == -1) {
+                            common.push(value);
+                        }
+                    }
+                });
+                if (common.length != 0) {
+                    display_duplicate_entry(common);  //Function to highlight the rows in popup
+                    error_message = ui_messeges("JMSG001"); // Get message details
+                    no_duplicate_value = 'N';
+                    return [no_duplicate_value, error_message];
+                }
+            }
+            return [no_duplicate_value, error_message];
+        }
+
+
+     //Function to highlight duplicate records
+     function display_duplicate_entry(common) {
+        var payment_term_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            payment_term_dic = {}
+            payment_term_dic.payment_term_key = row.find("TD").eq(1).find('input[type="number"]').val();
+            payment_term_check.push(payment_term_dic.payment_term_key);
+            jQuery.grep(payment_term_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+</script>
+<script src="{% static 'scripts/supplier_managment/payment_term.js' %}"></script>
+{% endblock %}

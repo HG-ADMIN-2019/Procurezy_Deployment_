@@ -1,0 +1,247 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Users Report (Admin Tool) {% endblock %}
+{% block maincontent %}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {% include 'root/loader.html' %}
+    <div class="container-fluid">
+        <div class="mep-form_wrapper">
+            <div class="d-flex justify-content-between">
+                <h3>Users Report</h3>
+                <div></div>
+            </div>
+            <hr>
+            <div class="card card-shadow-1">
+                <div class="card-body">
+                    <form method="post" action="{% url 'eProc_Admin_Tool:user_report' %}">
+                        {% csrf_token %}
+                        {{ user_rep_form.non_field_errors }}
+                        <div class="row" id="{{ user_rep_form.name }}" title="{{ user_rep_form.label }}">
+                            <div class="col-md">
+                                <label>User Report Type</label>
+                                {{ user_rep_form.userrep_type }}
+                            </div>
+                            <div class="col-md">
+                                <label>Company Number</label>
+                                {{ user_rep_form.company_code }}
+                            </div>
+                            <div class="col-md">
+                                <label>Username</label>
+                                {{ user_rep_form.username }}
+                                <span id="err_username" class="error_message" hidden></span>
+                            </div>
+                            <div class="col-auto">
+                                <label>User Status</label>
+    <select name="user_status" id="id_user_status" class="form-control">
+        <option value="Active" selected>Active</option>
+        <option value="Inactive" >Inactive</option>
+    </select>
+                            </div>
+                            <div class="col-auto my-1">
+                                <button class="btn btn-primary button-search-users" id="hg_user_report_search" type="submit" title="Please click to get the search details!"><i class="fas fa-search"></i> search</button>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="elements-space-between">
+                            <button class="btn btn-link" type="reset" value="Reset" id="reset-filters">clear filters</button>
+                            <div>
+                                <span class="badge help-text-badge help-text-star-search"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="table-container">
+                <div class="search_result_count_card card mt-3">
+                    {% if t_count > 0 %}
+                    <div class="card-body">
+                        <h6 class="card-title">Total number of results found :{{t_count}}</h6>
+                    </div>
+                    {% endif %}
+                    {% if t_count == 0 %}
+                    <div class="card-body">
+                        <h6 class="card-title">No Results Found</h6>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if t_count > 0 %}
+                {% if final_list %}
+                <div class="card mt-3">
+                    <table id="user_report_table" class="table table_sort_filter_export_excel">
+                        <thead class="thead-light">
+                            <tr>
+                                <th> Username </th>
+                                <th> First Name </th>
+                                <th> Last Name </th>
+                                <th> Email </th>
+                                <th> Company Number </th>
+                                <th> Company Name </th>
+                                <th> User Lock Status </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for acc in final_list %}
+                            <tr>
+                                <td scope="row"> {{acc.2}}</td>
+                                <td scope="row"> {{acc.4}} </td>
+                                <td scope="row">{{ acc.3 }}</td>
+                                <td scope="row"> {{acc.5}} </td>
+                                <td scope="row">{{ acc.0 }}</td>
+                                <td scope="row">{{ acc.1 }}</td>
+                                <td scope="row">
+                                    {% if acc.6 %}
+                                    <input type="checkbox" id="id_locked" checked disabled>
+                                    {% else %}
+                                    <input type="checkbox" id="id_unlocked" disabled>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="hg_spacer2"> &nbsp; </div>
+    </div><script src="{% static 'scripts/user_report.js' %}"></script>
+<script>
+    // Datatables script to generate sort filter & export to excel feature for tables
+    function table_sort_filter_export_excel() {
+        $('.table_sort_filter_export_excel').DataTable({
+            dom: '<"row"<"col"l><"datatableBtn col"fB>> rt <"row"<"col"i><"col"p>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'User Reports', // Change the title here
+                    text: 'Export to Excel',
+                },
+            ],
+        });
+    }
+
+    // Funtion to get username
+    $(document).ready(function () {
+        nav_bar_admin();
+        $('#id_username').attr('type', 'search');
+        table_sort_filter_export_excel();
+
+    // Function to set the default value of the company dropdown
+    function setDefaultCompanyValue() {
+        var companyCodeDropdown = $("label:contains('Company Number')").next("select");
+        companyCodeDropdown.val(companyCodeDropdown.find("option:first").val());
+    }
+
+    // Check if the page was refreshed or initially loaded
+    if (performance.navigation.type === 1) {
+        // Page was refreshed, set default company value
+        setDefaultCompanyValue();
+    }
+
+$(document).ready(function () {
+    // Check if there is stored form data and populate the form fields
+    var storedFormData = localStorage.getItem('formData');
+    if (storedFormData) {
+        var formData = JSON.parse(storedFormData);
+        $('#id_company_code').val(formData.companyCode);
+        $('#id_userrep_type').val(formData.userRepType);
+        $('#id_username').val(formData.username);
+        $('#id_user_status').val(formData.userStatus);
+    }
+    localStorage.removeItem('formData');
+    });
+
+    // Loader implementation on search button
+    $('#hg_user_report_search').click(function () {
+        var formData = {
+            companyCode: $('#id_company_code').val(),
+            userRepType: $('#id_userrep_type').val(),
+            username: $('#id_username').val(),
+            userStatus: $('#id_user_status').val()
+        };
+        localStorage.setItem('formData', JSON.stringify(formData));
+        $('#hg_loader').modal('show');
+    });
+});
+
+    // Function to hide the table and pagination controls
+    function hideTableAndPagination() {
+        document.getElementById("table-container").style.display = "none";
+    }
+
+    // Function to show the table and pagination controls
+    function showTableAndPagination() {
+        document.getElementById("table-container").style.display = "block";
+    }
+
+    // Add event listeners to the buttons
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("hg_user_report_search").addEventListener("click", showTableAndPagination);
+        document.querySelector("button[type='reset']").addEventListener("click", showTableAndPagination);
+    });
+
+    function resetFilters() {
+        $('#id_company_code').val('');
+        $('#id_username').val('');
+        $('#id_user_status').val('');
+        var companyCodeDropdown = $("label:contains('Company Number')").next("select");
+        companyCodeDropdown.val(companyCodeDropdown.find("option:first").val());
+        localStorage.removeItem('formData');
+        $('form').submit();
+    }
+
+    // Listen for the "Clear Filters" button click
+    $('#reset-filters').click(function (e) {
+        e.preventDefault();
+        resetFilters();
+    });
+
+    $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if (!(temp[i].value == '') && !(temp[i].value == null)) {
+
+                data = temp[i].value;
+                var count = data.split('**').length - 1;
+                if((count >= 1) || (data == '*')){
+                    var display_id = temp[i].nextElementSibling.id;
+                    $('#'+display_id).prop('hidden', false);
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = "Please enter valid value";
+                    valid = false;
+                }
+            }
+        }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            $("#err_username").prop("hidden", false);
+                setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
+    });
+
+    $("body").on("keypress blur change", ".mandatory_fields", function (event) {
+         var get_value = event.currentTarget.value;
+            var count = get_value.split('**').length - 1;
+            if((count>=1)|| (get_value == '*'))
+            {
+            var display_id = event.currentTarget.nextElementSibling.id;
+            $('#'+display_id).prop('hidden', false);
+            document.getElementById(display_id).style.display = "block";
+            event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+            }
+            else{
+                $(".error_message").prop("hidden", true);
+                document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+
+            }
+    });
+</script>
+{% if inc_footer %}
+{% include 'root/footer.html' %}
+{% endif %}
+{% endblock %}

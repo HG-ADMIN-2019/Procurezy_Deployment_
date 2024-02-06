@@ -1,0 +1,44 @@
+.manager-approval-card{
+    
+    .approval-cart-number{
+        text-decoration: none;
+        font-size: 2rem; 
+        
+    }
+
+    .approval-card-label{
+        font-size: 1.2rem;
+    }
+
+    .imp-text{
+        font-size: 1.3rem;
+    }
+
+    .btn_approval{
+        color: #fd8522;
+        font-weight: bold;
+    }
+
+    .total-value-section{
+        display: flex;
+        justify-content:flex-end;
+
+        .total-value-cost{
+            font-size: 2rem;
+        }
+    }
+
+    &__header {
+        text-align: right;
+    }
+
+    &__desc-sections {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}

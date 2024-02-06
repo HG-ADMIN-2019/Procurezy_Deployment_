@@ -1,0 +1,20 @@
+.org_registration_table {
+    border-collapse: collapse;
+    margin-bottom:10px;
+    width: 1410px;
+
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        width: 10%;
+    }
+
+    tbody td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        width: 10%;
+    }
+}
+  

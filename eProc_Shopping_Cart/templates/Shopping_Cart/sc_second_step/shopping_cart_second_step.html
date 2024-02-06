@@ -1,0 +1,802 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Shopping Cart {% endblock %}
+{% block maincontent %}
+{% load custom_template_tags %}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<style>
+    /* // jquery search plugin style */
+    .ui-autocomplete { z-index:2147483647; }
+
+</style>
+
+
+<div class="sc-status-header">
+    <div class="sc-status-page-title">
+        <h5 id="shopping_cart_heading">Review Your Shopping Cart</h5>
+        <p class="hg_subtext_color" id="p_tag_head">Please check your shopping cart details before you send it for approval.</p>
+    </div>
+
+    <div class="sc-status-img-container">
+        <img src="{% static 'images/Status-bar2.png'%}" class="sc-status-img" id="status_bar">
+    </div>
+
+</div>
+
+
+<div class="container-fluid">
+
+    <div class="mt-4 mr-2 ml-2">
+
+        <div class="alert alert-warning display-none" id="sc_warning_messages" role="alert"></div>
+        <div class="alert alert-info display-none" id="sc_info_messages" role="alert"></div>
+        <div id="sc_error_msg" class="alert alert-danger display-none"></div>
+        <div id="sc_success_messages" class="alert alert-success msg-display-class display-none"></div>
+
+        <div class="elements-space-between sc-button-group">
+            <div class="sc_name_style">
+                <span class="h6" style="margin-bottom: 1rem;">Shopping Cart Name:</span> <span id="sc_name_id">{{ cart_name }}</span> &nbsp;
+                <!-- <span>
+                    <button id="edit_shopping_cart_name" type="button" onclick="edit_sc_name()" class="btn btn-primary btn-sm" title="Edit shopping cart name" style="margin-bottom: 1rem;"><i class="far fa-edit"></i></button>
+                </span> -->
+                <span class="badge badge-primary" id="edit_shopping_cart_name" type="button" onclick="edit_sc_name()" title="Edit shopping cart name"><i class="far fa-edit"></i></span>
+            </div>
+            <div id="shopping_cart_button_div">
+                <button class="btn btn-primary" id="add_approver_note_btn" data-toggle="modal" data-target="#add_approver_note"><i class="fa fa-plus" aria-hidden="true"></i> approver note</button>
+                <button onclick="check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value);" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> check</button>
+                <button id="save_shopping_cart_button" onclick="save_shopping_cart();" class="btn btn-primary"><i class="fa fa-save" aria-hidden="true"></i> save</button>
+                {% if manager_details and completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> send to purchasing team</button>
+                {% endif %}
+
+                {% if manager_details.0 == 'Auto' and not completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> place order</button>
+                {% endif %}
+
+                {% if manager_details.0 != 'Auto' and not completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> submit for approval</button>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div id="buy_on_behalf" hidden><input type="text" id="shopping_cart_requester" value="{{request.user.username}}"></div>
+        <!-- <div class="mb-3">
+            <h5 class="hg_display_inline">Approval process: </h5><span class="badge badge-pill badge_display_approval_link"><a href="#" id="display_approver_div">Display approval process</a></span>
+        </div> -->
+        <h6 class="mb-3" hidden>Silent PO: <input type="checkbox" id="silent_PO" name="silent_PO" value="silent_PO" ></h6>
+    </div>
+
+    <div class="mb-4">
+        <!--  Row contains Shipping details section and Account assignment category section  -->
+        <div class="row no-gutters">
+            <div class="col-lg mr-2 ml-2">
+                <!-- Shipping details section  -->
+                {% include 'Ship To Bill To Address/display_address_card.html' %}
+            </div>
+
+            <div class="col-lg mr-2 ml-2">
+                <!--  Account assignment category card section  -->
+                {% include 'Account Assignment/account_assignment_display_card.html' %}
+            </div>
+        </div>
+    </div>
+
+
+    <!--  Item overview card section  -->
+    <div class="card mb-4 mr-2 ml-2 card-shadow-1">
+        <div class="card-body">
+            <h4>Cart Overview</h4>
+        </div>
+        <div>
+            {% include 'Shopping_Cart/item_table_details/shopping_cart_second_step_item_details.html' %}
+        </div>
+    </div>
+
+    <div class="mr-2 ml-2">
+        <!---------------------------------------Manager details Start ---------------------------------->
+        <div id="approval_process_overview" class="approval-overview">
+            <div class="card card-shadow-1">
+                <div class="card-body">
+                    <h4>Approval Process Overview</h4>
+                    <div id="workflow_div" class="approval-overview__section">
+
+                        <div class="approval-overview__user-icon-container ao-logged-in-user">
+                            <div class="workflow-user-bg">
+                                <i class="fa fa-user fa-3x" aria-hidden="true"></i>
+                            </div>
+                            <button type="button" class="button-workflow-user">{{ request.user.first_name }}</button>
+                        </div>
+                        {% if completion_work_flow %}
+                        <div class="approval-overview__next-icon-container">
+                            <i class="fas fa-angle-double-right fa-3x"></i>
+                        </div>
+                        <div class="approval-overview__user-icon-container ao-workflow-user">
+                            {% if completion_work_flow.0 == 'Multiple' %}
+                            <div class="workflow-user-bg">
+                                <i class="fas fa-users fa-3x" aria-hidden="true"> </i>
+                            </div>
+                            <button type="button" class="button-workflow-user">{{completion_work_flow.0}}</button>
+                            <span>Shopper's Assist</span>
+                            {% else %}
+                            <div class="workflow-user-bg">
+                                <i class="fa fa-user fa-3x" aria-hidden="true"> </i>
+                            </div>
+                            <button type="button" class="button-workflow-user">{{completion_work_flow.0}}</button>
+                            <span>Shopper's Assist</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div id="div_manager_detail" class="approval-overview__managers-section">
+                            {% if manager_details %}
+                            {% for manager_detail in manager_details %}
+                            <div class="approval-overview__next-icon-container">
+                                <i class="fas fa-angle-double-right fa-3x"></i>
+                            </div>
+                            {% if manager_detail == 'Auto' %}
+
+                            <div class="approval-overview__user-icon-container ao-workflow-user">
+                                <div class="workflow-user-bg">
+                                    <i class="fas fa-user-check fa-2x icon-workflow-auto" aria-hidden="true"> </i>
+                                </div>
+                                <button type="button" class="button-workflow-user">{{manager_detail.first_name}}</button>
+                            </div>
+                            {% else %}
+                            <div class="approval-overview__user-icon-container ao-workflow-user">
+                                <div class="workflow-user-bg">
+                                    <i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i>
+                                </div>
+                                <button type="button" class="button-workflow-user">{{manager_detail.first_name}}</button>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-----------------------------------Manager details End -------------------------------------------------->
+
+        <hr>
+
+        <div class="hg_display elements-align-right">
+            <div>
+                <button onclick="check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value);" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> check</button>
+                <button onclick="save_shopping_cart();" class="btn btn-primary"><i class="fa fa-save" aria-hidden="true"></i> save</button>
+                {% if manager_details and completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> send to purchasing team</button>
+                {% endif %}
+
+                {% if manager_details.0 == 'Auto' and not completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> place order</button>
+                {% endif %}
+
+                {% if manager_details.0 != 'Auto' and not completion_work_flow %}
+                <button class="btn btn-primary" onclick="order_shopping_cart()"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> submit for approval</button>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{% url 'eProc_Shopping_Cart:cart-details' %}" class="badge badge-light hg_gb_btn mb-3"><i class="fas fa-arrow-left"></i> Go Back</a>
+    </div>
+
+</div>
+
+<!--########################################## All Make Changes pop up ###############################################-->
+
+<!--start of display & edit shopping cart name-->
+<div class="modal fade" id="edit_sc_name_window">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Shopping Cart Name</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div>
+                    <input type="text" id="sc_name_input" value="" class="form-control check_sc_name" maxlength="40">
+                    <small id="sc_name_input" class="form-text text-muted">Maximum characters allowed is 40.</small>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button  class="btn btn-primary" onclick="submitSCname()"><i class="fa fa-check" aria-hidden="true"></i> save </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--end of display & edit shopping cart name-->
+
+<!--start of edit default shipping address pop up-->
+{% include 'Ship To Bill To Address/edit_shipping_address.html' %}
+<!--end of edit default shipping address pop-up-->
+
+<!--start of change shipping address pop-up-->
+{% include 'Ship To Bill To Address/change_shipping_address_modal.html'  %}
+<!--end of change shipping address pop-up-->
+
+<!-- Start of Change Account assignment category pop up-->
+{% include 'Account Assignment/change_account_assignment_modal.html' %}
+<!-- End of Change Account assignment category pop up-->
+<!--start of Add approver note pop-up -->
+<div class="modal fade" id="add_approver_note">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Approver Note</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <textarea class="form-control" id="approver_text" rows="4"></textarea>
+                <small class="form-text text-muted">Approver note help text here</small>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="save_approver_note"><i class="fa fa-check" aria-hidden="true"></i> save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end of Add approver note pop-up -->
+
+<!-- start of Goods/Services Recipient popup -->
+<div class="modal fade" id="ChangeGoodsReceiver">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Goods/Services Recipient</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group">
+                            <input class="form-control py-2 border-right-0 border check_product_name" type="search" placeholder="Search receiver" id="search_receiver" name="search_receiver" value="">
+                            <span class="input-group-append">
+                                <div class="input-group-text bg-transparent"><i class="fa fa-search"></i></div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <small class="form-text text-muted">Help text here</small>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary"  data-dismiss="modal" onclick="select_goods_reciever()"><i class="fa fa-check" aria-hidden="true"></i> select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end of Goods/Services Recipient popup -->
+
+<!-- start on save error popup-->
+<div id="save_error_popup_id" class="modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Error Information</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body" id="save_error_id">
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end on save error popup-->
+{{ cart_items_guid_list|json_script:"cart_items_guid_list" }}
+<script>
+
+
+    var GLOBAL_SELECT_ITEM_NUM = 0;
+    var GLOBAL_ITEM_DETAIL_LIST = {{item_detail_list|safe}};
+    var shopping_cart_errors = {{shopping_cart_errors|safe}};
+    var rendered_default_company_code = '{{default_company_code|safe}}';
+    var sc_completion_flag = '{{sc_completion_flag|safe}}';
+    var GLOBAL_MANAGER_DETAIL = {{approver_id|safe}};
+    var requester_user_name = '{{requester_user_name|safe}}';
+    var acct_assignment_cat = '{{acct_assignment_category|safe}}';
+    var purchase_group = '{{purchase_group|safe}}';
+    var multiple_purch_group = {{completion_work_flow|safe}}
+    // start of get acc assignment values in pop up
+    var acc_cat_type = "{{acc_cat_default_value}}";
+    var acc_cat_values = "{{acc_value.0}}";
+    var gl_account_values = "{{default_gl_account.0}}";
+    var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+    var msg_display_interval = {{msg_display_time_value|safe}};
+    var cart_length = {{cart_items_count}};
+    var acc_desc_list = {{acc_desc_append_list|safe}};
+    //cart item guid
+    var sc_item_guid = []
+    {% for items in cart_items_guid_list %}
+        sc_item_guid.push('{{items|safe}}')
+    {% endfor %}
+for (let item_number = 0; i < cart_length; item_number++) {
+    sessionStorage.setItem('last_added_file_number-' + item_number_check, 0)
+}
+
+
+    if(acc_cat_type == 'CC') {
+        document.getElementById('CC').value = acc_cat_values;
+    } else if (acc_cat_type == 'AS') {
+        document.getElementById('AS').value = acc_cat_values;
+    } else if (acc_cat_type == 'WBS') {
+        document.getElementById('WBS').value = acc_cat_values;
+    }else if (acc_cat_type == 'OR') {
+        document.getElementById('OR').value = acc_cat_values;
+    }
+
+    var highest_value_item_number = document.getElementById('highest_item').value
+var highest_item_acc_asgn_cat = (document.getElementById('change_acc_type_'+highest_value_item_number).innerHTML).split(' - ')[0]
+var highest_item_change_acc_value = (document.getElementById('change_acc_value_'+highest_value_item_number).innerHTML).split(' - ')[0]
+
+const check_manager_detail = (response) => {
+    GLOBAL_MANAGER_DETAIL = response.approver_id;
+    $('#div_manager_detail').empty();
+    var manager_icon = '';
+    error_message = '';
+    $('#id_dynamic').empty();
+    if (response.manager_detail) {
+        $.each(response.manager_detail, function (i, item) {
+            if (item == 'Auto') {
+                double_angular = '<div class="approval-overview__next-icon-container"><i class="fas fa-angle-double-right fa-3x"></i></div>';
+                manager_icon += '' + double_angular + '<div class="approval-overview__user-icon-container ao-workflow-user"><div class="workflow-user-bg"><i class="fas fa-user-check fa-2x icon-workflow-auto" aria-hidden="true"></i></div><button type="button" class="button-workflow-user">' + item.first_name + '</button></div>';
+            }
+            else {
+                double_angular = '<div class="approval-overview__next-icon-container"><i class="fas fa-angle-double-right fa-3x"></i></div>';
+                manager_icon += '' + double_angular + '<div class="approval-overview__user-icon-container ao-workflow-user"><div class="workflow-user-bg"><i class="fa fa-user-tie fa-3x" aria-hidden="true"> </i></div><button type="button" class="button-workflow-user">' + item.first_name + '</button></div>';
+            }
+        });
+    }
+    if (response.msg_info) {
+        error_message = response.msg_info + '<br>'
+    }
+    $('#div_manager_detail').append(manager_icon);
+    return error_message
+}
+
+
+// Check for shopping cart errors
+function check_shopping_cart(type, sc_data, acc_default, acc_default_val){
+    var error_messages = ''
+    $('#sc_error_msg').hide();
+    $('#sc_warning_messages').hide();
+    $('#sc_success_messages').hide();
+    $('#sc_info_messages').hide();
+    var default_address = "{{addr_val_desc|safe}}";
+    //var default_account_asignment_category = "{{acc_default|safe}}";
+    //var default_account_asignment_value = {{acc_value|safe}}
+    //default_account_asignment_value = default_account_asignment_value[0]
+    var error_messages = '';
+    var check_sc_data = '';
+    if(type != 'approval_workflow'){
+        check_sc_data = get_data_for_check()
+        header_level_data = get_sc_header_data()
+    }
+    var total_val = $('#total_cart_value').text();
+    var requester = $('#shopping_cart_requester').val()
+    data = {
+            'acc_default': acc_default.split(' - ')[0],
+            'acc_default_val': acc_default_val.split(' - ')[0],
+            'total_val':total_val,
+            'check_sc_data': check_sc_data,
+            'header_level_data':header_level_data,
+            'type': type,
+            'requester': requester,
+            'check_type':'sc_second_step'
+    }
+    OpenLoaderPopup();
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Shopping_Cart:check_shopping_cart' %}",
+        data:JSON.stringify(data),
+        success: function (response) {
+            var error_status = true;
+            document.getElementById('sc_error_msg').style.display = 'none';
+            $('#sc_error_msg').html('');
+            console.log("CHECK RESPONSE ",response)
+            manager_detail = response.manager_detail.length
+            sc_errors = response.sc_error
+            sc_info_messsages_check = response.sc_info
+            var error_msg_info = response.error_msg_info
+          //  if (shopping_cart_errors['error_msg_info']) {
+      //  error_messages += shopping_cart_errors['error_msg_info']
+   // }
+            if (response.error_msg_info){
+                $.each(response.error_msg_info, function (i, item) {
+                    error_messages += item + '<br>'
+                });
+            }
+            // If SC has info
+            if (sc_info_messsages_check.length > 0){
+                var info_messages = '';
+                for(info = 0; info <= sc_info_messsages_check.length; info++){
+                    info_dict_obj = sc_info_messsages_check[info]
+                    for (var info_key in info_dict_obj) {
+                        if (info_key == '0'){
+                            info_messages += 'Info : ' + info_dict_obj[info_key] + '<br>'
+                        } else {
+                            info_messages += 'Info at item ' + info_key + ': ' + info_dict_obj[info_key] + '<br>'
+                        }
+                    }
+                }
+                $('#sc_info_messages').html(info_messages);
+                $('#sc_info_messages').show();
+            }
+            console.log(sc_errors);
+            // If the SC has no errorrs then call order SC function
+            if(sc_errors.length == 0 && error_msg_info.length == 0 && manager_detail != 0 && internal_supplier_error_itemNumber.length == 0){
+                    var msg = "JMSG042";
+                    var msg_type ;
+                    error_status = false
+                  msg_type = get_message_desc(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                  var display1 = msg_type.messages_id_desc;
+                  $('#sc_success_messages').html(display1);
+                   $('#sc_success_messages').show();
+                    // message_display_time_specific();
+
+                document.getElementById('sc_error_msg').style.display = 'none';
+                $('#sc_error_msg').html('');
+                if(type == 'order'){
+                    order_shopping_cart_ajax(sc_data);
+                    CloseLoaderPopup();
+                }
+            } else {
+                // If SC has errors and type is order then display error messasges.
+                if(type == 'order'){
+
+                            var msg = "JMSG043";
+                            var msg_type ;
+                          msg_type = get_message_desc(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type == "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                            var display7 = msg_type.messages_id_desc;
+                               error_messages += display7 ;
+
+                }
+                for( i = 0; i < sc_errors.length; i++ ){
+                    dict_obj = sc_errors[i]
+                    for (var key in dict_obj) {
+                        if (key == '0'){
+                            error_messages += 'Error: ' + dict_obj[key] + '<br>'
+                        } else {
+                            error_messages += 'Error at item ' + key + ': ' + dict_obj[key] + '<br>'
+                        }
+                    }
+                }
+                CloseLoaderPopup();
+
+            }
+            if(type == 'save'){
+                save_shopping_cart_ajax(sc_data)
+                CloseLoaderPopup();
+            }
+
+            error_messages += check_manager_detail(response)
+            error_messages += check_ui_errors_warnings(error_messages);
+                $('#sc_error_msg').html(error_messages);
+            if (error_status){
+                document.getElementById('sc_error_msg').style.display = 'block';
+                }
+            error_messages = ''
+            internal_supplier_error_itemNumber = []
+            if(type == 'check' || type == 'approval_workflow'){
+                CloseLoaderPopup();
+            }
+            scroll_top();
+            clear_session_storage();
+        }
+    });
+
+}
+
+// Function to save shopping cart
+function save_shopping_cart(){
+    $('#save_error_id').empty();
+
+//var error_msg = '';
+//    {% if not acc_default  %}
+//        {% if acc_list %}
+//            var error_msg = '<div class="alert alert-danger" role="alert"><span>No default Account assignment category maintained. Please maintain defaults in <a href="{% url 'eProc_User_Settings:purchase_settings' %}" target="_blank" >Purchase Settings</a></span></div>'
+//        {% else %}
+//
+//                    var msg = "JMSG027";
+//                    var msg_type ;
+//                  msg_type = get_message_desc(msg);
+//                  $("#error_msg_id").prop("hidden", false)
+//
+//                  if(msg_type.message_type == "ERROR"){
+//                        display_message("error_msg_id", msg_type.messages_id_desc)
+//                  }
+//                  else if(msg_type.message_type == "WARNING"){
+//                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+//                  }
+//                  else if(msg_type.message_type == "INFORMATION"){
+//                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+//                  }
+//                  var display7 = msg_type.messages_id_desc;
+//
+//            var error_msg ='<div class="alert alert-danger" role="alert"><span class="error">display7</span></div>';
+//        {% endif %}
+//    {% else %}
+//        {% if not acc_value.0  %}
+//            var error_msg = '<div class="alert alert-danger" role="alert"><span>No default Account assignment category values maintained. Please maintain defaults in <a href="{% url 'eProc_User_Settings:purchase_settings' %}" target="_blank" >Purchase Settings</a></span></div>'
+//        {% endif %}
+//    {% endif %}
+//    if (error_msg){
+//        $('#save_error_id').html(error_msg);
+//        $('#save_error_popup_id').modal('show');
+//    }
+//    else
+//    {
+        data = get_sc_data()
+        check_shopping_cart('save', data, highest_item_acc_asgn_cat, highest_item_change_acc_value)
+        $('#sc_success_messages').show();
+ //   }
+}
+
+
+// Function to display third step data
+function display_third_step(order_type){
+    $('#shopping_cart_heading').html('Thank you! Your shopping cart is now being processed.')
+    $('#p_tag_head').html('You can always check the status of your shopping cart orders under <a style="color:#007bff;" href="{% url 'eProc_Doc_Search_and_Display:search_shopping_carts' %}">My Orders</a>.')
+    // $('#status_bar').html('<img src="{% static 'images/Status-bar3.png'%}" class="img-responsive" style="max-width:80%;">')
+    if(order_type == 'ORDER_SC'){
+        $("#status_bar").attr("src", "{% static 'images/Status-bar3.png'%}");
+    }
+
+    $('#shopping_cart_button_div').html('<a href="/shop/products_services/All/create"><button class="btn btn-primary" title="Continue Shopping"><i class="fas fa-shopping-cart"></i> continue shopping </button></a> <button class="btn btn-primary" onclick="sc_print_pdf();" style="margin-left: 3px;" title="Print PDF"><i class="far fa-file-pdf"></i> print PDF </button>')
+    document.getElementById('edit_shopping_cart_name').style.display = 'none';
+    $('.sc_name_style').css("margin-bottom", "1rem")
+    $("textarea").attr("disabled", true);
+    hg_display = document.getElementsByClassName('hg_display')
+    for(i=0; i<hg_display.length; i++){
+        hg_display[i].style.display = 'none';
+    }
+    CartCounterView(0);
+}
+
+var item_number_attached = '';
+
+//binds to onchange event of field
+$('.File').bind('change', function() {
+     var url_new = "{% url 'eProc_Basic:get_message_description' %}";
+    var msg = "MSG187";
+    var msg_type ;
+    attachment_size = "{{attachment_size}}"
+    attachment_extensions_array = "{{ attachment_extension|safe }}"
+    attachment_size_in_bytes = parseInt(attachment_size) * 1000000
+    total_size = []
+    file_length = this.files.length
+
+    msg_type = message_config_details(msg);
+
+    for(i=0; i < file_length; i++){
+        file_name = this.files[i].name.split('.')
+        file_extensions = file_name.slice(-1)[0].toUpperCase()
+        if(!attachment_extensions_array.includes(file_extensions)){
+            document.getElementById(this.id).value = '';
+             if(msg_type.message_type == "Error"){
+                document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = msg_type.messages_id_desc
+                $('#attachment_error'+item_number).show()
+              }
+
+
+<!--            document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = "Please attach valid file extension"-->
+<!--            $('#attachment_error'+item_number).show()-->
+            return
+        } else {
+            document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = ""
+            $('#attachment_error'+item_number).hide()
+        }
+        total_size.push(this.files[i].size);
+    }
+    max_number_of_file_attached = total_size.reduce((pv, cv) => pv + cv, 0);
+    if(max_number_of_file_attached > attachment_size_in_bytes){
+        document.getElementById(this.id).value = '';
+
+                    var msg = "JMSG041";
+                    var msg_type ;
+                  msg_type = get_message_desc(msg);
+                  $("#error_msg_id").prop("hidden", false)
+
+                  if(msg_type.message_type == "ERROR"){
+                        display_message("error_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "WARNING"){
+                     display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                  }
+                  else if(msg_type.message_type == "INFORMATION"){
+                     display_message("id_info_msg_id", msg_type.messages_id_desc)
+                  }
+                  var display7 = msg_type.messages_id_desc;
+                  document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = display7 + attachment_size + 'MB'
+
+        $('#attachment_error'+item_number).show()
+    } else {
+        document.getElementById('attachment_error'+this.id.substr(-1)).innerHTML = ""
+        $('#attachment_error'+item_number).hide()
+    }
+
+});
+
+
+function ChangeGoodsReciever() {
+    $('#ChangeGoodsReceiver').modal('show');
+    $( "#search_receiver" ).autocomplete({
+        source: "{% url 'eProc_Shopping_Cart:auto_complete_goods_receiver' %}",
+    });
+}
+
+
+/* ajax call to order shopping cart */
+function ajax_order_shopping_cart(data) {
+    urlLink = "{% url 'eProc_Shopping_Cart:order_shopping_cart' %}";
+    let result = FormAjaxCallAPI(urlLink, data);
+    return result;
+}
+
+/* ajax call to save shopping cart */
+function ajax_save_shopping_cart(data) {
+    urlLink = "{% url 'eProc_Shopping_Cart:save_sc' %}";
+    let result = FormAjaxCallAPI(urlLink, data);
+    return result;
+}
+
+
+/* ajax call to check shopping cart */
+// function ajax_check_sc_response(data) {
+//     urlLink = "{% url 'eProc_Shopping_Cart:check_shopping_cart' %}";
+//     let result = AjaxCallAPI(urlLink, data);
+//     return result;
+// }
+
+/* ajax call to update goods reciever */
+const ajax_update_goods_reciever = (data) => {
+    urlLink = "{% url 'eProc_Shopping_Cart:update_user_name' %}";
+    let result = AjaxCallAPIBasic(urlLink, data);
+    return result;
+}
+
+// Function to store shipping details & sc name data in session storage
+window.onbeforeunload = function () {
+    sessionStorage.setItem("sc_name", $('#sc_name_id').text());
+    sessionStorage.setItem("approver_text", $('#approver_text').val());
+
+    var internal_session_elements = $("[id^=int_note_text]")
+    var supplier_session_elements = $("[id^=sup_note_text]")
+    for(var i=0; i < internal_session_elements.length; i++){
+        var int_element = internal_session_elements[i].id
+        int_element = "#"+int_element
+        var sup_element = supplier_session_elements[i].id
+        sup_element = "#"+sup_element
+        sessionStorage.setItem(int_element, $(int_element).val());
+        sessionStorage.setItem(sup_element, $(sup_element).val());
+    }
+}
+
+// Function to retrieve data from session storage
+window.onload = function () {
+    // for SC name
+    var get_sc_name = $('#sc_name_id').text();
+    var sc_name = sessionStorage.getItem("sc_name");
+    if (sc_name !== null) $('#sc_name_id').text(sc_name);
+
+    // for approver notes values
+    var app_notes = sessionStorage.getItem("approver_text");
+    if (app_notes !== null) $('#approver_text').text(app_notes);
+
+    // for notes values
+    var get_elements = Object.keys(sessionStorage);
+
+    // for (let i=0; i < get_elements.length; i++){
+    //     let new_element = get_elements[i];
+    //     let x_elememt = new_element.split('-')[1];
+    //     let element_value = sessionStorage.getItem(new_element);
+    //     if (element_value !== null) $(new_element).val(element_value);
+
+    //     if(new_element.split('-')[0] == '#sup_note_text-' || new_element.split('-')[0] == '#int_note_text-') {
+    //         let suppplier_note = sessionStorage.getItem("#sup_note_text-"+x_elememt);
+    //         let internal_note = sessionStorage.getItem("#int_note_text-"+x_elememt);
+
+    //         if(suppplier_note !== '' || internal_note !== '') {
+    //             $('#notes_added-'+x_elememt).prop("hidden", false);
+    //         } else {
+    //             $('#notes_added-'+x_elememt).prop("hidden", true);
+    //         }
+    //     }
+
+
+    // }
+
+
+    for(i=0; i < get_elements.length; i++) {
+        let new_element = get_elements[i];
+        let z = new_element.split('-');
+        let note_type = z[0];
+        let note_index = z[1];
+
+        if(note_type == '#sup_note_text' || note_type == '#int_note_text') {
+            let element_value = sessionStorage.getItem(new_element);
+            if (element_value){
+                $(new_element).val(element_value);
+                $('#notes_added-'+note_index).prop("hidden", false);
+            } else {
+                $('#notes_added-'+note_index).prop("hidden", true);
+            }
+        }
+    }
+}
+
+function get_message_desc(msgId){
+var msg_type, result;
+ $.ajax({
+            async: false,
+            type: 'POST',
+            url: "{% url 'eProc_Basic:get_message_description' %}",
+          data: JSON.stringify(msgId),
+          dataType: 'json',
+            success: function (response) {
+               result = response;
+               console.log(response);
+            },
+            error: function (error) {
+
+            }
+        })
+       return  result;
+}
+
+
+</script>
+
+<script src="{% static 'scripts/shopping_cart_second_step.js' %}"></script>
+{% endblock %}

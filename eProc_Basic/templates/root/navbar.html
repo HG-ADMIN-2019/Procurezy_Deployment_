@@ -1,0 +1,250 @@
+{% load static %}
+
+<!--Nav bar for html pages-->
+<div class="fixed-top" id="navOuter" {% if is_slide_menu %} style="margin-left: 65px; transition: 0.3s;" {% endif %}>
+    <nav  class="navbar navbar-expand-lg bg-dark majjaka-main-navbar">
+        <a class="navbar-brand" onclick="location.href='{% url 'eProc_Catalog:get_catalogs' 'All' 'create' %}';">
+            <img src="{% static 'images/logo black new1.png'%}" alt="Majjaka Logo" style="height: 80%;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+
+            <ul class="nav hg_nav_container justify-content-end">
+
+                <div class="notification_wrap" id="notification_icon_div_id" onclick="show_notification();">
+                    <div class="nav-button-div">
+                        <li class="nav-item dropdown">
+                            <button type="button" class="nav-notif-button" id="notification_alerts_dropdown" data-toggle="dropdown" aria-expanded="false">
+                                <span class="material-icons">notifications</span>
+                                <span id="notification_counter"></span>
+                            </button>
+                            <!-- Notification Dropdown section - Start-->
+                            <div class="dropdown-menu dropdown-menu-lg-right py-0 notification_alerts_dropdown" aria-labelledby="notification_alerts_dropdown">
+                                <div class="list-group">
+                                    <div class="list-group-item dropdown-menu-header text-muted">
+                                        Notification
+                                    </div>
+                                    <div id="notification_msg_display" class="notification_msg_list">
+
+                                    </div>
+            
+                                </div>
+                            </div>
+                        </li>
+                    </div>
+                </div>
+
+                <div class="nav-button-div" id="add_to_cart_div_id">
+                    <li class="nav-item">
+                        <button type="button" id="shopping-cart-icon" class="nav-notif-button" onclick="location.href='{% url 'eProc_Shopping_Cart:cart-details' %}';">
+                            <span class="material-icons">shopping_cart</span>
+                            <span id="cart_counter"></span>            
+                        </button>
+                    </li>
+                </div>
+
+                <li class="nav-item dropdown majjaka-main-navbar__user-menu">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="majjaka-main-navbar__username">Hello {{ request.user.first_name }}</span>
+                        <img src="{% static 'img/user.png'%}">
+                    </a>
+                    <div class="dropdown-menu user-dropdown" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item user-dropdown-item" href="#">
+                            <span class="material-icons-outlined user-dropdown-item__icons">supervisor_account</span>Client-{{ request.user.client }}
+                        </a>
+                        <a class="dropdown-item user-dropdown-item" href="{% url 'eProc_User_Settings:personal_settings_display' %}">
+                            <span class="material-icons-outlined user-dropdown-item__icons">tune</span> Personalize
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item user-dropdown-item" href="{% url 'eProc_Login:logout_page' %}" title="Sign out" onclick="clear_session_data()">
+                            <span class="material-icons-outlined user-dropdown-item__icons">logout</span>Sign Out
+                        </a>
+                        
+                    </div>
+                    
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+<!--End of Story SP08-01 -->
+{% include 'root/menu-bar.html' %}
+</div>
+<script>
+    $(document).ready(function(){
+        // Loader implementation on search button
+        $('#shopping-cart-icon').click(function () {
+            OpenLoaderPopup();
+        });
+        show_notif_add_to_cart()
+        CartCounterView({{cart_counter}});
+        NotificationCounterView({{notification_count}});
+    });
+
+
+    function CartCounterView(count) {
+        var CartCounter = count;
+
+        if(CartCounter > 0 ){
+            $('#cart_counter').addClass('nav-notif-button_badge');
+            $('#cart_counter').html(CartCounter);
+        } else {
+            $('#cart_counter').empty();
+            $('#cart_counter').removeClass('nav-notif-button_badge');
+        }
+    };
+
+    function NotificationCounterView(count) {
+        var NotifCounter = count;
+
+        if(NotifCounter > 0 ){
+            $('#notification_counter').addClass('nav-notif-button_badge');
+            $('#notification_counter').html(NotifCounter);
+        } else {
+            $('#notification_counter').empty();
+            $('#notification_counter').removeClass('nav-notif-button_badge');
+        }
+    };
+
+    function clear_session_data(){
+        sessionStorage.clear();
+        localStorage.clear();
+    }
+
+    var GLOBAL_NOTIFICATION_COUNT = 0
+
+    // Function to show  notification dropdown
+    function show_notification(){
+        var side_menu_flag = true
+        $.ajax({
+            type : 'POST',
+            url  : "{% url 'eProc_Notification:get_notification_detail' %}",
+            data: {
+                side_menu_flag:side_menu_flag
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $("#notification_counter").empty();
+                msg_array = response.notification
+                GLOBAL_NOTIFICATION_COUNT = response.unread_notification_count;
+                NotificationCounterView(GLOBAL_NOTIFICATION_COUNT);
+                html_msg = ''
+                var today_date   = new Date()
+                $("#notification_msg_display").empty()
+                $.each(msg_array, function (i, item) {
+                    var notif_icon = ''
+                    if(item.notification_type_id == 'WF003' || item.notification_type_id == 'WF004') {
+                        notif_icon = '<div class="notification-type-icon-chat"><i class="far fa-comment-alt"></i></div>'
+                    } else {
+                        notif_icon = '<div class="notification-type-icon-document"><i class="far fa-file-alt"></i></div>'
+                    }
+
+                    // var set_important_icon = ''
+                    // if(item.star_notif_flag) {
+                    //     set_important_icon = ''
+                    // }
+
+                    if (item.read_status){
+                        if (item.star_notif_flag){
+                            html_msg+='<div id="'+ item.notif_id +'" class="list-group-item"> <div class="row no-gutters align-items-center"> <div class="col-1"> '+notif_icon+' </div> <div class="col-10"> <a data-url="' +item.url_link+ '" id="message-'+ item.notif_id +'" onclick="set_notif_status(this)"> <div class="notification_msg_info">' +item.msg_info+ ' </div></a> <span class="text-muted small mt-1" id="time-'+ item.notif_id +'">' + item.notif_changed_at + ' ago </span> <span class="icon_notification_important" id="important-' + item.notif_id +'" onclick="notificationImportant(this);" data-toggle="tooltip" title="Mark as important" style="color: orange;"> <i class="material-icons-outlined">star_outline</i> </span>  </div> <div class="col-1 notification_close"> <button type="button" class="close button-close-delete" id="delete_notif-' + item.notif_id +'" onclick="deleteNotification(this)">&times;</button></div> </div> </div>'
+                        }
+                        else {
+                            html_msg+='<div id="'+ item.notif_id +'" class="list-group-item"> <div class="row no-gutters align-items-center"> <div class="col-1"> '+notif_icon+' </div> <div class="col-10"><a data-url="' +item.url_link+ '" id="message-'+ item.notif_id +'" onclick="set_notif_status(this)"> <div class="notification_msg_info">' +item.msg_info+ ' </div></a> <span class="text-muted small mt-1" id="time-'+ item.notif_id +'">' +item.notif_changed_at+ ' ago </span> <span class="icon_notification_important" id="important-' + item.notif_id +'" onclick="notificationImportant(this);" data-toggle="tooltip" title="Mark as important" style="color:#D3D3D3"> <i class="material-icons-outlined">star_outline</i></span>  </div> <div class="col-1 notification_close"> <button type="button" class="close button-close-delete" id="delete_notif-' + item.notif_id +'" onclick="deleteNotification(this)">&times;</button></div> </div> </div>'
+                        }
+                    }
+                    
+                    else{
+                        if (item.star_notif_flag){
+                            html_msg+='<div id="'+ item.notif_id +'" class="list-group-item new_unread_notification"> <div class="row no-gutters align-items-center"> <div class="col-1"> '+notif_icon+' </div> <div class="col-10"> <a data-url="' +item.url_link+ '" id="message-'+ item.notif_id +'" onclick="set_notif_status(this)"> <div class="notification_msg_info">' +item.msg_info+ ' </div></a> <span class="text-muted small mt-1" id="time-'+ item.notif_id +'">' + item.notif_changed_at + ' ago </span> <span class="icon_notification_important" id="important-' + item.notif_id +'" onclick="notificationImportant(this);" data-toggle="tooltip" title="Mark as important" style="color: orange;"> <i class="material-icons-outlined">star_outline</i> </span>  </div> <div class="col-1 notification_close"> <button type="button" class="close button-close-delete" id="delete_notif-' + item.notif_id +'" onclick="deleteNotification(this)">&times;</button></div> </div> </div>'
+                        }
+                        else {
+                            html_msg+='<div id="'+ item.notif_id +'" class="list-group-item new_unread_notification"> <div class="row no-gutters align-items-center"> <div class="col-1"> '+notif_icon+' </div> <div class="col-10"> <a data-url="' +item.url_link+ '" id="message-'+ item.notif_id +'" onclick="set_notif_status(this)"> <div class="notification_msg_info">' +item.msg_info+ ' </div></a> <span class="text-muted small mt-1" id="time-'+ item.notif_id +'">' + item.notif_changed_at + ' ago </span> <span class="icon_notification_important" id="important-' + item.notif_id +'" onclick="notificationImportant(this);" data-toggle="tooltip" title="Mark as important" style="color:#D3D3D3"> <i class="material-icons-outlined">star_outline</i> </span>  </div> <div class="col-1 notification_close"> <button type="button" class="close button-close-delete" id="delete_notif-' + item.notif_id +'" onclick="deleteNotification(this)">&times;</button></div> </div> </div>'
+                    
+                        }
+                    }
+                });
+                $("#notification_msg_display").append(html_msg)
+            }
+        });
+    }
+
+    function dropdownOpen(e) {
+        $('.dropdown-menu').on("click.bs.dropdown", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    }
+
+    // function to set notification status
+    function set_notif_status(e){
+
+        dropdownOpen(e)
+
+        var onclick_id = e.id
+        var url = $(e).attr('data-url');
+        var notif_id = onclick_id.split('-')[1]
+
+        $.ajax({
+            type : 'POST',
+            url  : "{% url 'eProc_Notification:update_read_status' %}",
+            data: {
+                notif_id:notif_id,
+                read_status:true
+            },
+            success: function (response) {
+                $("#notification_counter").empty();
+                GLOBAL_NOTIFICATION_COUNT = response.notification_count;
+                NotificationCounterView(GLOBAL_NOTIFICATION_COUNT);
+                $("#"+notif_id).css({"background-color": "white", "color": "black"});
+                window.open(url)
+            }
+        });
+    }
+
+    // Function to set notification as important
+    function notificationImportant(e) {
+
+        dropdownOpen(e)
+        var onclick_id = e.id
+        var notif_id = onclick_id.split('-')[1]
+
+        $.ajax({
+            type : 'POST',
+            url  : "{% url 'eProc_Notification:set_notification_important' %}",
+            data: {
+                notif_id:notif_id,
+            },
+            success: function (response) {
+                if (response.success == 'IMPORTANT') {
+                    $("#important-"+notif_id).css({"color": "orange"})
+                } else if (response.success == 'NOT_IMPORTANT') {
+                    $("#important-"+notif_id).css({"color": "#D3D3D3"})
+                }
+            }
+        });
+    }
+
+    function deleteNotification(e){
+        dropdownOpen(e)
+        var onclick_id = e.id
+        var notif_id = onclick_id.split('-')[1]
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Notification:delete_notification' %}",
+            data: {
+                notif_id:notif_id,
+            },
+            success: function (response) {
+                $("#"+notif_id).remove();
+            }
+        });
+    }
+</script>
+

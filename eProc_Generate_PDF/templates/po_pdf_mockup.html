@@ -1,0 +1,386 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+
+        @page {
+            @frame header_frame {           /* Static Frame */
+                -pdf-frame-content: header_content;
+                left: 30pt; right: 30pt; top: 30pt; height: 130pt;
+                
+                
+            }
+            @frame content_frame {          /* Content Frame */
+                left: 30pt; right: 30pt; top: 165pt; height: 630pt;
+               
+                
+            }
+            
+            @frame footer_frame {           /* Another static Frame */
+                    -pdf-frame-content: footer_content;
+                    left: 30pt; right: 30pt; top: -30pt; height: 20pt;
+                    
+            }
+        }
+           
+        table td {
+            vertical-align:top;
+        }
+
+
+        table.headerTable{
+            -pdf-keep-with-next: true;
+            font-size: 110%;
+            border: 0.5px solid black;
+        }
+
+        table.headerTable td {
+            padding: 20%;
+        }
+
+        .headerTable__heading {
+            font-weight: 500;
+        }
+
+        .headerTable__body {
+            font-size: 105%;
+            
+        }
+
+        table.addressTable {
+            -pdf-keep-with-next: true;
+            font-size: 110%;
+        }
+
+        table.itemTable{
+            -pdf-keep-with-next: true;
+            font-size: 100%;
+            border: 0.5px solid black;
+        }
+        
+        table.itemTable th, table.itemTable td {
+          padding: 3px;
+        }
+
+        table.header_title {
+            font-size: 150%;
+        }
+
+        
+
+    </style>
+</head>
+<body>
+
+    <!-- Content for Static Frame 'header_frame' -->
+    <div id="header_content">
+        <div>
+            <table class="header_title">
+                <tr>
+                    <td>
+                        <span style="color: white; background-color: #4E4E4E; padding: 3px;">
+<!--                            <img width="300px" src="http://majjaka-eprocure.com/static/images/majjkalogo-black.png">-->
+                        </span>
+                    </td>
+                    <td style="text-align: right;">Purchase Order No: <b>{{po_header_details.0.doc_number}}</b> </td>
+                </tr>
+            </table>
+        </div>
+        <br>
+
+        <div>
+            <table class="headerTable">
+                <tr>
+                    <td colspan="2" width="50%"> 
+                        <div class="headerTable__heading" > Buyer, Email</div>
+                        <div>
+                            <div class="headerTable__body"> {{po_header_details.0.requester}}</div>
+                            <div class="headerTable__body"> {{po_header_details.0.email_id}}</div>
+                        </div> 
+                    </td>
+                    <td width="25%"  > 
+                        <div class="headerTable__heading"  > Vendor Contract</div>
+                        <div>
+                            <div class="headerTable__body">{{po_header_details.0.supplier_description}}</div>
+                            <div class="headerTable__body"> </div>
+                        </div> 
+                    </td>
+                    <td width="25%"  >
+                        <div class="headerTable__heading"  > Date</div>
+                        <div>
+                            <div class="headerTable__body">{{po_header_details.0.created_at}}</div>
+                            
+                        </div> 
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%"  >
+                        <div class="headerTable__heading" > Buyer Telephone No</div>
+                        <div class="headerTable__body">{{po_header_details.0.phone_num}}</div>
+                    </td>
+                    <td width="50%"  >
+                        <div class="headerTable__heading" >Buyer Fax No</div>
+                        <div class="headerTable__body"></div>
+                    </td>
+                    <td width="50%"  >
+                        <div class="headerTable__heading" >Vendor Telephone No</div>
+                        <div class="headerTable__body">{{po_header_details.0.supplier_mobile_num}}</div>
+                    </td>
+                    <td width="50%"  >
+                        <div class="headerTable__heading" >Vendor Email</div>
+                        <div class="headerTable__body">{{po_header_details.0.supplier_email}}</div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        
+    </div>
+    
+    <!-- HTML Content -->
+    <div id="body_content">
+        <table class="addressTable">
+            <tr>
+                <td width="50%" >
+                    <div class="headerTable__heading" > Bill and Ship to Address</div>
+                    {{po_header_delivery_address.street}}<br>
+                    {{po_header_delivery_address.area}}<br>
+                    {{po_header_delivery_address.landmark}}<br>
+                    {{po_header_delivery_address.city}} - {{po_header_delivery_address.postal_code}}<br>
+                    {{po_header_delivery_address.region}}, {{po_header_delivery_address.country_code}}<br>
+                    Ph.no. {{po_header_delivery_address.telephone_number}}
+                </td>
+                <td width="50%" >
+                    <div class="headerTable__heading" > Invoice Sending Address</div>
+                    {{po_header_invoice_address.street}}<br>
+                    {{po_header_invoice_address.area}}<br>
+                    {{po_header_invoice_address.landmark}}<br>
+                    {{po_header_invoice_address.city}} - {{po_header_invoice_address.postal_code}}<br>
+                    {{po_header_invoice_address.region}}, {{po_header_invoice_address.country_code}}<br>
+                    Ph.no. {{po_header_delivery_address.telephone_number}}
+                
+                </td>
+            </tr>
+        </table>
+
+        <br>
+
+        <table class="addressTable">
+            <tr>
+                <td width="50%" rowspan="2">
+                    <div class="headerTable__heading" > Supplier Address</div>
+                    {{po_header_details.0.supplier_address.name1}} {{po_header_details.0.supplier_address.name2}}
+                    {{po_header_details.0.supplier_address.street}}<br>
+                    Email: {{po_header_details.0.supplier_address.email}}<br>
+                    Ph no: {{po_header_details.0.supplier_address.landline}}<br>
+                    {{po_header_details.0.supplier_address.city}} - {{po_header_details.0.supplier_address.postal_code}}<br>
+                    Ph.no. {{po_header_delivery_address.telephone_number}}
+                </td>
+                <td width="50%" >
+                    <div class="headerTable__heading" > Terms of Delivery</div>
+                    {{po_header_details.0.incoterm}} - {{po_header_details.0.incoterm_loc}}<br>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" >
+                    <div class="headerTable__heading" > Terms of Payment</div>
+                    {{po_header_details.0.payment_term}}<br>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+
+<!--        <table class="addressTable">-->
+
+<!--            <tr>-->
+<!--                <td width="50%" >-->
+<!--                    <div class="headerTable__heading" > Goods Marking</div>-->
+<!--                    According to agreement<br>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--        </table>-->
+
+        <table class="addressTable">
+            <tr>
+                <td width="50%" >
+                    <div class="headerTable__heading" > Goods/Services Recipient</div>
+                    {{po_header_details.0.requester}}<br>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+
+        <table class="itemTable">
+            <thead>
+                <tr>
+                    <th width="5%" >Item No.</th>
+                    <th>Product Number</th>
+                    <th>Product Description</th>
+                    <th>Order Quantity</th>
+                    <th>UOM</th>
+                    <th>Unit Price excl.tax</th>
+                    <th>Shipping Date from Vendor</th>
+                    <th>Total Amount excl.tax</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for po_item_detail in po_item_details %}
+                <tr>
+                    <td> {{po_item_detail.po_item_num}} </td>
+                    <td> {{po_item_detail.supp_product_id}} </td>  
+                    <td>{{po_item_detail.description}} </td> 
+                    <td>{{po_item_detail.quantity}}</td>  
+                    <td>{{po_item_detail.unit}} </td> 
+                    <td>{{po_item_detail.price}}</td>  
+                    <td>{{po_item_detail.item_del_date|date:'Y-m-d'}}</td> 
+                    <td>{{po_item_detail.value}} {{po_item_detail.currency}}</td>
+                </tr>
+
+                {% if po_item_detail.eform_data %}
+                <tr>
+                    <td colspan="8">
+                        <div><b>Additional information:</b></div>
+<!--                        <table>-->
+<!--                            <tbody>-->
+<!--                            {% for e_data in po_item_detail.eform_data %}-->
+<!--                            <tr>-->
+<!--                                <td width="20%">{{e_data.eform_field_name}}</td>-->
+<!--                                <td>{{e_data.eform_field_data}}</td>-->
+<!--                            </tr>-->
+<!--                            {% endfor %}-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+
+                        {% for e_data in po_item_detail.eform_data %}
+                        <span><b>{{e_data.eform_field_name}} :</b> <span>{{e_data.eform_field_data}}</span></span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+
+                {% for supplier_note in supplier_notes %}
+                {% if supplier_note.item_guid == po_item_detail.po_item_guid %}
+                {% if supplier_note.note_text %}
+                <tr>
+                    <td colspan="8">
+                        <div><b>Additional comments on the line item:</b></div>
+                        {{supplier_note.note_text}}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+
+                {% if po_item_detail.ctr_num %}
+                <tr>
+                    <td colspan="8">
+                        <div><b>Contract Reference:</b></div>
+                        <div>Contract Number: {{po_item_detail.ctr_num}}</div>
+                    </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td colspan="8">
+                        <div><b>Cost Object:</b></div>
+                        {% for po_acc_data in po_accounting_details %}
+                        
+                        {% if po_acc_data.po_item_guid_id == po_item_detail.po_item_guid %}
+                        <div>
+                            <!-- Generic Account:{{po_acc_data.generic_acc_str}} <br> -->
+                            {{po_acc_data.acc_cat}} : {{po_acc_data.cost_center}} <br>
+                            GL Account: {{po_acc_data.gl_acc_num}}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>   
+                {% endfor %}
+                
+            </tbody>         
+            
+        </table>
+        <br>
+        <div style="font-size: 125%;">
+            <div style="text-align:right;">Total Value (Net): <b>{{actual_price}} {{po_header_details.0.currency}}</b></div>
+            <div style="text-align:right;">Total Discount: <b>{{discount_value}} {{po_header_details.0.currency}}</b></div>
+            <div style="text-align:right;">Total Tax: <b>{{tax_value}} {{po_header_details.0.currency}}</b></div>
+            <div style="text-align:right;"><b>Total Value (Gross):</b>  <b style="font-size: 150%;">{{po_header_details.0.total_value}} {{po_header_details.0.currency}}</b></div>
+        </div>
+
+    </div>
+
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">
+        <table>
+            <tr>
+                <td>
+                    <span>
+                        Page <pdf:pagenumber>
+                            of <pdf:pagecount>
+                    </span>
+                </td>
+                <td style="text-align: right;">
+                    <span style="color: white; background-color: #4E4E4E;">
+<!--                        <img width="100px" src="http://majjaka-eprocure.com/static/images/majjkalogo-black.png">-->
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+
+    </div>
+</body>
+</html>
+
+<!-- @page {
+    size: a4 portrait;
+    @frame header_frame {           /* Static Frame */
+        -pdf-frame-content: header_content;
+        left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+    }
+   
+    @frame content_frame {          /* Content Frame */
+        left: 30pt; right: 30pt; top: 30pt;
+    }
+    @frame footer_frame {           /* Another static Frame */
+        -pdf-frame-content: footer_content;
+        left: 30pt; right: 30pt; top: -30pt; height: 20pt;
+    }
+} -->
+
+<!-- @page {
+    @frame content_frame {          /* Content Frame */
+        left: 30pt; right: 30pt; top: 30pt;
+    }
+    
+    @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 30pt; right: 30pt; top: -30pt;
+    }
+} -->
+
+
+<!-- @page {
+    @frame header_frame {           /* Static Frame */
+        -pdf-frame-content: header_content;
+        left: 30pt; right: 30pt; top: 30pt;
+    }
+    @frame content_frame {          /* Content Frame */
+        -pdf-frame-content: body_content;
+        left: 30pt; right: 30pt; top: 180pt;
+    }
+    
+    @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 30pt; right: 30pt; top: -30pt;
+    }
+} -->
+

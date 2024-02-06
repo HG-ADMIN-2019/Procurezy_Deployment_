@@ -1,0 +1,258 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Org Announcements Details (Admin Tool){% endblock %}
+
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="hg_wrapper">
+
+        <div>
+            <div class="hg_head1">Organizational Announcements Details</div>
+            <hr class="hg_heading_hrborder">
+        </div>
+
+        <!--Register type drop down-->
+        <div class="card card-margin">
+
+            <div class="tab-content">
+
+                <div id="basic_data_tab" class="tab-pane active p-3" >
+                     <div id="save_error_div" class="alert alert-danger display-none" role="alert" ></div>
+                    {{ supplier_form.non_field_errors }}
+                    <!-- Display the success message upon successful registration-->
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+
+                    <!-- Add Organizational Announcement form-->
+                    <form method="POST" id="org_announcement_form" name="org_announcement_form">
+                        {% csrf_token %}
+                        <div class="alert alert-success display-none" id="org_announcement_update_success" role="alert"></div>
+                        <!--    Basic Data      -->
+                        <div class="card">
+<!--                            <h5 class="card-header">Organizational Announcement Data</h5>-->
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <input value="{{announcement_details.unique_announcement_id}}" id="announcement_guid" hidden>
+
+                                        <input type="text" class="form-control hg_edit_display_mode" id="announcement_id" value="{{announcement_details.announcement_id}}" hidden>
+
+                                    <div class="form-group col-md">
+                                        <label> Title</label><span class="hg_required"></span><br>
+                                        <input type="text" class="form-control hg_edit_display_mode" id="announcement_subject" value="{{announcement_details.announcement_subject}}" disabled>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Description</label><span class="hg_required"></span><br>
+                                        <input type="text" name="announcement_desc" id="announcement_desc" class="form-control hg_edit_display_mode" value="{{announcement_details.announcement_description}}" disabled>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Status</label><br>
+                                        <select name="status" id="status" class="form-control hg_edit_display_mode" disabled>
+                                          {% for status in status_dropdown_values %}
+                                            <option value="{{status.field_type_id}}" >{{status.field_type_id}}</option>
+                                        {% endfor %}
+                                        </select>
+
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Priority</label><br>
+                                        <select name="priority" id="priority" class="form-control hg_edit_display_mode" disabled >
+                                         {% for priority in priority_dropdown_values %}
+                                            <option value="{{priority.field_type_id}}" >{{priority.field_type_id}}</option>
+                                         {% endfor %}
+                                        </select>
+
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> From Date</label><span class="hg_required"></span><br>
+                                        {{from_date|date:'Y-m-d'}}
+                                        <input type="date" class="form-control hg_edit_display_mode" name="from_date" id="from_date" value="{{from_date}}" disabled>
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> To Date</label><span class="hg_required"></span><br>
+                                        <input type="date" class="form-control hg_edit_display_mode" name="to_date" id="to_date" value="{{to_date}}" disabled>
+                                    </div>
+
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                         <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="delete_org_announcement_data()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of delete confirmation popup-->
+                         <!--save confirmation popup-->
+    <div class="modal fade" id="id_save_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to save?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="id_popup_save" onclick="save_announcement_details()" class="btn btn-primary"><i class="fas fa-save"></i> YES</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of save confirmation popup-->
+                        <br>
+                        <div class="d-flex justify-content-end">
+                            <div id="org_save_cancel_button" class="display-none">
+                                <button type="button" id="save_org_data" name="save_org_data" class="btn btn-primary" value="org_save" data-toggle="modal" data-target="#id_save_confirm_popup"><i class="fas fa-save"></i> save</button>
+                                <button type="button" class="btn btn-primary" onclick="cancel_announcement_details();"><i class="fas fa-times"></i> cancel</button>
+                            </div>
+                              <div id="org_edit_button">
+                                <button type="button" class="btn btn-primary" onclick="edit_org_announcement_data();"><i class="fas fa-pencil-alt"></i> edit</button>
+<!--                                <button id="org_delete_button" type="button" class="btn btn-primary" onclick="delete_org_announcement_data();"><i class="fas fa-pencil-alt"></i> DELETE</button>-->
+<!--                            <button class="btn btn-primary" id="org_delete_button" value="org_delete" data-toggle="modal" data-target="#id_delete_confirm_popup">-->
+<!--                        <i class="fa fa-trash"></i> DELETE-->
+<!--                    </button>-->
+                              </div>
+                        </div>
+
+                    </form>
+                </div>
+
+        </div>
+
+    </div>
+
+    <div class="hg_spacer2"> &nbsp; </div>
+</div>
+
+<script>
+var selected_status = "{{selected_status|safe}}";
+$(document).ready(function(){
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "4rem");
+    $("#status").val(selected_status).attr('selected', 'selected');
+});
+function edit_org_announcement_data(){
+    $('#org_announcement_update_success').hide();
+    $(".hg_edit_display_mode").prop( "disabled", false );
+    document.getElementById('org_edit_button').style.display = 'none'
+    document.getElementById('org_save_cancel_button').style.display = 'block'
+}
+
+function cancel_announcement_details(){
+    $(".hg_edit_display_mode").prop( "disabled", true );
+    document.getElementById('org_save_cancel_button').style.display = 'none'
+    document.getElementById('org_edit_button').style.display = 'block'
+}
+
+function save_announcement_details() {
+
+    var form_data={};
+    form_data = {
+        announcement_id : document.getElementById('announcement_id').value,
+        announcement_subject : document.getElementById('announcement_subject').value,
+        announcement_description : document.getElementById('announcement_desc').value,
+        status : document.getElementById('status').value,
+        priority : document.getElementById('priority').value,
+        announcement_from_date : document.getElementById('from_date').value,
+        announcement_to_date : document.getElementById('to_date').value,
+        announcement_guid : document.getElementById('announcement_guid').value,
+        del_ind:0,
+    }
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:update_org_announcement_details' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+          document.getElementById('org_announcement_update_success').innerHTML = response.message;
+          $('#save_error_div').hide()
+          $('#org_announcement_update_success').show();
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+          $('#id_save_confirm_popup').modal('hide');
+          cancel_announcement_details();
+        }
+    });
+
+}
+function delete_org_announcement_data() {
+
+    var form_data={};
+    form_data = {
+        announcement_id : document.getElementById('announcement_id').value,
+        announcement_subject : document.getElementById('announcement_subject').value,
+        announcement_description : document.getElementById('announcement_desc').value,
+        status : document.getElementById('status').value,
+        priority : document.getElementById('priority').value,
+        announcement_from_date : document.getElementById('from_date').value,
+        announcement_to_date : document.getElementById('to_date').value,
+        announcement_guid : document.getElementById('announcement_guid').value,
+        del_ind:1,
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:update_org_announcement_details' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+           console.log(response);
+          document.getElementById('org_announcement_update_success').innerHTML = response.message;
+          $('#save_error_div').hide()
+          $('#org_announcement_update_success').show();
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+          $('#id_delete_confirm_popup').modal('hide');
+        }
+    });
+    window.location = "{% url 'eProc_Admin_Tool:org_announcements_search' %}";
+
+}
+
+</script>
+
+<!--<script src="{% static 'scripts/display-edit-supplier.js' %}"></script>-->
+
+
+{% endblock %}
+

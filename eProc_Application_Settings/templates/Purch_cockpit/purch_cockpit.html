@@ -1,0 +1,37 @@
+<div id="purch_cockpit_main" class="hg_main hg_application_main" style="display:none">
+
+    <div>
+        <h1 style="vertical-align: middle;">Display Purchaser Cockpit Data</h1>
+        <hr class="hg_heading_hrborder">
+    </div>
+    <div id="edit_purch_cockpit_div" class="hg_button_bottom_padding" style="display: block;">
+        <button class="btn btn-primary" onclick="edit_purch_cockpit_data()"><i class="fas fa-edit" id="edit" title="Edit"></i>
+            Edit</button>
+    </div>
+
+    <div id="add_delete_line_purch_cockpit_div" style="display: none;" class="hg_button_bottom_padding">
+        <button class="btn btn-primary" onclick="purch_cockpit_app_add_new_line();"><i class="fa fa-plus"
+                aria-hidden="true" id="add_line" title="Add Line"></i> Add</button>
+        <button class="btn btn-primary" onclick="application_settings_delete_Row('display_purch_table')"><i class="fa fa-trash"
+                aria-hidden="true" title="Delete Line" id="delete_line"></i> Delete</button>
+    </div>
+
+    <div class="hg_table_app_align">
+        <table id="display_purch_table" class="table table-striped" style="margin-bottom:10px;">
+            <thead id="purch_header">
+
+            </thead>
+            <tbody id="purch_body">
+                <tr>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="purch_cockpit_edit_buttons" class="hg_cancel_save_button_align" style="display:none;">
+        <button type="button" class="btn btn-primary hg_button_margin" onclick="display_purch_cockpit_data()"><i
+                class="fas fa-times"></i> cancel</button>
+        <button type="button" onclick="purch_cockpit_save()" class="btn btn-primary"><i class="fas fa-save"></i> save</button>
+    </div>
+</div>

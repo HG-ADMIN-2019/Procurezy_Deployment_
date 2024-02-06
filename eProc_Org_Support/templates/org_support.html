@@ -1,0 +1,256 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Organizational Support {% endblock %}
+
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="hg_wrapper">
+
+        <div>
+            <div class="hg_head1">Organizational Support</div>
+            <hr class="hg_heading_hrborder">
+        </div>
+
+        <!--Register type drop down-->
+        <div class="card card-margin">
+
+            <div class="tab-content">
+
+                <div id="basic_data_tab" class="tab-pane active p-3" >
+                     <div id="save_error_div" class="alert alert-danger display-none" role="alert" ></div>
+
+                    <!-- Display the success message upon successful registration-->
+                    <div>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+
+                    <!-- Add Organizational Support form-->
+                    <form method="POST" id="org_support_form" name="org_support_form">
+                        {% csrf_token %}
+                        <div class="alert alert-success display-none" id="org_support_update_success" role="alert"></div>
+                        <!--    Basic Data      -->
+                        <div class="card">
+                            <h5 class="card-header">Add Organizational Support Detaila</h5>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <input value="" id="org_support_guid" hidden>
+
+<!--                                    <input type="text"  id="announcement_id" value="{{announcement_details.announcement_id}}" hidden>-->
+
+                                    <div class="form-group col-md">
+                                        <label> Support Types:</label><span class="hg_required"></span><br>
+                                         <select name="support_type" id="support_type" class="form-control hg_edit_display_mode" >
+                                            <option value="email">Email</option>
+                                             <option value="call">Call</option>
+                                             <option value="chat">Chat</option>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Support Email:</label><span class="hg_required"></span><br>
+                                        <input type="text" name="support_email" id="support_email" class="form-control hg_edit_display_mode" value="" >
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Support Number</label><br>
+                                         <input type="text" class="form-control hg_edit_display_mode" id="support_number" name="support_number" value="" required >
+                                    </div>
+
+                                    <div class="form-group col-md">
+                                        <label> Username</label><br>
+                                        <select name="username" id="username" class="form-control hg_edit_display_mode" >
+                                            {% for name in username_values %}
+                                            <option value="{{name}}">{{name}}</option>
+                                         {% endfor %}
+                                        </select>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <br>
+                        <div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Are you sure you want to reset the form?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">no</button>
+                <button type="button" class="btn btn-primary" id="announcement_form_reset">yes</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+                        <div class="d-flex justify-content-end">
+                            <div id="org_save_button">
+
+                                <button class="btn btn-primary" type="button" title="Click here to Register" onclick="save_support_data();"> save</button>
+
+                            </div>
+                              <div id="org_edit_button" class="display-none">
+                                <button type="button" class="btn btn-primary" onclick="edit_org_announcement_data();"><i class="fas fa-pencil-alt"></i> edit</button>
+
+                            </div>
+                            <div id="update_saved_data" class="display-none">
+                            <button type="button"  name="save_org_data" class="btn btn-primary" onclick="update_saved_support();"><i class="fas fa-save"></i> save</button>
+                            <button type="button" class="btn btn-primary" onclick="cancel_announcement_details();"><i class="fas fa-times"></i> cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+    <div class="hg_spacer2"> &nbsp; </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "4rem");
+
+});
+
+function cancel_announcement_details(){
+    $(".hg_edit_display_mode").prop( "disabled", true );
+    document.getElementById('update_saved_data').style.display = 'none'
+    document.getElementById('org_edit_button').style.display = 'block'
+}
+
+function edit_org_announcement_data(){
+    $('#org_support_update_success').hide();
+    $(".hg_edit_display_mode").prop( "disabled", false );
+    document.getElementById('org_edit_button').style.display = 'none'
+    document.getElementById('update_saved_data').style.display = 'block'
+}
+
+ // Validation function
+   const save_support_form_validation = (sub, desc, from_date, to_date) => {
+        var is_valid = true
+        var save_form_errors = ''
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (sub == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Subject";
+        }
+        else if (desc == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Description";
+        }
+         else if (from_date == '') {
+             if ((Date.parse(to_date) < Date.parse(from_date)) == false) {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Announcement From Date";
+            }
+          }
+          else if (to_date == '') {
+            is_valid = false
+            save_form_errors += messageConstants["JMSG007"] + "Announcement To Date";
+        }
+
+
+        return is_valid, save_form_errors
+    }
+
+function save_support_data(){
+<!-- var sub_val= $('#announcement_subject').val();-->
+<!--     var desc_val = $('#announcement_desc').val();-->
+<!--     var from_date_val = $('#from_date').val();-->
+<!--     var to_date_val = $('#to_date').val();-->
+<!--      is_save_form_valid = save_announcement_form_validation(sub_val, desc_val, from_date_val, to_date_val)-->
+<!--        if (is_save_form_valid != '') {-->
+<!--            $('#save_error_div').html(is_save_form_valid)-->
+<!--            $('#save_error_div').show()-->
+<!--            scroll_top();-->
+<!--            return-->
+<!--        }-->
+
+    var form_data={};
+    form_data = {
+        support_type : document.getElementById('support_type').value,
+        support_email : document.getElementById('support_email').value,
+        support_number : document.getElementById('support_number').value,
+        username : document.getElementById('username').value,
+        org_support_guid : document.getElementById('org_support_guid').value,
+    }
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:org_support_save' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+          document.getElementById('org_support_update_success').innerHTML = response.message;
+          //console.log(response.updated_guid)
+          $('#save_error_div').hide();
+          $('#org_support_update_success').show();
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+        document.getElementById('org_support_guid').value = response.updated_guid;
+        document.getElementById('org_save_button').style.display = 'none';
+         document.getElementById('org_edit_button').style.display = 'block';
+         $(".hg_edit_display_mode").prop( "disabled", true );
+        }
+    });
+
+}
+
+function update_saved_support() {
+
+    var form_data={};
+    form_data = {
+        support_type : document.getElementById('support_type').value,
+        support_email : document.getElementById('support_email').value,
+        support_number : document.getElementById('support_number').value,
+        username : document.getElementById('username').value,
+        org_support_guid : document.getElementById('org_support_guid').value,
+    }
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Org_Support:update_org_support_details' %}",
+        data: JSON.stringify(form_data),
+        success: function(response) {
+          document.getElementById('org_support_update_success').innerHTML = response.message;
+          $('#save_error_div').hide();
+          $('#org_support_update_success').show();
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+          cancel_announcement_details();
+        }
+    });
+
+}
+
+</script>
+{% endblock %}

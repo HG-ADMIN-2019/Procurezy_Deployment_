@@ -1,0 +1,741 @@
+ {% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <!--    <script src="https://use.fontawesome.com/releases/v5.15.2/js/all.js" data-auto-replace-svg="nest"></script>-->
+</head>
+<style>
+    input[type=button],
+    input[type=submit],
+    input[type=reset],
+    .hg_button {
+        text-transform: uppercase;
+    }
+    
+    .hg_table input[type=text] {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    
+    .hg_input_box_width {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .hg_button_bottom_padding {
+        margin-bottom: 10px;
+    }
+    
+    .hg_button_margin {
+        margin-right: 10px;
+    }
+    
+    .hg_table_app_align {
+        padding-top: 60px;
+    }
+    
+    .hg_cancel_save_button_align {
+        float: right;
+        margin-top: 10px;
+    }
+    
+    .hg_heading_hrborder {
+        border: 1px solid #FFCC6B;
+        width: 100%
+    }
+    
+    .hg_select {
+        border: 0;
+        width: 100%;
+    }
+    
+    th {
+        background-color: #e9e9e9;
+        padding-left: 20px;
+    }
+    
+    table {
+        border: none;
+        text-align: center;
+        vertical-align: middle;
+        width: 100%;
+    }
+    
+    table,
+    th,
+    td {
+        <!-- padding: 5px 10px 5px 10px;
+        -->border: none;
+        text-align: left;
+        text-transform: uppercase;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+    
+    tr:nth-child(odd) {
+        background-color: #e9e9e9;
+    }
+    
+    .hg_main {
+        position: relative;
+        width: 73%;
+        background-color: #FDFAF1;
+        left: 24%;
+        padding-top: 50px;
+        padding-left: 20px;
+    }
+    
+    i {
+        color: #4B2D2A;
+    }
+    
+    table,
+    td,
+    tr,
+    th {
+        border: none;
+    }
+    
+    table,
+    th,
+    td {
+        border: none;
+    }
+    
+    .hg_sidenav {
+        height: 100%;
+        background-color: #fefefe;
+        /* background-color: #FFB700; */
+        /*background-image: linear-gradient(to top, rgba(250, 189, 76, 0.6), rgba(250, 189, 76, 1));*/
+        position: fixed;
+        padding: 10px;
+        /* margin-top: 5%; */
+        overflow: hidden;
+        float: left;
+        text-align: left;
+        width: 350px;
+        left: 0;
+        top: 0;
+    }
+    
+    .hg_tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+    
+    #overlay div {
+        width: 300px;
+        margin: 100px auto;
+        background-color: #fff;
+        border: 1px solid #4B2D2A;
+        padding: 15px;
+        text-align: center;
+    }
+    /* tree menu classes start */
+    /* Remove default bullets */
+    
+    ul,
+    #myUL {
+        list-style-type: none;
+    }
+    /* Remove margins and padding from the parent ul */
+    
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+    /* Style the caret/arrow */
+    
+    .hg_caret {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+    /* Create the caret/arrow with a unicode, and style it */
+    
+    .hg_caret::before {
+        content: "\25B6";
+        color: #4B2D2A;
+        display: inline-block;
+        margin-right: 3px;
+    }
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    
+    .hg_caret-down::before {
+        transform: rotate(90deg);
+    }
+    /* Hide the nested list */
+    
+    .hg_nested {
+        display: none;
+        /* background-color: #FFB700; */
+        color: #4B2D2A;
+    }
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    
+    .hg_app_set_active {
+        display: block;
+    }
+    
+    .hg_caret1 {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+    /* Create the caret/arrow with a unicode, and style it */
+    
+    .hg_caret1::before {
+        content: "\25B7";
+        color: #4B2D2A;
+        display: inline-block;
+        margin-right: 3px;
+    }
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    
+    .hg_caret1-down::before {
+        transform: rotate(90deg);
+    }
+    /* tree menu classes end */
+    
+    .hg_expand_tree {
+        color: #4B2D2A;
+    }
+    
+    .hg_align_to_tree {
+        margin: 0px 0px 0px 340px;
+    }
+    
+    .hg_spacing {
+        width: 60%;
+        margin: 10px 10px 10px 30%;
+    }
+    
+    .hg_tStyle {
+        font-size: 15px;
+        padding-bottom: 5px;
+    }
+    
+    .input {
+        border: 1px solid #707070;
+    }
+    
+    .display_buttons {
+        float: left;
+        margin: 15px 0 15px 0;
+        margin-right: 10px;
+    }
+    
+    #display_basic_table_filter {
+        float: right;
+        margin-left: 10px;
+        margin-bottom: 15px;
+    }
+    
+    #display_basic_table_info {
+        float: left;
+        margin-left: 10px;
+    }
+    
+    #display_basic_table_length {
+        float: right;
+        margin-top: 10px;
+    }
+    
+    #display_basic_table_length,
+    #display_basic_table_info,
+    #display_basic_table_paginate {
+        display: inline;
+    }
+    
+    tr:nth-child(odd) {
+        background-color: #FFFFFF;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #eee;
+    }
+    
+    #display_basic_table_paginate {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    #display_basic_table_filter {
+        margin-top: 12px;
+    }
+    
+    #id_check_all {
+        float: left;
+        margin: 10px 65% 0 20px;
+    }
+    
+    .scrollbox_tree {
+        overflow-y: auto;
+        max-height: calc(100vh - 0px);
+    }
+    
+    .scrollbox {
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+    }
+    
+    .hg_pl10 {
+        color: black;
+        font-family: sans-serif;
+        font-size: 25px;
+        font-weight: bold;
+        margin-bottom: 25px;
+    }
+    
+    .hg_pb5 {
+        font-weight: 500;
+    }
+    
+    .check_success_message {
+        font-size: small;
+        line-height: 5px;
+    }
+    
+    .check_special_character_messages {
+        font-size: small;
+        line-height: 5px;
+    }
+    
+    .check_error_messages {
+        font-size: small;
+        line-height: 5px;
+    }
+    
+    #id_popup_table_paginate {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        font-size: smaller;
+    }
+    
+    #id_popup_table_length {
+        float: right;
+        font-size: smaller;
+        margin-top: 5px;
+    }
+    
+    #id_popup_table_info {
+        font-size: smaller;
+        float: left;
+        width: auto;
+    }
+    
+    #id_popup_table_paginate #id_popup_table_length #id_popup_table_info {
+        display: inline;
+    }
+    
+    .tree,
+    .tree ul {
+        margin: 0;
+        padding: 0;
+        list-style: none
+    }
+    
+    .tree ul {
+        margin-left: 1em;
+        position: relative
+    }
+    
+    .tree ul ul {
+        margin-left: .5em
+    }
+    
+    .tree ul:before {
+        content: "";
+        display: block;
+        width: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        border-left: 1px solid
+    }
+    
+    .tree li {
+        margin: 0;
+        padding: 0 1em;
+        line-height: 2em;
+        color: rgb(0, 0, 0);
+        font-weight: 700;
+        position: relative
+    }
+    
+    .tree ul li:before {
+        content: "";
+        display: block;
+        width: 10px;
+        height: 0;
+        border-top: 1px solid;
+        margin-top: -1px;
+        position: absolute;
+        top: 1em;
+        left: 0
+    }
+    
+    .tree ul li:last-child:before {
+        background: #fff;
+        height: auto;
+        top: 1em;
+        bottom: 0
+    }
+    
+    .indicator {
+        margin-right: 5px;
+        margin-left: 5px;
+        margin-bottom: 0px;
+    }
+    
+    .tree li a {
+        text-decoration: none;
+        color: rgb(4, 33, 194);
+        text-size-adjust: 100%;
+    }
+    
+    .tree li button,
+    .tree li button:active,
+    .tree li button:focus {
+        text-decoration: none;
+        color: rgb(0, 0, 0);
+        border: none;
+        background: transparent;
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+        outline: 0;
+    }
+    
+    .ul_class {
+        cursor: pointer;
+        user-select: none;
+        font-size: 100%;
+        /* Prevent text selection */
+    }
+    
+    .ul_sub {
+        font-size: 101%;
+    }
+    
+    .hg_valign_mid {
+        float: left;
+        margin-top: 6px;
+    }
+    
+    .jumbotron_alignment {
+        padding-top: 30px;
+        margin-top: 0px;
+    }
+    
+    .container-fluid {
+        padding-top: 2rem;
+        padding-left: 22rem;
+    }
+</style>
+
+<body>
+
+    <div>
+        <div class="hg_sidenav scrollbox_tree" style="margin: top 5%">
+            <h4 class="hg_pl10">Majjaka eProcurement</h4>
+            <div class="container" style="margin-top:15px;">
+                <div class="row">
+                    <ul id="tree1">
+                        <img src="{% static 'images/base-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Basic Settings
+
+                            <ul>
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:upload_countries' %}';">Upload Countries</a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:upload_currencies' %}';">Upload Currencies </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:upload_languages' %}';">Upload Languages </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:upload_product_category' %}';">Upload UNSPSC </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:upload_timezone' %}';">Upload Time Zone </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:upload_unit_of_measure' %}';">Upload Unit of Measure</a></li>
+                            </ul>
+                        </li>
+
+                        <img src="{% static 'images/app-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Application Settings
+
+                            <ul class="ul_sub">
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:upload_clients' %}';">Define Clients </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:upload_document_type' %}';">Define Document Types </a></li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:display_calendar' %}';">Create Calendar Config </a></li>
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:display_holidays' %}';">Create Holiday Calendar </a></li>
+                                <li>Define Number Ranges
+                                    <ul>
+                                        <li><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:number_range' %}';">Shopping Cart </a></li>
+                                        <li><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:number_range_purchase_order' %}';">Purchase Order </a></li>
+                                        <li><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:number_range_goods_verification' %}';">Goods Verification </a></li>
+                                    </ul>
+                                </li>
+
+                                <li>Define Transaction Types
+                                    <ul>
+                                        <li><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:transaction_type' %}';">Transaction Types</a></li>
+                                        <li class="hg_caret1" >Shopping Cart </li>
+                                        <li class="hg_caret1">Purchase Order</li>
+                                        <li class="hg_caret1">Good Verification</li>
+                                    </ul>
+                                </li>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:upload_acc_assign_categories' %}';">Define Account Assignment Categories</a></li>
+
+                                <li>Define System Settings</li>
+
+                                <li>Define Email Notifications
+                                    <ul>
+                                        <li>Email Contents</li>
+                                        <li>Email Key Words</li>
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Emails:email_notif' %}';">Email Notification Settings</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <img src="{% static 'images/mas-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Master Data Settings
+                            <ul>
+                                <li>Upload Accounting Data
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:account_ass_values' %}';">Account Assignment Values</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:account_assignment' %}';">Account Assignment Descriptions</a></li>
+
+                                    </ul>
+                                </li>
+
+                                <li>Upload Customer Product Categories(UNSPSC)
+                                    <ul>
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:upload_cust_prod_cat' %}';">Customer Product Categories</a></li>
+
+                                    </ul>
+                                </li>
+
+                                <li>Upload Approval Data
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:approval_type' %}';">Approval Types</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:approval_limit' %}';">Approval Limit</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:approval_limit_value' %}';">Approval Limit Value</a></li>
+
+
+                                    </ul>
+                                </li>
+
+                                <li>Upload Spend Limit Data
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:spend_limit_id' %}';">Spend Limit ID </a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:spend_limit_value' %}';">Spend Limit Value </a></li>
+
+                                    </ul>
+                                </li>
+
+                                <li>Work Flow Data
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:work_flow_schema' %}';">Work Flow Schema</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:work_flow_accounting' %}';">Work Flow Accounting</a></li>
+
+
+                                    </ul>
+                                </li>
+
+                                 <li>Supplier
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:display_incoterms' %}';">Create Incoterms</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:payment_terms' %}';">Payment Terms</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:payment_terms_desc' %}';">Payment Terms Description</a></li>
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:upload_supplier' %}';">Upload Supplier</a></li>
+                                    </ul>
+                                </li>
+
+                                 <li>Address
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:address_type' %}';">Address Types</a></li>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:address' %}';">Address</a></li>
+
+
+                                    </ul>
+                                </li>
+
+                                <li>Organization Data
+                                    <ul>
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:org_node_types' %}';">Org Node Types</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:org_attributes' %}';">Org Attributes</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:org_companies' %}';">Org Companies</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:purchasing_org' %}';">Purchasing Organization</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:purchasing_grp' %}';">Purchasing Group</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:roles' %}';">Roles</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:auth_objects' %}';">Authorization Objects</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:auth_grp' %}';">Authorization Group</a></li>
+
+
+                                        <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Application_Settings:auth' %}';">Authorization </a></li>
+
+
+                                    </ul>
+                                </li>
+                                 <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Master_Settings:det_gl_acc' %}';">Determine GL Account </a></li>
+
+                            </ul>
+                        </li>
+
+                        <img src="{% static 'images/base-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Purchaser Cockpit Configuration
+                            <ul>
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Basic_Settings:purch_Cockpit' %}';">Purchase Cockpit</a></li>
+
+
+                            </ul>
+                        </li>
+
+                        <img src="{% static 'images/base-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Content Management
+                            <ul id="id_content_manger">
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Manage_Content:upload_catalog' %}';">Catalog</a></li>
+
+
+                                <li class="hg_caret1"><a class="display_span hg_tStyle" onclick="location.href='{% url 'eProc_Manage_Content:upload_product_cattegories' %}';">Product Categories/Series</a></li>
+
+
+                            </ul>
+                        </li>
+                        <img src="{% static 'images/base-icn.png'%}" width="20px" height="20px" class="hg_valign_mid">
+                        <li class="ul_class">Integration
+                            <ul>
+                                <li id="define_conn" ondblclick="define_connection(this); ">Python to SAP Connector</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+
+<script>
+    //#############################################################Application settings start #############################################
+    // var toggler = document.getElementsByClassName("hg_caret");
+    // var i;
+
+    // for (i = 0; i < toggler.length; i++) {
+    //     toggler[i].addEventListener("click", function() {
+    //         this.parentElement.querySelector(".hg_nested").classList.toggle("hg_app_set_active");
+    //         this.classList.toggle("hg_caret-down");
+    //     });
+    // }
+
+    $(document).ready(function() {
+        $('#nav_menu_items').remove();
+    });
+
+    $.fn.extend({
+        treed: function(o) {
+
+            var openedClass = 'fa-minus-circle';
+            var closedClass = 'fa-plus-circle';
+
+            if (typeof o != 'undefined') {
+                if (typeof o.openedClass != 'undefined') {
+                    openedClass = o.openedClass;
+                }
+                if (typeof o.closedClass != 'undefined') {
+                    closedClass = o.closedClass;
+                }
+            };
+
+            //initialize each of the top levels
+            var tree = $(this);
+            tree.addClass("tree");
+            tree.find('li').has("ul").each(function() {
+                var branch = $(this); //li with children ul
+
+                branch.prepend("<i class='indicator fas fa-plus-circle' ></i>");
+                branch.addClass('branch');
+                branch.on('click', function(e) {
+                    if (this == e.target) {
+                        var icon = $(this).children('i:first');
+                        console.log(icon)
+                        icon.toggleClass(openedClass + " " + closedClass);
+                        $("fa-plus-circle").toggleClass("fa-minus-circle")
+                        $(this).children().children().toggle();
+                    }
+                })
+                branch.children().children().toggle();
+            });
+            //fire event from the dynamically added icon
+            tree.find('.branch .indicator').each(function() {
+                $(this).on('click', function() {
+                    $(this).closest('li').click();
+                });
+            });
+            //fire event to open branch if the li contains an anchor instead of text
+            tree.find('.branch>a').each(function() {
+                $(this).on('click', function(e) {
+                    $(this).closest('li').click();
+                    e.preventDefault();
+                });
+            });
+            //fire event to open branch if the li contains a button instead of text
+            tree.find('.branch>button').each(function() {
+                $(this).on('click', function(e) {
+                    $(this).closest('li').click();
+                    e.preventDefault();
+                });
+            });
+        }
+    });
+
+    //Initialization of treeviews
+
+    $('#tree1').treed();
+
+    //#############################################################Application settings End #################################################
+</script>

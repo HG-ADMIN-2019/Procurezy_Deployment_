@@ -1,0 +1,23 @@
+sys_attr_type,sys_attr_value,del_ind
+ACCOUNT_ASSIGNMENT_CATEGORY,1,0
+ACCOUNT_ASSIGNMENT_CATEGORY,0,0
+PWD_POLICY,No Password Policy,1,0
+PWD_POLICY,[A-Za-z0-9]{8,16}_Should consist of the following Minimum length - 8 characters long Atleast one numeric value(0-9) Atleast one Upper case(A-Z) and one lower case values(a-z),0,0
+PWD_POLICY,[a-z0-9]{8,16}_Should consist of the following Minimum length - 8 characters long Atleast one numeric value.Atleast one lowercase,0,0
+CHANGE_SHIPPING_ADDRESS,0,0
+FREQUENTLY_PURCHASED_ITEMS,0,0
+CHANGE_SHIPPING_ADDRESS,1,0
+FREQUENTLY_PURCHASED_ITEMS,1,0
+RECENTLY_VIEWED_ITEMS,1,0
+RECENTLY_VIEWED_ITEMS,0,0
+EDIT_ADDRESS,1,0
+PURCHASE_GROUPS,0,0
+PURCHASE_GROUPS,1,0
+EDIT_ADDRESS,0,0
+PWD_POLICY,[A-Za-z0-9!@#%]{8,16}_Should consist of the following Minimum length - 8 characters long Atleast one numeric value (0-9) Atleast one Upper case and one lower case values (A-Z)(a-z) Atleast one special character (!@#%),0,0
+LIMIT_ITEM,0,0
+LIMIT_ITEM,1,0
+ADD_TO_FAVOURITES,1,0
+ADD_TO_FAVOURITES,0,0
+LOGIN_ATTEMPTS,3,0
+LOGIN_ATTEMPTS,6,0

@@ -1,0 +1,546 @@
+{% extends 'root/base.html' %}
+{% load static %}
+    {% block title %} Holiday Calendar (Application Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    .btn-disable{
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Holidays</h3>
+            <div>
+                  <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Basic_Settings:extract_calendar_holiday_data' %}'" type="button">
+                    <i class="fas fa-download"></i> extract
+                  </button>
+                  <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span id="success_msg_id"></span></div>
+            <div class="table-container tcw-80">
+                <div class="edit-button-section mb-4">
+                    <button id="id_edit_data" title="Edit" class="btn btn-secondary btn-sm" onclick=" onclick_holiday_edit_button()">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times" title="Cancel"></i> cancel
+                    </button>
+                </div>
+                <!--   display basic country table-->
+                <table id="display_basic_table" class="class_basic_calendar_table table table-bordered custom-table">
+                    <thead id="id_calendar_table_header">
+                        <tr>
+                            <th>Calender Number</th>
+                            <th>Calender Description</th>
+                            <th>Country</th>
+                            <th>Year</th>
+                            <th hidden></th>
+                            <th hidden></th>
+                            <th>Action</th>
+                            <th hidden>GUID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_calendar_tbody">
+                        {% for calendar in calendar_data %}
+                        <tr>
+                            <td>{{calendar.calender_id}}</td>
+                            <td>{{calendar.description}}</td>
+                            {% for ct in country_list %}
+                                {% if calendar.country_code == ct.country_code  %}
+                                    <td>{{ct.country_name}}</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td>{{calendar.year}}</td>
+                            <td hidden></td>
+                            <td hidden></td>
+                            <td>
+                                <a href="#" class="badge badge-pill badge-button-blue maintain-calendar-holiday-config" title="Maintain Holidays"  id="{{calendar.calender_id}}"  onclick="onclick_create(this.id)" hidden>Maintain Holidays</a>
+                                <a href="#" class="badge badge-pill badge-button-blue view-calendar-holiday-config" title="View Holidays" id="{{calendar.calender_id}}-Delete"  onclick="onclick_View(this.id)"> View Holidays</a>
+                            </td>
+                            <td hidden></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!--end of display basic country table-->
+            </div>
+        </div>
+    </div>
+    <!--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="holidayModal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-xl" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> View Holiday</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body scrollbox">
+                    <div id="id_del_add_button" class="mb-4">
+                        <button type="button" class="btn btn-primary" title="Add New Row" id="new-row" onclick="add_popup_row()"> add new row</button>
+                        <button class="btn btn-outline-danger" title="Delete" onclick="delete_popup_row('id_popup_table')"><i class="fa fa-trash"></i> delete
+                        </button>
+                    </div>
+                    <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                    <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                    <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                        <p id="id_error_msg_holiday_description" ></p>
+                        <p id="id_error_msg_calendar_name" ></p>
+                        <p id="id_error_msg_calendar_length" ></p>
+                    </div>
+                    <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                    <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                    <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                    <table class="class_popup_table table table-bordered mt-2" id="id_popup_table" >
+                        <thead>
+                            <tr>
+                                <th id="hg_select_checkbox" scope="col"> <div id="id_check_all"> <input type="checkbox" id="selectAll" onclick="checkAllHoliday(this)"></div></th>
+                                <th>Holiday Description</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                <th hidden>GUID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="id_popup_tbody">
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Close" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<script>
+    var messages_list = {{messages_list|safe}};
+    var rendered_calendar_data = {{calendar_data|safe}};
+    var render_country_data = {{country_list|safe}};
+    var render_holiday_data = "{{holidays_data|safe}}"
+    var calendar_data_array = {}
+    var main_table_calendar_value =[];
+    var calendar = '';
+    var edit_basic_data ='';
+    var GLOBAL_ACTION='';
+    var ROW_DELETE='';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_CALENDERHOLIDAYS"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_COUNTRY"]
+    var table_content='';
+
+    // Onclick of Config Holiday link, display or add the rows
+function onclick_Maintain_holiday_button(calender_id) {
+    $("#error_msg_id").css("display", "none");
+    GLOBAL_CALENDER_ID = calender_id.split('-')[0];
+    $("#id_check_all").show();
+    $('#id_popup_table').DataTable().destroy();
+    $("#id_popup_tbody").empty();
+    var res = get_all_checkboxes();
+    var $chkbox_all = $('td input[class="checkbox_check"]', res);
+    var edit_basic_data = "";
+    var unique_input = '';
+    OpenLoaderPopup();
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Configuration:get_holiday_from_calenderid' %}",
+        data: {
+            calender_id: GLOBAL_CALENDER_ID
+        },
+        success: function (response) {
+            $('#id_popup_table').DataTable().destroy();
+            $("#id_popup_tbody").empty(); // Clear previous content
+            if (response.length == 0) {
+                empty_resp = '';
+                empty_resp += '<tr>';
+                empty_resp += '<td><input type="checkbox" class="checkbox_check" name="hg_checkbox" required></td>';
+                empty_resp += '<td><input class="holiday_description input" type="text" id="holiday_description1"  name="holiday_description"  required></td>';
+                empty_resp += '<td><input type="text" class="form-control from_date formatDate" name="from_date"></td>';
+                empty_resp += '<td><input type="text" class="form-control to_date formatDate" name="to_date"></td>';
+                empty_resp += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                empty_resp += '<td hidden><input type="text" class="input" name="calender_holiday_guid"></td>';
+                empty_resp += '</tr>';
+                table_content = empty_resp;
+                $('#id_popup_table tbody').append(empty_resp);
+                table_sort_filter('id_popup_table');
+                DatePicker();
+            } else {
+                var i = 0;
+                content = '';
+                $.each(response, function (key, value) {
+                    var from_date = formatDate(value.fields.from_date);
+                    if (from_date < currentDate) {
+                        i = i + 1;
+                        content += '<tr>';
+                        content += '<td><input type="checkbox" class="checkbox_check" name="hg_checkbox" required></td>';
+                        content += '<td><input class="holiday_description input" id="holiday_description2" required  type="text"  +  name="holiday_description" + value="' + value.fields.holiday_description + '" onkeypress="return /[A-Z 0-9]/i.test(event.key)" ></td>';
+                        content += '<td><input class="form-control from_date formatDate" type="text"  + name="from_date" + value="' + from_date + '" ></td>';
+                        content += '<td><input class="form-control to_date formatDate" type="text" + name="to_date"  + value="' + formatDate(value.fields.to_date) + '" ></td>';
+                        content += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                        content += '<td hidden><input class="input"  type="text"  name="calender_holiday_guid"  value="' + value.pk + '" ></td>';
+                        content += '</tr>';
+                    } else {
+                        i = i + 1;
+                        content += '<tr>';
+                        content += '<td><input type="checkbox" class="checkbox_check" name="hg_checkbox" required></td>';
+                        content += '<td><input class="holiday_description input" id="holiday_description2" required  type="text"  +  name="holiday_description" + value="' + value.fields.holiday_description + '" onkeypress="return /[A-Z 0-9]/i.test(event.key)"></td>';
+                        content += '<td><input class="form-control from_date formatDate" type="text"  + name="from_date" + value="' + from_date + '"></td>';
+                        content += '<td><input class="form-control to_date formatDate" type="text" + name="to_date"  + value="' + formatDate(value.fields.to_date) + '" ></td>';
+                        content += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                        content += '<td hidden><input class="input"  type="text"  name="calender_holiday_guid"  value="' + value.pk + '"></td>';
+                        content += '</tr>';
+                    }
+                });
+                $('#id_popup_tbody').append(content);
+                table_sort_filter('id_popup_table');
+                table_content = content;
+                DatePicker();
+            }
+            CloseLoaderPopup();
+        },
+        error: function (error) {
+            error_msg.innerHTML = error.responseText
+        }
+    });
+    DatePicker();
+    $("#id_del_ind_checkbox").prop("hidden", true);
+    setTimeout(function () { $('#holidayModal').modal('show'); }, 400);
+
+}
+
+    // validate and save for add,copy,update and upload data
+function popup_save_data() {
+    $('#success_msg_id').empty();
+    $('#id_popup_table').DataTable().destroy();
+    GLOBAL_ACTION = "ADD";
+    no_duplicate_value = 'Y';
+    var error_message = '';
+    get_main_table_data(); // Read data from main table
+    // compare for duplicates in popup
+    [no_duplicate_value, error_message] = compare_table_for_duplicate_entries(validate_add_attributes, calendar_data_array);
+    if (error_message) {
+        display_error_message(error_message);
+    } else {
+        var dateValid;
+        [dateValid, error_message] = check_date(calendar_data_array);
+        if (error_message) {
+            display_error_message(error_message);
+        } else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                if ((no_duplicate_value == 'Y')  && (dateValid == 'Y')) {
+                    var add_basic_data = '';
+                    $('#id_save_confirm_popup').modal('hide');
+                    data = {
+                        'data': calendar_data_array,
+                        'table_name': 'CalenderHolidays',
+                        'action': GLOBAL_ACTION
+                    }
+                    OpenLoaderPopup();
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (Response) {
+                            render_holiday_data = Response[0];
+                            display_basic_db_data();
+                            $('#holidayModal').modal('hide');
+                            success_response(Response); // Function call to display response data
+                            MultipleSelect();
+                            DatePicker();
+                            CloseLoaderPopup();
+                        }
+                    });
+                } else if (error_message) {
+                display_error_message(error_message);
+            }
+        }
+    }
+    }
+    table_sort_filter('id_popup_table');
+}
+
+//delete the selected row in db
+    var main_table_calendar_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty();
+        GLOBAL_ACTION = 'DELETE';
+        main_table_calendar_checked = [];
+        var Tabledata = { "Dbl_clck_tbl_id": 'CalenderHolidays' };
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+         data = {'data':main_table_calendar_checked,'table_name':'CalenderHolidays','action':GLOBAL_ACTION}
+         OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+            data : JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                render_holiday_data = Response[0];
+                display_basic_db_data();
+                success_response(Response); // Function call to display response data
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    //Onclick of view holiday button
+    function onclick_View(calender_id){
+        $('#new-row').hide();
+        $('.btn-outline-danger').hide();
+        $("#save_id").prop("hidden", true);
+        onclick_copy_update_button(calender_id);
+        document.getElementById("id_del_add_button").style.display = "none";
+
+    }
+
+    // Onclick of Config Holiday link, display or add the rows
+    function onclick_copy_update_button(calender_id) {
+    $("#error_msg_id").css("display", "none");
+    GLOBAL_CALENDER_ID = calender_id.split('-')[0];
+    $("#hg_select_checkbox").prop("hidden", true);
+
+    $("#id_popup_tbody").empty();
+    var res = get_all_checkboxes();
+    var $chkbox_all = $('td input[class="checkbox_check"]', res);
+    var edit_basic_data = "";
+    var unique_input = '';
+    OpenLoaderPopup();
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Configuration:get_holiday_from_calenderid' %}",
+        data: {
+            calender_id: GLOBAL_CALENDER_ID
+        },
+        success: function (response) {
+            $('#id_popup_table').DataTable().destroy();
+            $("#id_popup_tbody").empty(); // Clear previous content
+
+            if (response.length == 0) {
+                empty_resp = '';
+                empty_resp += '<tr>';
+                empty_resp += '<td><input type="checkbox" class="checkbox_check" name="hg_checkbox" required></td>';
+                empty_resp += '<td><input class="holiday_description input" type="text" id="holiday_description1"  name="holiday_description"  required></td>';
+                empty_resp += '<td><input  type="text" class="form-control formatDate"   name="from_date"></td>';
+                empty_resp += '<td><input type="text"  class="form-control formatDate" name="to_date"></td>';
+                empty_resp += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                empty_resp += '<td hidden><input type="text" class="input" name="calender_holiday_guid"></td>';
+                empty_resp += '</tr>';
+                table_content = empty_resp;
+                $('#id_popup_table tbody').append(empty_resp);
+                table_sort_filter('id_popup_table');
+                DatePicker();
+            } else {
+                var i = 0;
+                content = '';
+                $.each(response, function (key, value) {
+                    i = i + 1;
+                    var from_date = formatDate(value.fields.from_date);
+                    content += '<tr>';
+                    content += '<td><input class="holiday_description input" id="holiday_description2" required  type="text"  +  name="holiday_description" + value="' + value.fields.holiday_description + '" onkeypress="return /[A-Z 0-9]/i.test(event.key)"  / disabled></td>';
+                    content += '<td><input  class="form-control formatDate" type="text"  + name="from_date" + value="' + from_date + '" / disabled></td>';
+                    content += '<td><input  class="form-control formatDate" type="text" + name="to_date"  + value="' + formatDate(value.fields.to_date) + '" / disabled></td>';
+                    content += '<td hidden><input type="checkbox" name="del_ind"></td>';
+                    content += '<td hidden><input class="input"  type="text"  name="calender_holiday_guid"  value="' + value.pk + '" / disabled></td>';
+                    content += '</tr>';
+                });
+                $('#id_popup_tbody').append(content);
+                table_content = content;
+                HolidayDatePicker();
+                DatePicker();
+            }
+            CloseLoaderPopup();
+        },
+        error: function (error) {
+        }
+    });
+    DatePicker();
+    $("#id_del_ind_checkbox").prop("hidden", true);
+    setTimeout(function () {
+        $('#holidayModal').modal('show');
+    }, 400);
+}
+
+    //Onclick of Maintain holiday button
+    function onclick_create(calender_id){
+        $('#new-row').show();
+        $('.btn-outline-danger').show();
+        onclick_Maintain_holiday_button(calender_id);
+        $("#save_id").prop("hidden", false);
+        document.getElementById("id_del_add_button").style.display = "block";
+        $("#hg_select_checkbox").prop("hidden", false);
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, calendar) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var add_attr_duplicates_list = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        var validDate = 'Y';
+        $.each(validate_add_attributes, function (index, value) {
+            if ($.inArray(value, add_attr_unique_list) == -1) {
+                add_attr_unique_list.push(value);
+            }
+            else {
+                if ($.inArray(value, add_attr_duplicates_list) == -1) {
+                    add_attr_duplicates_list.push(value);
+                }
+            }
+        });
+        if (add_attr_duplicates_list.length != 0) {
+            get_message_details("JMSG001"); // Get message details
+            no_duplicate_value = 'N'
+            return [no_duplicate_value,error_message]
+        }
+        else {
+            $.each(calendar, function (i, item) {
+                if (item.holiday_description == '') {
+                    get_message_details("JMSG002"); // Get message details
+                    no_duplicate_value = 'N'
+                    return [no_duplicate_value,error_message]
+                }
+            });
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //onclick of select all checkbox
+    function checkAllHoliday(ele) {
+        if (ele.checked) {
+            $('.checkbox_check').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = true;
+                }
+            });
+        }
+        else{
+            $('.checkbox_check').each(function() {
+                var disable_check = this.disabled
+                if(disable_check == false){
+                    this.checked = false;
+                }
+            });
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    // -----------------------------------------
+    var table = $('#id_popup_table').DataTable();
+ var rows_selected = [];
+//onclick of select all checkbox
+$('#id_popup_table tbody').on('click', 'input[class="checkbox_check"]', function(e){
+      var $row = $(this).closest('tr');
+      // Get row data
+      var data = table.row($row).data();
+      // Get row ID
+      var rowId = data[0];
+      // Determine whether row ID is in the list of selected row IDs
+      var index = $.inArray(rowId, rows_selected);
+      // If checkbox is checked and row ID is not in list of selected row IDs
+      if(this.checked && index === -1){
+         rows_selected.push(rowId);
+      // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
+      } else if (!this.checked && index !== -1){
+         rows_selected.splice(index, 1);
+      }
+      if(this.checked){
+         $row.addClass('selected');
+      } else {
+         $row.removeClass('selected');
+      }
+      // Update state of "Select all" control
+//      updateDataTableSelectAllCtrl(table);
+      // Prevent click event from propagating to parent
+      e.stopPropagation();
+   });
+
+   // Handle click on "Select all" control
+   $('thead input[id="selectAll"]', table.table().container()).on('click', function(e){
+      if(this.checked){
+         $('#id_popup_table tbody input[class="checkbox_check"]:not(:checked)').trigger('click');
+      } else {
+         $('#id_popup_table tbody input[class="checkbox_check"]:checked').trigger('click');
+      }
+      // Prevent click event from propagating to parent
+      e.stopPropagation();
+      table_sort_filter('id_popup_table');
+   });
+   // Handle table draw event
+   table.on('draw', function(){
+      // Update state of "Select all" control
+      updateDataTableSelectAllCtrl(table);
+      valueChanged();
+//      e.stopPropagation();
+   });
+    function updateDataTableSelectAllCtrl(table){
+       var $table             = table.table().node();
+       var $chkbox_all        = $('tbody input[class="checkbox_check"]', $table);
+       var $chkbox_checked    = $('tbody input[class="checkbox_check"]:checked', $table);
+       var chkbox_select_all  = $('thead input[id="selectAll"]', $table).get(0);
+
+       // If none of the checkboxes are checked
+       if($chkbox_checked.length === 0){
+          chkbox_select_all.checked = false;
+          if('indeterminate' in chkbox_select_all){
+             chkbox_select_all.indeterminate = false;
+          }
+       // If all of the checkboxes are checked
+       } else if ($chkbox_checked.length === $chkbox_all.length){
+          chkbox_select_all.checked = true;
+          if('indeterminate' in chkbox_select_all){
+             chkbox_select_all.indeterminate = false;
+          }
+       } else {
+          chkbox_select_all.checked = true;
+          if('indeterminate' in chkbox_select_all){
+             chkbox_select_all.indeterminate = true;
+          }
+   }
+}
+
+
+</script>
+<script src="{% static 'scripts/holiday_calendar.js' %}"></script>
+{% endblock %}

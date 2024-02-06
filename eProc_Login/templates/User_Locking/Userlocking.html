@@ -1,0 +1,18 @@
+{% extends 'root/base.html' %}
+
+{% block title %} User locked {% endblock %}
+
+{% block maincontent %}
+
+    <div class="hg_navbar_cnt hg_headBar"></div>
+	<div class="hg_navbar hg_mrgTop" ></div>
+    <div class="hg_ctnt_area7" >
+            <div style="margin-top:20px;">
+                <div class="hg_headBg1" >Your account is locked!<div class="hg_clsbtn_outr"><input type="button" class="hg_cls_btn" id="close"  onclick="location.href='{% url 'eProc_Login:login_page' %}';"  /></div></div>
+                <div class="hg_login-field hg_user_locked"> Account locked: Too many login attempts. Contact an admin to unlock your account.</div>
+            </div>
+    </div>
+
+
+{% endblock %}
+

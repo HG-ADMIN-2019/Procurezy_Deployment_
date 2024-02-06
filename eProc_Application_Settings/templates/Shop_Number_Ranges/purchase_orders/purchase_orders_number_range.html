@@ -1,0 +1,418 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} PO Number Ranges (Application Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Purchase Order Number Ranges</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Application_Settings:extract_purchase_order_number_range_data' %}'" type="button">
+                    <i class="fas fa-download"></i> extract
+                 </button>
+                <button class="btn btn-primary" type="button" id="id_add_data" value="ADD" data-toggle="modal" data-target="#myModal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> add number ranges
+                </button>
+                 <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" id="id_edit_data"  onclick="onclick_edit_button()">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" title= "DELETE" value="Delete" style="display:none;" onclick="onclick_delete_button()">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="id_update_data" style="display:none;" value="UPDATE" type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> update
+                    </button>
+                    <button  class="btn btn-secondary btn-sm" id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <!--   display basic number_range table-->
+                <table id="display_basic_table" class="class_basic_number_range_table table table-bordered custom-table">
+                    <thead id="id_number_range_table_header">
+                    <tr>
+                        <th id="hg_select_checkbox" hidden>
+                            <div id="id_check_all" style="display:none;">
+                                <input type="checkbox" id="selectAll" name="chk[]">
+                            </div>
+                        </th>
+                        <th>Sequence</th>
+                        <th>Starting Number</th>
+                        <th>Ending Number</th>
+                        <th>Current Number</th>
+                        <th hidden>guid</th>
+                    </tr>
+                    </thead>
+                    <tbody id="id_number_range_tbody">
+                    {% for numberrange in upload_numberrange %}
+                    <tr>
+                        <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                        <td>{{numberrange.sequence}}</td>
+                        <td>{{numberrange.starting}}</td>
+                        <td>{{numberrange.ending}}</td>
+                        <td>{{numberrange.current}}</td>
+                        <td hidden>{{numberrange.guid}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--modal popup for Add,copy,update and upload-->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Purchase Order Number Range</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>
+                            <button class="btn btn-outline-danger" onclick="delete_popup_row('id_popup_table')"><i class="fa fa-trash"></i> delete</button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages"
+                            class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_sequence"></p>
+                            <p id="id_error_msg_starting"></p>
+                            <p id="id_error_msg_ending"></p>
+                            <p id="id_error_msg_current"></p>
+                            <p id="id_error_msg_range"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                                <tr>
+                                    <th id="header_select">Select</th>
+                                    <th>Sequence</th>
+                                    <th>Starting</th>
+                                    <th>Ending</th>
+                                    <th>Current</th>
+                                    <th hidden>Guid</th>
+                                    <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" style="display:none;" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button class="btn btn-primary" id="save_id"><i class="fas fa-save"></i> save</button>
+                    <button class="btn btn-primary btn-sm" title="Delete" id="delete_data" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup" onclick="hideModal()">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+        {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %} {% endfor %} {% endif %}
+    </div>
+</div>
+{{ upload_numberrange|json_script:"upload_numberrange" }}
+<script>
+    var rendered_number_range_data = JSON.parse(document.getElementById('upload_numberrange').textContent);
+    var messages_list = {{messages_list|safe}};
+    var number_range_data_array = {}
+    var main_table_number_range_value = [];
+    var number_range = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_NUMBER_RANGE"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_NUMBER_RANGE"]
+    var rendered_sequence={{sequence|safe}}
+    var max_sequence='';
+    max_sequence = rendered_sequence+1
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        var number_range_data = new Array();
+        var compare_array = [];
+        var number_range = {};
+        var no_duplicates = 'Y'
+        var error_message = '';
+        get_main_table_data();  //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, numberranges_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else{
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value,numberranges_data,main_table_data)
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var number_range_data_array = numberranges_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':numberranges_data,'table_name':'NumberRanges','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (Response) {
+                        rendered_number_range_data = Response[0].upload_response;
+                        max_sequence = parseInt(Response[0].sequence_max) + 1;
+                        display_basic_db_data();
+                        $('#myModal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message){
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    // Onclick delete Button
+    function onclick_delete_button() {
+        $("#error_msg_id").css("display", "none");
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        GLOBAL_ACTION = "DELETE";
+        var edit_basic_data = "";
+        var guid = '';
+        main_table_number_range_checked = [];
+        get_row_data("#display_basic_table"); // Function call to get the selected row data
+        display_button(); // Call the display_button function to show/hide the buttons
+        data = {'data':main_table_number_range_checked,'table_name':'NumberRanges','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_delete_flags' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                var docTypeArray = Response.delete_flags // Get the delete_flags array from the response
+                // Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                var j = 0; // Index for docTypeArray
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        if (j < docTypeArray.length && docTypeArray[j] === false) {
+                            check = '<input type="checkbox" disabled>';
+                            $('#delete_data').prop('disabled', true);
+                        } else {
+                            check = '<input type="checkbox" onclick="enableDeleteButton()">';
+                        }
+                        j++; // Move to the next index in docTypeArray
+                        edit_basic_data +=
+                            '<tr>' +
+                            '<td>' + check + '</td>' +
+                            '<td><input type="number" class="form-control" value="' + row.cells[1].innerHTML + '" name="sequence"  maxlength="5"  disabled></td>' +
+                            '<td><input class="form-control" value="' + row.cells[2].innerHTML + '" type="number"  name="starting"  maxlength="100000000"  disabled></td>' +
+                            '<td><input value="' + row.cells[3].innerHTML + '" type="number" class="form-control"  name="ending"  maxlength="10"  disabled></td>' +
+                            '<td><input value="' + row.cells[4].innerHTML + '" type="number" class="form-control"  name="current"  maxlength="10"  disabled></td>' +
+                            '<td hidden><input  type="text" class="form-control" value="' + guid + '"></td>' +
+                            '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>' +
+                            '</tr>';
+                    }
+                }
+                CloseLoaderPopup();
+                $('#id_popup_tbody').append(edit_basic_data);
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#myModal').modal('show');
+                table_sort_filter('id_popup_table');
+            },
+        });
+    }
+
+    //delete the selected row in db................
+    var main_table_number_range_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_number_range_checked = [];
+        var disable_check = '';
+        $('#display_basic_table').DataTable().destroy();
+        get_row_data("#id_popup_table"); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        if(disable_check){
+            $('#delete_data').prop('disabled', true);
+            error_message = ui_messeges("JMSG112")// Get message details
+            var display4 = msg_type.messages_id_desc;
+            document.getElementById("id_error_msg_checkbox").innerHTML = display4+ "Checkbox";
+            $('#id_delete_confirm_popup').modal('hide');
+            $('#myModal').modal('show');
+        }
+        else if(main_table_number_range_checked.length == "0"){
+            var msg = "JMSG005";
+            var msg_type ;
+            msg_type = message_config_details(msg);
+            $("#error_msg_id").prop("hidden", false);
+            if(msg_type.message_type == "ERROR"){
+                display_message("error_msg_id", msg_type.messages_id_desc)
+            }
+            else if(msg_type.message_type == "WARNING"){
+                display_message("id_warning_msg_id", msg_type.messages_id_desc)
+            }
+            else if(msg_type.message_type == "INFORMATION"){
+                display_message("id_info_msg_id", msg_type.messages_id_desc)
+            }
+            $('#id_delete_confirm_popup').modal('hide');
+            $('#myModal').modal('show')
+            table_sort_filter('display_basic_table');
+        }
+        else{
+            data = {'data':main_table_number_range_checked,'table_name':'NumberRanges','action':GLOBAL_ACTION}
+            OpenLoaderPopup();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Response) {
+                    rendered_number_range_data = Response[0].upload_response;
+                    max_sequence = parseInt(Response[0].sequence_max) + 1;
+                    display_basic_db_data();
+                    success_response(Response); // Function call to display response data
+                    CloseLoaderPopup();
+                }
+            });
+        }
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, number_range) {
+        add_attr_duplicates = false;
+        var validation_error = false
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        var error_message = ''
+        $.each(validate_add_attributes, function (index, value) {
+            if ($.inArray(value, add_attr_unique_list) == -1) {
+                add_attr_unique_list.push(value);
+            } else {
+                if ($.inArray(value, common) == -1) {
+                    common.push(value);
+                }
+            }
+        });
+        $.each(number_range, function (i, item) {
+            check_number_range = number_range
+            validation_error = range_check_function(number_range,check_number_range)
+            if(!validation_error){
+                error_message = ui_messeges("JMSG109")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+            if (item.sequence.length == 0 || isNaN(item.starting) || isNaN(item.ending) || isNaN(item.current)) {
+                error_message = ui_messeges("JMSG002")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            } else if (item.starting > item.ending) {
+                error_message = ui_messeges("JMSG035")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            } else if (item.current < item.starting) {
+                error_message = ui_messeges("JMSG036")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            } else if (item.current > item.ending) {
+                error_message = ui_messeges("JMSG037")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            } else if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        return [no_duplicate_value,error_message]
+    }
+
+    //validate by comparing  main table values and popup table values
+    function maintable_validation(validate_add_attributes, main_table_low_value,numberranges_data,main_table_data) {
+        var no_duplicate_entries = 'Y'
+        var common = [];
+        var error_message =''
+        jQuery.grep(validate_add_attributes, function (el) {
+            if (jQuery.inArray(el, main_table_low_value) != -1) {
+                common.push(el);
+            }
+        });
+        if (common.length != 0) {
+            error_message = ui_messeges("JMSG001")// Get message details
+            no_duplicate_value = 'N'
+            return [no_duplicate_value,error_message]
+        }
+        validation_error = main_range_check_function(numberranges_data,main_table_data)
+        if(!validation_error){
+            error_message = ui_messeges("JMSG300")// Get message details
+            no_duplicate_value = 'N'
+            return [no_duplicate_value,error_message]
+        }
+        return [no_duplicate_entries,error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var po_num_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            po_num_dic = {}
+            po_num_dic.sequence = row.find("TD").eq(1).find('input[type="number"]').val();
+            var compare = po_num_dic.sequence
+            po_num_check.push(compare);
+            jQuery.grep(po_num_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+</script>
+<script src="{% static 'scripts/Number_ranges/po_number_ranges.js' %}"></script>
+{% endblock %}

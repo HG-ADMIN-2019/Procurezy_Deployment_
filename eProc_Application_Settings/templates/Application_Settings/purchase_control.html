@@ -1,0 +1,582 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Purchase Control (Application Settings) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Purchase Control</h3>
+            <div>
+                <button class="btn btn-outline-primary" title="Extract"
+                        onclick="location.href='{% url 'eProc_Application_Settings:extract_purchase_control_data' %}'"
+                        type="button">
+                    <i class="fas fa-download"></i> extract
+                </button>
+                <button type="button" id="id_add_data" value="ADD" class="btn btn-primary" title="Add Purchase Control" data-toggle="modal" data-target="#purchase_ctrl_Modal" onclick="onclick_add_button(this)">
+                    <i class="fa fa-plus"></i> add purchase control
+                </button>
+                <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close" onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"></div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" title="Edit" id="id_edit_data" onclick="onclick_edit_button();">
+                        <i class="fas fa-edit"></i> edit
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="id_delete_data" value="pur_cntrl_delete" title="Delete" style="display:none;" 
+                        data-toggle="modal" data-target="#id_delete_confirm_popup">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-primary btn-sm" title="Update" id="id_update_data" style="display:none;" value="UPDATE"
+                            type="button" onclick="onclick_update_button()">
+                        <i class="far fa-edit"></i> Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel" id="id_cancel_data" style="display:none;" type="button"
+                            onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_basic_aac_table table table-bordered custom-table">
+                    <thead id="id_pc_table_header">
+                    <tr>
+                        <th id="hg_select_checkbox" hidden>
+                            <div id="id_check_all" style="display:none;">
+                                <input type="checkbox" id="selectAll" name="chk[]">
+                            </div>
+                        </th>
+                        <th>Company Code</th>
+                        <th>Call Off</th>
+                        <th>UNSPSC Code</th>
+                        <th>Status</th>
+                        <th hidden>Guid</th>
+                        <th hidden>del_ind</th>
+                    </tr>
+                    </thead>
+                    <tbody id="id_pc_tbody">
+                    {% for purchasecontrol in display_purchase_control %}
+                    <tr>
+                        <td class="class_select_checkbox" hidden><input type="checkbox" class="checkbox_check" onclick="valueChanged()" required></td>
+                        <td>{{ purchasecontrol.company_code_id}}</td>
+                        <td>{{purchasecontrol.call_off}}</td>
+                        <td>{{purchasecontrol.prod_cat_id}}</td>
+                        <td>
+                            {% if purchasecontrol.purchase_ctrl_flag %}
+                                Activate
+                                {% else %}
+                                Deactivate
+                            {% endif %}
+                        </td>
+                        <td hidden>{{purchasecontrol.purchase_control_guid}}</td>
+                        <td hidden>{{purchasecontrol.del_ind}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <!--end of display basic aac table-->
+            </div>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div class="modal fade" id="purchase_ctrl_Modal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title"> Maintain Purchase Control</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()"><i
+                                    class="fa fa-plus"></i> add new row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')"><i class="fa fa-trash"></i>
+                                delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages"
+                            class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_pc_code"></p>
+                            <p id="id_error_msg_pc_name"></p>
+                            <p id="id_error_msg_pc_length"></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span
+                                id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                            <tr>
+                                <th id="header_select">Select</th>
+                                <th>Company Code</th>
+                                <th>Call Off</th>
+                                <th>UNSPSC Code</th>
+                                <th>Status</th>
+                                <th hidden>Guid</th>
+                                <th id="id_del_ind_checkbox" hidden>Del Indicator</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_popup_tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i
+                        class="fas fa-times"></i> cancel
+                    </button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of modal popup for Add,copy,update and upload-->
+    <!-- modal popup to upload the csv file; save confirmation popup; delete confirmation popup -->
+    {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %} {% for message in messages %} {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %} {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b></div>
+        {% endif %} {% endfor %} {% endif %}
+    </div>
+</div>
+{{ display_purchase_control |json_script:"display_purchase_control" }}
+{{ dropdown_activate|json_script:"dropdown_activate" }}
+<script>
+    var rendered_pc_data = JSON.parse(document.getElementById('display_purchase_control').textContent);
+    var rendered_pc_company_data
+    var messages_list = {{messages_list|safe}};
+    var rendered_prod_category = {{prod_catogories|safe}}
+    var rendered_activate = JSON.parse(document.getElementById('dropdown_activate').textContent);
+    var purchase_control_data_array = {}
+    var main_table_pc_value = [];
+    var purchse_control = '';
+    var edit_basic_data = '';
+    var GLOBAL_ACTION = '';
+    var no_duplicate_entries = 'Y'
+    var appname = uiConstants["CONST_APPNAME01"]
+    var Tablename = uiConstants["CONST_TABLENAME_PURCHASE_CONTROL"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_PUR_CONTROL"]
+    var rendered_call_off = uiConstants["CONST_PUR_CONTROL_CALLOFF_DATA"]
+    var pc_company_dropdown,call_off_dropdown,prod_cat_dropdown,activate_dropdown;
+    var hiddenCompanyIDs = [];
+    var hiddenCallOffValue = [];
+
+    function dropdown() {
+        pc_company_dropdown = '';
+        $.each(rendered_pc_company_data, function (i, item) {
+            pc_company_dropdown += '<option value="' + item.company_id + '">' + item.company_id + '</option>'
+        });
+
+        call_off_dropdown = '';
+        $.each(rendered_call_off, function (i, item) {
+            call_off_dropdown += '<option value="' + item.value + '">' + item.desc + '</option>'
+        });
+
+        prod_cat_dropdown = '';
+        $.each(rendered_prod_category, function (i, item) {
+            prod_cat_dropdown += '<option value="' + item.prod_cat_id + '">' + item.prod_cat_id + '</option>'
+        });
+
+        activate_dropdown = '';
+         $.each(rendered_activate, function(i, item){
+            activate_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+         });
+    }
+
+    var available_company_data = [];
+    function on_page_load_dropdown() {
+        var hiddenProd_catIDs = [];
+        hide_company_values(); // function call to filter company values
+
+        if (available_company_data.length > 0) {
+            var company_value = available_company_data[0];
+            var call_of_val = main_table_data[company_value];
+            if (!call_of_val) {
+                pc_company_dropdown = '';
+                $.each(available_company_data, function (i, item) {
+                    pc_company_dropdown += '<option value="' + item + '">' + item + '</option>'
+                });
+
+                call_off_dropdown = '';
+                $.each(rendered_call_off, function (i, item) {
+                    call_off_dropdown += '<option value="' + item.value + '">' + item.desc + '</option>'
+                });
+
+                prod_cat_dropdown = '';
+                $.each(rendered_prod_category, function (i, item) {
+                    prod_cat_dropdown += '<option value="' + item.prod_cat_id + '">' + item.prod_cat_id + '</option>'
+                });
+
+                activate_dropdown = '';
+                $.each(rendered_activate, function(i, item){
+                    activate_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+                });
+                return;
+            } else {
+                pc_company_dropdown = '';
+                $.each(available_company_data, function (i, item) {
+                    pc_company_dropdown += '<option value="' + item + '">' + item + '</option>'
+                });
+
+                main_table_callOffValues = {};
+                var callOff
+                call_of_val.forEach(item => {
+                    callOff = item.call_off; // Assuming this property holds the auth_level
+                    if (!main_table_callOffValues[callOff]) {
+                        main_table_callOffValues[callOff] = new Set();
+                    }
+                    main_table_callOffValues[callOff].add(item.prod_cat_id);
+                });
+
+                call_off_dropdown = '';
+                hiddenCallOffValue = [];
+                for (const item of rendered_call_off) {
+                    const callOffValue = item.desc;
+
+                    if (rendered_prod_category.length === main_table_callOffValues[callOffValue]?.size) {
+                        hiddenCallOffValue.push(callOffValue);
+                    } else {
+                        call_off_dropdown += '<option value="' + callOffValue + '">' + callOffValue + '</option>';
+                    }
+                }
+
+                prod_cat_dropdown = '';
+                hiddenProd_catIDs = [];
+                var callOffValuesArray = call_off_dropdown.match(/value="([^"]+)"/g).map(function(match) {
+                    return match.match(/"([^"]+)"/)[1];
+                });
+                for (var i = 0; i < callOffValuesArray.length; i++) {
+                    var callOffValue = callOffValuesArray[i];
+                    if (!main_table_callOffValues.hasOwnProperty (callOffValue)) {
+                        rendered_prod_category.forEach(function(item) {
+                            var prod_cat_id = item.prod_cat_id;
+                            prod_cat_dropdown += '<option value="' + prod_cat_id + '">' + prod_cat_id + '</option>';
+                        });
+                        break;
+                    } else {
+                        var assignedProdCatIDs = Array.from(main_table_callOffValues[callOffValue]);
+                        rendered_prod_category.forEach(function(item) {
+                            var prod_cat_id = item.prod_cat_id;
+                             if (!assignedProdCatIDs.includes(prod_cat_id)) {
+                                prod_cat_dropdown += '<option value="' + prod_cat_id + '">' + prod_cat_id + '</option>';
+                            } else {
+                                hiddenProd_catIDs.push(prod_cat_id);
+                            }
+                        });
+                    }
+                    break;
+                }
+
+                activate_dropdown = '';
+                $.each(rendered_activate, function(i, item){
+                    activate_dropdown += '<option value="' + item.field_type_id + '">' + item.field_type_id + '</option>';
+                });
+            }
+        }
+    }
+
+    function hide_company_values() {
+        available_company_data = [];
+        hidden_company_value = [];
+        for(i = 0; i < rendered_pc_company_data.length; i++) {
+            var item = rendered_pc_company_data[i];
+            var company_code = item.company_id
+            var callOffValues = main_table_data[company_code];
+            if (callOffValues === undefined) {
+                available_company_data.push(company_code);
+                continue;
+            }
+
+            var callOff
+            main_table_callOffValues = {};
+            callOffValues.forEach(item => {
+                callOff = item.call_off; // Assuming this property holds the auth_level
+                if (!main_table_callOffValues[callOff]) {
+                    main_table_callOffValues[callOff] = new Set();
+                }
+                main_table_callOffValues[callOff].add(item.prod_cat_id);
+            });
+
+            hiddenCallOffValue = [];
+            for (const item of rendered_call_off) {
+                const callOffValue = item.desc;
+                if (rendered_prod_category.length === main_table_callOffValues[callOffValue]?.size) {
+                    hiddenCallOffValue.push(callOffValue);
+                }
+            }
+
+            if(rendered_call_off.length==hiddenCallOffValue.length){
+                hidden_company_value.push(company_code)
+            }else {
+                available_company_data.push(company_code);
+            }
+        }
+    }
+
+    //onclick of add button display purchase_ctrl_Modal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        OpenLoaderPopup();
+        var data = {'table_name':'PurchaseControl'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_pc_company_data = response.upload_company_code
+                rendered_prod_category = response.prod_catogories
+                rendered_activate = response.dropdown_activate
+                display_tb_data(); // Read data from main table
+                on_page_load_dropdown();
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop("hidden", false);
+                GLOBAL_ACTION = button.value
+                basic_add_new_html = '';
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                $('#purchase_ctrl_Modal').modal('show');
+                new_row_data();   // Add a new row in popup
+                $("#header_select").prop("hidden", false);
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value, error_message] = compare_table_for_duplicate_entries(validate_add_attributes, purhcase_control_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries, error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N'){
+                    $('#purchase_ctrl_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var add_basic_data = '';
+                var purchase_control_data_array = purhcase_control_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = { 'data': purhcase_control_data, 'table_name': 'PurchaseControl', 'action': GLOBAL_ACTION }
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (Response) {
+                        rendered_pc_data = Response[0];
+                        display_basic_db_data();
+                        $('#purchase_ctrl_Modal').modal('hide');
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message) {
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    //delete the selected row in db................
+    var main_table_purchase_contrl_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_purchase_contrl_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = { 'data': main_table_purchase_contrl_checked, 'table_name': 'PurchaseControl', 'action': GLOBAL_ACTION }
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:create_update_application_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_pc_data = Response[0];
+                display_basic_db_data();
+                $('#purchase_ctrl_Modal').modal('hide');
+                success_response(Response); // Function call to display response data
+                CloseLoaderPopup();;
+            }
+        });
+    }
+
+    // on click copy icon display the selected checkbox data
+    function onclick_copy_update_button(data) {
+        OpenLoaderPopup();
+        var data = {'table_name':'PurchaseControl'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_activate = response.dropdown_activate
+                rendered_pc_company_data = response.upload_company_code
+                dropdown();
+                $("#error_msg_id").css("display", "none")
+                $('#id_popup_table').DataTable().destroy();
+                $("#id_popup_tbody").empty();
+                //Reference the Table.
+                var res = get_all_checkboxes(); // Function to get all the checkboxes
+                var $chkbox_all = $('td input[type="checkbox"]', res);
+                //Reference the CheckBoxes in Table.
+                var edit_basic_data = "";
+                var unique_input = '';
+                var dropdown_val = [];
+                //Loop through the CheckBoxes.
+                for (var i = 0; i < $chkbox_all.length; i++) {
+                    if ($chkbox_all[i].checked) {   
+                        var row = $chkbox_all[i].parentNode.parentNode;
+                        var Status = row.cells[4].innerHTML;
+                        dropdown_val.push([ Status ])
+                        if (GLOBAL_ACTION == "UPDATE") {
+                            guid = row.cells[4].innerHTML;
+                            edit_basic_data +=
+                            `<tr>
+                                <td hidden><input type="checkbox" required></td>
+                                <td>
+                                    <select  type="text" class="input form-control" } disabled>
+                                    <option>${row.cells[1].innerHTML}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select type="text" class="input form-control" value= ${row.cells[2].innerHTML} disabled>
+                                        <option>${row.cells[2].innerHTML}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select type="text" class="input form-control" value= ${row.cells[3].innerHTML} disabled>
+                                        <option>${row.cells[3].innerHTML}</option>
+                                    </select>
+                                </td>
+                                <td><select type="text" class="input form-control">${activate_dropdown}</select></td>
+                                <td hidden><input type="text" class= "form-control" value= ${guid}></td><td class="class_del_checkbox" hidden><input type="checkbox" required></td>
+                            </tr>`;
+                            $("#header_select").prop("hidden", true);
+                        }
+                    }
+                }
+                $('#id_popup_table').append(edit_basic_data);
+                var i = 0;
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    var Status = dropdown_val[i][0]
+                    $(row.find("TD").eq(4).find("select option[value=" + Status + "]")).attr('selected', 'selected');
+                    i++;
+                });
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                $('#purchase_ctrl_Modal').modal('show');
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        on_page_load_dropdown;
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+        new_row_data();   // Add a new row in popup
+    }
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, purchse_control) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(purchse_control, function (i, item) {
+            if ((item.company_code_id == null) || (item.call_off == null) || (item.prod_cat_id == null) || (item.purchase_ctrl_flag == null) ) {
+                error_message = ui_messeges("JMSG002")// Get message detailss
+                no_duplicate_value = 'N'
+                return [no_duplicate_value, error_message]
+            }
+        });
+        if (no_duplicate_value == 'Y') {
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                } else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value, error_message]
+            }
+        }
+        return [no_duplicate_value, error_message]
+    }
+
+    //Function to highlight duplicate records
+    function display_duplicate_entry(common) {
+        var purhcase_control_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            purhcase_control_dic = {}
+            purhcase_control_dic.company_code_id = row.find("TD").eq(1).find('select[type="text"]').val();
+            purhcase_control_dic.call_off = row.find("TD").eq(2).find('select[type="text"]').val();
+            purhcase_control_dic.prod_cat_id = row.find("TD").eq(3).find('select option:selected').val();
+            var compare = purhcase_control_dic.company_code_id + '-' + purhcase_control_dic.call_off
+            purhcase_control_check.push(compare);
+            jQuery.grep(purhcase_control_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+</script>
+<script src="{% static 'scripts/purchase_control.js' %}"></script>
+{% endblock %}

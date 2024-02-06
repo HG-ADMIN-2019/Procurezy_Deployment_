@@ -1,0 +1,295 @@
+
+<form method="post" id="update_pr">
+    {% csrf_token %}
+    
+    <div class="alert alert-danger display-none" id="pr_form_errors" role="alert"></div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="update-pr-item_name">Product/Service Name<span class="hg_required"></span></label>
+            <input type="text" minlength="3" class="form-control form-control-sm" maxlength="40" id="update-pr-item_name" required />
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="update-pr-prod_desc">Description<span class="hg_required"></span></label>
+            <input type="text" class="form-control form-control-sm" maxlength="255" id="update-pr-prod_desc" required />
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="update-pr-product_id"> Product/Service ID </label>
+            <input type="text" class="form-control form-control-sm" id="update-pr-product_id"  maxlength="20" />
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="update-pr-prod_cat">Product Category<span class="hg_required"></span></label>
+            <select id="update-pr-prod_cat" class="form-control form-control-sm selectpicker" data-live-search="true" required>
+                {% for product_cat in product_category %}
+                <option value="{{product_cat.prod_cat_id}}" id="{{product_cat.prod_cat_id}}">{{product_cat.prod_cat_id}} - {{product_cat.category_desc}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="update-pr-price">Price <strong>(Approx)</strong><span class="hg_required"></span></label>
+            <input id="update-pr-price" type="number" class="form-control form-control-sm" maxlength="15" required />
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label for="update-pr-currency">Currency<span class="hg_required"></span></label>
+            <select id="update-pr-currency" class="form-control form-control-sm selectpicker" data-live-search="true" required >
+                {% for currencies in currency %}
+                <option id="{{currencies}}" value="{{currencies.currency_id}}">{{currencies.currency_id}} - {{currencies.description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label for="update-pr-uom">Unit of Measure<span class="hg_required"></span></label>
+            <select id="update-pr-uom" class="form-control form-control-sm selectpicker" data-live-search="true" required>
+                {% for uom in unit %}
+                <option id="{{uom}}" value="{{uom.uom_id}}">{{uom.uom_id}} - {{uom.uom_description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="update-pr-lead_time">Lead Time <strong>(Business Days)</strong><span class="hg_required"></span></label>
+            <input id="update-pr-lead_time" type="number" maxlength="3" minlength="1" min="1" class="form-control form-control-sm" required />
+        </div>
+    
+        <div class="form-group col-md-6">
+            <label for="update-pr-quantity">Quantity<span class="hg_required"></span></label>
+            <input id="update-pr-quantity" type="number" min="1" minlength="1" maxlength="10" class="form-control form-control-sm" required />
+        </div>
+    </div>
+    
+    <br>
+    <div>
+        <span class="badge generic-help-text-badge"></span>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+        <button type="button" class="btn btn-primary" id="save_pr_form_data"><i class="fas fa-save"></i> save</button>
+    </div>
+
+    
+</form>
+
+
+<script>
+    var item_name = '';
+    var unit = '';
+    var price = '';
+    var quantity = '';
+
+    // Function to update purchase requistion items 
+    $('#save_pr_form_data').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        OpenLoaderPopup();
+        $('#pr_form_errors').hide();
+        $('#pr_form_errors').html('');
+        item_name = document.getElementById("update-pr-item_name").value
+        prod_desc = document.getElementById("update-pr-prod_desc").value
+        prod_id = document.getElementById("update-pr-product_id").value
+        price = document.getElementById("update-pr-price").value
+        prod_cat = document.getElementById("update-pr-prod_cat").value
+        currency = document.getElementById("update-pr-currency").value
+        unit = document.getElementById("update-pr-uom").value
+        lead_time = document.getElementById("update-pr-lead_time").value
+        quantity = document.getElementById("update-pr-quantity").value
+
+        // PF form validation
+        is_valid = pr_form_validation(item_name, price, lead_time, quantity)
+        if (is_valid != true) {
+            $('#pr_form_errors').html(is_valid);
+            $('#pr_form_errors').show();
+            document.getElementById('pr_form_errors').scrollIntoView()
+            return false;
+        } else {
+            $('#pr_form_errors').hide();
+        }
+        item_data = {
+                guid: update_item_guid,
+                description: item_name,
+                int_product_id: prod_id,
+                long_desc:prod_desc,
+                price: price,
+                prod_cat_id: prod_cat,
+                currency: currency,
+                unit: unit,
+                lead_time: lead_time,
+                quantity: quantity,
+                call_off: '03'
+        }
+
+        if (is_first_step != 'True') {
+            let item_value_object = {};
+            index_of_item_guid = rendered_item_guid.indexOf(update_item_guid)
+            accounting_guid = rendered_acc_guid[index_of_item_guid]
+            item_data['account_assignment_category'] = (document.getElementById('ScAccounting-acc_cat-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['account_assignment_value'] = (document.getElementById('ScAccounting-acc_val-' + accounting_guid).innerHTML).split('-')[0].trim()
+            item_data['sc_header_guid'] = GLOBAL_HEADER_GUID
+            item_value_class = document.getElementsByClassName('hg_item_total_value')
+            for (let i=0; i<item_value_class.length; i++) {
+                let item_guid = item_value_class[i].id.split('-')[2]
+                let item_value = item_value_class[i].innerHTML
+                item_value_object[item_guid] = item_value
+            }
+            item_data['item_value_object'] = item_value_object
+        }
+        if (is_first_step == 'True') {
+            update_url = "{% url 'eProc_Shopping_Cart:update_pr_details' %}"
+        } else {
+            update_url = "{% url 'eProc_Doc_Details:update_saved_item' %}"
+        }
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: update_url,
+            data: JSON.stringify(item_data),
+            success: function (response) {
+                if (is_first_step == 'True') {
+                    update_pr_item_info_in_first_step(response)
+                } else {
+                    update_pr_item_info_at_doc_detail(response)
+                }
+                $('#update_modal_popup').modal('hide');
+                CloseLoaderPopup();
+            },
+            error: function (response) {
+                CloseLoaderPopup();
+                $('#pr_form_errors').html(response.responseJSON.error_message);
+                $('#pr_form_errors').show();
+                document.getElementById('pr_form_errors').scrollIntoView()
+            }
+        })
+    });
+
+    function get_highest_item_val(call_off, quantity, price, price_unit, overall_limit) {
+        item_data = {}
+        item_data.call_off = call_off;
+        item_data.update_item_index = GLOBAL_UPDATE_ITEM_ROW - 1;
+        item_data.quantity = quantity;
+        item_data.price = price;
+        item_data.price_unit = price_unit;
+        item_data.overall_limit = overall_limit;
+        item_data.item_total_value_list = rendered_item_total;
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Doc_Details:get_highest_item' %}",
+            data: JSON.stringify(item_data),
+            success: function (response) {
+                change_highest_item_row = response.height_value_index + 1;
+                rendered_item_total = response.item_total_value_list;
+                document.getElementById("item_value_" + guid).innerHTML = response.item_total_value;
+                document.getElementById("total_cart_value").innerHTML = response.total_sc_value;
+                document.getElementById("update_pop_up").style.display = "none";
+                document.getElementById("desc_" + guid).innerHTML = item_name
+                document.getElementById("unit_" + guid).innerHTML = unit
+                document.getElementById("price_" + guid).innerHTML = price
+                document.getElementById("quantity_" + guid).innerHTML = quantity
+
+                if (GLOBAL_HIGHEST_VALUE_ITEM_ROW != change_highest_item_row) {
+                    acc_type = document.getElementById('change_acc_type_' + change_highest_item_row).innerHTML;
+                    acc_type = acc_type.replace(/\s/g, '');
+                    acc_type = acc_type.split('-')[0]
+                    acc_value = document.getElementById('change_acc_value_' + change_highest_item_row).innerHTML;
+                    acc_value = acc_value.replace(/\s/g, '');
+                    acc_value = acc_value.split('-')[0]
+                    total_sc_value = $('#total_cart_value').text();
+                    cmp_code = GLOBAL_SC_CO_CODE;
+                    trigger_wf(acc_type, acc_value, total_sc_value, cmp_code, change_highest_item_row)
+                }
+            }
+
+        });
+
+    }
+    function trigger_wf(acc_type, acc_value, total_sc_value, cmp_code, change_highest_item_row) {
+        item_data = {}
+        item_data.acc_type = acc_type;
+        item_data.acc_value = acc_value;
+        item_data.cmp_code = cmp_code;
+        item_data.total_sc_value = total_sc_value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Doc_Details:trigger_wf' %}",
+            data: JSON.stringify(item_data),
+            success: function (response) {
+                GLOBAL_MANAGER_DETAIL = response.approver_id;
+                $('#div_manager_detail').empty();
+                var manager_icon = '';
+                $('#id_dynamic').empty();
+                if (response.manager_detail) {
+                    $.each(response.manager_detail, function (i, item) {
+                        if (item == 'Auto') {
+                            error_msg = '<br><br><span>Status:Auto Approved</span>'
+                        }
+                        else {
+                            error_msg = '<br><br><span>Status:Waiting for Approval by Financial Approval</span>'
+                        }
+                        double_angular = '<div style="float:left; width:100px"><i class="fas fa-angle-double-right" style="height:50px; width:50px"></i></div>';
+                        manager_icon += '' + double_angular + '<div style="float:left; width:100px"><i class="fa fa-user" style="color:orange; height:50px; width:50px" aria-hidden="true"> </i><br><button type="button">' + item.first_name + '</button></div>';
+                    });
+                }
+                if (response.msg_info) {
+                    error_msg = '<br><br><span>' + response.msg_info + '</span>'
+                }
+                $('#id_dynamic').append(error_msg);
+                $('#div_manager_detail').append(manager_icon);
+                GLOBAL_HIGHEST_VALUE_ITEM_ROW = change_highest_item_row;
+            }
+        });
+    }
+
+    // remove bootstrap alert classes on close
+$('#update_pop_up').on('hidden.bs.modal', function (e) {
+    $('#pr_form_errors').hide();
+})
+
+const update_pr_item_info_in_first_step = (response) => {
+    $('#update_pop_up').modal('hide')
+    document.getElementById("desc_" + guid).innerHTML = item_name
+    document.getElementById("unit_" + guid).innerHTML = unit
+    document.getElementById("price_" + guid).innerHTML = price+' / '+currency
+    document.getElementById("quantity_" + guid).innerHTML = quantity
+    document.getElementById("item_value_" + guid).innerHTML = response.item_value
+    document.getElementById("total_cart_value").innerHTML = response.total_value
+    document.getElementById("actual_price").innerHTML = response.price_details.actual_price
+    document.getElementById("discount_value").innerHTML = response.price_details.discount_value
+};
+
+const update_pr_item_info_at_doc_detail = (response) => {
+    item_details = response.item_details
+    update_item_details[update_item_guid] = item_details
+
+    // Update highest item value guid and row
+    GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(response.item_with_highest_value) + 1;
+    highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    highest_item_change_acc_value = (document.getElementById('ScAccounting-acc_val-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).innerHTML).split(' - ')[0].trim()
+    
+    // Update the values in UI 
+    $('#desc-' + update_item_guid).html(item_details.description)
+    $('#del_date-' + update_item_guid).html(response.item_delivery_date)
+    $('#unit-' + update_item_guid).html(item_details.unit)
+    $('#ScIem-price-' + update_item_guid).html(item_details.price)
+    $('#currency-' + update_item_guid).html(item_details.currency)
+    $('#ScIem-value-' + update_item_guid).html(item_details.value)
+    $('#item_quantity-' + update_item_guid).html(item_details.quantity)
+    $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).html(response.total_value)
+    document.getElementById("actual_price").innerHTML= response.price_details.actual_price
+    document.getElementById("discount_value").innerHTML= response.price_details.discount_value
+    check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value)
+
+};
+
+</script>

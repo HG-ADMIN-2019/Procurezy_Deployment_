@@ -1,0 +1,72 @@
+.workflow-overview {
+    .card.workflow-overview__process-card {
+        background-color: #F5F5F5; 
+        border: none;
+    }
+
+    &__section {
+        display: flex;
+        flex-direction: row;
+        overflow:auto;
+        margin-top: 20px;
+    }
+
+    &__user-icon-container {
+        display: flex;
+        flex-direction: column;
+        align-items:center;
+        width:8rem; 
+    }
+
+    &__next-icon-container{
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    &__managers-section {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+.workflow-user-bg {
+    background-color: #F5F5F5; 
+    height: 5rem;
+    width: 5rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.workflow-active {
+        border: 3px solid #4dabf7;
+        color: #4dabf7;            // Active user highligt icon color to light blue 
+    }
+
+    &.workflow-inactive {
+        color: #676767;            
+    }
+
+    &.workflow-completed {
+        color: #53C245;   
+        
+        .icon-workflow-completed {
+            font-size: 2.95em;
+            margin-left: 0.85rem;
+        }
+    }
+
+    &.workflow-requester-active {
+        border: 3px solid #4dabf7;          // Active user highligt icon color to light blue 
+    }
+
+    &.workflow-rejected {
+        color: #DC453D;    
+        
+        .icon-workflow-rejected {
+            font-size: 2.95em;
+            margin-left: 0.85rem;
+        }
+    }
+
+}

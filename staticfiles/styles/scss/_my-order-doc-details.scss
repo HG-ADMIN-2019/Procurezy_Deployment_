@@ -1,0 +1,55 @@
+.myorder-saved-sc-header {
+    width: 100%;
+    padding: 25px 20px 30px;
+    background: #FFFFFF;
+}
+
+.mo-doc-header{
+    margin: 1.5rem 0.5rem;
+
+    &__alerts-wrapper {
+        margin-top: 1rem;
+    }
+
+    &__doc-details {
+       
+
+        .mo-doc-details-wrapper{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            p {
+                font-size: large;
+
+                &>:first-child {
+                    font-weight: 500;
+                }
+            }
+        }
+    }
+}
+
+.mo-doc-body-wrapper {
+    margin-bottom: 1rem;
+}
+
+.mo-item-table {
+    &__supplier-desc {
+        color:$blue-primary;
+    }
+}
+
+.mo-doc-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.5rem 0.5rem 0.5rem;
+    flex-wrap: wrap;
+
+    .mo-doc-button-group__approval {
+        margin-left: 0.5rem;
+        padding-left: 0.5rem;
+        border-left:1px solid #aaaaaa;
+    }
+}

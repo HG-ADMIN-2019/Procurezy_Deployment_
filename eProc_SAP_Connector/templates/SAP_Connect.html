@@ -1,0 +1,104 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+<style>
+
+
+.hg_button{
+    float :left;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+</style>
+<html lang="en">
+<script defer src="{% static 'font/js/all.js' %}"></script>
+<link rel="stylesheet" href="{% static 'styles/search.css' %}">
+<link rel="stylesheet" href="{% static 'styles/sc.css' %}">
+<script src="{% static 'scripts/main.js' %}"></script>
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
+<head>
+    <meta charset="UTF-8">
+    <title> {% block title %} Admin Tool {% endblock %} </title>
+</head>
+<body>
+
+<div id="Admintool">
+    <div class="hg_ctnt_area" style="margin-top:20px;">
+        <div class="hg_limorder" style="width:100%;" >
+            <div class="hg_limordertxt hg_pt20">
+                <div class="hg_head1"></div>
+            </div>
+            SAP SRM : Configurations
+            <div><button class="btn btn-primary" onclick="open_popup()">Add</button></div>
+
+            <div id="add_connection" class="modal" style="display: none;margin:auto; padding:30%;padding-top:10%;">
+                <!-- Modal content -->
+                <div class="modal-content" >
+                       <div class="container" >
+                    <div class="modal-header" >
+                        <span class="close" >&times;</span>
+                    </div>
+                    <br>
+                    <div class="form-group" >
+                        <p>ashost :<br>
+                            <input type="text" class = "form-control" id="ashost" name="ashost"></p>
+                        <p>sysnr:<br>
+                            <input type="text" class = "form-control" id="sysnr" name="sysnr"></p>
+                        <p>client:<br>
+                            <input type="text" class = "form-control" id="client" name="client"></p>
+                        <p>user:<br>
+                            <input type="text" class = "form-control" id="user" name="user"></p>
+                        <p>passwd:<br>
+                            <input type="text" class = "form-control" id="passwd" name="passwd"></p>
+
+                    </div>
+                    <button class = "btn btn-primary" onclick="add_connection()" >Save</button>
+                    <button class = "btn btn-primary" >Cancel</button>
+                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+
+function open_popup()
+{
+    alert("popup");
+    document.getElementById('add_connection').style.display= 'block'
+    $('#add_connection').find('input:text').val('');
+
+}
+
+<!--function add_connection()-->
+<!--{-->
+<!--let ashost = document.getElementById("ashost").value;-->
+<!--let sysnr =  document.getElementById("sysnr").value;-->
+<!--let client =  document.getElementById("client").value;-->
+<!--let user =  document.getElementById("user").value;-->
+<!--let passwd =  document.getElementById("passwd").value;-->
+
+
+
+<!--$.ajax({-->
+<!--    type:'POST',-->
+<!--    url: "{% url 'eProc_SAP_Connector:create_connection' %}",-->
+<!--    data: {-->
+<!--            "ashost" : ashost,-->
+<!--            "sysnr" : sysnr,-->
+<!--            "client" : client,-->
+<!--            "user" : user,-->
+<!--            "passwd" : passwd-->
+<!--            },-->
+<!--    success:function(response)-->
+<!--});-->
+
+
+<!--}-->
+</script>
+{% endblock %}

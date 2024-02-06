@@ -1,0 +1,911 @@
+{% load static %}
+
+<script>
+  function tableSortFilter (myID){
+     $('.'+myID).DataTable();
+  }
+
+</script>
+
+<div class="card d-none" id="org_attribute_overview">
+    <div class="card-body">
+        <div class="elements-space-between">
+            <h4 class="card-title">Attribute Overview</h4>
+        </div>
+        <div id="ext_resp_success_msg_div" style="display:none" class="elements-space-between">
+        <span id="ext_resp_success_msg" class="error"></span>
+    </div>
+    </div>
+
+    <ul class="sub-tabs">
+        <li data-tab-target="#attribute_information" class="sub-tab active">
+            <div class="sub-tab-link">
+                <i class="fas fa-info-circle"></i><span> Attributes</span>
+            </div>
+        </li>
+        <li data-tab-target="#extended_attribute_information" class="sub-tab">
+            <div class="sub-tab-link">
+                <i class="fas fa-chevron-circle-down"></i><span> Extended Attributes</span>
+            </div>
+        </li>
+        <li data-tab-target="#attribute_responsibility_information" class="sub-tab" onclick="responsibility_tab();">
+            <div class="sub-tab-link">
+                <i class="fas fa-clipboard-list"></i><span> Responsibility</span>
+            </div>
+        </li>
+        <li data-tab-target="#attribute_company_id_information" class="sub-tab">
+            <div class="sub-tab-link">
+                <i class="fas fa-clipboard-list"></i><span>Company ID</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!--  Attributes tab -->
+        <div id="attribute_information" data-tab-content class="active">
+
+            <div>
+                <div class="d-flex flex-row-reverse m-3">
+                    <button type="button" id="select_attr" class="btn btn-outline-primary" data-toggle="modal" data-target="#select_attribute_popup"><i class="fas fa-check-square"></i>
+                        select attributes
+                    </button>
+                </div>
+
+                <div>
+                    <table id="my_table" class="table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" hidden>Type</th>
+                            <th scope="col" >Attributes</th>
+                            <th scope="col">Value</th>
+                            <th scope="col">Value Description</th>
+                            <th scope="col">Default</th>
+                            <th scope="col">Inherit</th>
+                            <th scope="col">Exclude</th>
+                            <th scope="col">Action</th>
+                            <th scope="col" hidden>Object Id</th>
+                            <th scope="col">Node name</th>
+                        </tr>
+                        </thead>
+                        <tbody id="main_table_body">
+                        </tbody>
+                    </table>
+                    <br><br>
+                </div>
+            </div>
+
+        </div>
+
+        <!--  Extended Attribute_information tab -->
+        <div id="extended_attribute_information" data-tab-content>
+            <div>
+                <div id="ext_error_div" style="display:none">
+                    <span id="ext_attr_errmsg" class="error"></span>
+                </div>
+                <div id="ext_porg_id">
+                    <div class="d-flex justify-content-between m-3">
+                        <h4>Product Categories</h4>
+                        <button onclick="save_ext_resp_attr('PROD_CAT',false)" value="save" class="btn btn-primary" id="ext_attr_save"><i class="fas fa-check"></i> Save</button>
+                    </div>
+                    <table id="extend_attr_table" class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Product Category From</th>
+                                <th scope="col">Product Category To</th>
+                                <th scope="col">Company Code</th>
+                                <th scope="col">Inherit</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="extend_attr_body">
+                            <tr>
+                                <td><input type="number" name="from" class="form-control" required></td>
+                                <td><input type="number" name="to" class="form-control" required></td>
+                                <td><a><i class="fa fa-plus text-primary"></i></a> <a><i class="fa fa-trash text-primary"></i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Attribute Responsibility_information tab -->
+        <div id="attribute_responsibility_information" data-tab-content>
+            <div>
+                <div id="non_pgrp" style="display:none">
+                    <span id="resp_msg" class="error"></span>
+                </div>
+                <div id="success_msg_div" style="display:none">
+                    <span id="success_msg" class="error"></span>
+                </div>
+                <div id="resp_pgrp" style="display:none">
+                    <div class="d-flex justify-content-between m-3">
+                        <h4> Product Responsibility </h4>
+                        <button onclick="save_ext_resp_attr('RESP_PROD_CAT',true)" class="btn btn-primary" id="responsibility_save"><i class="fas fa-check"></i> save</button>
+                    </div>
+
+                    <table id="responsibility_table" class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Product Category From</th>
+                                <th scope="col">Product Category To</th>
+                                <th scope="col">Company Code</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="responsibility_body">
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Attribute Responsibility_information tab -->
+        <div id="attribute_company_id_information" data-tab-content>
+            <div>
+                <div id="non_company_id" style="display:none">
+                    <span id="company_id_msg" class="error"></span>
+                </div>
+                <div id="company_id_success_msg_div" style="display:none">
+                    <span id="company_id_success_msg" class="error"></span>
+                </div>
+                <div id="company_id">
+                    <div class="d-flex justify-content-between m-3">
+                        <h4> Purchaser Company Code </h4>
+                        <button class="btn btn-primary" onclick="save_company_id()" id="company_id_save"><i class="fas fa-check"></i> save</button>
+                    </div>
+
+                    <table id="company_id_table" class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Purchase Organization</th>
+                                <th scope="col">Company Code</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="company_id_body">
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-----------------------------------------------Select attribute popup------------------------------------------------------------->
+
+<div class="modal fade" id="select_attribute_popup">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!--Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="attrModalLabel">Select Attributes</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!--Modal Body -->
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert" id="select_err_msg" style="display: none;"></div>
+                <label for="attr_drop">Please select the Attribute ID</label>
+                <select id="attr_drop" name="attr_value" class="form-control" data-toggle="dropdown">
+                    {% for attr_id_value in attr_id%}
+                    <option value="{{attr_id_value.attribute_id}}">{{attr_id_value.attribute_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <!--Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button type="button" class="btn btn-primary" id="ok_button" data-toggle="modal" value="Select" name="Select"><i class="fas fa-check"></i> Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-----------------------------------------------End of Select attribute popup------------------------------------------------------------->
+
+
+<!-----------------------------------------------Modify Attribute Popup------------------------------------------------------------->
+<div class="modal fade" id="modify_popup">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <!--Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyModalTitle">Modify Attributes</h5>
+                <button type="button" class="close" data-dismiss="modal"> &times;</button>
+            </div>
+
+            <!--Modal Body -->
+            <div class="modal-body">
+                <div>
+                    <div>
+                        <span id="modify_popup_errmsg" class="error"></span>
+                    </div>
+                    <div id="delete_tab" class="d-flex justify-content-between mb-3"> </div>
+                    <table id="delete_table" class="table table-hover mdfyAttrTableData" style="width: 100%;">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Select</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Default</th>
+                                <th scope="col">Inherit</th>
+                                <th scope="col">Exclude</th>
+                                <th scope="col" >Object Id</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modify_body">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!--Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" class="btn btn-primary" id="save_delete_rows"><i class="fas fa-check"></i> save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-----------------------------------------------End of Modify Attribute Popup------------------------------------------------------------->
+
+
+<!-----------------------------------------------Add Modify Popup------------------------------------------------------------->
+<div class="modal fade" id="add_attr_pop_up">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <!--Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAttrPopup">Add Attributes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!--Modal Body -->
+            <div class="modal-body">
+                <div class="container-fluid">
+
+                        <div>
+                            <span id="add_att_error_msg" class="error"></span>
+                        </div>
+                        <div id="add_attr_tab">
+
+                        </div>
+                        <table id="add_attr_table" class="table table-striped addAttrTableData" style="width: 100%;">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Select</th>
+                                <th scope="col">Attribute ID</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Default</th>
+                                <th scope="col">Inherit</th>
+                                <th scope="col">Exclude</th>
+                                <th scope="col">Object ID</th>
+                            </tr>
+                            </thead>
+                            <tbody id="add_attr_body">
+
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+
+            <!--Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" class="btn btn-primary" id="add_attr_save"><i class="fas fa-check"></i> save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-----------------------------------------------End Of Add Modify Popup------------------------------------------------------------->
+
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        NavigateTabs(); // Custom function to switch tabs
+    });
+
+    var add_attr_increment=0;
+    var GLOBAL_SELECTED_ATTR_ID = '';
+    function removeRow(oButton) {
+            var attr_table = document.getElementById('my_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+    function remove_ext_Row(oButton) {
+            var attr_table = document.getElementById('extend_attr_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+    function remove_company_Row(oButton) {
+            var attr_table = document.getElementById('company_id_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+    function remove_resp_Row(oButton) {
+            var attr_table = document.getElementById('responsibility_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+    function delete_selected_row(oButton) {
+            var attr_table = document.getElementById('delete_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+    function delete_add_att_row(oButton) {
+            var attr_table = document.getElementById('add_attr_table');
+            attr_table.deleteRow(oButton.parentNode.parentNode.rowIndex); // button -> td -> tr.
+        }
+
+$("#select_attr").click(function(){
+    object_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID
+    node_type = nodeRefNodeType(jsonData, GLOBAL_ONCLICK_UPDATE_OBJ_ID);
+    var basic_data_input = {
+            'node_types':node_type,
+            'object_id':object_id
+    };
+    //let attr_url ='attributes/attr_id_list';
+    let attr_data = org_attribute_id_ajax_call(basic_data_input);
+    $("#select_attribute_popup").appendTo("body").modal("show");
+    console.log(attr_data);
+    var drop_down_option = '';
+    $('#attr_drop').empty();
+    $('#attr_drop').append('<option value="">Please Select</option>');
+    $.each(attr_data, function (i, item) {
+        drop_down_option += '<option value="' + item.attribute_id + '">' + item.attribute_name + '</option>';
+    });
+    $('#attr_drop').append(drop_down_option);
+});
+
+$("#org_attr_tab").click(function(){
+    document.getElementById('attr_display_tab').style.display='block';
+    document.getElementById('extend_display_tab').style.display='none';
+    document.getElementById('res_display_tab').style.display='none';
+});
+
+$("#Extended_tab").click(function(){
+    document.getElementById('extend_display_tab').style.display='block';
+    document.getElementById('attr_display_tab').style.display='none';
+    document.getElementById('res_display_tab').style.display='none';
+});
+
+// Extended attr save
+function save_ext_resp_attr(ext_resp_attr_id,flag) {
+    console.log(flag)
+    var save_ext_attributes = new Array();
+    var validate_modify_attributes = new Array();
+    var attr_id_value = '';
+    // responsibility save
+    if (flag) {
+        $("#responsibility_table TBODY TR").each(function () {
+            var row = $(this);
+            var save_ext_attribute = {};
+            save_ext_attribute.low = row.find("td:eq(0) input[type='number']").val();
+            save_ext_attribute.high = row.find("td:eq(1) input[type='number']").val();
+            if(CENTRALIZE_PURCH_LEVEL_FLAG == true){
+                save_ext_attribute.extended_value = row.find("TD").eq(2).find("select option:selected").val();
+            }
+            else{
+                save_ext_attribute.extended_value = row.find("td:eq(2) input[type='text']").val();
+            }
+            save_ext_attribute.attr_id = ext_resp_attr_id;
+            save_ext_attribute.obj_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+            save_ext_attributes.push(save_ext_attribute);
+        });
+    }
+    else{
+        $("#extend_attr_table TBODY TR").each(function () {
+            var row = $(this);
+            var save_ext_attribute = {};
+            var ext_inherit = '';
+            ext_inherit = row.find("TD").eq(2).find('input[type="checkbox"]').is(':checked');
+            if (!(ext_inherit)){
+                save_ext_attribute.low = row.find("td:eq(0) input[type='number']").val();
+                save_ext_attribute.high = row.find("td:eq(1) input[type='number']").val();
+                if(CENTRALIZE_PURCH_LEVEL_FLAG == true){
+                    save_ext_attribute.extended_value = row.find("TD").eq(2).find("select option:selected").val();
+                } else{
+                    save_ext_attribute.extended_value = row.find("td:eq(2) input[type='text']").val();
+                }
+                save_ext_attribute.attr_id = ext_resp_attr_id;
+                save_ext_attribute.obj_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+                save_ext_attributes.push(save_ext_attribute);
+            }
+        });
+
+    }
+    if (save_ext_attributes.length == 0){
+        var save_ext_attribute = {};
+        save_ext_attribute.obj_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+        save_ext_attribute.attr_id = ext_resp_attr_id;
+        save_ext_attributes.push(save_ext_attribute);
+    }
+    OpenLoaderPopup();
+     $.ajax({
+            type: 'POST',
+            url:"{% url 'eProc_Attributes:save_ext_attr' %}",
+            data:JSON.stringify(save_ext_attributes),
+            success: function(response) {
+            $("#ext_attr_errmsg").empty();
+            $("#resp_msg").empty();
+            document.getElementById("ext_attr_errmsg").style.color = "green";
+            document.getElementById("ext_resp_success_msg").style.color = "green";
+
+            document.getElementById("ext_resp_success_msg").innerHTML = 'Data Saved Successfully'
+
+            document.getElementById('ext_resp_success_msg_div').style.display='block';
+            setTimeout(function(){
+            document.getElementById("ext_attr_errmsg").innerHTML = "";
+            document.getElementById("ext_resp_success_msg").innerHTML = "";
+             }, 5000);
+            //create_main_table(response)
+            CloseLoaderPopup();
+            }
+        });
+
+}
+
+function responsibility_tab() {
+    if (GLOBAL_ON_DOUBLE_CLICK_NODE_TYPE != 'PGRP'){
+        document.getElementById("resp_msg").innerHTML = 'Responsibility Not Applicable';
+
+        document.getElementById('non_pgrp').style.display='block';
+        document.getElementById('resp_pgrp').style.display='none';
+    }
+    else{
+    document.getElementById('resp_pgrp').style.display='block';
+    document.getElementById('non_pgrp').style.display='none';
+    }
+};
+
+var drop_down_value = '';
+var default_exclude_incremental_value = 0;
+var GLOBAL_EXCLUDE_ATTR_LIST = [];
+
+// based on selected attr row in main table, get attribute id list
+function get_selected_attr_list(attr_id) {
+    OpenLoaderPopup();
+    GLOBAL_SELECTED_ATTR_ID = attr_id
+    var obj_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+    GLOBAL_EXCLUDE_ATTR_LIST = []
+    $("#delete_tab").empty();
+    $.ajax({
+        url: "{% url 'eProc_Attributes:update_popup' %}",
+        type: "post",
+        data: {
+            'value': attr_id,
+            'obj_id':obj_id,
+        },
+        success: function (response) {
+            update_table_entry(response)
+            CloseLoaderPopup();
+        }
+    });
+}
+
+function update_table_entry(response){
+    GLOBAL_EXCLUDE_ATTR_LIST = []
+    $("#delete_tab").empty();
+    $("#delete_table").find("tr:gt(0)").remove();
+    var trHTML = '';
+    var trHTML_inherit = '' ;
+    var delete_table_id = $("#delete_table").attr('id');
+    if(response.attr_value_list.length !== 0){
+        var attr_id_header = response.attr_value_list[0].attribute_id
+        $("#delete_tab").html(`
+        <h6>Modify Attributes for ${attr_id_header}</h6>
+        <div>
+            <button class="btn btn-outline-primary" onclick="attributeAddNewRow();"><i class="fas fa-plus"></i> Add New Line</button>
+            <button class="btn btn-outline-danger" onclick="delete_popup_Row(${delete_table_id})"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+        `)
+        //var drop_down_lists = response.slice(0 , 1);
+        //response.shift();
+        drop_down = '';
+        var default_drop_down = '';
+        var attr_values = response.attr_values
+        var attr_value_list = response.attr_value_list
+        $.each(attr_value_list, function (i, item) {
+            if(GLOBAL_SELECTED_ATTR_ID ===item.attribute_id){
+                if (attr_values){
+                    drop_down = '';
+                    //drop_down = '<option value="' + item.low + '">' + item.low + '</option>';
+                        $.each(attr_values, function (index, attribute_value) {
+                                if(attribute_value.attribute_values == item.low){
+                                    default_drop_down = '<option value="' + attribute_value.attribute_values + '">' + attribute_value.attribute_values_description + '</option>';
+                                }
+                                drop_down += '<option value="' + attribute_value.attribute_values + '">' + attribute_value.attribute_values_description + '</option>';
+                            });
+                            default_drop_down +=drop_down
+                            drop_down_value = '<select id="attr_val_1" class="form-control">'+default_drop_down+'</select>'
+                        }
+                     else{
+                     drop_down_value = '<input type="text" id="modify_att_low_value" value="' + item.low + '" name="modify_att_low_value" class="form-control">';
+                     }
+                if(item.object_id == GLOBAL_ONCLICK_UPDATE_OBJ_ID){
+                    //get drop down list
+                    default_exclude_incremental_value = default_exclude_incremental_value+1
+                    if(item.attr_level_default){
+                        default_value = '<input type="checkbox" class="dummy_default_class" id="default-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Default" checked>';
+                    }
+                    else{
+                        default_value = '<input type="checkbox" class="dummy_default_class" id="default-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Default">';
+                    }
+
+                    inherit_value = '<input disabled type="checkbox" name="Inherit-" value="Inherit">';
+
+                    if(item.attr_level_exclude){
+                        exclude_value = '<input disabled type="checkbox" class="default_inherit_toggle-'+ default_exclude_incremental_value +'" id="exclude-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Exclude" checked>';
+                     }
+                    else{
+                        exclude_value = '<input disabled type="checkbox" class="default_inherit_toggle-'+ default_exclude_incremental_value +'" id="exclude-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Exclude">';
+                    }
+                        trHTML += '<tr id="modify_row"><td><input type="checkbox" name="select" value="select"></td><td class="attr_td">' + item.attribute_id + '</td><td>' + drop_down_value + '</td><td>' + default_value + '</td><td>' + inherit_value+ '</td><td>' + exclude_value + '</td><td>'+item.object_id+'</td></tr>';
+                    }
+                else{
+                    exclude_list = {}
+
+                    exclude_list.attr_level_exclude = item.attr_level_exclude
+                    exclude_list.object_id = item.object_id
+                    GLOBAL_EXCLUDE_ATTR_LIST.push(exclude_list)
+
+                    if(item.attr_level_default){
+                        default_value = '<input disabled  type="checkbox" name="Default" value="Default" checked>';
+                    }
+                    else{
+                        default_value = '<input disabled type="checkbox" name="Default" value="Default">';
+                    }
+
+                    inherit_value = '<input disabled type="checkbox" name="Inherit" value="Inherit" checked >';
+
+                    if(item.attr_level_exclude){
+                        exclude_value = '<input onclick= "replace_cell_content(this,'+item.object_id+');" type="checkbox" name="Exclude" value="Exclude" checked>';
+                     }
+                    else{
+                        exclude_value = '<input onclick= "replace_cell_content(this,'+item.object_id+');"  type="checkbox" name="Exclude" value="Exclude">';
+                    }
+                    trHTML_inherit += '<tr><td contenteditable="false" ><input disabled type="checkbox" name="select" value="select"></td><td contenteditable="false" class="attr_td">' + item.attribute_id + '</td><td contenteditable="false">' + item.low + ' - ' + item.attribute_value_desc + '</td><td>' + default_value + '</td><td>' + inherit_value+ '</td><td>' + exclude_value + '</td><td>'+item.object_id+'</td></tr>';
+                }
+            }
+        });
+
+        $('#delete_table').append(trHTML_inherit);
+        $('#delete_table').append(trHTML);
+        tableSortFilter('mdfyAttrTableData')
+    }
+    $("#modify_popup").appendTo("body").modal("show");
+
+}
+//################################# START OF CHECK AND UNCHECK DEFAULT AND EXCLUDE #################################
+function check_uncheck(input_info){
+
+    var onclick_id = input_info.id;
+    var split_onclick_id = onclick_id.split("-");
+    var default_exclude_count = split_onclick_id[1];
+    if(split_onclick_id[0] === "exclude"){
+        $("#default-"+default_exclude_count).attr("checked",false);
+    }
+    else if (split_onclick_id[0] === "default"){
+        $("#exclude-"+default_exclude_count).attr("checked",false);
+        $('.dummy_default_class').each(function() {
+        default_id = this.id;
+        if(default_id != onclick_id){
+            $(this).prop('checked', false)
+        }
+        });
+    }
+}
+//################################# START OF CHECK AND UNCHECK DEFAULT AND EXCLUDE #################################
+
+//################################## IN MODIFICATION POPUP ON CLICK OF EXCLUDE CHECK BOX ##########################
+function replace_cell_content(button_details,find)
+{
+    index_value = button_details.parentNode.parentNode.rowIndex -1
+    exclude_flag = GLOBAL_EXCLUDE_ATTR_LIST[index_value].attr_level_exclude
+    inherit_obj_id = GLOBAL_EXCLUDE_ATTR_LIST[index_value].object_id
+    if (button_details.checked != exclude_flag){
+        $(button_details).closest("td").next().html(GLOBAL_ONCLICK_UPDATE_OBJ_ID);
+
+    }
+    else{
+        $(button_details).closest("td").next().html(inherit_obj_id);
+    }
+
+    if ( button_details.checked ) {
+        // if checked ...
+        console.log( button_details.value );
+    }
+
+
+}
+
+//############################################################################################################
+
+
+
+    function highlightEdit(elem){
+      $(elem).css("background", "#e3e3e3") //just add any css or anything, it's only to depict that this area is being edited...
+    }
+
+$(document).ready(function(){
+      // on select of add attribute, this jquery get dropdown list
+    $("#ok_button").click(function(){
+        $("#select_attribute_popup").modal('toggle')
+
+        add_popup_add_new_line = '';
+        var e = document.getElementById("attr_drop");
+        var value = e.options[e.selectedIndex].value;
+        if(GLOBAL_ATTRIBUTE_ID_LIST.includes(value)){
+            get_selected_attr_list(value)
+        }
+        else{
+            if (value){
+                $("#add_attr_tab").empty();
+                $("#add_att_error_msg").empty();
+                $.ajax({
+                    url: "{% url 'eProc_Attributes:dropdown_list' %}",
+                    type: "post",
+                    data: {'value': value},
+                    success: function (response) {
+                        $("#add_attr_table").find("tr:gt(0)").remove();
+                        var html_to_append = '';
+                        var trHTML = '';
+                        var html_to_option = '';
+                        var delete_table_id = $("#add_attr_table").attr('id');
+                        var attr_id_header = response.attr_id;
+                        $("#add_attr_tab").append('<a style="margin-right:5px;" class="btn btn-primary">'+attr_id_header+'</a>')
+                        $("#add_attr_tab").append('<a style="margin-right:5px;" onclick=cloneRow() class="btn btn-primary">Addnewline</a>')
+                        $("#add_attr_tab").append('<INPUT type="button" value="delete line" class="btn btn-primary" onclick="delete_popup_Row('+delete_table_id+')" >')
+                        if (response.attr_value){
+                            $.each(response.attr_value, function (index, attr_values) {
+                                    html_to_option += '<option value="' + attr_values.attribute_values + '">' + attr_values.attribute_values_description + '</option>';
+                                    });
+                            html_to_append = '<select id="attr_val_1" style="width:100px;">'+html_to_option+'</select>'
+
+                        }
+                        else{
+                        html_to_append = '<input type="text" id="att_low_value" name="att_low_value">';
+                        }
+                        trHTML = '<tr id="add_attr_tr"><td contenteditable="false" ><input type="checkbox" name="select" value="select"></td><td>'+response.attr_id+'</td><td>'+html_to_append+'</td><td><input type="checkbox" name="Default" value="Default"></td><td><input type="checkbox" name="inherit" value="inherit"></td><td><input type="checkbox" name="exclude" value="exclude"></td><td>' + GLOBAL_ONCLICK_UPDATE_OBJ_ID + '</td></tr>';
+                        add_popup_add_new_line = trHTML;
+                        $('#add_attr_table').append(trHTML);
+                        tableSortFilter('addAttrTableData')
+                        $("#select_attribute_popup").modal("hide");
+                        $("#add_attr_pop_up").appendTo("body").modal("show");
+
+                    }
+                });
+            }
+            else{
+                $('#select_err_msg').show();
+                document.getElementById("select_err_msg").innerHTML = OrgMessageConstants["JMSG004"]+ "Attribute";
+                setTimeout(function(){
+                document.getElementById("select_err_msg").innerHTML = "";
+                $('#select_err_msg').hide();
+                }, 5000);
+            }
+        }
+    });
+});
+
+//delete checked row
+function delete_popup_Row(delete_table) {
+    try {
+        var table = document.getElementById(delete_table.id);
+        var rowCount = table.rows.length;
+
+        for(var i=0; i<rowCount; i++) {
+            var row = table.rows[i];
+            var chkbox = row.cells[0].childNodes[0];
+            if(null != chkbox && true == chkbox.checked) {
+                table.deleteRow(i);
+                rowCount--;
+                i--;
+            }
+    }
+    }catch(e) {
+        alert(e);
+    }
+}
+
+$(function() {
+    $("#add_attr_save").on("click", function() {
+        var attributes = new Array();
+        var main_table_low_value = [];
+        var validate_add_attributes = [];
+        $("#add_attr_table TBODY TR").each(function () {
+            var row = $(this);
+            var attribute = {};
+            attribute.attribute_id = row.find("TD").eq(1).html();
+            selected_attr=attribute.attribute_id;
+            attribute.value = row.find("TD").eq(2).find("select option:selected").val();
+            if (attribute.value == undefined){
+                attribute.value = row.find("TD").eq(2).find('input[type="text"]').val();
+            }
+            attribute.attr_level_default = row.find("TD").eq(3).find('input[type="checkbox"]').is(':checked');
+            attribute.inherit = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked');
+            attribute.attr_level_exclude = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked');
+            attribute.object_id = row.find("TD").eq(6).html();
+            validate_add_attributes.push(attribute.value);
+            attributes.push(attribute);
+        });
+        var attribute_details = {}
+            attribute_details.attr_details = attributes
+            attribute_details.object_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+        $("#my_table TBODY TR").each(function () {
+            var row = $(this);
+            var main_attribute = {};
+            main_attribute.attribute_id = row.find("TD").eq(0).html();
+            if(main_attribute.attribute_id == selected_attr){
+                main_attribute.low_value = row.find("TD").eq(1).html();
+                main_table_low_value.push(main_attribute.low_value);
+            }
+        });
+        var common = [];
+        jQuery.grep(validate_add_attributes, function(el) {
+        if (jQuery.inArray(el, main_table_low_value) != -1){ common.push(el);}
+        });
+        // validating in add attr table
+        add_attr_duplicates = false;
+        var add_attr_duplicates_list = [];
+        var add_attr_unique_list = [];
+        $("#modify_popup_errmsg").empty();
+        $.each(validate_add_attributes, function (index, value) {
+            console.log(value)
+            if($.inArray(value, add_attr_unique_list ) == -1){
+                add_attr_unique_list.push(value);
+            }else{
+            if($.inArray(value, add_attr_duplicates_list ) == -1){
+                add_attr_duplicates_list.push(value);
+            }
+        }
+        });
+        if(common.length != 0 || add_attr_duplicates_list.length != 0){
+            document.getElementById("add_att_error_msg").innerHTML = OrgMessageConstants["JMSG001"];
+        }
+        else{
+            $.ajax({
+                type: "POST",
+                url: "{% url 'eProc_Attributes:save_table' %}",
+                data: JSON.stringify(attribute_details),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var row_data = '';
+                    var default_value = '';
+                    var inherit_value = '';
+                    var exclude_value = '';
+                    create_main_table(response)
+
+                    $("#add_attr_pop_up").appendTo("body").modal("hide");
+                }
+            });
+        }
+    });
+
+    $("#save_delete_rows").on("click", function() {
+        OpenLoaderPopup()
+        //$("#modify_popup").modal('hide')
+        var save_delete_attributes = new Array();
+        var attr_id_value = '';
+        $("#delete_table TBODY TR").each(function () {
+            var row = $(this);
+            var save_delete_attribute = {};
+            save_delete_attribute.attribute_id = row.find("TD").eq(1).html();
+            save_delete_attribute.value = row.find("TD").eq(2).find("select option:selected").val();
+            if (save_delete_attribute.value == undefined){
+                save_delete_attribute.value = row.find("TD").eq(2).find('input[type="text"]').val();
+            }
+
+            save_delete_attribute.attr_level_default = row.find("TD").eq(3).find('input[type="checkbox"]').is(':checked');
+            save_delete_attribute.inherit = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked');
+            if (save_delete_attribute.inherit){
+                var attribute_value = row.find("TD").eq(2).html().split(' - ')[0]
+                save_delete_attribute.value = attribute_value
+            }
+
+            save_delete_attribute.attr_level_exclude = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked');
+            save_delete_attribute.object_id = row.find("TD").eq(6).html();
+
+            var data_array = save_delete_attribute.value+save_delete_attribute.attr_level_default+save_delete_attribute.attr_level_exclude
+            save_delete_attributes.push(save_delete_attribute);
+        });
+
+        if (save_delete_attributes.length == 0)
+        {
+            var save_delete_attribute = {};
+            save_delete_attribute.attribute_id = GLOBAL_SELECTED_ATTR_ID;
+            save_delete_attribute.object_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+            save_delete_attributes.push(save_delete_attribute);
+        }
+        var attribute_details = {}
+        attribute_details.attr_details = save_delete_attributes
+        attribute_details.object_id = GLOBAL_ONCLICK_UPDATE_OBJ_ID;
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Attributes:save_deleted_attr' %}",
+            data: JSON.stringify(attribute_details),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                update_table_entry(response)
+                create_main_table(response)
+                $("#modify_popup").modal('hide')
+                CloseLoaderPopup();
+            }
+        });
+    });
+});
+
+function cloneRow() {
+    $('#add_attr_table').append(add_popup_add_new_line);
+}
+
+function attributeAddNewRow() {
+    default_exclude_incremental_value = default_exclude_incremental_value+1;
+    inherit_value = '<input disabled type="checkbox" name="Inherit" value="Inherit" >';
+    default_value = '<input type="checkbox" class="dummy_default_class" id="default-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Default">';
+    exclude_value = '<input type="checkbox" class="default_inherit_toggle-'+ default_exclude_incremental_value +'" id="exclude-'+ default_exclude_incremental_value +'" onclick="check_uncheck(this);" name="option'+ default_exclude_incremental_value +'" value="Exclude" disabled >';
+    modify_popup_add_new_line = '<tr><td contenteditable="false"><input type="checkbox" name="select" value="select"></td><td contenteditable="false" class="attr_td">' + GLOBAL_SELECTED_ATTR_ID + '</td><td contenteditable="false">' + drop_down_value + '</td><td>'+ default_value +'</td><td>'+ inherit_value +'</td><td>'+ exclude_value +'</td><td>' + GLOBAL_ONCLICK_UPDATE_OBJ_ID + '<td></tr>';
+    $('#modify_body').append(modify_popup_add_new_line);
+}
+
+function clone_resp_table_row() {
+    $('#responsibility_body').append(resp_add_new_line);
+}
+
+function clone_ext_table_row() {
+    $('#extend_attr_body').append(ext_add_new_line);
+}
+
+function clone_code_table_row() {
+    $('#company_id_body').append(company_add_new_line);
+}
+
+function save_company_id(){
+    var save_porg_mapping_attributes = new Array();
+    $("#company_id_table TBODY TR").each(function () {
+            var row = $(this);
+            var save_porg_mapping_attribute = {};
+            save_porg_mapping_attribute.porg_id = row.find("td:eq(0) input[type='text']").val();
+            save_porg_mapping_attribute.company_id = row.find("TD").eq(1).find("select option:selected").val();
+            save_porg_mapping_attributes.push(save_porg_mapping_attribute);
+    });
+    data = {'save_porg_mapping_attributes':save_porg_mapping_attributes,'object_id':GLOBAL_ONCLICK_UPDATE_OBJ_ID}
+    OpenLoaderPopup();
+     $.ajax({
+            type: 'POST',
+            url:"{% url 'eProc_Attributes:save_porg_company_id' %}",
+            data:JSON.stringify(data),
+            success: function(response) {
+            $("#company_id_success_msg").empty();
+            $("#resp_msg").empty();
+            document.getElementById("company_id_success_msg").style.color = "green";
+            document.getElementById("company_id_success_msg").innerHTML = 'Data Saved Successfully';
+            document.getElementById('company_id_success_msg_div').style.display='block';
+            setTimeout(function(){
+            document.getElementById("company_id_success_msg").innerHTML = "";
+            document.getElementById("company_id_success_msg_div").innerHTML = "";
+             }, 5000);
+            CloseLoaderPopup();
+            }
+     });
+
+}
+</script>

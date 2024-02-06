@@ -1,0 +1,200 @@
+// spacing given to body if navbar is required 
+.navbar-exist {
+    padding-top: 7.3rem;
+}
+
+.majjaka-main-navbar {
+
+    .nav-button-div {
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+
+        .nav-notif-button {
+            position: relative;
+            display: flex;
+            align-items:center;
+            justify-content: center;
+            border: none;
+            outline: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: white;
+            font-size: 20px;
+
+            &:hover {
+                background-color: #5a6268;
+            }
+
+            .material-icons {
+                font-size: 20px;
+            }
+        }
+
+        .nav-notif-button_badge {
+            position: absolute;
+            top: -3px;
+            right:-7px;
+            display: flex;
+            align-items:center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: red;
+            font-size: 10px;
+        }
+
+    }
+
+    &__user-menu {
+        .nav-link {
+            border-left: 2px solid #5a6268;
+            color: #969696;
+        }
+    }
+
+    &__username {
+        font-weight: 500;
+        color: #969696;
+    }
+
+    .user-dropdown {
+    
+        .user-dropdown-item {
+            display: flex;
+
+            &__icons {
+                padding-right: 0.5rem;
+            }
+        }
+    }
+
+}
+
+.notification_wrap {
+    display: flex;
+
+    .notification_alerts_dropdown {
+        width: 500px; 
+        right: -16rem;
+    }
+
+    .dropdown-menu:after{
+        content: "";
+        position: absolute;
+        top: -1.25rem;
+        right: 16.5rem;
+        border: 10px solid;
+        border-color: transparent transparent #fff transparent;
+    }
+
+    .dropdown-menu-header {
+        border: none;
+        text-align: center;
+        font-weight: 500;
+        border-bottom: 1px solid #dee6ed;
+    }
+
+    .list-group-item:hover{
+        background-color: #f4f7f9;
+    }
+
+    a:hover{
+        text-decoration: none;
+        color: black;
+        cursor: pointer;
+    }
+
+}
+
+
+.notification_msg_list {
+    overflow: auto;
+    max-height: 25rem;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 2px solid rgba(0, 0, 0, 0);
+        background-clip: padding-box;
+        background-color: rgba(158,158,158,.6);
+        border-radius: 10px;
+    }
+
+    .new_unread_notification {
+        color: #721c24;
+        background-color: #f8d7da;
+    }
+
+    .notification_important{
+        background-color: #fff3cd;
+    }
+
+    .list-group-item{
+        border-left: none;
+        border-right: none;
+        padding-left: .75rem;
+
+        .col-10 {
+            padding-left: .75rem;
+
+            .material-icons-outlined{
+                vertical-align: bottom;
+            }
+
+        }
+
+        .notification_close{
+            margin-top: -2rem;
+
+            .button-close-delete {
+                display: none;
+            }
+        }
+
+        &:hover .button-close-delete{
+            display: block;
+        }
+    }
+
+    .icon_notification_important {
+        margin-left: 1rem;
+        cursor: pointer;
+    }
+
+    .notification_msg_info {
+        font-weight: 500;
+    }
+
+    .notification-type-icon-document {
+        background-color: #d4edda;
+        color: $green-success;
+        height: 2rem;
+        width: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .notification-type-icon-chat {
+        background-color: #E5E1F9;
+        color: #7363d1;
+        height: 2rem;
+        width: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+}
+
+
+
+

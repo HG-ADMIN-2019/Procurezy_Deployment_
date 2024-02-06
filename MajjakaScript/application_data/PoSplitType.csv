@@ -1,0 +1,10 @@
+po_split_type,po_split_type_desc,del_ind
+1,Supplier,0
+2,Currency,0
+3,Ship To Address,0
+4,Purchasing Group,0
+5,Call Off,0
+6,Limit order,0
+7,Purchase Requisition,0
+8,incoterm,0
+9,payment Terms,0

@@ -1,0 +1,174 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Approvals (Admin Tool) {% endblock %}
+{% block maincontent %}
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="d-flex justify-content-between">
+            <h3>Approvals Report</h3>
+            <div></div>
+        </div>
+        <hr>
+        <div class="card card-shadow-1">
+            <div class="card-body">
+                <form method="post" action="{% url 'eProc_Admin_Tool:approval_report' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md">
+                            <label>Company Number</label>
+                            <select name="comp_code_app" id="id_comp_code_app" class="form-control">
+                                {% for comp in comp_list %}
+                                    <option value="{{ comp.company_id }}"> {{ comp.company_id }} - {{ comp.name1 }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label>Account Assignment Category</label>
+                            <select name="acc_assgn_cat" id="acc_assgn_cat" class="multiple_select form-control" data-selected-text-format="count" multiple data-actions-box="true" title="Select..">
+                                {% for acc_cat in acct_val_list %}
+                                    <option value="{{ acc_cat.account_assign_cat }}"> {{ acc_cat.account_assign_cat }}-{{ acc_cat.description }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-auto my-1">
+                            <button id="hg_approval_report_search" class="btn btn-primary button-search-users" type="submit" title="Please click to get the search details!">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+                    <button id="clear_filters_btn" class="btn btn-link" type="reset" value="Reset">Clear filters</button>
+                </form>
+            </div>
+        </div>
+        <div class="search_result_count_card card">
+            {% if t_count > 0 %}
+                <div class="card-body">
+                    <h6 class="card-title">Total number of results found: {{ t_count }}</h6>
+                </div>
+            {% endif %}
+            {% if t_count == 0 %}
+                <div class="card-body">
+                    <h6 class="card-title">No Results Found</h6>
+                </div>
+            {% endif %}
+        </div>
+        <!-- To Display Header Details only if there are any results -->
+        <div id="table-container">
+            {% if t_count > 0 %}
+                {% if final_list %}
+                    <div class="card mt-3">
+                        <table id="approval_report_table" class="table table_sort_filter_export_excel">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Company Code</th>
+                                    <th scope="col">Account Assignment Category</th>
+                                    <th scope="col">Account Assignment Value</th>
+                                    <th scope="col">Approver</th>
+                                    <th scope="col">Approver Code</th>
+                                    <th scope="col">Approval Limit</th>
+                                    <th scope="col">Approver Currency Key</th>
+                                    <th scope="col">Superior Company Code</th>
+                                    <th scope="col">Superior Account Assignment Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for acc in final_list %}
+                                    <tr>
+                                        <td scope="row">{{ acc.0 }}</td>
+                                        {% if acc.1 == 'AS' %}
+                                            <td scope="row">Asset</td>
+                                        {% elif acc.1 == 'CC' %}
+                                            <td scope="row">Cost Center</td>
+                                        {% elif acc.1 == 'GLACC' %}
+                                            <td scope="row">General Ledger Account</td>
+                                        {% elif acc.1 == 'OR' %}
+                                            <td scope="row">Internal Order</td>
+                                        {% elif acc.1 == 'WBS' %}
+                                            <td scope="row">Project</td>
+                                        {% endif %}
+                                        <td scope="row">{{ acc.2 }}</td>
+                                        <td scope="row">{{ acc.3 }}</td>
+                                        <td scope="row"> {{ acc.9 }} </td>
+                                        <td scope="row"> {{ acc.7 }} </td>
+                                        <td scope="row"> {{ acc.8 }} </td>
+                                        <td scope="row">{{ acc.5 }}</td>
+                                        <td scope="row">{{ acc.6 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="hg_spacer2"> &nbsp; </div>
+
+<script>
+    var selected_status_value = {{ inp_acc_assgn_cat | safe }};
+    console.log('Selected Status Value:', selected_status_value);
+<!--    var selected_comp_value = {{ inp_comp_code | safe }};-->
+<!--    console.log('Selected Company Value:', selected_comp_value);-->
+
+    $(document).ready(function () {
+        $('.multiple_select').selectpicker();
+        $('#hg_approval_report_search').click(function () {
+            $('#table-container').show();
+            OpenLoaderPopup();
+            var selectedCompany = $('#id_comp_code_app').val();
+            var selectedCategories = $('#acc_assgn_cat').val();
+            var selectedData = {
+            company: selectedCompany,
+            categories: selectedCategories
+        };
+        localStorage.setItem("selectedData", JSON.stringify(selectedData));
+    });
+
+    // Event handler for the "clear filters" button
+    $('#clear_filters_btn').click(function () {
+        localStorage.removeItem("selectedData");
+        document.getElementById("id_comp_code_app").selectedIndex = 0;
+        // Select all options in the acc_assgn_cat dropdown
+        $('#acc_assgn_cat option').prop('selected', true);
+        $('#acc_assgn_cat').selectpicker('refresh');
+        $('form').submit();
+    });
+
+
+    // Retrieve and set the selected data from local storage on page load
+    var selectedDataJSON = localStorage.getItem("selectedData");
+    if (selectedDataJSON) {
+        var selectedData = JSON.parse(selectedDataJSON);
+        if (selectedData.company) {
+            $('#id_comp_code_app').val(selectedData.company);
+        }
+        if (selectedData.categories) {
+            $('#acc_assgn_cat').selectpicker('val', selectedData.categories);
+        }
+    }
+    localStorage.removeItem("selectedData");
+});
+
+    // Datatables script to generate sort filter & export to excel feature for tables
+    function table_sort_filter_export_excel() {
+        $('.table_sort_filter_export_excel').DataTable({
+            dom: '<"row"<"col"l><"datatableBtn col"fB>> rt <"row"<"col"i><"col"p>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'Approvals Report', // Change the title here
+                    text: 'Export to Excel',
+                },
+            ],
+        });
+    }
+</script>
+<script src="{% static 'scripts/approval_report.js'%}"> </script>
+{% if inc_footer %}
+{% include 'root/footer.html' %}
+{% endif %}
+{% endblock %}

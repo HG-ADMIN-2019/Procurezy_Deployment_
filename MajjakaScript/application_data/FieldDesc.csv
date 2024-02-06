@@ -1,0 +1,25 @@
+FIELD_NAME,FIELD_DESC,del_ind
+acct_assignment_category,Account Assignment Category,0
+activate,Activate,0
+address_type,Address Type Desc,0
+approval_type,Approval Type,0
+attribute_id,Org Attributes,0
+authorization,Authorization,0
+AUTH_001,Auth 001,0
+auth_level,Authorization Level,0
+auth_obj_grp,Authorization Group,0
+auth_obj_id,Authorization Object Id,0
+auth_type,Authorization Type,0
+document_type,Document Type,0
+incoterm,Incoterms,0
+messages_id,Message Id,0
+messages_type,Type Of The Message,0
+org_node_types,Org Node Type,0
+Priority,Org Announcement Priority,0
+purchase_ctrl_flag,Purchase Control Flag,0
+roles,Roles,0
+split_type,Split Type Description,0
+status,Org Announcement Status,0
+sys_attr_type,System Settings Attribute Type,0
+user_type,User Type Desc,0
+workflow_schema,Workflow Schema,0

@@ -1,0 +1,591 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+
+
+
+<head>
+    <title>{% block title %}Application Settings{% endblock %}</title>
+</head>
+<style>
+    input[type=button],
+    input[type=submit],
+    input[type=reset],
+    .hg_button {
+        text-transform: uppercase;
+    }
+
+    .hg_table input[type=text]
+    {
+        width: 100%;
+        height: 100%;
+        border: none;
+        }
+
+    .hg_input_box_width {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .hg_button_bottom_padding {
+        margin-bottom: 10px;
+    }
+
+    .hg_button_margin {
+        margin-right: 10px;
+    }
+
+    .hg_table_app_align {
+        padding-top: 60px;
+    }
+
+    .hg_cancel_save_button_align {
+        float: right;
+        margin-top: 10px;
+    }
+
+    .hg_heading_hrborder {
+        border: 1px solid orange;
+        width: 100%
+    }
+
+    .hg_select {
+        border: 0;
+        width: 100%;
+    }
+
+    th {
+    background-color:#e9e9e9;
+    }
+    table {
+        border: none;
+        text-align: center;
+        width: 95%;
+       
+    }
+
+    table, th, td {
+        padding: 5px 10px 5px 10px;
+        border: none;
+        text-align: left;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+    tr:nth-child(odd) {
+        background-color: #e9e9e9;
+    }
+
+
+    .hg_main {
+        position: relative;
+        width: 73%;
+        background-color: #FDFAF1;
+        left: 24%;
+        padding-top: 50px;
+        padding-left: 20px;
+    }
+
+    i{
+        color: #4B2D2A;
+    }
+
+    table,td,tr,th{
+        border:none;
+    }
+
+    table, th, td {
+        border:none;
+    }
+
+    .hg_sidenav {
+        height: 100%;
+        /* background-color: #FFB700; */
+        background-image: linear-gradient(to top, rgba(250, 189, 76,0.6), rgba(250, 189, 76,1));
+        position: fixed;
+        padding: 10px;
+        margin-top: 5%;
+        overflow: hidden;
+        float: left;
+        text-align: left;
+        width: 22%;
+        left: 0;
+        top: 0;
+    }
+
+    .hg_tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+    #overlay div {
+        width: 300px;
+        margin: 100px auto;
+        background-color: #fff;
+        border: 1px solid #4B2D2A;
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* tree menu classes start */
+    /* Remove default bullets */
+    ul,
+    #myUL {
+        list-style-type: none;
+    }
+
+    /* Remove margins and padding from the parent ul */
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .hg_caret {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+
+    /* Create the caret/arrow with a unicode, and style it */
+    .hg_caret::before {
+        content: "\25B6";
+        color: #4B2D2A;
+        display: inline-block;
+        margin-right: 3px;
+    }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .hg_caret-down::before {
+        transform: rotate(90deg);
+    }
+
+    /* Hide the nested list */
+    .hg_nested {
+        display: none;
+        /* background-color: #FFB700; */
+        color: #4B2D2A;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .hg_app_set_active {
+        display: block;
+    }
+
+    .hg_caret1 {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+
+    /* Create the caret/arrow with a unicode, and style it */
+    .hg_caret1::before {
+        content: "\25B7";
+        color: #4B2D2A;
+        display: inline-block;
+        margin-right: 3px;
+    }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .hg_caret1-down::before {
+        transform: rotate(90deg);
+    }
+
+    /* tree menu classes end */
+
+    .hg_expand_tree {
+        color: #4B2D2A;
+    }
+
+    .hg_align_to_tree {
+        margin: 0px 0px 0px 340px;
+    }
+</style>
+
+<body style="background-color:#FDFAF1;">
+
+<!--    <div id="loading_popup" class="hg_modal">-->
+<!--        <div class="hg_modal_content" style=" width:100px; height:150px;">-->
+<!--            <div class="hg_container" style=" width:100px; height:150px;">-->
+<!--                <div id="output">-->
+<!--                    <h3>Please wait..</h3>-->
+<!--                    <img src="{% static 'img/loading.gif' %}" height="50px" width="50px" alt="loading" />-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+    {% include 'root/loader.html' %}
+    {% include 'root/navbar.html' %}
+    <div>
+        <div class="hg_sidenav" style="margin-top:10%">
+            <h2 class="hg_pl10" style="color:#4B2D2A">Configure Application Settings</h2>
+            <ul id="myUL" style="padding:10px 0px 0px 10px; font-size:14px;">
+                <li><span class="hg_caret" style="color:#4B2D2A">Application Settings</span>
+
+                    <ul class="hg_expand_tree">
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Basic Settings</span>
+                            <ul class="hg_nested hg_pl30">
+                                <li id="upload_country" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Countries</span></li>
+                                <li id="upload_currencies" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Currencies</span></li>
+                                <li id="upload_languages" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Languages</span></li>
+                                <li id="upload_ProdCat" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Product Category</span></li>
+                                <li id="upload_Timezone" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Timezone</span></li>
+                                <li id="upload_UOM" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Upload Unit of Measure</span></li>
+                            </ul>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/app-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Application Settings</span>
+                            <ul class="hg_nested hg_pl30">
+                                <li id="upload_clients" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Define Clients</span></li>
+                                <li id="upload_doctyp" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Define Document Types</span></li>
+                                <li><span class="hg_caret">Define Number Ranges</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="sc" ondblclick="get_sc_num_ranges()" class="hg_aslnk">Shopping Cart</li>
+                                        <li>Purchase Order</li>
+                                        <li>Good Verification</li>
+                                    </ul>
+                                </li>
+                                <li><span class="hg_caret">Define Transaction Types</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li ondblclick="get_transaction_type();" >Shopping Cart</li>
+                                        <li>Purchase Order</li>
+                                        <li>Good Verification</li>
+                                    </ul>
+                                </li>
+                                <li id="upload_accasscat" ondblclick="basic_settings_upload(this); "><span
+                                        class="hg_caret1">Define Acc. Assign. Categories</span></li>
+                                <li><span class="hg_caret1">Define System Settings</span></li>
+                                <li><span class="hg_caret">Define Email Notifications</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li>Email Contents</li>
+                                        <li>Email Key Words</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/mas-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Master Data Settings</span>
+                            <ul class="hg_nested hg_pl30">
+                                <li><span class="hg_caret">Upload Accounting Data</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="upload_accdata" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Account Assignment Values</span></li>
+                                        <li id="upload_accdatades" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Account Assignment Descriptions</span></li>
+                                    </ul>
+                                </li>
+                                <li><span class="hg_caret">Upload Customer Product Categories(UNSPSC)</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li>Customer Product Categories(UNSPSC)</li>
+                                    </ul>
+                                </li>
+                                <li><span class="hg_caret">Upload Approval Data</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="upload_apptypes" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Approval Types</span></li>
+                                        <li id="upload_applimit" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Approval Limit</span></li>
+                                        <li id="upload_applimval" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Approval Limit Value</span></li>
+
+                                    </ul>
+                                </li>
+                                <li><span class="hg_caret">Upload Spend Limit Data</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="upload_spndlimid" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Spend Limit ID </span></li>
+                                        <li id="upload_spndlimval" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Spend Limit Value</span></li>
+                                    </ul>
+                                </li>
+                                <li><span class="hg_caret">Work Flow Data</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="upload_wfschema" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Work Flow Schema</span></li>
+                                        <li id="upload_WFACC" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Work Flow Accounting </span></li>
+
+                                    </ul>
+                                </li>
+
+                                <li><span class="hg_caret">Organization Data</span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li id="upload_orgnodetypes" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Org Node Types</span></li>
+                                        <li id="upload_orgattributes" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Org Attributes </span></li>
+                                        <li id="upload_companies" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Org Companies </span></li>
+                                        <li id="upload_porg" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Purchase Orgs </span></li>
+                                        <li id="upload_pgrp" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Purchase Groups </span></li>
+                                        <li id="upload_roles" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Roles </span></li>
+                                        <li id="upload_authobj" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Authorization Objects </span></li>
+                                        <li id="upload_authgrp" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Authorization Group </span></li>
+                                        <li id="upload_auth" ondblclick="basic_settings_upload(this); "><span
+                                                class="hg_caret1">Authorization </span></li>
+
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/tran-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Transactional Data Settings</span>
+                            <ul class="hg_nested hg_pl30">
+                                <li><span class="hg_caret">Upload Migration Data </span>
+                                    <ul class="hg_nested hg_pl30">
+                                        <li>Shopping Cart</li>
+                                        <li>Purchase Order</li>
+                                        <li>Goods Verification</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Purchaser Cockpit Configuration</span>
+                            <ul class="hg_nested hg_pl30">
+                                <li id="purch_cockpit" ondblclick="purch_cockpit_config(this); "><span
+                                        class="hg_caret1">Purchase Cockpit</span></li>
+
+                            </ul>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"> Content Management </span>
+                            <ul class="hg_nested hg_pl30">
+                                <li id="define_ctlg" ondblclick="define_catalog(this); "><span class="hg_caret1">Define
+                                        Catalog</span></li>
+                                <li id="define_prod_service" ondblclick="define_product_services();">
+                                    <span class="hg_caret1">Define Product Cattegories/Series</span></li>
+
+                            </ul>
+                        </li>
+                       
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                            height="20px" class="hg_valign_mid"> Integration </span>
+                            <ul class="hg_nested hg_pl30">
+                                <li id="define_conn" ondblclick="define_connection(this); "><span class="hg_caret1">Python to SAP Connector</span></li>
+                            </ul>
+                        </li>
+
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"><a href="{% url 'eProc_Manage_Content:upload_cust_prod_cat' %}"> Email Notification Settings </a> </span>
+                        </li>
+                        <li class="hg_pb5"><span class="hg_caret"><img src="{% static 'images/base-icn.png'%}" width="20px"
+                                    height="20px" class="hg_valign_mid"><a  href="{% url 'eProc_SAP_Connector:get_sap_connect' %}">Connector </a> </span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    {% include 'Application_Settings/Number_Ranges/Shopping_Cart/number_ranges.html' %}
+    {% include 'Application_Settings/Basic_setting_Upload/upload_data.html' %}
+    {% include 'Application_Settings/Transaction Types/Shopping_Cart/transaction_types.html' %}
+    {% include 'Application_Settings/Purch_cockpit/purch_cockpit.html' %}
+    {% include 'ManageContent/content_mng.html' %}
+    {% include 'ManageContent/Catalog_Product.html' %}
+    {% include 'Application_Settings/Integration/SAP_Connect.html' %}
+
+
+    <script>
+
+     let get_nav = document.getElementsByClassName("hg_navbar_cnt")
+        for(let i=0;i<get_nav.length;i++)
+        {
+            get_nav[i].style.height = "54px";
+        }
+
+        $(document).ready(function () {
+            var $loading = $('#loading_popup').hide();
+            $(document)
+                .ajaxStart(function () {
+                    $loading.show();
+                })
+                .ajaxStop(function () {
+                    $loading.hide();
+                });
+        });
+        document.getElementById('home_btn').style.display = "none";
+        document.getElementById('sc_cart_counter').style.display = "none";
+// <!--        document.getElementById('navOuter').style.height = "0px";-->
+// <!--        document.getElementById('navOuter').style.padding = "0px";-->
+
+        //#############################################################Application settings start #############################################
+        var toggler = document.getElementsByClassName("hg_caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".hg_nested").classList.toggle("hg_app_set_active");
+                this.classList.toggle("hg_caret-down");
+            });
+        }
+
+
+        function delete_popup_Row(myTable) {
+            try {
+                var table = document.getElementById(myTable);
+                var rowCount = table.rows.length;
+
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var chkbox = row.cells[4].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                    }
+                }
+            } catch (e) {
+                alert(e);
+            }
+        }
+        //#############################################################Application settings End #################################################
+
+        //#####################################################Common Application settings functions start ######################################
+
+        function application_settings_delete_Row(myTable) {
+            try {
+                var table = document.getElementById(myTable);
+                var rowCount = table.rows.length;
+
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var chkbox = row.cells[0].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                    }
+                }
+                return rowCount;
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+        //####################################################### Common Application settings functions End ##################################
+
+        //######################################################### Purchaser Cockpit Start ################################################
+
+        // On double click of Purchaser Cockpit: default display
+        var purch_global_data = '<tr></tr>';
+
+        function purch_cockpit_config(purch_cockpit) {
+            var purch_cockpit = purch_cockpit.id;
+            var purch_header_data = '';
+            var purch_body_data = '<tr></tr>';
+            $('#purch_header').empty();
+            $('#purch_body').empty();
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:purch_cockpit' %}",
+                data: {
+                    purch_cockpit: purch_cockpit
+                },
+                success: function (Response) {
+                    purch_global_data = Response;
+                    purch_header_data = '<tr><th style="padding:10px; width:150px; text-align:left">Product category from</th><th style="padding:10px; width:150px; text-align:left">Product category to</th><th style="padding:10px; width:150px; text-align:left">Purchaser cockpit value </th> </tr>'
+                    $.each(Response, function (i, item) {
+                        purch_body_data += '<tr ><td>' + item.fields.from_prod_cat + '</td><td>' + item.fields.to_prod_cat + '</td><td>' + item.fields.purch_cockpit_value + '</td></tr>';
+                    });
+                    $('#purch_header').append(purch_header_data);
+                    $('#purch_body').append(purch_body_data);
+                    hide_content_divs()
+                    document.getElementById("purch_cockpit_main").style.display = "block";
+                }
+
+            });
+
+        }
+
+        // On click of display button
+        function display_purch_cockpit_data() {
+            purch_cockpit_config(purch_cockpit);
+            document.getElementById("edit_purch_cockpit_div").style.display = "block";
+            document.getElementById("sc_trans_type_edit_buttons").style.display = "none";
+            document.getElementById("add_delete_line_purch_cockpit_div").style.display = "none";
+        }
+
+        // On click of edit button 
+        function edit_purch_cockpit_data() {
+            var purch_header_data = '';
+            var purch_body_data = '<tr></tr>';
+            $('#purch_header').empty();
+            $('#purch_body').empty();
+
+            if (purch_global_data) {
+                purch_header_data = '<tr><th style="padding:10px; width:30px;">Select</th><th style="padding:10px; width:150px; text-align:left;">Product category from</th><th style="padding:10px; width:150px; text-align:left;">Product category to</th><th style="padding:10px; width:150px; text-align:left;">Purchaser cockpit value </th> </tr>'
+                $.each(purch_global_data, function (i, item) {
+                    purch_body_data += '<tr ><td><input type="checkbox" required></td><td><input value="' + item.fields.from_prod_cat + '" type="text" name="from_prod_cat" required></td><td><input value="' + item.fields.to_prod_cat + '" type="text" name="to_prod_cat" required></td><td>' + item.fields.purch_cockpit_value + '</td></tr>';
+                });
+            }
+            $('#purch_header').append(purch_header_data);
+            $('#purch_body').append(purch_body_data);
+            document.getElementById("edit_purch_cockpit_div").style.display = "none";
+            document.getElementById("purch_cockpit_edit_buttons").style.display = "block";
+            document.getElementById("add_delete_line_purch_cockpit_div").style.display = "block";
+        }
+
+        // on click of add new line icon, add new line to editable table
+        function purch_cockpit_app_add_new_line() {
+            purch_add_new_html = '<tr></tr>';
+            if (purch_global_data) {
+                purch_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input type="text" name="from_prod_cat" required></td><td><input type="text" name="to_prod_cat" required></td><td>false</td></tr>';
+            }
+            else {
+                purch_add_new_html = '<tr><td></td><td><input type="text" name="from_prod_cat" required></td><td><input type="text" name="to_prod_cat" required></td><td><input value="True"></td></tr>';
+            }
+            $('#purch_body').append(purch_add_new_html);
+        }
+
+        // on click of save, save edited data into db
+        function purch_cockpit_save() {
+            var purch_cockpit_data = new Array();
+            $("#display_purch_table TBODY TR").each(function () {
+                var row = $(this);
+                var get_purch_cockpit_data = {};
+                get_purch_cockpit_data.from_prod_cat = row.find("TD").eq(1).find('input[type="text"]').val();
+                get_purch_cockpit_data.to_prod_cat = row.find("TD").eq(2).find('input[type="text"]').val();
+                get_purch_cockpit_data.purch_cockpit_value = row.find("TD").eq(3).html();
+                purch_cockpit_data.push(get_purch_cockpit_data);
+            })
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:save_purch_cockpit' %}",
+                data: JSON.stringify(purch_cockpit_data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+            });
+        }
+
+        //######################################################### Purchaser Cockpit End ################################################
+        // Function to hide all the divs at once
+        function hide_content_divs() {
+            available_div = document.getElementsByClassName('hg_application_main')
+            for (let index = 0; index < available_div.length; index++) {
+                var element = available_div[index];
+                element.style.display = "none";
+            }
+        }
+    </script>
+
+    {% endblock %}

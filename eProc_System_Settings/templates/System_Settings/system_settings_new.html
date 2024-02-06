@@ -1,0 +1,344 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} System Settings {% endblock %}
+{% block maincontent %}
+<style>
+    .custom-checkbox-label {
+        display: inline-block;
+        margin-bottom: 0px;
+
+    }
+    .custom-checkbox-label-subtext {
+        font-size: 14px;
+        color: grey;
+        margin-left: 16px;
+        display: inline-block;
+    }
+</style>
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="elements-space-between">
+            <h3>System Settings</h3>
+            <div>
+                <button type="button" id="cancel_sys_settings" class="btn btn-outline-primary" data-toggle="modal"
+                    data-target="#myModal" hidden><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-primary" id="edit_sys_settings" type="button" onclick="onclick_edit()"><i class="far fa-edit"></i>
+                    Edit</button>
+                <button class="btn btn-primary" id="save_sys_settings" type="button" title="Save" hidden
+                    onclick="save_system_settings_details()"><i class="fas fa-check"></i> Save</button>
+            </div>
+        </div>
+        <hr>
+        <div id="err_msg_app_settings_t" class="alert alert-success" hidden> <span class="msg_display" id="success_msg_id"></span></div>
+        <form method="POST" id="SystemSettingform">
+            {% csrf_token %}
+            <!--    Account Data      -->
+            <div class="card card-shadow-1 mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">User Password</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Password Policy</label><span class="hg_required"></span><br>
+                            <select class="toggle_field form-control" id="pwd_policy" name="pwd_policy" disabled>
+                                {% for pwd_policy in password_policy %}
+                                <option value="{{pwd_policy.sys_attr_value}}" {% if pwd_policy.sys_settings_default_flag %}selected{% endif %}>{{pwd_policy.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the appropriate password policy
+                            </small>
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Login Attempts</label><span class="hg_required"></span><br>
+                            <select class="toggle_field form-control" id="login_attempts" name="login_attempts"
+                                disabled>
+                                {% for login_attempts in login_attempts %}
+                                <option value="{{login_attempts.sys_attr_value}}" {% if login_attempts.sys_settings_default_flag %}selected{% endif %}> {{login_attempts.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the number of incorrect login attempts
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-shadow-1 mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">System Attributes</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Session Timeout In Seconds</label><span class="hg_required"></span><br>
+                            <select class="toggle_field form-control" id="session_timeout" name="session_timeout"
+                                disabled>
+                                {% for session_timeout in session_timeout %}
+                                <option value="{{session_timeout.sys_attr_value}}" {% if session_timeout.sys_settings_default_flag %}selected{% endif %}> {{session_timeout.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select system idle duration
+                            </small>
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Message Display In Seconds</label><span class="hg_required"></span><br>
+                            <select class="toggle_field form-control" id="msg_display" name="msg_display" disabled>
+                                {% for msg_display in msg_display %}
+                                <option value="{{msg_display.sys_attr_value}}" {% if msg_display.sys_settings_default_flag %}selected{% endif %}> {{msg_display.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the message display time
+                            </small>
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Application Theme Color</label><br>
+                            <select type="text" class="toggle_field form-control" id="theme_color" name="theme_color"
+                                disabled>
+                                {% for theme_color in theme_color %}
+                                <option value="{{theme_color.sys_attr_value}}" {% if theme_color.sys_settings_default_flag %}selected{% endif %}> {{theme_color.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select your theme color
+                            </small>
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Pagination Count</label><span class="hg_required"></span><br>
+                            <select type="text" class="toggle_field form-control" id="pagination_count"
+                                name="pagination_count" disabled>
+                                {% for pagination_count in pagination_count %}
+                                <option value="{{pagination_count.sys_attr_value}}" {% if pagination_count.sys_settings_default_flag %}selected{% endif %}> {{pagination_count.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the number of records to be displayed
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-shadow-1 mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Attachment Data</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Attachment Size In MB</label><span class="hg_required"></span><br>
+                            <select type="text" class="toggle_field form-control" id="attachment_size"
+                                name="attachment_size" disabled>
+                                {% for attachment_size in attachment_size %}
+                                <option value="{{attachment_size.sys_attr_value}}" {% if attachment_size.sys_settings_default_flag %}selected{% endif %}> {{attachment_size.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the attachment size
+                            </small>
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Attachment Extension Supported</label><span class="hg_required"></span><br>
+                            <select type="text" class="toggle_field form-control" id="attachment_extension" name="attachment_extension" value="{{system_settings_instance.attachment_extension}}" disabled>
+                                {% for attachment_extension in attachment_extension %}
+                                <option value="{{attachment_extension.sys_attr_value}}" {% if attachment_extension.sys_settings_default_flag %}selected{% endif %}>{{attachment_extension.sys_attr_value}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Select the type of extensions
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-shadow-1 mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Application Data</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            {% if acct_assignment_category.0 == '1' %}
+                                <input type="checkbox" class="toggle_field" id="acct_assignment_category"
+                                name="acct_assignment_category" value="1" class="toggle_field" checked disabled>
+                            {% elif acct_assignment_category.0 == '0' %}
+                                <input type="checkbox" class="toggle_field" id="acct_assignment_category"
+                                name="acct_assignment_category" value="0" class="toggle_field" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="acct_assignment_category"
+                                name="acct_assignment_category" value="0" class="toggle_field" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Mix Account Assignment Category</label>
+                            <span class="custom-checkbox-label-subtext"> Can have multiple account assignment categories
+                                in shopping cart </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if purchase_group.0 == '1' %}
+                            <input type="checkbox" class="toggle_field" id="purchase_group" name="purchase_group"
+                                value="1" class="toggle_field" checked disabled>
+                            {% elif purchase_group.0 == '0' %}
+                            <input type="checkbox" class="toggle_field" id="purchase_group" name="purchase_group"
+                                value="0" class="toggle_field" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="purchase_group" name="purchase_group"
+                                value="0" class="toggle_field" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Mix Purchase Groups</label>
+                            <span class="custom-checkbox-label-subtext"> Can have multiple purchasing groups in shopping
+                                cart </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if edit_address.0 == '1' %}
+                                <input type="checkbox" class="toggle_field" id="edit_address" name="edit_address" value="1"
+                                class="toggle_field" checked disabled>
+                            {% elif edit_address.0 == '0' %}
+                                <input type="checkbox" class="toggle_field" id="edit_address" name="edit_address" value="0"
+                                class="toggle_field" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="edit_address" name="edit_address" value="0"
+                                class="toggle_field" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Enable Edit Address</label>
+                            <span class="custom-checkbox-label-subtext"> Can edit current shipping address in shopping
+                                cart </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if recently_viewed_items.0 == '1' %}
+                                <input type="checkbox" class="toggle_field" id="recently_viewed_items"
+                                name="recently_viewed_items" value="1" checked disabled>
+                            {% elif recently_viewed_items.0 == '0' %}
+                                <input type="checkbox" class="toggle_field" id="recently_viewed_items"
+                                name="recently_viewed_items" value="0" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="recently_viewed_items"
+                                name="recently_viewed_items" value="0" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Enable Recently Viewed Items</label>
+                            <span class="custom-checkbox-label-subtext"> Can view recently viewed items in home page
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            {% if frequently_purchased_items.0 == '1' %}
+                            <input type="checkbox" class="toggle_field" id="frequently_purchased_items"
+                                name="frequently_purchased_items" value="1" checked disabled>
+                            {% elif frequently_purchased_items.0 == '0' %}
+                            <input type="checkbox" class="toggle_field" id="frequently_purchased_items"
+                                name="frequently_purchased_items" value="0" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="frequently_purchased_items"
+                                name="frequently_purchased_items" value="0" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Enable Frequently Purchased Items</label>
+                            <span class="custom-checkbox-label-subtext"> Can view frequently purchased items in home
+                                page </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if change_shipping_address.0 == '1' %}
+                                <input type="checkbox" class="toggle_field" id="change_shipping_address"
+                                name="change_shipping_address" value="1" checked disabled>
+                            {% elif change_shipping_address.0 == '0' %}
+                                <input type="checkbox" class="toggle_field" id="change_shipping_address"
+                                name="change_shipping_address" value="0" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="change_shipping_address"
+                                name="change_shipping_address" value="0" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Enable Change Shipping Address</label>
+                            <span class="custom-checkbox-label-subtext"> Add or update a new shipping address </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if limit_item.0 %}
+                                <input type="checkbox" class="toggle_field" id="limit_item" name="limit_item" value="1"
+                                checked disabled>
+                            {% elif limit_item.0 == 0 %}
+                                <input type="checkbox" class="toggle_field" id="limit_item" name="limit_item" value="0"
+                                disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="limit_item" name="limit_item" value="0"
+                                disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Enable Limit Order Item</label>
+                            <span class="custom-checkbox-label-subtext"> Add a limit item to shopping cart </span>
+                        </div>
+                        <div class="form-group col-md">
+                            {% if add_favourites.0 == '1' %}
+                                <input type="checkbox" class="toggle_field" id="add_favourites" name="add_favourites"
+                                value="1" checked disabled>
+                            {% elif add_favourites.0 == '0' %}
+                                <input type="checkbox" class="toggle_field" id="add_favourites" name="add_favourites"
+                                value="0" disabled>
+                            {% else %}
+                                <input type="checkbox" class="toggle_field" id="add_favourites" name="add_favourites"
+                                value="0" disabled>
+                            {% endif %}
+                            <label class="custom-checkbox-label"> Add to Favourites</label>
+                            <span class="custom-checkbox-label-subtext"> Save shopping cart to your favourites </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Extended data -->
+        </form>
+    </div>
+    <div class="hg_spacer2"> &nbsp; </div>
+</div>
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                Are you sure you want to Cancel the changes?
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="system_settings_form_reset"
+                    onclick="cancel_mode()"><i class="fas fa-check"></i> Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'scripts/system_settings.js' %}"> </script>
+<script>
+    function save_system_settings_details() {
+        OpenLoaderPopup();
+        var form_data = {};
+        form_data = {
+            pwd_policy: document.getElementById('pwd_policy').value,
+            login_attempts: document.getElementById('login_attempts').value,
+            session_timeout: document.getElementById('session_timeout').value,
+            msg_display: document.getElementById('msg_display').value,
+            theme_color: document.getElementById('theme_color').value,
+            pagination_count: document.getElementById('pagination_count').value,
+            attachment_size: document.getElementById('attachment_size').value,
+            attachment_extension: document.getElementById('attachment_extension').value,
+            acct_assignment_category: document.getElementById('acct_assignment_category').value,
+            purchase_group: document.getElementById('purchase_group').value,
+            edit_address: document.getElementById('edit_address').value,
+            recently_viewed_items: document.getElementById('recently_viewed_items').value,
+            frequently_purchased_items: document.getElementById('frequently_purchased_items').value,
+            change_shipping_address: document.getElementById('change_shipping_address').value,
+            limit_item: document.getElementById('limit_item').value,
+            add_favourites: document.getElementById('add_favourites').value,
+            sys_settings_default_flag: 0,
+        }
+        console.log(form_data['acct_assignment_category']);
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_System_Settings:system_settings_new' %}",
+            data: JSON.stringify(form_data),
+            success: function (response) {
+                $('#success_msg_id').text(response.success_message);
+                message_display_time();
+                $("#edit_sys_settings").prop("hidden", false);
+                $("#save_sys_settings").prop("hidden", true);
+                $("#cancel_sys_settings").prop("hidden", true);
+                $('.toggle_field').prop('disabled', true);
+                CloseLoaderPopup();
+            }
+        });
+    }
+</script>
+{% endblock %}

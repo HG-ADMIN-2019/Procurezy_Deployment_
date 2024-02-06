@@ -1,0 +1,35 @@
+.mo-items-table {                          // used in sc completion and my order doc details
+    &__btn-wrapper {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: flex-start;
+
+        & > div {
+            margin-right: 0.35rem;
+        }
+    }
+
+    .attachment-icon {
+        color: #F0B64D;
+    }
+}
+
+.mo-item-table {
+
+    .mo-catalog-item-input {               // used in sc completion and my order doc details
+        width:50px;
+        border: 1px solid #a3a3a3;
+        border-radius: .3rem;
+        text-align: center;
+    }
+
+    #{&} &__action-section {
+        background-color: white;
+    }
+
+    .mo-reciever {
+        margin: 0 0 1rem 1rem;
+        
+    }
+
+}

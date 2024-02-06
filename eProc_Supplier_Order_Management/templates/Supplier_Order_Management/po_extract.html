@@ -1,0 +1,43 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Majjaka eProcure - PO Extract {% endblock %}
+<style>
+.main-container {
+      float: left;
+      position: relative;
+      left: 50%;
+    }
+    .fixer-container {
+      float: left;
+      position: relative;
+      left: -50%;
+    }
+</style>
+{% block maincontent %}
+<div class="container-fluid">
+  <div class="mep-form_wrapper">
+<form method="POST" action="{% url 'eProc_Supplier_Order_Management:po_extract' %}">
+            {% csrf_token %}
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-outline-primary" style="padding: 40px 40px;float: right;"><i class="fa-solid fa-file-export"></i> Extract PO </button>
+
+    </div>
+    {% for data in text %}
+    {{data}}
+    {% endfor %}
+    <br><br>
+    {% if header_detail %}
+    HEADER DATA: {{header_detail}}
+    {% endif %}
+    <br><br>
+    {% if supplier_address %}
+    ADDRESS: {{supplier_address}}
+    {% endif %}
+
+  </form>
+  </div>
+</div>
+
+
+{% endblock %}

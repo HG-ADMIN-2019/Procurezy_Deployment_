@@ -1,0 +1,63 @@
+.po-header-label {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.po-header-desc {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+
+    &__status {
+        font-size: 90% !important; 
+    }
+}
+
+.sub-tabs .sub-tab-link.text-size-x-small {
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card.po-value-card {
+    background: #E9F5EC;
+    border: 1px solid rgba(0, 140, 48, 0.47);
+}
+
+
+.po-value-section {
+    display: flex;
+    justify-content: space-between;
+}
+
+.po-value-label {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    color: #155724;
+}
+
+.po-value-desc {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    color: #155724;
+}
+
+.sub-tabs.h-scrollbar {
+    overflow: auto;
+    overflow-y: hidden;
+}
+
+.item-description.text-overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contain-approval-btn {
+    
+}

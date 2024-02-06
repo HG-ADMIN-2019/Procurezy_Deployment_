@@ -1,0 +1,362 @@
+{% load static %}
+
+<!--Start product detail popup-->
+<div class="modal fade" id="freetext_product_detail_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div>
+                <button type="button" class="close" data-dismiss="modal" style="padding-right: 1%">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <div class="mep-form_wrapper">
+
+                    <form method="POST" id="free_text_form_submit">
+                        {% csrf_token %}
+                        <div>
+                            <div class="d-flex justify-content-between">
+                                <h3>Free Text Form</h3>
+                                <div>
+                                    <button class="btn btn-outline-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i> reset</button>
+                                    <button class="btn btn-primary" type="submit"><i class="fas fa-shopping-cart" title="Shopping Cart"></i> add to cart</button>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+            
+                        <div class="alert alert-warning display-none" role="alert" id="edit_message"></div>
+                        <div class="alert alert-danger display-none" id="free_text_errors" role="alert" ></div>
+            
+                        <div class="card mt-4 ">
+            
+                            <h5 class="card-header">Which Product/Service are you looking for ?</h5>
+                            <div class="card-body">
+                            <h5 class="card-title">What do you need ?</h5>
+            
+                                <div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div>Product Name:<span class="hg_required"></span></div>
+                                            <div><input type="text" name="product_name" class="form-control" maxlength="40" minlength="3" required="" id="id_product_name"></div>
+                                        </div>
+                                        <div class="col mb-3">
+                                            <div>Description:<span class="hg_required"></span></div>
+                                            <div><textarea name="description" cols="40" rows="10" class="form-control" style="height:40px" maxlength="255" required="" id="id_description"></textarea></div>
+                                        </div>
+                                        <div class="w-100"></div>
+                                        <div class="col">
+                                            <div>Estimated Price in (<span id="ft_currency"></span>):<span class="hg_required"></span></div>
+                                            <div><input type="number" name="price" class="form-control" min="1" max="9999999.99" step="0.01" required="" id="id_price_value"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div>Estimated Price Per Unit:<span class="hg_required"></span></div>
+                                            <div><input type="number" name="price_unit" class="form-control" min="1" max="9999999.99" step="0.01" required="" id="id_price_unit"></div>
+                                        </div>
+            
+                                        <div class="col mb-3">
+                                            <div>Unit of Measure:<span class="hg_required"></span></div>
+                                            <div id="select_uom_dropdown">
+                                                <select id="uom_free_text" class="form-control" data-live-search="true" title="Select unit of measure" required>
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="w-100"></div>
+                                        <div class="col-md-4">
+                                            <div>Delivery Date:<span class="hg_required"></span></div>
+                                            <div><input type="date" name="delivery_date" class="form-control" min="" max="9999-12-12" required="" id="id_delivery_date"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div>Quantity:<span class="hg_required"></span></div>
+                                            <input type="number" name="quantity" class="form-control" min="1" required="" id="id_quantity">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="card mt-4 " id="eform_card_details">
+                            <div class="card-body">
+                            <h5 class="card-title">What Are The Custom Fields ?</h5>
+            
+                                <span id="is_eform" hidden>no_eform</span>
+            
+                                <div class="row justify-content-center" >
+                                    <div class="col-md-7 freetext-eform-body" id="eform_fields"> </div>
+                                </div>
+                            </div>
+                        </div>
+            
+            
+                        <div class="card mt-4 " id="supplier_det_div">
+                            <div class="card-body">
+                            <h5 class="card-title">What Are The Free Text Details ?</h5>
+            
+                                <div class="row">
+                                    <div class="col">
+                                        <b>Lead Time:</b><br>
+                                        <span id="lead_time"></span>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <b>FreeText Description:</b><br>
+                                        <span id="catalog_id"></span>
+                                    </div>
+                                    <div class="w-100"></div>
+                                    <div class="col mb-3">
+                                        <b>UNSPSC:</b><br>
+                                        <span id="product_category_id"></span>
+                                    </div>
+                                    <div class="col">
+                                        <b>Form ID:</b><br>
+                                        <span id="eform_id"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+            
+                    <div class="card mt-4 ">
+                        <div class="card-body">
+                        <h5 class="card-title">Who is the supplier ?</h5>
+            
+                            <div class="row">
+                                <div class="col">
+                                    <b>Supplier ID:</b><br>
+                                    <span id="supplier_id"></span>
+                                </div>
+                                <div class="col">
+                                    <b>Supplier Name:</b><br>
+                                    <span id="supplier_name"></span>
+                                </div>
+                                <div class="col">
+                                    <b>Supplier Product Number:</b><br>
+                                    <span id="supplier_article_number"></span>
+                                </div>
+                                <div class="w-100 p-2"></div>
+                                <div class="col">
+                                    <b>First Name:</b><br>
+                                    <span id="supplier_firstname"></span>
+                                </div>
+                                <div class="col">
+                                    <b>Last Name:</b><br>
+                                    <span id="supplier_lastname"></span>
+                                </div>
+            
+                                <div class="col">
+                                    <b>Email:</b><br>
+                                    <span id="supplier_email"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var eform_configured = ''
+    var freetext_id = ''
+    const ViewFreetextItemWindow = (send_doc_number, encrypted_freetext_id) => {
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Add_Item:view_freetext_item_form' %}",
+            data: {
+                encrypted_freetext_id: encrypted_freetext_id,
+                document_number: send_doc_number,
+            },
+            success: function (response) {
+                console.log(response.product_detail)
+                create_freetext_item_popup(response.product_detail)
+                $('#freetext_product_detail_popup').modal('show');
+                CloseLoaderPopup();
+            },
+            error: function (response) {
+                console.log(response.error)
+            }
+        })
+    }
+
+    function create_freetext_item_popup(data) {
+        // What Are The Free Text Details
+        $('#lead_time').html(data.configured_free_text_form.lead_time);
+        $('#catalog_id').html(data.configured_free_text_form.description);
+        $('#product_category_id').html(data.configured_free_text_form.product_category_id);
+        $('#eform_id').html(data.configured_free_text_form.form_id);
+        $('#ft_currency').html(data.configured_free_text_form.currency_id);
+
+        freetext_id = data.configured_free_text_form.freetext_id
+        // Who is the supplier 
+        $('#supplier_id').html(data.configured_free_text_form.supplier_id);
+        $('#supplier_name').html(data.configured_free_text_form.supplier_name);
+        $('#supplier_article_number').html(data.configured_free_text_form.supplier_article_number);
+        $('#supplier_firstname').html(data.configured_free_text_form.supplier_firstname);
+        $('#supplier_lastname').html(data.configured_free_text_form.supplier_lastname);
+        $('#supplier_email').html(data.configured_free_text_form.supplier_email);
+        eform_configured = data.eform_configured;
+        // display eform fields
+        display_fields_from_array(data.eform_configured);
+
+        $('#uom_free_text').empty()
+        let unit_option = '<option value="" selected>Select</option>';
+        $.each(data.unit, function(index, value) {
+            unit_option += '<option value="' + value['uom_id'] + '">' + value['uom_id']+ ' - ' + value['uom_description'] + '</option>'
+        })
+
+        $('#uom_free_text').append(unit_option)
+
+    }
+
+    const display_fields_from_array = (eform_configured) => {
+        $('#eform_fields').empty()
+        var div_content = '';
+
+        $.each(eform_configured, function (index, value) {
+            field_data_type = value['field_data_type'];
+            field_name = value['field_name'];
+            is_required = value['required'];
+
+            var options = '<option value="" selected>Select</option>';
+
+            if (field_data_type == 'dropdown') {
+                get_dropdown = value['dropdown_options']
+                get_dropdown_type = value['dropdown_type']
+                if (get_dropdown_type == 'Currency'){
+                    for (i = 0; i < currency_list.length; i++) {
+                        options += '<option value="' + currency_list[i]['currency_id'] + '">' + currency_list[i]['currency_id']+ ' - ' + currency_list[i]['description'] + '</option>'
+                    }
+                }
+
+                if (get_dropdown_type == 'Country'){
+                    for (i = 0; i < country_list.length; i++) {
+                        options += '<option value="' + country_list[i]['country_code'] + '">' + country_list[i]['country_code']+ ' - ' + country_list[i]['country_name'] + '</option>'
+                    }
+                }
+
+                if (get_dropdown_type == 'dropdown_custom_options'){
+                    for (i = 0; i < get_dropdown.length; i++) {
+                        options += '<option value="' + get_dropdown[i] + '">' + get_dropdown[i] + '</option>'
+                    }
+                }
+
+                div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"><div class="form-group col-md-11"> <label  for="' + field_name + '">' + field_name + '</label><span id="span_' + field_name + '"></span> <select id="'+value.eform_field_config_guid +'" class="form-control toggle_mode">' + options + '</select></div>  </div>'
+            }
+            else if (field_data_type == 'checkbox') {
+                div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"> <div class="form-group col-md-11"> <input class="toggle_mode" id="'+value.eform_field_config_guid +'" type="' + field_data_type + '"> <label  for="' + field_name + '">' + field_name + '</label><span id="span_' + field_name + '"></span> </div>  </div>'
+            }
+            else if (field_data_type == 'textarea') {
+                div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"> <div class="form-group col-md-11"> <label  for="' + field_name + '">' + field_name + '</label><span id="span_' + field_name + '"></span> <textarea id="'+value.eform_field_config_guid +'" class="form-control toggle_mode"></textarea> </div>  </div>'
+            }
+
+            else if (field_data_type == 'date') {
+                var date_type = $('input:radio[name="check_input_datetime_type"]:checked').attr('id');
+
+                if(date_type == 'datetime_value_on'){
+                    div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"> <div class="form-group col-md-11"> <label  for="' + field_name + '">' + field_name + '</label><span id="span_' + field_name + '"></span> <input id="'+value.eform_field_config_guid +'" class="form-control toggle_mode" type="' + field_data_type + '"> </div>  </div>'
+                } else if(date_type == 'datetime_value_timeframe') {
+                    div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"> <div class="form-group col-md-11"> <label for="">Form Date</label><span id="span_' + field_name + '"></span> <input class="form-control toggle_mode" id="'+value.eform_field_config_guid +'" type="date"> <label for="">To Date</label><span id="span_' + field_name + '"></span> <input class="form-control toggle_mode" type="date"> </div>  </div>'
+                }
+            }
+            else {
+                div_content = '<div class="form-row eform-field-wrapper" id="array_index-' + index + '"> <div class="form-group col-md-11"> <label  for="' + field_name + '">' + field_name + '</label><span id="span_' + field_name + '"></span> <input id="'+value.eform_field_config_guid +'" class="form-control toggle_mode" type="' + field_data_type + '"></div>  </div>'
+            }
+
+            $('#eform_fields').append(div_content)
+            if (is_required) {
+                var required_label = document.getElementById('span_' + field_name);
+                required_label.classList.add('hg_required');
+            }
+        });
+    }
+$('#free_text_form_submit').submit(function (e) {
+    e.preventDefault();
+    //OpenLoaderPopup();
+    data = {}
+    data.call_off = '02'
+    data.freetext_id = freetext_id
+    var delivery_date = '{{product_detail.configured_free_text_form.delivery_date|safe}}';
+    data.item_name = document.getElementById("id_product_name").value;
+    data.prod_desc = document.getElementById("id_description").value;
+    data.price_unit = $('#id_price_unit').val();
+    data.price = $('#id_price_value').val();
+    data.uom = document.getElementById("uom_free_text").value;
+    data.item_del_date = document.getElementById("id_delivery_date").value;
+    data.quantity = document.getElementById("id_quantity").value;
+    var item_del_date = Date.parse(data.item_del_date);
+    var calculated_delivery_date = Date.parse(delivery_date);
+    if (item_del_date < calculated_delivery_date) {
+        CloseLoaderPopup()
+        var message = "Please choose delivery date more than "+delivery_date
+        $('#free_text_errors').text(message);
+        $("#free_text_errors").css("display", "block")
+        //alert ("Error!");
+    }
+    else{
+        let header_guid = '';
+    var error_message = '';
+
+    if (is_edit) {
+        data.header_guid = window.sessionStorage.getItem('sc_header_guid');
+        data.document_number = window.sessionStorage.getItem('sc_header_guid');
+    }
+    else{
+        data.document_number = 'create'
+    }
+
+    var eform_data = []
+    var eform_id = ''
+    $.each(eform_configured, function (index, value) {
+        var eform_field_data
+        eform_id = value.eform_id
+        if(value.field_data_type == "checkbox"){
+            if ($(value.eform_field_config_guid).is(':checked')) {
+                eform_field_data = true;
+            }
+            else{
+                eform_field_data = false;
+            }
+        }
+        else{
+                eform_field_data = document.getElementById(value.eform_field_config_guid).value
+        }
+
+        eform_dictionary = {
+            'eform_field_data':eform_field_data,
+            'eform_type':value.eform_type,
+            'eform_field_count':value.eform_field_count,
+            'eform_id':eform_id,
+            'eform_field_name':value.field_name,
+            'eform_type':value.eform_type,
+        }
+        eform_data.push(eform_dictionary)
+    });
+    data.eform_data = eform_data
+    data.eform_id = eform_id
+    console.log(eform_data)
+    var ft_url = '/add_item/update_or_create_item/' + document_number
+    $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            url: ft_url,
+            data:  JSON.stringify(data),
+            success: function (response) {
+                $('#freetext_product_detail_popup').modal('hide')
+               $('#confirm_add_item').modal('show')
+            },
+            error: function (response) {
+                document.getElementById('free_text_errors').innerHTML = response.responseJSON.error;
+                $('#free_text_errors').show();
+                scroll_top()
+            }
+        })
+    }
+
+
+});
+</script>

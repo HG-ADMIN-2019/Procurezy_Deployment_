@@ -1,0 +1,330 @@
+<!--Register page template-->
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Register a new user {% endblock %}
+
+{% block maincontent %}
+
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between">
+            <h3>User Registration</h3> 
+            <div></div>
+        </div>
+
+        <ul class="sub-tabs">
+            <li data-tab-target="#basic_data_tab" class="sub-tab active">
+                <div class="sub-tab-link">
+                    <i class="fas fa-info-circle"></i><span> Basic Data</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="basic_data_tab" data-tab-content class="active">
+                <div class="mt-3">
+
+                    <!-- Display the success message upon successful registration--> 
+                    <div>
+                        {% if messages %}
+                        <div>
+                            {% for message in messages %}
+                            {% if message.tags == 'error'%}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-success">{{ message }}</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <form method="POST" id="user_register_forms">
+                        {% csrf_token %}
+                        <!-- Display the eror messages during registration -->
+                        {% if reg_form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field in reg_form %}
+                                {% if field.errors %}
+                                {{ field.label }}: {{ field.errors|striptags }} <br>
+                                {% endif %}
+                            {% endfor%}
+                        </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-end">
+                            <div>
+                                <button class="btn btn-primary" type="submit" title="Click here to Register" id="user_registration_submit"><i class="fas fa-check"></i> register</button>
+                            </div>
+                        </div>
+                        
+
+                        <div class="card card-shadow-1 mt-3">
+                            
+                            <div class="card-body">
+                                <div class="elements-space-between">
+                                    <h5 class="card-title">Basic Data</h5>
+                                    <div>
+                                        <span class="badge help-text-badge help-text-alpha-numeric"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>User Name </label><span class="hg_required"></span><br>
+                                        {{ reg_form.username }}
+                                        <span id="err_username" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Employee Id</label><span class="hg_required"></span><br>
+                                        {{ reg_form.employee_id }}
+                                        <span id="err_employee_id" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>User Type</label><span class="hg_required"></span><br>
+                                        {{ reg_form.user_type }}
+                                        <span id="err_user_type" class="error_message" hidden></span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>First Name</label><span class="hg_required"></span><br>
+                                        {{ reg_form.first_name }}
+                                        <span id="err_first_name" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Last Name</label><br>
+                                        {{ reg_form.last_name }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label> Currency</label><span class="hg_required"></span><br>
+                                        <select name="currency_id" id="id_currency_id" class="form-control hg_edit_display_mode mandatory_fields" >
+                                         <option value="" selected>Select</option>
+                                            {% for items in currency_list %}
+                                                <option value="{{items.currency_id}}">{{items.currency_id}} - {{items.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span id="err_currency_id" class="error_message" hidden> </span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Language</label><span class="hg_required"></span><br>
+<!--                                        {{ reg_form.language_id }}-->
+                                        <select name="language_id" id="id_language_id" class="form-control hg_edit_display_mode mandatory_fields" >
+                                        <option value="" selected>Select</option>
+                                        {% for items in language_list %}
+                                            <option value="{{items.language_id}}">{{items.language_id}} - {{items.description}}</option>
+                                        {% endfor %}
+                                        </select>
+                                        <span id="err_language_id" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label> Time Zone</label><span class="hg_required"></span><br>
+<!--                                        {{ reg_form.time_zone }}-->
+                                        <select name="time_zone" id="id_time_zone" class="form-control hg_edit_display_mode mandatory_fields" >
+                                        <option value="" selected>Select</option>
+                                        {% for items in time_zone %}
+                                            <option value="{{items.time_zone}}">{{items.time_zone}} - {{items.description}}</option>
+                                        {% endfor %}
+                                        </select>
+                                        <span id="err_time_zone" class="error_message" hidden></span>
+                                    </div>
+
+                                </div>
+ 
+                            </div>
+                        </div>
+                        
+                        <!--   contact information   -->
+                        <div class="card card-shadow-1 mt-3">
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">Contact Information</h5>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>E-mail</label><span class="hg_required"></span><br>
+                                        {{ reg_form.email }}
+                                         <span id="err_email" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Phone Number</label><span class="hg_required"></span><br>
+                                        {{ reg_form.phone_num }}
+                                         <span id="err_phone_num" class="error_message" hidden></span>
+                                        <small class="form-text text-muted help-text-phone-numbers"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!--   Addtional information   -->
+                        <div class="card card-shadow-1 mt-3">
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">Extended Data</h5>
+                                <div class="row">
+                                    <div class="form-group col-md">
+                                        <label>Date Format</label><span class="hg_required"></span><br>
+                                        {{ reg_form.date_format }}
+                                        <span id="err_date_format" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md">
+                                        <label>Decimal Notation</label><span class="hg_required"></span><br>
+                                        {{ reg_form.decimal_notation }}
+                                         <span id="err_decimal_notation" class="error_message" hidden></span>
+                                    </div>
+                                    <div class="form-group col-md hg-mt-2rem" >
+                                        <label>SSO User</label>&nbsp;&nbsp;<input type="checkbox" name="SSO User" value="SSO User">
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                    <!--User register form-->
+
+                </div>
+            </div>
+
+            <div id="org_data_tab" data-tab-content>
+                <div class="mt-3">
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <h3>Organizational data</h3>
+                            <p>Organizational data</p>
+                        </div>
+
+                    </div>
+                                     
+                </div>
+            </div>
+
+            <div id="buisness_doc_tab" data-tab-content>
+                <div class="mt-3">
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <h3>Business Document</h3>
+                            <p>Business Document.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Are you sure you want to reset the form?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="user_form_reset">Yes</button>
+            </div>
+
+        </div>
+    </div>
+</div> 
+
+<div class="hg_spacer2"> &nbsp; </div>
+
+
+<script>
+var msg_flag = {{msg_flag|safe}};
+$(document).ready(function(){
+    if(msg_flag){
+        $('#id_currency_id').val(localStorage.getItem("currency_id"));
+        $('#id_language_id').val(localStorage.getItem("language_id"));
+        $('#id_time_zone').val(localStorage.getItem("time_zone"));
+    }
+
+  $("#user_form_reset").click(function(){
+    $('#user_register_form')[0].reset();
+    $('#myModal').modal('hide');
+  });
+  $('#nav_menu_items').remove();
+  $("body").css("padding-top", "4rem");
+  NavigateTabs(); // Custom function to switch tabs
+<!--  message_display_time();-->
+  setTimeout(function() {
+                    $('.alert-danger').prop("hidden", true);
+     }, msg_display_interval*1000);
+});
+
+// Get the element with id="defaultOpen" and click on it
+<!--document.getElementById("defaultOpen").click();-->
+
+$('#user_registration_submit').click(function () {
+<!--    OpenLoaderPopup();-->
+    var is_save_form_valid;
+    localStorage.setItem("currency_id", document.getElementById("id_currency_id").value);
+    localStorage.setItem("language_id", document.getElementById("id_language_id").value);
+    localStorage.setItem("time_zone", document.getElementById("id_time_zone").value);
+    is_save_form_valid = save_user_form_validation();
+    if(!is_save_form_valid){
+        return false;
+    }
+});
+
+ function save_user_form_validation(){
+   var is_valid = true;
+        var save_form_errors = ''
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        var err_text1 = '';
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(temp[i].nodeName == "SELECT"){
+                if(temp[i].value == ''){
+                    err_text1 = temp[i].parentNode.children[0].innerHTML;
+                    $('#temp[i].nextElementSibling.id').prop("hidden", false);
+                    document.getElementById(temp[i].nextElementSibling.id).style.display = "block";
+                    $('#temp[i].nextElementSibling.id').html("required");
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = err_text1 + " required";
+                    is_valid = false;
+                }
+                else{ $('#temp[i].nextElementSibling.id').prop('hidden', true);
+                    $("#temp[i].nextElementSibling.id").prop("hidden", true);
+                }
+            }
+            else{
+                if(temp[i].value == ''){
+                    var err_text = temp[i].parentNode.children[0].innerHTML;
+                    $(".error_message").prop("hidden", false);
+                    temp[i].nextElementSibling.innerHTML = err_text + " required";
+                   is_valid = false;
+                }
+            }
+        }
+        return is_valid
+    }
+$("body").on("keypress keyup change", ".mandatory_fields", function (event) {
+    if(event.currentTarget.value == "") {
+        $('#event.currentTarget.nextElementSibling.id').prop('hidden', true);
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "block";
+    }
+    else{
+        document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "none";
+    }
+ });
+
+</script>
+
+{% endblock %}

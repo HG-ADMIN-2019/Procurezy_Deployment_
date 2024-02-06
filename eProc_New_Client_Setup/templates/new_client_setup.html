@@ -1,0 +1,390 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block maincontent %}
+
+<div class="card client-setup-card">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between mb-4">
+            <h3>Set up client</h3>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#add_new_client_modal"><i class="fa fa-plus"></i> Add New Client</button>
+        </div>
+
+        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+
+        <div>
+            <table class="table table-bordered" id="client_list_table">
+                <thead>
+                    <tr>
+                        <th>Client Id</th>
+                        <th>Client Description</th>
+                        <th>Action</th>
+                        <th>Setup Action</th>
+                        <th>Setup Org Model</th>
+                        <th>Client Status</th>
+                        <th>Users</th>
+                    </tr>
+                </thead>
+                <tbody id="client_body">
+                    {% for client_detail in client_details %}
+                    <tr>
+                        <!-- clint id -->
+                        <td>{{client_detail.client}}</td>
+                        <!-- client desc -->
+                        <td id="description-{{client_detail.client}}">{{client_detail.description}}</td>
+                        <!-- action buttons -->
+                        <td>
+                            <button type="button" class="btn btn-link" title="Edit Client" id="update-{{client_detail.client}}" onclick="update_client(this.id)"><i class="fas fa-edit item-action-icons"></i></button>
+                            {% if client_detail.edit_update_flag%}
+                            <button type="button" class="btn btn-link" title="Delete Client" onclick="delete_confirmation({{client_detail.client}})"><i class="fas fa-trash-alt item-action-icons"></i></button>
+                            {% else %}
+                            <button type="button" class="btn btn-link" title="Delete Client" disabled><i class="fas fa-trash-alt item-action-icons"></i></button>
+                            {% endif %}
+                        </td>
+                        <!-- setup action -->
+                        <td>
+                            {% if client_detail.data_setup_flag %}
+                            <span class="badge badge-pill badge_status_approved status-pill">CLIENT SET UP DONE</span>
+                            {% else %}
+                            <button type="button" class="btn btn-primary btn-sm" id="data_set_up-{{client_detail.client}}" onclick="set_up_new_client(this.id)"> Setup now</button>
+                            {% endif %}
+                        </td>
+                        <!-- setup org model -->
+                        <td>
+                            {% if client_detail.org_setup_flag %}
+                            <span class="badge badge-pill badge_status_approved status-pill">ORG SET UP DONE</span>
+                            {% else %}
+                            <button type="button" class="btn btn-primary btn-sm" id="org-{{client_detail.client}}" onclick="create_org_structure(this.id)">Setup now</button>
+                            {% endif %}
+                        </td>
+                        <!-- client status -->
+                        <td>
+                            {% if client_detail.status == 'COMPLETED' %}
+                            <span class="badge badge-pill badge_status_approved status-pill">COMPLETED</span>
+                            {% elif client_detail.status == 'READY' %}
+                            <span class="badge badge-pill badge_status_await_approval status-pill">READY</span>
+                            {% else %}
+                            <span class="badge badge-pill badge_status_save status-pill">IN PROGRESS</span>
+                            {% endif %}
+                        </td>
+                        <!-- users -->
+                        <td>
+                            <a href="{% url 'eProc_New_Client_Setup:new_client_user_registration' client_detail.client %}">
+                                <button type="button" class="btn btn-link" title="Add users" ><i class="far fa-user"></i></button>
+                            </a>
+                                <button type="button" class="btn btn-link" title="View users list" id="view_users-{{client_detail.client}}" onclick="view_users(this.id)"><i class="far fa-list-alt"></i></button>
+                            
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="add_new_client_modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Client</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="client_id">Client ID</label>
+                    <input class="form-control" placeholder="Client ID" type="number" id="client_id" name="client_id">
+                </div>
+                <div class="form-group">
+                    <label for="client_description">Client Description</label>
+                    <input class="form-control" placeholder="Client Description" id="client_description" name="client_description">
+                </div>        
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button class="btn btn-primary" type="button" id="save_client" onclick="save_new_client(1)"><i class="fas fa-check"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="update_client_popup">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Client</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="client_id">Client ID</label>
+                    <input class="form-control" placeholder="Client ID" type="number" id="update_client_id" name="client_id">
+                </div>
+                <div class="form-group">
+                    <label for="client_description">Client Description</label>
+                    <input class="form-control" placeholder="Client Description" id="update_client_description" name="client_description">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <button class="btn btn-primary" type="button" id="update_client" onclick="update_desc_client()"><i class="fas fa-check"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="display_users_popup">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Users List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user_list_body">
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--delete confirmation popup-->
+<div class="modal fade" id="id_delete_confirm_popup">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h5 class="modal-title">Please Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete?.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" onclick="delete_client()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function(){
+        $('#nav_menu_items').remove();
+    });
+    var GLOBAL_CLIENT = ''
+    var client_data = [];
+
+    function save_new_client(n) {
+        OpenLoaderPopup();
+        var client_detail = {}
+        client_detail.client_id = $('#client_id').val();
+        client_detail.client_description = $('#client_description').val();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:save_new_client' %}",
+            data: JSON.stringify(client_detail),
+            success: function (response) {
+                update_client_table(response.client_data)
+                $('#add_new_client_modal').modal('hide');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+
+    function set_up_new_client(id){
+        OpenLoaderPopup();
+        var client_id = id.split('-')[1]
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:set_up_new_client' %}",
+            data: JSON.stringify(client_id),
+            success: function (response) {
+                update_client_table(response.client_data)
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    function update_client_table(client_data){
+        $('#client_body').empty();
+        var html_data = '';
+        $.each(client_data, function(index, client_detail) {
+            var client_set_up = ''
+            var org_setup = ''
+            var status = ''
+            var update_button
+            var delete_button
+            if (client_detail.data_setup_flag){
+                client_set_up = '<span class="badge badge-pill badge_status_approved status-pill">CLIENT SET UP DONE</span>'
+            }
+            else{
+                client_set_up = '<button type="button" class="btn btn-primary btn-sm" id="data_set_up-'+client_detail.client+'" onclick="set_up_new_client(this.id)"> Setup now</button>'
+            }
+            if (client_detail.org_setup_flag){
+                org_setup = '<span class="badge badge-pill badge_status_approved status-pill">ORG SET UP DONE</span>'
+            }
+            else{
+                org_setup = '<button type="button" class="btn btn-primary btn-sm" id="org-'+ client_detail.client +'" onclick="create_org_structure(this.id)">Setup now</button>'
+            }
+            if (client_detail.status == 'COMPLETED'){
+                status = '<span class="badge badge-pill badge_status_approved status-pill">COMPLETED</span>'
+            }
+            else if (client_detail.status == 'READY' ){
+                status = '<span class="badge badge-pill badge_status_await_approval status-pill">READY</span>'
+            }
+            else{
+                status = '<span class="badge badge-pill badge_status_save status-pill">IN PROGRESS</span>'
+            }
+            if (client_detail.edit_update_flag){
+            delete_button = '<button type="button" class="btn btn-link" title="Delete Client" onclick="delete_confirmation('+ client_detail.client +')" ><i class="fas fa-trash-alt item-action-icons"></i></button>'
+            }
+            else{
+                delete_button = '<button type="button" class="btn btn-link" title="Delete Client" disabled ><i class="fas fa-trash-alt item-action-icons"></i></button>'
+            }
+            html_data += '<tr>'+
+                            '<td>'+ client_detail.client +'</td>'+
+                            '<td id="description-'+ client_detail.client +'">'+ client_detail.description +'</td>'+
+                            '<td>'+
+                                '<button type="button" class="btn btn-link" title="Edit Client" id="update-'+ client_detail.client +'" onclick="update_client(this.id)"><i class="fas fa-edit item-action-icons"></i></button>'+
+                                '' + delete_button + ''+
+                            '</td>'+
+                            '<td>'+ client_set_up +'</td>'+
+                            '<td> '+ org_setup + ' </td>'+
+                            '<td> '+ status + ' </td>'+
+                            '<td>'+
+                                '<a id="user-'+client_detail.client+'" onclick="create_user(this.id)">'+
+                                    '<button type="button" class="btn btn-link" title="Add users" ><i class="far fa-user"></i></button>'+
+                                '</a>'+
+                                    '<button type="button" class="btn btn-link" title="View users list" id="view_users-'+client_detail.client+'" onclick="view_users(this.id)"><i class="far fa-list-alt"></i></button>'+
+                            '</td>'+
+                        '</tr>';
+        });
+        $('#client_body').append(html_data);
+
+    }
+
+    function view_users(id){
+        OpenLoaderPopup();
+        var client_id = id.split('-')[1]
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:view_users' %}",
+            data: {'client_id':client_id},
+            success: function (response) {
+                display_user_list(response.user_data)
+                $('#display_users_popup').modal('show');
+                CloseLoaderPopup();
+            }
+        });
+
+    }
+
+    function create_user(id){
+        OpenLoaderPopup();
+        var client = id.split('-')[1]
+        var url = "{% url 'eProc_New_Client_Setup:new_client_user_registration' 123 %}";
+        var href_link = url.replace('123', client)
+        window.open(href_link,"_self");
+        CloseLoaderPopup();
+    }
+
+    function display_user_list(user_data){
+        $('#user_list_body').empty();
+        var html_data
+        $.each(user_data, function(index, user) {
+            html_data +='<tr><td>'+ user.username +'</td><td>'+ user.first_name +'</td><td>'+ user.last_name +'</td></tr>'
+        });
+        $('#user_list_body').append(html_data);
+    }
+
+    function update_client(id){
+        var client_id = id.split('-')[1]
+        var client_description
+        $("#client_list_table TBODY TR").each(function () {
+            var row = $(this);
+            client = row.find("TD").eq(0).html();
+            if(client_id==client){
+                client_description = row.find("TD").eq(1).html();
+            }
+        });
+        $('#update_client_id').val(client_id)
+        $("#update_client_id").prop('disabled', true);
+        $('#update_client_description').val(client_description)
+        $('#update_client_popup').modal('show');
+    }
+
+    function update_desc_client(id){
+        OpenLoaderPopup();
+        var client_id = $('#update_client_id').val()
+        var client_description = $('#update_client_description').val()
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:update_client_description' %}",
+            data: {'client_id':client_id,'description':client_description},
+            success: function (response) {
+                $('#description-'+client_id).html(client_description);
+                $('#update_client_popup').modal('hide');
+                CloseLoaderPopup();
+            }
+        });
+    }
+    function delete_confirmation(client_id){
+        GLOBAL_CLIENT = client_id
+        $('#id_delete_confirm_popup').modal('show');
+
+    }
+    function delete_client(){
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:delete_client' %}",
+            data: {'client_id':GLOBAL_CLIENT},
+            success: function (response) {
+                update_client_table(response.client_data)
+                $('#id_delete_confirm_popup').modal('hide');
+                CloseLoaderPopup();
+            }
+        });
+    }
+    function create_org_structure(id){
+        OpenLoaderPopup();
+        var client_id = id.split('-')[1]
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_New_Client_Setup:create_org_model' %}",
+            data: JSON.stringify(client_id),
+            success: function (response) {
+                update_client_table(response.client_data)
+                CloseLoaderPopup();
+
+            }
+        });
+    }
+</script>
+
+{% endblock %}

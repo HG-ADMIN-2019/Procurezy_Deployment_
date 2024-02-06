@@ -1,0 +1,425 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} chat {% endblock %}
+
+{% block maincontent %}
+
+	<script src="https://use.typekit.net/hoy3lrg.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<style>
+		.faArrowIcon {
+        position:relative;
+    }
+
+    .faArrowIcon:before {
+        font-family: 'Material Icons';
+        top:0;
+        left:-5px;
+        padding-right:10px;
+        content: "\f233"; 
+    }
+	</style>
+
+<div class="container-fluid main-chat-container">
+
+	<div class="majjaka-chat-app">
+
+		<div class="row no-gutters chat-row"> 
+			<!-- Left chat panel containig message search bar and chat contact list -->
+			<div class="col-3 pr-2 pt-2 left-chat-col">
+
+				<div class="left-chat-panel-wrapper">
+
+					<!-- Chat search header card -->
+					<div class="chat-search-header">
+						<div class="chat-card">
+							<div class="chat-card-header">
+								<div class="majjaka-chat-icon"><i class="far fa-comment-alt"></i></div>
+								<span class="chat-card-header-text">My messages</span>
+							</div>
+							<div class="chat-card-body">
+								<div class="input-wrapper">
+									<i class="material-icons">search</i>
+									<input type="search" placeholder="Search here.." id="myInput">
+								</div>
+							</div>
+						</div>
+					</div> 
+
+
+					<div class="chat-contact-container">
+						<!-- Chat contact card -->
+						{% for chats in user_chats_list %}
+						<div class="chat-card chat-initiated-card" id="chat-{{chats.room_no}}" onclick="location.href='{% url 'eProc_Chat:room' 'RESPONSE' 'INQUIRED' chats.room_no chats.client_id %}';">
+							<div class="chat-card-body chat-contact_card">
+								<!-- <div class="chat-contact_image-section">
+									<img src="/static/images/download.jpg" alt="" class="chat-contact_profile-image" />
+								</div> -->
+								<div>
+									<div class="chat-contact_profile-image custom-group-icon">
+										<i class="material-icons">groups</i>
+									</div>
+								</div>
+								
+								<div class="chat-contact_chat-detail">
+									<div class="chat-detail-top">
+										{% if chats.chat_type == 'INQUIRED' %}
+										<div class="chat-detail-name-section">
+											<span class="chat-detail-name">Shopping Cart {{chats.room_no}} - Inquiry</span>
+										</div>
+										{% endif %}
+										<div class="chat-detail-timestamp-section">
+											<span class="chat-detail-timestamp">{{chats.chat_timestamp}}</span>
+										</div> 
+									</div>
+									<div class="chat-detail-bottom">
+										<div class="chat-detail-message-section">
+											<div class="chat-message">{{chats.chat_content}}</div>
+										</div>
+										<div class="chat-detail-unread-message-section">
+											<span class="chat-unread-message">1</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						{% endfor %}
+					</div>
+
+				</div>
+
+			</div>
+
+			<!-- Main chat panel to exchange texts -->
+			<div class="col pl-2 pr-2 pt-2">
+
+				<div class="chat-card chat-window-section">
+
+					<div class="chat-window-header-main">
+						<div class="chat-window-header">
+							<div class="chat-window-description">
+								<!-- <div class="chat-window-image-section">
+									<img src="/static/images/download.jpg" alt="" class="chat-contact_profile-image">
+								</div> -->
+
+								<div>
+									<div class="chat-contact_profile-image custom-group-icon">
+										<i class="material-icons">groups</i>
+									</div>
+								</div>
+								<div class="chat-window-detail-section">
+									<div class="chat-window-detail-top">
+										<div class="chat-group-name-section">
+											<span class="chat-group-name">Shopping Cart {{chat_room_data.room_no}} - Inquiry</span>
+										</div>
+									</div>
+									<div class="chat-window-detail-bottom">
+										<div class="chat-group-participants-section">
+											<span class="chat-group-participants">
+												{% for participant_names in participants_name %}&nbsp;{{participant_names.first_name}}, {% endfor %}
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+	
+							<div class="chat-window-info-group">
+								<button class="chat-circular-button" onclick="toggle_group_info('chat-group-info-section');" data-toggle="tooltip" data-placement="bottom" title="Group Info"><i class="material-icons">more_horiz</i></button>
+							</div>
+		
+						</div>
+					</div>
+					
+					<div class="chat-window-body">
+						<div class="chat-window">
+							
+						</div>
+					</div>
+					
+					<div class="chat-window-footer">
+						<div class="chat-message-bar-wrapper">
+							
+							<div class="message-input-wrapper">
+								<div class="message-input-group" style="background-color: #EEEEEE">
+									<div class="mes-icon">
+										<i class="fas fa-plus"></i>
+									</div> 
+									<input type="search" placeholder="Write a message.." id="chat-message-input" style="background-color: #EEEEEE">
+								</div>
+							</div>
+
+							<div class="message-send-wrapper">
+								<button id="chat-message-submit" class="message-submit-button"><i class="fas fa-paper-plane"></i> send</button>
+							</div> 
+
+						</div>
+						
+					</div>
+				</div>
+ 
+			</div>
+
+			<!-- Hideable chat group info section -->
+			<div class="col-3 pl-2 pt-2" id="chat-group-info-section" style="display: none;">
+				<div class="chat-card chat-window-section">
+					<div class="chat-card-header elements-space-between">
+						<span class="chat-card-header-text">Group info</span>
+						<button class="chat-circular-button" onclick="toggle_group_info('chat-group-info-section');"><i class="material-icons"> close </i></button>
+					</div>
+
+					<div class="group-info-section-body">
+						<div class="group-info-profile-section">
+							<!-- <img src="/static/images/download.jpg" alt="" class="group-info-profile-image" /> -->
+							<div>
+								<div class="group-info-profile-image custom-group-icon">
+									<i class="material-icons">groups</i>
+								</div>
+							</div>
+							
+							<h5>Shopping Cart {{chat_room_data.room_no}} - Inquiry</h5>
+						</div>
+
+						<div class="group-info-participants-section">
+							<div class="group-info-participants-section_header">
+								<span class="header-label">Participants</span> 
+								<button type="button" class="button_invite"><i class="fas fa-plus fa-xs"></i>&nbsp; add participants</button>
+							</div>
+
+							<div class="group-info-participants-section_body">
+								{% for participant_names in participants_name %}
+								<div class="participants-section_list">
+									<div>
+										<img src="/static/images/outline_person_black_24dp.png" alt="" class="participants_section_img">
+									</div>
+									<div>
+										<span class="participant_name">{{participant_names.first_name}} {{participant_names.last_name}}</span>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+							
+						</div>
+
+						<div class="group-info-files-section">
+							<div class="group-info-files-section_header">
+								<span class="header-label">Files</span>
+							</div>
+
+							<div class="group-info-files-section__body">
+								<div class="group-info-files-section__types">
+									<div class="group-info-files-section__container group-docs">
+										<i class="material-icons-outlined">description</i>
+									</div> 
+									<span>Document</span>
+									<i class="material-icons">
+										navigate_next
+									</i>
+								</div>
+								<div class="group-info-files-section__types">
+									<div class="group-info-files-section__container group-img">
+										<i class="material-icons-outlined">image</i>
+									</div>
+									<span>Images</span>
+									<i class="material-icons">
+										navigate_next
+									</i>
+								</div>
+								<div class="group-info-files-section__types">
+									<div class="group-info-files-section__container group-video">
+										<i class="material-icons">videocam</i>
+									</div>
+									<span>Videos</span>
+									<i class="material-icons">
+										navigate_next
+									</i>
+								</div>
+							</div>
+							
+						</div>
+						<div class="group-info-button-section">
+							<button class="button-exit-chat">leave conversation</button>
+						</div>
+					</div>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+	
+</div>
+<script src="{% static 'doc_chat_main.js' %}"></script>
+<script src="{% static 'reconnecting-websocket.js' %}"></script>
+
+<script>
+
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();   
+	});
+
+	nav_bar_shop();
+	$( "#majjaka_notification_icon" ).remove();
+	$( "#majjaka_shopping_cart_icon" ).remove();
+	$('#nav_menu_items').remove();
+	$("body").css({"padding-top":"3.85rem", "height": "100vh", "width":"100%", "overflow": "hidden"});
+
+    
+	var roomName = {{room_name}}
+	var action_str = '{{action|safe}}'
+	var username = {{username}}
+	var title = '{{chat_room_title|safe}}';
+	// remove double quotes
+	var chat_room_title =  title.split('"').join('');
+	var action =  action_str.split('"').join('');
+
+	const chatSocket = new ReconnectingWebSocket(
+		'ws://'
+		+ window.location.host
+		+ '/ws/chat/'
+		+ roomName
+		+ '/'
+	);
+
+	chatSocket.onopen = function(e) {
+		fetch_messages();
+
+	};
+
+	chatSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+
+		if (data['command'] === 'messages'){
+			for (let i=0;i<data['messages'].length;i++){
+				create_messages(data['messages'][i]);
+
+			}
+		}
+		else if (data['command'] === 'new_message'){
+			create_messages(data['message']);
+
+		}
+	};
+
+	chatSocket.onclose = function(e) {
+		console.error('Chat socket closed unexpectedly');
+	};
+
+	document.querySelector('#chat-message-input').focus();
+	document.querySelector('#chat-message-input').onkeyup = function(e) {
+		if (e.keyCode === 13) {  // enter, return
+			document.querySelector('#chat-message-submit').click();
+		}
+	};
+
+	function fetch_messages(){
+		chatSocket.send(JSON.stringify({
+			'command':'fetch_messages',
+			'room_name':roomName,
+		}));
+	}
+
+	var date1 = ''
+
+	function create_messages(data){
+        console.log(data)
+		var author = data['author'];
+		var time_stamp = new Date(data.timestamp)
+		var local_time = time_stamp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+		var local_date = time_stamp.toLocaleString('en-US', {dateStyle: 'medium'})
+		
+		var date2 = time_stamp.toLocaleString('en-US', {dateStyle: 'medium'})
+		date1 = local_date
+		
+		
+
+		// creates an element for message 
+		var messageTag = document.createElement('div');
+
+		// creates an element for the chat message
+		var textTag = document.createElement('span');
+		textTag.className = "chat-message"
+
+		// creates an element for message time
+		var timeTag = document.createElement('span');
+		timeTag.className = "message-time"
+
+		// creates an element for reciever name 
+		var authorTag = document.createElement('span');
+		authorTag.className = "receiver-name"
+
+		textTag.textContent = data.content;
+		timeTag.textContent = local_time;
+		authorTag.textContent = data.author_first_name;
+
+		if (author === username){
+			messageTag.className = 'sender';
+            messageTag.appendChild(textTag);
+            messageTag.appendChild(timeTag)
+            document.querySelector('.chat-window').appendChild(messageTag);
+		}
+		else{
+			messageTag.className = 'receiver';
+			messageTag.appendChild(authorTag)
+            messageTag.appendChild(textTag);
+            messageTag.appendChild(timeTag)
+            document.querySelector('.chat-window').appendChild(messageTag);
+		}
+		$('.chat-window-body').scrollTop($('.chat-window-body')[0].scrollHeight);
+		
+	}
+
+	document.querySelector('#chat-message-submit').onclick = function(e) {
+		const messageInputDom = document.querySelector('#chat-message-input');
+		const message = messageInputDom.value;
+		chatSocket.send(JSON.stringify({
+			'message': message,
+			'command':'new_message',
+			'action':action,
+			'chat_room_title':chat_room_title,
+			'room_name':roomName,
+			'from':username,
+		}));
+		messageInputDom.value = '';
+	};
+
+	$(".messages").animate({ scrollTop: $(document).height() }, "fast");
+
+	$(".chat-initiated-card").click(function(e){
+		var classes = this.id
+		console.log(classes)
+
+		var id = $(this).attr("id")
+		$(".chat-contact-container").find(".active").removeClass("active");
+        sessionStorage.setItem("chat-initiated-card-active", id);
+	});
+
+	$(document).ready(function(){
+		$("#myInput").on("keyup", function() {
+			var value = $(this).val().toLowerCase();
+			$(".chat-contact-container .chat-initiated-card").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+
+		var chat_initiated_card_active = sessionStorage.getItem('chat-initiated-card-active');
+
+        if(chat_initiated_card_active) {
+            $(".chat-contact-container").find(".active").removeClass("active");
+            $('#' + chat_initiated_card_active).addClass("active");
+        }
+	});
+
+	function toggle_group_info (id) {
+		$('#'+id).toggle();
+	}
+
+</script>
+
+{% endblock %}

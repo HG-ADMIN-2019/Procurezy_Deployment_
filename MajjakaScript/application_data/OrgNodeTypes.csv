@@ -1,0 +1,8 @@
+NODE_TYPE,DESCRIPTION,del_ind
+CCODE,Company Code,0
+NODE,Node,0
+PGRP,Purchasing Group,0
+PLANT,Plant,0
+PORG,Purchasing Organization,0
+RNODE,Root Node,0
+USER,User,0

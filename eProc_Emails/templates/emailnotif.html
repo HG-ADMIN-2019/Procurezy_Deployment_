@@ -1,0 +1,245 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block maincontent %}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+</style>
+<div id="Admintool" style="margin-top:20px;">
+    <div class="container-fluid ml-5" style="width: 97%;">
+       <div class="jumbotron bg-white">
+        <div class="hg_limorder" style="width:100%;" >
+            <div class="hg_limordertxt hg_pt20">
+                <div class="hg_head1">Set up your E-mail Notifications</div>
+                <hr class="hg_heading_hrborder">
+            </div>
+
+            <div style="width:70%; overflow:auto;">
+                <div id="Notif_email" >
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div>
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <span id="success_message" class="hg_success"></span>
+                        <p id="demo"></p>
+
+                        <div>
+                            Choose a Email type:<br>
+                            <select id="select_variant_type" class="form-control hg_mb10" onchange="select_variant();">
+                                {% for vrnt_data in variant_list %}
+                                <option>{{ vrnt_data }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Creating drop down for keywords w.r.t variant name  -->
+<!--                        Available Keywords:<br>-->
+<!--                        <select id="available_keywords" class="form-control hg_mb10">-->
+<!--                            {% for keywrd_data in keyword_data %}-->
+<!--                            <option>{{ keywrd_data.keyword }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+
+                    </form>
+                    <!-- Start of email notification form -->
+                    <form id="email_notif_form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <fieldset disabled id="form_read_only">
+                            <input id="email_guid" value="{{data_onload.0.email_contents_guid}}" hidden>
+                            <label>Enter the E-mail subject:</label><br>
+                            <input type="search" id="email_subject" class="form-control mb-2" value="{{data_onload.0.subject}}" onkeypress="typeahead(this.id)">
+                            <label>Enter the E-mail content details:</label>
+                            <textarea id="email_header" class="form-control" style="height:100px;" onkeypress="typeahead(this.id)" placeholder="Enter Header here">{{data_onload.0.header}}</textarea>
+                            <textarea id="email_body" class="form-control" style="height:200px;" onkeypress="typeahead(this.id)" placeholder="Enter Body here">{{data_onload.0.body}}</textarea>
+                            <textarea id="email_footer" class="form-control" style="height:100px;" onkeypress="typeahead(this.id)" placeholder="Enter Footer here">{{data_onload.0.footer}}</textarea>
+                        </fieldset>
+                        <div style="text-align:right; width:100%; overflow:auto; margin-top:10px;">
+                            <button type="submit" id="save_en_button" class="btn btn-primary" style="display:none; float:right;" value="SAVE"><i class="fas fa-save"></i> &nbsp;save</button>
+                        </div>
+                    </form>
+                    <div style="text-align:right; overflow:auto; margin-top:10px;">
+                        <button type="button" id="edit_en_button" onclick="edit_en_button()" class="btn btn-primary" value="EDIT" style="float:right; "><i class="fas fa-pencil-alt"></i> &nbsp;edit</button>
+                        <button type="button" id="cancel_en_button" onclick="cancel_en_button()" class="btn btn-primary" value="cancel" style="display:none; float:right; margin-right:20px;"><i class="fas fa-times"></i> &nbsp;cancel</button>&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+</div><div id="box">&nbsp;</div>
+
+
+<!--    <div id="loading_popup" class="hg_modal" >-->
+<!--        <div class="hg_modal_content" style=" width:100px; height:150px;" >-->
+<!--            <div class="hg_container" style=" width:100px; height:150px;">-->
+<!--                <div id="output" >-->
+<!--                    <h3>Please wait...</h3>-->
+<!--                    <img  src="{% static 'img/loading.gif' %}" height="50px" width="50px"  alt="loading"/>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+        {% include 'root/loader.html' %}
+
+
+<script>
+
+nav_bar_admin();
+var availableKeywords = [
+        {% for data in keyword_list %}
+            "{{data}}",
+        {% endfor %}
+    ];
+
+    // function to retrieve email notification data using ajax request
+    function select_variant() {
+        var variant = document.getElementById("select_variant_type");
+        variant_data = variant.options[variant.selectedIndex].value;
+        document.getElementById('email_subject').value = "";
+        document.getElementById('email_body').value = "";
+        document.getElementById('email_header').value = "";
+        document.getElementById('email_footer').value = "";
+         $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Emails:edit_email_notif_form' %}",
+            data: {
+                'variant_data': variant_data,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (response) {
+                keywords = response.keyword_list
+                $('#available_keywords').empty()
+                for(i=0; i<keywords.length; i++){
+                    available_keywords = '<option>' + keywords[i] + '</option>'
+                    $('#available_keywords').append(available_keywords)
+                }
+                document.getElementById('email_guid').value = response.email_contents_guid;
+                document.getElementById('email_subject').value = response.subject;
+                document.getElementById('email_body').value = response.body;
+                document.getElementById('email_header').value = response.header;
+                document.getElementById('email_footer').value = response.footer;
+            }
+         })
+    }
+
+    // Edit button functionality
+    function edit_en_button() {
+        document.getElementById('form_read_only').disabled = false;
+        document.getElementById('edit_en_button').style.display = 'none'
+        document.getElementById('cancel_en_button').style.display = 'block'
+        document.getElementById('save_en_button').style.display = 'block'
+    }
+
+    // Cancel button functionality
+    function cancel_en_button() {
+        document.getElementById('form_read_only').disabled = true;
+        document.getElementById('edit_en_button').style.display = 'block'
+        document.getElementById('cancel_en_button').style.display = 'none'
+        document.getElementById('save_en_button').style.display = 'none'
+    }
+
+    // function to submit edited email notification setting data
+     $('#email_notif_form').submit(function () {
+        event.preventDefault();
+        console.log("form submitted!")
+        var email_guid = document.getElementById("email_guid").value;
+        console.log(email_guid)
+        var email_subject = document.getElementById("email_subject").value;
+        console.log(email_subject)
+        var email_header = document.getElementById("email_header").value;
+        var email_body = document.getElementById("email_body").value;
+        var email_footer = document.getElementById("email_footer").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Emails:update_email_notif_form' %}",
+            data: {
+                'email_guid': email_guid,
+                'email_subject': email_subject,
+                'email_header': email_header,
+                'email_body': email_body,
+                'email_footer': email_footer,
+            },
+            success: function(response) {
+                s_message = document.getElementById('success_message')
+                s_message.innerHTML = response.message
+                div_id = s_message.id
+                timeout(div_id)
+                cancel_en_button();
+            }
+        });
+        return false;
+    });
+
+    function timeout(hideDiv) {
+        setTimeout(function () {
+            document.getElementById(hideDiv).innerHTML = '';
+        }, 4000);
+    }
+
+
+//---------------------------------------------
+
+function split(val) {
+    return val.split('@');
+}
+
+function extractLast(term) {
+    return split(term).pop();
+}
+
+function typeahead(id){
+document.getElementById(id).addEventListener('keypress', (event) => {
+      if ( event.keyCode == 64 ) {
+        $('#'+id)
+        // don't navigate away from the field on tab when selecting an item
+        .bind("keydown", function(event) {
+            if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        }).autocomplete({
+            minLength: 0,
+            source: function(request, response) {
+                var term = request.term,
+                    results = [];
+                if (term.indexOf("@") >= 0) {
+                    term = extractLast(request.term);
+                        results = $.ui.autocomplete.filter(
+                         availableKeywords, term);
+                }
+                response(results);
+            },
+            focus: function() {
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function(event, ui) {
+                var terms = [];
+                terms = split(this.value);
+                var inputString = this.value;
+                if (inputString.charAt(inputString.length - 1) == '@') {
+                    var shortenedString = inputString.substr(0,(inputString.length -1));
+                terms = [shortenedString]
+                }
+                // add the selected item
+                terms.push(ui.item.value);
+                this.value = terms.join("");
+                return false;
+            }
+    });
+        }
+    });
+}
+</script>
+
+{% endblock %}

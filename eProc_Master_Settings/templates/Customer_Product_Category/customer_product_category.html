@@ -1,0 +1,1361 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Customer UNSPSC Codes (Master Settings) {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div class="configuration-table_wrapper">
+        <div class="elements-space-between">
+            <h3>Maintain Customer UNSPSC Codes</h3>
+            <div>
+                <button class="btn btn-outline-primary"  title="Template" onclick="location.href='{% url 'eProc_Master_Settings:extract_cusprodcat_template' %}'"type="button">
+                    <i class="fas fa-download"></i> template
+                </button>
+                <button class="btn btn-outline-primary"  title="Extract" onclick="location.href='{% url 'eProc_Master_Settings:extract_cusprodcat_data' %}'"type="button">
+                    <i class="fas fa-download"></i> extract data
+                </button>
+                 <button class="btn btn-outline-primary modal_upload" id="id_upload_redirect_data" title="Upload Data" value="cusprodcat_upload"  onclick="onclick_upload_button()" type="button">
+                    <i class="fas fa-cloud-upload-alt"></i> upload data
+                </button>
+                <button class="btn btn-primary " id="id_add_data" value="ADD" title="Add Product Categories" data-toggle="cusprodcat_Modal" onclick="onclick_add_button(this);">
+                    <i class="fa fa-plus"></i> add customer UNSPSC code
+                </button>
+                <button class="btn btn-outline-secondary" id="id_close" value="close" title="Close"  onclick="window_close();">
+                    <i class="fas fa-times"></i> close
+                </button>
+           </div>
+        </div>
+        <hr>
+        <div class="configuration-table_section">
+            <div id="err_msg_app_settings"> </div>
+            <div id="err_msg_app_settings_t" class="alert alert-success" hidden><span id="success_msg_id"></span> </div>
+            <div class="table-container tcw-60">
+                <div class="edit-button-section mb-4">
+                    <button class="btn btn-secondary btn-sm" id="id_edit_data" title="Edit" onclick="edit_basic()">
+                        <i class="far fa-edit"></i> edit
+                    </button>
+                    <button  class="btn btn-outline-danger btn-sm"  title= "Delete" id="id_delete_data" value="cusprodcat_delete" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                        <i class="fa fa-trash"></i> delete
+                    </button>
+                    <button class="btn btn-secondary btn-sm" title="Cancel"  id="id_cancel_data" style="display:none;" type="button" onclick="display_basic_db_data()">
+                        <i class="fas fa-times"></i> cancel
+                    </button>
+                </div>
+                <table id="display_basic_table" class="class_master_cusprodcat_table table table-bordered custom-table">
+                    <thead id="id_cusprodcat_table_header">
+                        <tr>
+                            <th id="hg_select_checkbox" hidden>
+                               <div id="id_check_all" style="display:none;">
+                                    <input type="checkbox" id="selectAll" name="chk[]">
+                                </div>
+                            </th>
+                            <th style="width: 25%;">Image</th>
+                            <th style="width: 35%;">Description</th>
+                            <th>UNSPSC Code</th>
+                            <th class="hg_unspsc_th_column" hidden> Upload Images</th>
+                            <th hidden>Guid</th>
+                            <th hidden>Del Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_cusprodcat_tbody">
+                        {% for cust_prod_cat in upload_cust_prod_cat %}
+                        <tr>
+                            <td class="class_select_checkbox" class="hg_unspsc_td_column" hidden><input type="checkbox"  class="checkbox_check" onclick="valueChanged()" ></td>
+                            <td>
+                                <a onclick="get_image_detail({{cust_prod_cat.prod_cat_id}})" href="#">
+                                    <div style="display: flex; flex-direction: row;">
+                                        <div> 
+                                                 <img src="/media/{{cust_prod_cat.image_url}}" onerror='this.src="/static/images/no-image-cropped.png"' id='prod_img-{{cust_prod_cat.prod_cat_id}}' class="mr-3 catalog_img product-config-img" >
+                                        </div>
+                                    </div> 
+                                </a>
+                            </td>
+                            <td>{{cust_prod_cat.prod_cat_desc}}</td>
+                            <td>{{ cust_prod_cat.prod_cat_id}}</td>
+                            <td class="hg_unspsc_td_column" hidden><a onclick="upload_unscpsc_prod_cat_image({{cust_prod_cat.prod_cat_id}})"><i class="fa fa-upload" aria-hidden="true"></i></a></td>
+                            <td hidden>{{cust_prod_cat.prod_cat_guid}}</td>
+                            <td hidden>del_ind</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div class="modal fade" id="cusprodcat_Modal" style="overflow:auto;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="update-countries-title"> Maintain Customer UNSPSC Code</h5>
+                    <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="popup-vertical-scroll">
+                        <div id="id_del_add_button" class="mb-4">
+                            <button class="btn btn-primary" title="Add New Row" type="button" onclick="add_popup_row()">
+                                <i class="fa fa-plus"></i> add new row
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete" onclick="application_settings_delete_Row('id_popup_table')">
+                                <i class="fa fa-trash"></i> delete
+                            </button>
+                        </div>
+                        <div id="id_check_success_messages" class="alert alert-success check_success_message" hidden></div>
+                        <div id="id_check_error_messages" class="alert alert-danger check_error_messages" hidden></div>
+                        <div id="id_check_special_character_messages" class="alert alert-danger check_special_character_messages" hidden>
+                            <p id="id_error_msg_prod_cat_id" ></p>
+                            <p id="id_error_msg_description" ></p>
+                            <p id="id_error_msg_prod_cat_id_length" ></p>
+                        </div>
+                        <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
+                        <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
+                        <div id="id_info_msg_id" class="alert alert-primary display-none" role="alert"></div>
+                        <table class="class_popup_table table table-bordered mt-2" id="id_popup_table">
+                            <thead>
+                            <tr>
+                                <th id="header_select">Select</th>
+                                <th>UNSPSC Code</th>
+                                <th id="desc_upload">Description</th>
+                                <th hidden>GUID</th>
+                                <th id="id_del_ind_checkbox" hidden>del_ind</th>
+                            </tr>
+                            </thead>
+                            <tbody id="id_popup_tbody">
+
+                            </tbody>
+                        </table>
+                     </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" title="Cancel" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button id="id_delete_duplicate" class="btn btn-primary" style="display:none;" title="Delete" type="button" onclick="delete_duplicate()"><i class="fa fa-trash"></i> delete duplicates</button>
+                    <button id="id_check_data" style="display:none;" class="btn btn-primary" title="Check" type="button" onclick="check_data()"><i class="fas fa-check"></i> check</button>
+                    <button class="btn btn-primary" title="Save" id="save_id"><i class="fas fa-save"></i> save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Start attachments popup-->
+    <div class="modal fade" id="view_image_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" >
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">View Images</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <img id="img_1"  onerror='this.src="/static/images/no-image-cropped.png"' style="border: 1px solid #e9ecef;"  class="mr-3 catalog_img" width="50%" height="50%">
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i>cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End attachments popup-->
+    <!--Start attachments popup-->
+    <div class="modal fade" id="attachments_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" >
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Upload UNSPSC Code Image</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div id="id_prod_cat_error_msg" class="alert alert-danger" style="display: none;"></div>
+                <div id="id_prod_cat_success_messages" class="alert alert-success" style="display: none;"></div>
+                <!-- Modal body -->
+                <div class="modal-body" style="height:75px;">
+                   <input id="id_image" type="file"><br>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary remove_upload_data" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                    <button class="btn btn-primary" onclick="save_product_cat_images(event)"><i class="fas fa-save"></i>upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End attachments popup-->
+   {% include 'configuration_common_pop_up.html' %}
+    <div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div style="color: green; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'error' %}
+        <div style="color: red; ">{{ message }}</div>
+        {% endif %}
+        {% if message.tags == 'info' %}
+        <div style="color: Black bold"><b>{{ message }}</b> </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<script>
+    var content_managment_settings = '{{content_managment_settings|safe}}';
+    var rendered_cust_prod_cat_data ={{upload_cust_prod_cat|safe}};
+    var rendered_UNSPC_data = {{upload_ProdCat|safe}};
+    var messages_list = {{messages_list|safe}};
+    var cusprodcat_data_array = {}
+    var main_table_cusprodcat_value =[];
+    var main_table_low_value = [];
+    var cusprodcat = '';
+    var edit_basic_data ='';
+    var GLOBAL_ACTION='';
+    var no_duplicate_entries = 'Y'
+    var Tablename = uiConstants["CONST_TABLENAME_CUSTPRODCAT"]
+    var appname = uiConstants["CONST_APPNAME01"]
+    var db_header_data = uiConstants["CONST_HEADER_DATA_CUSTPRODCAT"]
+    var prod_catid_desc = '';
+    var prod_cat_id_dropdown = '';
+    var usedProdCatIds = [];
+
+    //Drop dropdown function
+    function unspsc_dropdown() {
+        prod_cat_id_dropdown = '';
+        get_main_table_data(); //Read data from main table
+
+        var available_aac_values = rendered_UNSPC_data.filter(function(item) {
+            return !main_table_low_value.includes(item.prod_cat_id);
+        });
+        $.each(available_aac_values, function(i, item)  {
+            prod_cat_id_dropdown += '<option value="' + item.prod_cat_id + '">' + item.prod_cat_id + '</option>';
+        });
+
+        // Loop through the dropdown dictionary and check if each prod_cat_id is unused
+        if(available_aac_values.length != 0){
+            prod_catid_desc = available_aac_values[0].category_desc;
+        }
+        else {
+            prod_catid_desc = "";
+        }
+    }
+
+
+    // START UPLOAD POPUP
+    var GLOBAL_PROD_CAT_ID = '';
+    function upload_unscpsc_prod_cat_image(prod_id){
+        GLOBAL_PROD_CAT_ID = prod_id;
+        $('#id_image').val('');
+        $('#id_prod_cat_error_msg').empty();
+        $('#id_prod_cat_success_messages').empty();
+        $('#id_prod_cat_error_msg').hide()
+        $('#id_prod_cat_success_messages').hide();
+        $('#attachments_popup').modal('show');
+    }
+
+    //Start Intializing Index DB
+    //prefixes of implementation that we want to test
+    window.indexedDB = window.indexedDB || window.mozIndexedDB ||
+    window.webkitIndexedDB || window.msIndexedDB;
+    //prefixes of window.IDB objects
+    window.IDBTransaction = window.IDBTransaction ||
+    window.webkitIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ||
+    window.msIDBKeyRange
+    if (!window.indexedDB) {
+        var msg = "JMSG044";
+        var msg_type ;
+        msg_type = message_config_details(msg);
+        $("#error_msg_id").prop("hidden", false)
+        if(msg_type.message_type == "ERROR"){
+            display_message("error_msg_id", msg_type.messages_id_desc)
+        }
+        else if(msg_type.message_type == "WARNING"){
+            display_message("id_warning_msg_id", msg_type.messages_id_desc)
+        }
+        else if(msg_type.message_type == "INFORMATION"){
+            display_message("id_info_msg_id", msg_type.messages_id_desc)
+        }
+        var display = msg_type.messages_id_desc;
+        window.alert(display)
+    }
+
+    var db;
+    var request = window.indexedDB.open("store_unspsc_images", 1);
+    request.onerror = function(event) {
+        console.log("error: ");
+    };
+    request.onsuccess = function(event) {
+        db = request.result;
+        console.log("success: "+ db);
+    };
+    request.onupgradeneeded = function(event) {
+        var db = event.target.result;
+        var objectStore = db.createObjectStore("hg_unspsc_images", {keyPath: "image_id"});
+    }
+    //End Intializing Index DB
+
+    //CLEAR ATTACHEMENTS
+    function clear_session_data(){
+        sessionStorage.clear();
+        localStorage.clear();
+        var req = window.indexedDB.deleteDatabase('store_images');
+        req.onsuccess = function () {
+            alert("Deleted database successfully");
+        };
+    }
+    //start Function to convert File type to base64 type
+    // Function to convert File type to base64 type
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+    //end Function to convert File type to base64 type
+
+    //START OF CONVERTING DATAURL TO FILE
+    // Function convert base64 converted url to File type
+    function dataURLtoFile(dataUrl, filename) {
+        var array = dataUrl.split(','),
+        mime = array[0].match(/:(.*?);/)[1],
+        converted_to_atob = atob(array[1]),
+        atob_length = converted_to_atob.length,
+        u8arr = new Uint8Array(atob_length);
+        while(atob_length--){
+            u8arr[atob_length] = converted_to_atob.charCodeAt(atob_length);
+        }
+        file_data = new File([u8arr], filename, {type:mime})
+        return file_data;
+    }
+
+    // START CLEAR OR DELETE IMAGE STORE IN SESSION
+    function clearData() {
+        // open a read/write db transaction, ready for clearing the data
+        var transaction = db.transaction("hg_unspsc_images", "readwrite");
+        transaction.onerror = function(event) {
+        };
+        // create an object store on the transaction
+        var objectStore = transaction.objectStore("hg_unspsc_images");
+        // Make a request to clear all the data out of the object store
+        var objectStoreRequest = objectStore.clear();
+        objectStoreRequest.onsuccess = function(event) {
+        };
+    };
+
+    //********************************
+    function save_product_cat_images(event) {
+        $('#id_prod_cat_error_msg').html('');
+        $('#id_prod_cat_error_msg').hide();
+        data = new FormData();
+        var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+        const uploaded_file = document.getElementById('id_image');
+        const file = uploaded_file.files[0];
+        const fsize = file.size;
+        const file_extension = ((file.name).split(".")[1]).toUpperCase();
+        if (file){
+            let reader = new FileReader();
+            reader.onload = function(event){
+                if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+                    console.log(event.target.result);
+                    if (fsize >= 200000){
+                        $('#id_prod_cat_error_msg').html('Please upload an image with size less than 200KB');
+                        $('#id_prod_cat_error_msg').show() ;
+                    }
+                    else {
+                        data.append('prod_cat_id', GLOBAL_PROD_CAT_ID);
+                        data.append('prod_cat_image', file);
+                        data.append('file_name',file.name)
+                        $.ajax({
+                            type: 'POST',
+                            url: "{% url 'eProc_Master_Settings:upload_prod_cat_images' %}",
+                            data: data,
+                            success: function (Response) {
+                                var upload_id = "prod_img-"+GLOBAL_PROD_CAT_ID
+                                $('#'+upload_id).attr('src', event.target.result);
+                                $('#attachments_popup').modal('hide');
+                                rendered_cust_prod_cat_data = Response[0];
+                                display_basic_db_data
+                            },
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            error: function(data){
+                                
+                            }
+                        });
+                    }
+                }
+                else {
+                    $('#id_prod_cat_error_msg').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif')
+                    $('#id_prod_cat_error_msg').show()
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    };
+
+    //START ON CLICK OF VIEW IMAGE 
+    function get_image_detail(product_id){
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:get_prod_cat_image_detail' %}",
+            data: JSON.stringify(product_id),
+            success: function (response) {
+            static_url = '/media/';
+            if (response[0]){
+                    $('#img_1').attr('src',static_url+ response[0].fields.image_url);
+                }
+                else{
+                    $('#img_1').attr('src',"/static/images/no-image-cropped.png");
+                }
+            $('#view_image_popup').modal('show');
+            }
+        });
+    }
+
+    //popup save.................
+    $(function() {
+        $("#save_popup").on("click", function() {
+        var countries_data = new Array();
+        var main_table_low_value = [];
+        var validate_add_attributes = [];
+           $("#dis_tab TBODY TR").each(function () {
+                var row = $(this);
+                $('#cusprodcat_Modal').modal('show');
+                prod_cat_id = row.find("TD").eq(1).find('input[type="number"]').val();
+                if (prod_cat_id == undefined){
+                    prod_cat_id = row.find("TD").eq(1).find('input[type="number"]').val();
+                }
+                validate_add_attributes.push(prod_cat_id);
+            });
+            $('#display_basic_table').DataTable().destroy();
+            $("#display_basic_table TBODY TR").each(function () {
+                var row = $(this);
+                prod_cat_id = row.find("TD").eq(1).find('input[type="number"]').val();
+                main_table_low_value.push(prod_cat_id);
+            });
+            table_sort_filter('display_basic_table');
+            var common = [];
+            jQuery.grep(validate_add_attributes, function(el) {
+                if (jQuery.inArray(el, main_table_low_value) != -1){ common.push(el);}
+            });
+            // validating in add attr table
+            add_attr_duplicates = false;
+            var add_attr_duplicates_list = [];
+            var add_attr_unique_list = [];
+            $("#modify_popup_errmsg").empty();
+            $.each(validate_add_attributes, function (index, value) {
+                console.log(value)
+                if($.inArray(value, add_attr_unique_list ) == -1){
+                    add_attr_unique_list.push(value);
+                }else{
+                    if($.inArray(value, add_attr_duplicates_list ) == -1){
+                        add_attr_duplicates_list.push(value);
+                    }
+                }
+            });
+            if(common.length != 0 || add_attr_duplicates_list.length != 0){
+                document.getElementById("add_att_error_msg").innerHTML = messageConstants["JMSG001"];
+                document.getElementById("add_att_error_msg").style.color = "Red";
+                $('#cusprodcat_Modal').modal('show');
+            }
+            else{
+                var add_basic_data = '';
+                $("#dis_tab tbody tr").each(function (index) {
+                    var row = $(this);
+                    prod_cat_id = (row.find("TD").eq(1).find('input[type="number"]').val());
+                    prod_cat_guid = (row.find("TD").eq(2).html());
+                    add_basic_data += '<tr><td><input type="checkbox"></td><td><input type="number" value="' + prod_cat_id + '" required></td><td hidden>'+ prod_cat_guid +'</td></tr>'
+                });
+                $('#display_basic_table').DataTable().destroy();
+                $('#display_basic_table').append(add_basic_data);
+                $('#cusprodcat_Modal').modal('hide');
+                table_sort_filter('display_basic_table');
+                $('#cusprodcat_Modal').find('input:text').val('');
+            }
+        });
+    });
+
+    // on click of save, save edited data into db
+    function basic_save() {
+        attachment_data_array = new Array();
+        var data = new FormData();
+        var objectStore = db.transaction("hg_unspsc_images").objectStore("hg_unspsc_images");
+        objectStore.openCursor().onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                attachment_data_object = {}
+                attachment_pk = cursor.value.image_id;
+                attachment_data_object.image_id = cursor.value.image_id;
+                attachment_data_object.dataUrl = cursor.value.dataUrl;
+                attachment_data_object.file_name = cursor.value.file_name;
+                attachment_data_array.push(attachment_data_object)
+                cursor.continue();
+            }
+            else {
+                data = new FormData();
+                for(img=0;img<attachment_data_array.length; img++){
+                    var image_data =attachment_data_array[img];
+                    var abc = dataURLtoFile(image_data['dataUrl'],image_data['file_name']);
+                    var file_name = image_data['file_name'];
+                    data.append(image_data['image_id'], dataURLtoFile(image_data['dataUrl'],image_data['file_name']))
+                    data.append('file_name', image_data['file_name'])
+                    data.append('Prod_cat', image_data['image_id'])
+                    data.append('default_image_value', image_data['default_image'])
+                    console.log(abc)
+                }
+                $('#display_basic_table').DataTable().destroy();
+                var Tabledata = { "Dbl_clck_tbl_id": 'upload_custprodcat' }
+                var pattern = new RegExp(/[0123456789~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/); //unacceptable chars
+                var pattern_num = new RegExp(/[A-Z~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);//unacceptable chars
+                var pattern_alphanum = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);//unacceptable chars
+                Error_msg = "";
+                document.getElementById("err_msg_app_settings").innerHTML = "";
+                document.getElementById("err_msg_app_settings_t").innerHTML = "";
+                {
+                    document.getElementById("err_msg_app_settings").innerHTML = "";
+                    var cust_prod_cat_datas = new Array();
+                    var no_input_error_custprodcat = 'Y';
+                    var update_db_custprodcat = 'Y';
+                    var secondary_fields_chk_custprodcat = 'Y';
+                    $("#display_basic_table TBODY TR").each(function () {
+                        var row = $(this);
+                        var custprodcat_data = {};
+                        td_input = row.find("TD").eq(1).find('input').length;
+                        if (td_input) {
+                            custprodcat_data.prod_cat_id = (row.find("TD").eq(1).find('input[type="number"]').val());
+                            if (custprodcat_data.prod_cat_id.length == 0) {
+                                get_message_details("JMSG002"); // Get message details
+                                document.getElementById("err_msg_app_settings").innerHTML = Error_msg;
+                                document.getElementById("err_msg_app_settings").style.color = "Red";
+                                no_input_error_custprodcat = 'N';
+                            }
+                            if (pattern_num.test(custprodcat_data.prod_cat_id)) {
+                               get_message_details("JMSG003"); // Get message details
+                                var display = msg_type.messages_id_desc;
+                                Error_msg = display + "Product Category ID";
+                                document.getElementById("err_msg_app_settings").innerHTML = Error_msg;
+                                document.getElementById("err_msg_app_settings").style.color = "Red";
+                                no_input_error_custprodcat = 'N';
+                            }
+                            if (no_input_error_custprodcat == 'N') { update_db_custprodcat = 'N' }
+                        }
+                        else {
+                            custprodcat_data.prod_cat_id = (row.find("TD").eq(1).html());
+                        }
+                        custprodcat_data.prod_cat_guid = (row.find("TD").eq(2).html());
+                        cust_prod_cat_datas.push(custprodcat_data);
+                    });
+                    data.append('update', JSON.stringify(cust_prod_cat_datas))
+                    if ((update_db_custprodcat == 'Y') && (secondary_fields_chk_custprodcat == 'Y')) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "{% url 'eProc_Master_Settings:save_product_cat_cust' %}",
+                            data: data,
+                            success: function (Response) {
+                                rendered_cust_prod_cat_data = Response;
+                                display_basic_db_data();
+                                get_message_details("JMSG039"); // Get message details
+                                var display = messages_id_desc;
+                                document.getElementById("err_msg_app_settings_t").innerHTML = display;
+                                document.getElementById("err_msg_app_settings_t").style.color = "Green";
+                                clearData();
+                            },
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            error: function(data){
+
+                            }
+                        });
+                    }
+                }
+            }
+        };
+    }
+
+    //****************************
+    function get_table_data() {
+        var cust_prod_cat_array = new Array()
+        $("#display_basic_table tbody tr").each(function (index) {
+            var row = $(this);
+            var custprodcat_data = {};
+            custprodcat_data.prod_cat_id = (row.find("TD").eq(1).find('input[type="number"]').val());
+            custprodcat_data.prod_cat_guid = (row.find("TD").eq(2).html());
+            cust_prod_cat_array.push(custprodcat_data);
+        });
+        return cust_prod_cat_array;
+    }
+
+    function display_cust_prod_cat(cust_prodcat_array) {
+        th_data ='<tr><th id="hg_select_checkbox">Select</th><th>Product Category</th><th hidden>Guid </th></tr>'
+        $('#display_header').empty();
+        $('#display_header').append(th_data);
+        body_content = ''
+        $.each(cust_prodcat_array, function (index, data) {
+        body_content += '<tr>';
+        body_content += '<td></td>';
+        body_content += '<td>' + data.prod_cat_id + '</td>';
+        body_content += '<td hidden>' + data.prod_cat_guid + '</td>';
+        body_content += '</tr>';
+        });
+        $('#display_data').empty();
+        $('#display_data').append(body_content);
+        $( "#hg_select_checkbox").prop( "hidden", true );
+        $('#display_data tr td:nth-child(1)').hide();
+        document.getElementById("basic_edit_save").style.display = "block";
+        document.getElementById("edit_up_data_div").style.display = "block";
+        document.getElementById("add_line_up_div").style.display = "none";
+        document.getElementById("basic_edit_save").style.display = "none";
+        document.getElementById("delete_line_up_div").style.display = "none";
+        document.getElementById("copy_line_up_div").style.display = "none";
+        table_sort_filter('display_basic_table');
+    }
+
+    //onclick of display the table in display mode............
+    function display_basic_db_data() {
+        $('#display_basic_table').DataTable().destroy();
+        $('#id_cusprodcat_tbody').empty();
+        var edit_basic_data = '';
+        $.each(rendered_cust_prod_cat_data, function (i, item) {
+            edit_basic_data += '<tr><td class="class_select_checkbox"><input class="checkbox_check" onclick="valueChanged()" type="checkbox" required></td><td><a onclick="get_image_detail('+item.prod_cat_id+')" href="#"><div style="display: flex; flex-direction: row;"><div><img src="/media/'+item.image_url+'" onerror="this.src="/static/images/no-image-cropped.png""  id="prod_img-'+item.prod_cat_id+'" class="mr-3 catalog_img product-config-img" ></div></div></a></td><td>'+item.prod_cat_desc+'</td><td>' + item.prod_cat_id + '</td><td  class="hg_unspsc_td_column" hidden><a onclick="upload_unscpsc_prod_cat_image('+ item.prod_cat_id+')"><i class="fa fa-upload" aria-hidden="true"></i></a></td><td hidden>' + item.prod_cat_guid + '</td><td hidden>'+item.del_ind+'</td></tr>'
+        });
+        $('#id_cusprodcat_tbody').append(edit_basic_data);
+        $( "#hg_select_checkbox").prop( "hidden", true );
+        $( ".hg_unspsc_th_column").prop( "hidden", true );
+        $( ".hg_unspsc_td_column").prop( "hidden", true );
+        $(".hg_unspsc_td_column").show()
+        $(".hg_unspsc_td_column").show()
+        $( "#hg_select_checkbox").prop( "hidden", true );
+        $(".class_select_checkbox").prop("hidden", true);
+        $('input:checkbox').removeAttr('checked');
+        $('#id_edit_data').show();
+        $('#id_cancel_data').hide();
+        $('#id_delete_data').hide();
+        $('#id_copy_data').hide();
+        $('#id_update_data').hide();
+        $('#id_save_confirm_popup').modal('hide');
+        $('#id_delete_confirm_popup').modal('hide');
+        $('#id_check_all').hide();
+        table_sort_filter('display_basic_table');
+    }
+
+    var cust_prod_cat_data = new Array();
+    var validate_add_attributes = [];
+    var cusprodcat={};
+
+    // on click edit icon display the data in edit mode
+    function edit_basic(){
+        $('#display_basic_table').DataTable().destroy();
+        $( "#hg_select_checkbox").prop( "hidden", false );
+        $( ".hg_unspsc_th_column").prop( "hidden", false );
+        $( ".hg_unspsc_td_column").prop( "hidden", false );
+        $(".hg_unspsc_td_column").show()
+        $(".hg_unspsc_th_column").show()
+        $(".class_select_checkbox").prop("hidden", false);
+        $('#id_cancel_data').show();
+        $('#id_edit_data').hide();
+        $('#id_check_all').show();
+        table_sort_filter('display_basic_table');
+    }
+
+    // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        $("#error_msg_id").css("display", "none")
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html(" ");
+        });
+        if (GLOBAL_ACTION == "cusprodcat_upload") {
+             OpenLoaderPopup();
+            var data = {'table_name':'UnspscCategoriesCust'}
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+                data: JSON.stringify(data),
+                success: function(response) {
+                    rendered_UNSPC_data = response.upload_ProdCat
+                    unspsc_dropdown();
+                    var inc_index = 0;
+                    basic_add_new_html = '<tr><td><input type="checkbox" required></td><td><select type="text" class="input form-control prodid"  name="prodid" onchange="GetSelectedTextValue(this)">'+prod_cat_id_dropdown+'</select></td><td hidden><input class="form-control description" type="text"  name="description"  value="'+prod_catid_desc+'" disabled></td><td hidden><guid></td><td class="class_del_checkbox"><input type="checkbox" required></td></tr>';
+                    $('#id_popup_tbody').append(basic_add_new_html);
+                    $("#desc_upload").prop("hidden", true);
+                    $(".class_del_checkbox").prop("hidden", false);
+                    $("#id_del_ind_checkbox").prop("hidden", false);
+                    table_sort_filter('id_popup_table');
+                    CloseLoaderPopup();
+                }
+            });
+        }
+         else{
+               unspsc_dropdown();
+               basic_add_new_html =
+                '<tr>'+
+                    '<td><input type="checkbox" required></td>'+
+                    '<td><select type="text" class="input form-control prodid"  name="prodid" onchange="GetSelectedTextValue(this)">'+prod_cat_id_dropdown+'</select></td>'+
+                    '<td><input class="form-control description" type="text"  name="description"  value="'+prod_catid_desc+'" disabled></td>'+
+                    '<td hidden><guid></td><td hidden><del_ind></td>'+
+                '</tr>';
+            $('#id_popup_tbody').append(basic_add_new_html);   // Add a new row in popup
+            table_sort_filter('id_popup_table');
+        }
+        $('#delete_data').hide()
+    }
+
+    //onclick of add button display cusprodcat_Modal popup and set GLOBAL_ACTION button value
+    function onclick_add_button(button) {
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_popup_tbody").empty();
+        OpenLoaderPopup();
+        var data = {'table_name':'UnspscCategoriesCust'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_UNSPC_data = response.upload_ProdCat
+                unspsc_dropdown();
+                var inc_index = 0;
+                $("#error_msg_id").css("display", "none")
+                $("#header_select").prop( "hidden", false );
+                GLOBAL_ACTION = button.value
+                $("#id_popup_tbody").empty();
+                $("#desc_upload").prop("hidden", false);
+                $('#cusprodcat_Modal').modal('show');
+                basic_add_new_html = '<tr><td><input type="checkbox" required></td><td><select type="text" class="input form-control prodid"   name="prodid" onchange="GetSelectedTextValue(this)">'+prod_cat_id_dropdown+'</select></td><td><input class="form-control description" type="text"  name="description"  value="'+prod_catid_desc+'" disabled></td><td hidden><guid></td><td hidden>< del_ind></td></tr>';
+                $('#id_popup_tbody').append(basic_add_new_html);
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#save_id").prop("hidden", false);
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // onclick of valid popup
+    function valid_popup(){
+      $('#id_data_upload').modal('hide');
+      $("#valid_upload").modal('show');
+    }
+
+    //onclick of upload button display id_data_upload popup and set GLOBAL_ACTION button value
+    function onclick_upload_button() {
+        GLOBAL_ACTION = "cusprodcat_upload"
+        $("#id_error_msg_upload").prop("hidden",true)
+        $("#id_popup_tbody").empty();
+        $('#id_data_upload').modal('show');
+        document.getElementById('id_file_data_upload').value = "";
+    }
+
+    //onclick of cancel empty the popup table body and error messages
+    $(".remove_upload_data").click(() => {
+        $("#id_error_msg").html("");
+        $("#id_popup_tbody").empty();
+        $("#id_error_msg").empty();
+        $('#cusprodcat_Modal').modal('hide');
+        $("#id_error_msg").prop("hidden", true);
+        $("#id_error_msg_country_code").prop("hidden", true);
+        $("#id_error_msg_country_name").prop("hidden", true);
+        $("#id_error_msg_country_length").prop("hidden", true);
+        $("#id_check_error_messages").prop("hidden", true);
+        $("#id_check_success_messages").prop("hidden", true);
+        $("#id_check_special_character_messages").prop("hidden", true)
+        $("#id_check_data").prop("hidden", true);
+        $('#id_popup_table').DataTable().destroy();
+    });
+
+    //***************************
+    function delete_duplicate() {
+        $('#id_popup_table').DataTable().destroy();
+        var cusprodcat_code_check = new Array
+        var main_table_low_value = new Array
+        $("#id_popup_table TBODY TR").each(function () {
+            var row = $(this);
+            //*************** reading data from the pop-up ***************
+            cusprodcat_prod_cat_desc = row.find("TD").eq(2).find('input[type="text"]').val();
+            cusprodcat_prod_cat_id = row.find("TD").eq(1).find('select[type="text"]').val();
+            checked_box = row.find("TD").eq(3).find('input[type="checkbox"]').is(':checked')
+             if (checked_box){
+                del_ind = '1'
+            }
+            else{
+                del_ind = '0'
+                if (cusprodcat_prod_cat_id) {
+                    if (cusprodcat_code_check.includes(cusprodcat_prod_cat_id)) {
+                        $(row).remove();
+                    }
+                    cusprodcat_code_check.push(cusprodcat_prod_cat_id);
+                      main_table_low_value = get_main_table_data_upload(); //Read data from main table
+                    if (main_table_low_value.includes(cusprodcat_prod_cat_id)) {
+                        $(row).remove();
+                    }
+                    main_table_low_value.push(cusprodcat_prod_cat_id);
+                }
+            }
+        });
+        table_sort_filter_popup_pagination('id_popup_table')
+        check_data()
+    }
+
+    //onclick of data Upload copy data to modal pop-up
+    function onclick_display_csv_data() {
+        $("#valid_upload").modal('hide');
+        $("#id_delete_duplicate").hide()
+        $("#id_check_success_messages").empty();
+        $("#id_check_error_messages").empty();
+        $("#id_check_success_messages").prop("hidden", true);
+        $("#id_check_error_messages").prop("hidden", true);
+        $("#id_check_special_character_messages").prop("hidden", true);
+        $("#error_msg_id").css("display", "none")
+        $('#id_popup_table').DataTable().destroy();
+        formdata = new FormData();
+        attached_file = $('#id_file_data_upload').prop('files')[0]
+        if(attached_file == undefined){
+           display_file_select_error(); // Display error message if no file is selected
+        }
+        else {
+            file_extension = (attached_file.name).split(".")[1]
+            file_extension = file_extension.toUpperCase();
+            if(file_extension == 'CSV') {
+                formdata.append("file_attach", attached_file);
+                formdata.append("Tablename",Tablename);
+                formdata.append("appname",appname);
+                $('#id_data_upload').modal('hide');
+                $('#id_popup_tbody').empty();
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Basic_Settings:data_upload' %}",
+                    data: formdata,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(response) {
+                        if(response.error_message){
+                            $("#id_error_msg_upload").prop("hidden",false)
+                            document.getElementById("id_error_msg_upload").innerHTML = response.error_message;
+                            document.getElementById("id_error_msg_upload").style.color = "Red";
+                            $('#id_data_upload').modal('show');
+                        }
+                        else{
+                            var cusprodcat_data_array = response.valid_data_list;
+                            var edit_basic_data = '';
+                            var del_ind = '';
+                            var dropdown_values = [];
+                            var inc_index=0;
+                            $("#id_popup_tbody").empty();
+                            $.each(response.valid_data_list, function (i, value) {
+                                var prod_cat_id_value = value.prod_cat_id
+                                dropdown_values.push(prod_cat_id_value)
+                                del_ind = '<td>' + value.del_ind + '</td>'
+                                if (value.del_ind == 1) {
+                                    del_ind=' <input type="checkbox" value="' + value.del_ind + '" checked>'
+                                }
+                                else {
+                                    del_ind= '<input type="checkbox" value="' + value.del_ind + '" required>'
+                                }
+                                $("#desc_upload").prop( "hidden", true );
+                                 // Loop through the main table dictionary and collect the used prod_cat_ids
+                                  $.each(rendered_cust_prod_cat_data, function(k, item) {
+                                    usedProdCatIds.push(item.prod_cat_id);
+                                  });
+
+                                var prod_cat = '';
+                                var prod_cat_list = '';
+                                var prod_cat_id_list = '';
+                                var opt = '';
+
+                                $.each(rendered_UNSPC_data.upload_ProdCat, function(j, item1){
+                                    if(value.prod_cat_id == item1.prod_cat_id){
+                                        prod_cat = '<option value="' + item1.prod_cat_id + '">' + item1.prod_cat_id + '</option>';
+                                    }else{
+                                         if (usedProdCatIds.indexOf(item1.prod_cat_id) === -1) {
+                                            prod_cat_list += '<option value="' + item1.prod_cat_id + '">' + item1.prod_cat_id + '</option>';
+                                        }
+                                    }
+
+                                    prod_cat_id_list = prod_cat + prod_cat_list
+                                });
+
+                                edit_basic_data +=
+                                        '<tr>'+
+                                            '<td><input type="checkbox" required></td>'+
+                                            '<td><select type="text" class="input form-control prodid"  name="prodid" onchange="GetSelectedTextValue(this)"><option value ="' + value.prod_cat_id + '"'+prod_cat_id_list+'>'+value.prod_cat_id+'</option></select></td>'+
+                                            '<td hidden><input class="form-control description" type="text"  name="description"  value="'+prod_catid_desc+'" disabled>value ="' + value.category_desc + '"</td>'+
+                                            '<td hidden><guid></td><td>'+ del_ind +'</td>'+
+                                        '</tr>';
+                                inc_index += 1;
+                            });
+                            $('#id_popup_table').append(edit_basic_data);
+                            var i =0;
+                            $("#id_popup_table TBODY TR").each(function() {
+                                var row = $(this);
+                                var prod_cat_id_list = dropdown_values[i][0]
+                                $(row.find("TD").eq(1).find("select option[value="+prod_cat_id_list+"]")).attr('selected','selected');
+                                i = i + 1;
+                            });
+                            $( "#id_del_ind_checkbox").prop( "hidden", false );
+                            $( "#header_select").prop( "hidden", false );
+                            $( ".class_del_checkbox").prop( "hidden", false );
+                            $("#desc_upload").prop("hidden", true);
+                            $('#cusprodcat_Modal').modal('show');
+                            $('#id_data_upload').modal('hide');
+                            document.getElementById("id_del_add_button").style.display = "block";
+                            $('#id_check_data').show();
+                            $("#id_check_data").prop("hidden", false);
+                            $("#save_id").prop("hidden", true);
+                            table_sort_filter('id_popup_table')
+                        }
+                        CloseLoaderPopup();
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                });
+            }
+            else{
+                $("#id_error_msg_upload").prop("hidden",false)
+                get_message_details("JMSG110"); // Get message details
+                var display = msg_type.messages_id_desc;
+                document.getElementById("id_error_msg_upload").innerHTML = display;
+                document.getElementById("id_error_msg_upload").style.color = "Red";
+                $('#id_data_upload').modal('show');
+            }
+        }
+    }
+
+    //delete the selected row in db................
+    var main_table_cusprodcatdesc_checked = [];
+    function main_table_delete() {
+        $('#success_msg_id').empty()
+        GLOBAL_ACTION = 'DELETE'
+        main_table_cusprodcat_checked = [];
+        $('#display_basic_table').DataTable().destroy();
+        get_selected_row_data(); // Function call to get the selected row data
+        $('#id_delete_confirm_popup').modal('hide');
+        data = {'data':main_table_cusprodcat_checked,'table_name':'UnspscCategoriesCust','action':GLOBAL_ACTION}
+        OpenLoaderPopup();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Response) {
+                rendered_cust_prod_cat_data = Response[0][0];
+                display_basic_db_data();
+                $('#success_msg_id').text(Response[1])
+                if(Response[1].message_type== 'SUCCESS'){
+                    $('#success_msg_id').text(Response[1].message_desc)
+                }
+                $("#err_msg_app_settings_t").prop("hidden",false)
+                table_sort_filter('id_popup_table');
+                setTimeout(function(){$("#err_msg_app_settings_t").prop("hidden",true);},5000)
+                table_sort_filter('id_popup_table');
+                CloseLoaderPopup();
+            }
+        });
+    }
+
+    // Function to get the selected row data
+    function get_selected_row_data() {
+        $("#display_basic_table TBODY TR").each(function () {
+            var row = $(this);
+            var cusprodcat_arr_obj ={};
+            checked = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+            if(checked){
+                cusprodcat_arr_obj.prod_cat_desc = row.find("TD").eq(2).html();
+                cusprodcat_arr_obj.prod_cat_id = row.find("TD").eq(3).html();
+                cusprodcat_arr_obj.prod_cat_guid = row.find("TD").eq(5).html();
+                cusprodcat_arr_obj.del_ind = checked
+                main_table_cusprodcat_checked.push(cusprodcat_arr_obj);
+            }
+        });
+    }
+
+    // validate and save for add,copy,update and upload data
+    function popup_save_data() {
+        $('#success_msg_id').empty()
+        $('#id_popup_table').DataTable().destroy();
+        no_duplicate_entries = 'Y'
+        no_duplicate_value = 'Y'
+        var error_message = '';
+        get_main_table_data(); //Read data from main table
+        // compare for duplicates in popup
+        [no_duplicate_value,error_message] = compare_table_for_duplicate_entries(validate_add_attributes, cust_prod_cat_data)
+        if (error_message){
+            display_error_message(error_message)
+        }
+        else {
+            if ((GLOBAL_ACTION == "COPY") || (GLOBAL_ACTION == "ADD")) {
+                [no_duplicate_entries,error_message] = maintable_validation(validate_add_attributes, main_table_low_value)
+                if(no_duplicate_entries == 'N') {
+                    $('#cusprodcat_Modal').modal('show');
+                }
+            }
+            if ((no_duplicate_value == 'Y') && (no_duplicate_entries == 'Y')) {
+                var add_basic_data = '';
+                var cusprodcat_data_array = cust_prod_cat_data;
+                $('#id_save_confirm_popup').modal('hide');
+                data = {'data':cust_prod_cat_data,'table_name':'UnspscCategoriesCust','action':GLOBAL_ACTION}
+                OpenLoaderPopup();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'eProc_Master_Settings:create_update_master_data' %}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(Response) {
+                        rendered_cust_prod_cat_data = Response[0][0];
+                        rendered_UNSPC_data = Response[0][2]
+                        display_basic_db_data();
+                        success_response(Response); // Function call to display response data
+                        CloseLoaderPopup();
+                    }
+                });
+            }
+            else if (error_message){
+                display_error_message(error_message)
+            }
+        }
+        table_sort_filter('id_popup_table');
+    }
+
+    // Function to get main table data
+    function get_main_table_data() {
+        main_table_low_value = [];
+        $('#display_basic_table').DataTable().destroy();
+        $("#display_basic_table TBODY TR").each(function() {
+            var row = $(this);
+            var main_attribute = {};
+            main_attribute.prod_cat_id = row.find("TD").eq(3).html();  
+            main_table_low_value.push(main_attribute.prod_cat_id);
+        });
+        table_sort_filter('display_basic_table');
+    }
+
+    // Function to hide and display save related popups
+    $('#save_id').click(function () {
+        $('#cusprodcat_Modal').modal('hide');
+        cust_prod_cat_data = read_popup_data();
+        $('#id_save_confirm_popup').modal('show');
+    });
+
+    //Read popup table data
+    function read_popup_data() {
+        $('#id_popup_table').DataTable().destroy();
+        validate_add_attributes = [];
+        cust_prod_cat_data = [];
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            cusprodcat = {};
+            cusprodcat.del_ind = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked');
+            cusprodcat.prod_cat_id = row.find("TD").eq(1).find('select').val();
+            cusprodcat.category_desc = row.find("TD").eq(2).find("input").val();
+            cusprodcat.prod_cat_guid = row.find("TD").eq(3).find('input').val();
+            if (cusprodcat == undefined) {
+                cusprodcat.prod_cat_id = row.find("TD").eq(1).find('select').val();
+            }
+            if(cusprodcat.prod_cat_guid == undefined) {
+                cusprodcat.prod_cat_guid = '';
+            }
+            validate_add_attributes.push(cusprodcat.prod_cat_id);
+            cust_prod_cat_data.push(cusprodcat);
+        });
+        table_sort_filter('id_popup_table');
+        return cust_prod_cat_data;
+    }
+
+    function triggerFileUpload(id) {
+        $('#image-upload-errors').html('');
+        $('#image-upload-errors').hide();
+        var image1_length = document.getElementById('imgupload');
+        var length1 = image1_length.files.length
+        if(length1 == 0) {
+            $('#image-upload-errors').html('Please upload the Default Image first');
+            $('#image-upload-errors').show();
+        } else {
+            document.getElementById(id).click();
+        } 
+    }
+
+    function loadFile(event) {
+        $('#image-upload-errors').html('');
+        $('#image-upload-errors').hide();
+        var img_extension_list = ['PNG','JPG', 'JPEG', 'BMP', 'TIF', 'TIFF', 'GIF']
+        var reader = new FileReader();
+        reader.onload = function(){
+            const uploadfile = document.getElementById('imgupload1');
+            if (uploadfile.files.length > 0) {
+                const filedata = uploadfile.files[0];
+                const fsize = filedata.size;
+                const file_extension = ((filedata.name).split(".")[1]).toUpperCase();
+                console.log("file extentio  "+file_extension)
+                console.log("file size is  "+fsize)
+                if(jQuery.inArray(file_extension, img_extension_list) != -1) {
+                    if (fsize >= 200000){
+                        $('#image-upload-errors').html('Please upload an image with size less than 200KB');
+                        $('#image-upload-errors').show() ;
+                    } else {
+                        var output = document.getElementById('image-preview1');
+                        output.src = reader.result;
+                    }
+                } else {
+                    $('#image-upload-errors').html('Please attach jpg, jpeg, png, bmp, tif, tiff or gif')
+                    $('#image-upload-errors').show()
+                }
+            }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+
+    // validating the  popup table for duplicate entries
+    function compare_table_for_duplicate_entries(validate_add_attributes, cusprodcat) {
+        add_attr_duplicates = false;
+        var error_message = ''
+        var common = [];
+        var add_attr_unique_list = [];
+        var no_duplicate_value = 'Y'
+        $.each(cusprodcat, function (i, item) {
+            if (item.prod_cat_id == null){
+                $('#cusprodcat_Modal').modal('show');
+                error_message = ui_messeges("JMSG002")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        });
+        if(no_duplicate_value == 'Y'){
+            $.each(validate_add_attributes, function (index, value) {
+                if ($.inArray(value, add_attr_unique_list) == -1) {
+                    add_attr_unique_list.push(value);
+                }
+                else {
+                    if ($.inArray(value, common) == -1) {
+                        common.push(value);
+                    }
+                }
+            });
+            if (common.length != 0) {
+                display_duplicate_entry(common);  //Function to highlight the rows in popup
+                error_message = ui_messeges("JMSG001")// Get message details
+                no_duplicate_value = 'N'
+                return [no_duplicate_value,error_message]
+            }
+        }
+        return [no_duplicate_value,error_message]
+    }
+
+    //******************************************
+    function display_error_message(error_message){
+        $('#error_message').text(error_message);
+        document.getElementById("error_message").style.color = "Red";
+        $("#error_msg_id").css("display", "block")
+        $('#id_save_confirm_popup').modal('hide');
+        $('#cusprodcat_Modal').modal('show');
+    }
+
+    //********************************************
+    function product_id_value_find(product_id) {
+        corresponding_values = {};
+        corresponding_values.description_dropdown = '';
+        prod_cat_val_list = prod_cat_val_list;
+        for (var i = 0; i < prod_cat_val_list.length; i++) {
+            compare_dict = {};
+            compare_dict = prod_cat_val_list[i]
+            if (product_id == compare_dict.prod_cat_id) {
+                corresponding_values.description_dropdown += '<option value="' + compare_dict.prod_cat_desc + '">' + compare_dict.prod_cat_desc + '</option>'
+            }
+        }
+        return corresponding_values
+    }
+
+//check function restricting special char and diaplay the data count of csv file
+    function check_data() {
+        $("#id_delete_duplicate").hide()
+        $('#id_popup_table').DataTable().destroy();
+        $("#id_check_success_messages").empty()
+        $("#id_check_error_messages").empty()
+        $("#id_check_success_messages").prop("hidden", true)
+        $("#id_check_error_messages").prop("hidden", true)
+        $("#id_check_special_character_messages").prop("hidden", true)
+        document.getElementById("id_error_msg_prod_cat_id").innerHTML = "";
+        count = 0;
+        flag = 0;
+        var prodcat_array = new Array
+        var DB_array = new Array
+        var prodcat_list = new Array
+        var prod_cat_id_check = new Array
+        del_ind = ''
+        $("#id_popup_table TBODY TR").each(function() {
+            $('#id_popup_table').DataTable().destroy();
+            var row = $(this);
+            unspsc_dic = {}
+            //*************** reading data from the pop-up ***************
+            unspsc_dic.prod_cat_id = row.find("TD").eq(1).find('select[type="text"]').val()
+            checked_box = row.find("TD").eq(4).find('input[type="checkbox"]').is(':checked')
+            if (checked_box){
+                unspsc_dic.del_ind = '1'
+            } else {
+                unspsc_dic.del_ind = '0'
+            }
+            prodcat_list.push(unspsc_dic)
+            get_main_table_data(); //Read data from main table
+            if(unspsc_dic.del_ind == '0'){
+              if(unspsc_dic.prod_cat_id.length == 0){
+                        $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                        row_color_highlight_minlength(row);
+                        $("#id_error_msg_prod_cat_id").prop("hidden",false);
+                        error_message = ui_messeges("JMSG113")// Get message details
+                        var display8 = error_message;
+                        document.getElementById("id_error_msg_prod_cat_id").innerHTML = display8+ "Country Code";
+                        $("#id_check_special_character_messages").prop("hidden",false);
+                        count = count +1;
+                }
+                else if(prod_cat_id_check.includes((unspsc_dic.prod_cat_id))){
+                     $(row).css("border", "#f8d7da");
+                     row_color_highlight(row);
+                     $("#id_check_error_messages").prop("hidden",false);
+                     var display7 = ui_messeges("JMSG001");
+                     document.getElementById("id_check_error_messages").innerHTML = display7;
+                     $("#save_id").prop("hidden", true);
+                     $("#id_delete_duplicate").show()
+                     $("#id_check_data").prop("hidden", false);
+                     count = count +1;
+                     flag = flag + 1;
+                }
+                else if(main_table_low_value.includes((unspsc_dic.prod_cat_id))){
+                     $(row).css("border", "#f8d7da");
+                     row_color_highlight(row);
+                     $("#id_check_error_messages").prop("hidden",false);
+                     var display7 = ui_messeges("JMSG001");
+                     document.getElementById("id_check_error_messages").innerHTML = display7;
+                     $("#save_id").prop("hidden", true);
+                     $("#id_delete_duplicate").show()
+                     $("#id_check_data").prop("hidden", false);
+                     count = count +1;
+                     flag = flag + 1;
+                }
+                else{
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                    row_color_no_highlight(row);
+                    $(row).css("border", "");
+                    $("#id_delete_duplicate").hide()
+                }
+                prod_cat_id_check.push(unspsc_dic.prod_cat_id)
+                main_table_low_value.push(unspsc_dic)
+                table_sort_filter_popup_pagination('id_popup_table');
+            }
+
+            if(flag == 0){
+                $("#id_delete_duplicate").hide()
+            }
+            else{
+                $("#id_delete_duplicate").show()
+            }
+            if(count == 0){
+                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "none");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+            }
+        });
+        //*************** shows save button if there are no errors(special characters and max length) ***************
+        if(count == 0){
+            $("#id_delete_duplicate").hide()
+            $('#id_popup_table').DataTable().destroy();
+            $("#id_popup_table").find("input,button,textarea,select").attr("disabled", "disabled");
+            document.getElementById("id_del_add_button").style.display = "none";
+            $("#save_id").prop("hidden", false);
+            $("#id_check_data").prop("hidden", true);
+            if (prodcat_list == 0) {
+                $("#save_id").prop("hidden", true);
+            }
+            popup_data_dict = {'data_list': prodcat_list}
+            OpenLoaderPopup();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration_Check:check_cust_unspsc_category' %}",
+                data: JSON.stringify(popup_data_dict),
+                success: function(response) {
+                    table_sort_filter_popup_pagination('id_popup_table')
+                     $("#id_check_special_character_messages").prop("hidden", false);
+                     if (count == 0) {
+                        $("#id_check_special_character_messages").prop("hidden", true);
+                     }
+                    var message = ''
+                    update_check_message(response.messages[1])
+                    CloseLoaderPopup();
+                }
+            });
+        }
+    }
+
+     //Function to highlight duplicate records
+     function display_duplicate_entry(common) {
+        var cusprodcat_check = new Array;
+        $("#id_popup_table TBODY TR").each(function() {
+            var row = $(this);
+            cusprodcat_dic = {}
+            cusprodcat_dic.prod_cat_id = row.find("TD").eq(1).find('select option:selected').val();
+            var compare =  cusprodcat_dic.prod_cat_id
+            cusprodcat_check.push(compare);
+            jQuery.grep(cusprodcat_check, function(el) {
+                if (jQuery.inArray(el, common) != -1) {
+                    row_color_highlight(row);
+                }
+                else {
+                    row_color_no_highlight(row);
+                }
+            });
+
+        });
+    }
+
+    //**********************************************
+    function update_check_message(messages) {
+        $.each(messages, function (i, message) {
+            $("#id_check_success_messages").append('<p>' + message + '</p>')
+        });
+        $("#id_check_success_messages").prop("hidden",false)
+    }
+
+    //**************************************
+    function GetSelectedTextValue(rowid){
+        var row = $(rowid);
+             var selectedText = "";
+          var selectedValue = row[0].value;
+             $.each (rendered_UNSPC_data, function(i, item){
+            if(selectedValue == item.prod_cat_id){
+              row[0].parentNode.nextElementSibling.children.description.value = item.category_desc;
+            }
+          });
+    }
+
+ // Function to get main table data
+function get_main_table_data_upload() {
+    main_table_low_value = [];
+    $('#display_basic_table').DataTable().destroy();
+    $("#display_basic_table TBODY TR").each(function() {
+        var row = $(this);
+        var main_attribute = {};
+        main_attribute.prod_cat_id = row.find("TD").eq(3).html();
+        main_attribute.del_ind = row.find("TD").eq(6).find('input[type="checkbox"]').is(':checked');
+        var compare = main_attribute.prod_cat_id
+        main_table_low_value.push(compare);
+    });
+   table_sort_filter('display_basic_table');
+    return main_table_low_value
+}
+
+//Get message for check data function
+function get_msg_desc_check_data(msg){
+    var msg_type ;
+    msg_type = message_config_details(msg);
+    $("#error_msg_id").prop("hidden", false);
+    return msg_type.messages_id_desc;
+}
+
+</script>
+{% endblock %}

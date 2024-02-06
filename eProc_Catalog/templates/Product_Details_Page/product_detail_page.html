@@ -1,0 +1,700 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Product Detail {% endblock %}
+
+{% block maincontent %}
+
+{% include 'root/loader.html' %}
+<style>
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
+<div class="container-fluid">
+    <div>
+        <div class="row no-gutters mb-3">
+            <div class="col-md mt-3 mr-2 ml-2">
+                <div class="card sticky-top" style="top: 4.7rem;">
+                    <div class="card-body">
+                        <div class="product-image-section">
+                            <div class="product-image-section__showcase"> 
+                                <img src="/media/{{prod_img_detail.0.image_url}}" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image" class="image-featured" id="image-featured">
+                            </div>
+                            <div class="product-image-section__select-img">
+                                {% for image_data in prod_img_detail %}
+                                <img src="/media/{{image_data.image_url}}" onerror='this.src="/static/images/no-image-cropped.png"' alt="product image" class="image-thumbnail">
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md mt-3 mr-2 ml-2">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="alert alert-warning" role="alert" id="create_error_div" style="display: none;">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                        </div>
+                        <div class="product-detail-section">
+                            <div class="product-detail-section__header">
+                                <div>
+                                    <span class="product-header-text">{{prod_detail.short_desc}}</span>
+                                </div>
+                                <div class="product-detail-section__header-bottom">
+                                    <span class="product-header-sub-text">by {{prod_detail.supplier_desc}}</span>
+
+                                    {% if prod_detail.external_link %}
+                                    <div>
+                                        <span class="badge badge-pill badge_custom_pill_primary">
+                                            <a href="https://{{prod_detail.external_link}}" target="_blank">Visit product website <i class="fas fa-external-link-alt"></i></a>
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                            </div>
+
+                            <div class="product-detail-section__pricing section-margin-t-b">
+                                <div class="product-pricing-text">
+                                    <span class="text-muted">{{prod_detail.currency_id}}</span> <span id="id_price">{{prod_detail.price}}</span><span class="product-pricing-text__unit"> / {{prod_detail.unit_desc}}</span>
+                                </div>
+                                <div id="id_discount_section" class="product-pricing-after-discount">
+
+                                </div>
+
+                                <!-- <div class="product-pricing-after-discount">
+                                    <div class="pricing-ex-discount"><s>{{prod_detail.currency_id}} {{prod_detail.price}}</s></div>
+                                    <div class="discount-perc-text badge badge-pill badge_status_approved"><span class="">10</span><span>% off</span></div>
+                                </div> -->
+
+                            </div>
+
+                            {% if quantity_dictionary %}
+                            <div class="product-detail-section__discount section-margin-t-b">
+                                <span class="discount-section-title">Available Discount</span>
+                                
+                                {% for quantity in quantity_dictionary.variant_data %}
+                                <div class="discount-label-text">
+                                    <i class="material-icons">discount</i>
+                                    <span>{{quantity.discount_percentage_value}}% off on minimum {{quantity.discount_min_quantity}} quantity</span>
+                                </div>
+                                {% endfor %}
+                                
+                            </div>
+                            {% endif %}
+
+                            <div class="product-detail-section__addtocart section-margin-t-b">
+                                <div class="product-detail-section__addtocart-top">
+                                    <div class="box1">
+                                        <span class="h5">Quantity</span>
+                                    </div>
+                                    <div class="box2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="quantity-left-minus btn btn-light btn-lg" onclick="on_change_quantity('DECREMENT')"  data-type="minus" data-field=""><i class="fas fa-minus"></i></button>
+                                            </div>
+                                            <input type="number" onkeypress="return event.charCode >= 48" onchange="on_change_quantity('')" id="catalog_quantity" name="catalog_quantity" class="form-control product-quantity-input" min="1" max="100" style="height: auto;" value="1">
+                                            <div class="input-group-append">
+                                                <button type="button" class="quantity-right-plus btn btn-light btn-lg" onclick="on_change_quantity('INCREMENT')" data-type="plus" data-field=""><i class="fas fa-plus"></i></button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                   <div class="box3">
+                                        <button type="button" class="btn btn-primary btn-add-product btn-lg" onclick="add_catalog_popup()"> add to cart <i class="material-icons"> add_shopping_cart </i></button>
+                                   </div>
+                                </div>
+
+                                <div class="product-detail-section__addtocart-bottom">
+                                    <div>
+                                        <span>Minimum Order Quantity: {{prod_detail.quantity_min}}</span>
+                                    </div>
+                                    <div>
+                                        <span> Lead Time(Days): {{prod_detail.lead_time}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            {% for eform_data in eform_detail %}
+                            {% if eform_data.dropdown_pricetype == 'VARIANT_BASE_PRICING' %}
+                            <div class="product-detail-section__vwbp section-margin-t-b">
+                                <h5>{{eform_data.eform_field_name}}</h5>
+
+                                <div class="row no-gutters select-option-container">
+                                    {% for variant in eform_data.pricing %}
+                                    <div class="col-sm-4 select-option-item" >
+                                        <div class="select-option-item__card {% if variant.pricing_data_default == True %} selected-vwbp dummy_class_price_data {% endif %}" id="VARIANT_BASE_PRICING-{{eform_data.variant_config_guid}}-{{variant.product_eform_pricing_guid}}"  onclick="update_price(this.id)">
+                                            <div class="select-option-item__card-body">
+                                                <span class="card-main-text">{{variant.pricing_data}}</span>
+                                                <span class="card-sub-text">{{variant.product_description}}, {{variant.price}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                </div>
+
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% for eform_data in eform_detail %}
+                            {% if eform_data.dropdown_pricetype == 'VARIANT_ADDITIONAL_PRICING' %}
+                            <div class="product-detail-section__vwap section-margin-t-b">
+                                <h5>{{eform_data.eform_field_name}}</h5>
+                                <div class="row no-gutters select-option-container">
+                                    {% for variant in eform_data.pricing %}
+                                    <div class="col-sm-3 select-option-item" >
+                                        <div class="select-option-item__card {% if variant.pricing_data_default == True %} selected-vwap dummy_class_price_data {% endif %}" id="VARIANT_ADDITIONAL_PRICING-{{eform_data.variant_config_guid}}-{{variant.product_eform_pricing_guid}}"  onclick="update_price(this.id)">
+                                            <div class="select-option-item__card-body">
+                                                <span class="card-main-text">{{variant.pricing_data}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %} 
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            <div class="product-detail-section__vwobp section-margin-t-b">
+                                <div class="row">
+                                {% for eform_data in eform_detail %}
+                                {% if eform_data.dropdown_pricetype == 'VARIANT_WITHOUT_PRICING' %}
+                                
+                                    <div class="col-sm-6">
+                                        <h5>{{eform_data.eform_field_name}}</h5>
+                                        <select class="form-control dummy_eform_class" >
+                                            <option value="">Select</option>
+                                            {% for eform_data_dropdown in eform_data.eform_field_data %}
+                                            <option value="VARIANT_WITHOUT_PRICING-{{eform_data.variant_config_guid}}-{{eform_data_dropdown}}">{{eform_data_dropdown}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                
+                                {% endif %}
+                                {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="product-detail-section__product-description section-margin-t-b">
+                                <h5 class="card-title">Product Description</h5>
+                                <p>{{prod_detail.long_desc}}</p> 
+                            </div>
+                            {% if product_specification %}
+                            <div class="product-detail-section__product-specification section-margin-t-b">
+                                <h5 class="card-title">Product Specifications</h5>
+
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        {% for prod_spec in product_specification %}
+                                        <tr>
+                                            <td class="text-muted">{{prod_spec.product_info_key}}</td>
+                                            <td>{{prod_spec.product_info_value}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        {% if prod_detail.quantity_avail %}
+                        <div>
+                            <span class="h6">Available Quantity: </span> <span>{{prod_detail.quantity_avail}}</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <span class="h6">Price Unit: </span> <span>{{prod_detail.price_unit}}</span>
+                        </div>
+                        <div>
+                            <span class="h6">Product Category: </span> <span>{{prod_detail.prod_cat_id_id}} - {{prod_detail.prod_cat_desc}} </span>
+                        </div>
+                        
+                        <div>
+                            <span class="h6">Manufacturer: </span> <span>{{prod_detail.manufacturer}} </span>
+                        </div>
+                        <div>
+                            <span class="h6">Country of Origin: </span> <span>{{prod_detail.country_desc}}</span>
+                        </div>
+                        {% if prod_detail.brand %}
+                        <div>
+                            <span class="h6">Brand: </span> <span> {{prod_detail.brand}}</span>
+                        </div>
+                        {% endif %}
+                        {% if prod_detail.ctr_num %}
+                        <div>
+                            <span class="h6">Contract Number: </span> <span> {{prod_detail.ctr_num}}</span>
+                        </div>
+                        {% endif %}
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ eform_detail|json_script:"eform_detail" }}
+{{ quantity_dictionary|json_script:"quantity_dictionary" }}
+<script>
+    var is_edit = false
+    var document_number = 'create';
+    var GLOBAL_QUANTITY = JSON.parse(document.getElementById('quantity_dictionary').textContent);
+    const eform_detail = JSON.parse(document.getElementById('eform_detail').textContent);
+    var GLOBAL_EFORM_FLAG = true;
+    var GLOBAL_PRODUCT_ID = '{{prod_detail.product_id}}';
+    var GLOBAL_FROM_ID = '{{prod_detail.variant_id|safe}}';
+    var GLOBAL_CURRENCY = '{{prod_detail.currency_id}}';
+
+    $(document).ready(function () {
+        $(document)
+        .ajaxStart(function () {
+           
+        })
+        .ajaxStop(function () {
+            
+        });
+    });
+
+
+$(document).ready(function(){
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "3.7rem");
+
+    var image_thumbnail = document.getElementsByClassName('image-thumbnail');
+
+    for(i=0; i < image_thumbnail.length; i++){
+        console.log(image_thumbnail);
+        image_thumbnail[0].classList.add('prod-img-selected');
+
+    };
+
+    catalog_quantity = 0;
+
+    $('.quantity-right-plus').click(function(e){
+        e.preventDefault();
+        var catalog_quantity = parseInt($('#catalog_quantity').val());
+        $('#catalog_quantity').val(catalog_quantity + 1);
+    })
+    $('.quantity-left-minus').click(function(e){
+        e.preventDefault();
+        var catalog_quantity = parseInt($('#catalog_quantity').val());
+        if(catalog_quantity>1) {
+            $('#catalog_quantity').val(catalog_quantity - 1);
+        }
+
+    })
+});
+
+var image_thumbnail = document.getElementsByClassName('image-thumbnail');
+var image_thumbnail_select = document.getElementsByClassName('prod-img-selected');
+
+for(i=0; image_thumbnail.length > i; i++){
+
+    image_thumbnail[i].addEventListener('click', function(){
+
+        if(image_thumbnail_select.length > 0){
+            image_thumbnail_select[0].classList.remove('prod-img-selected');
+        };
+        this.classList.add('prod-img-selected');
+        var new_src = this.src;
+        document.getElementById('image-featured').src = new_src;
+    });
+
+};
+// ========================= UPDATE PRICING ===================================================================
+var GLOBAL_BASE_PRICE = update_base_price_value()
+function update_base_price_value(){
+    eform_id = '{{prod_detail.eform_id|safe}}'
+    if (eform_id){
+        $.each(eform_detail, function (i, eform_config) {
+            if(eform_config.dropdown_pricetype=='VARIANT_BASE_PRICING'){
+                 $.each(eform_config.pricing, function (i, eform_pricing) {
+                    if (eform_pricing.pricing_data_default){
+                        price = eform_pricing.price
+                    }
+                 });
+
+            }
+        });
+    }
+    else{
+    price = '{{prod_detail.price|safe}}'
+    }
+    return price
+}
+function update_price(price_value){
+    var select_price_option = price_value.split('-')
+    var price = get_price(select_price_option[1],select_price_option[2])
+    quantity = document.getElementById("catalog_quantity").value
+    if (select_price_option[0]=='VARIANT_BASE_PRICING'){
+        remove_base_class()
+        $("#"+price_value).addClass("selected-vwbp")
+        $("#"+price_value).addClass("dummy_class_price_data")
+
+        //$("#id_prod_desc").text(select_price_option[6] + ' ');
+        //price = select_price_option[2]
+        let quantity_range = get_price_range(quantity)
+            console.log(quantity_range)
+        var price_percentage = get_percentage_by_quantity(quantity_range)
+        if(quantity_range !== 0){
+            GLOBAL_BASE_PRICE = parseFloat(price)*(100- (parseFloat(price_percentage)))/100
+        }
+        else{
+            GLOBAL_BASE_PRICE = parseFloat(price)
+        }
+
+        var item_price = GLOBAL_BASE_PRICE
+        $('.selected-vwap').each(function() {
+            var select_value = this.id
+            var select_value_split = select_value.split('-')
+            if (select_value_split[0]=='VARIANT_ADDITIONAL_PRICING'){
+                var additional_price = get_price(select_value_split[1],select_value_split[2])
+                item_price = calculate_item_value_based_on_operator(additional_price,'PLUS',item_price)
+            }
+       });
+       item_price = item_price *parseInt(quantity)
+        $("#id_price").text(item_price);
+    }
+    if(select_price_option[0]=='VARIANT_ADDITIONAL_PRICING'){
+        remove_additional_class(select_price_option[1])
+        $("#"+price_value).addClass("selected-vwap")
+        $("#"+price_value).addClass("dummy_class_price_data")
+        var item_price = GLOBAL_BASE_PRICE
+        $('.selected-vwap').each(function() {
+            var select_value = this.id
+            var select_value_split = select_value.split('-')
+            if (select_value_split[0]=='VARIANT_ADDITIONAL_PRICING'){
+                var additional_price = get_price(select_value_split[1],select_value_split[2])
+                item_price = calculate_item_value_based_on_operator(additional_price,'PLUS',item_price)
+            }
+       });
+       item_price = parseFloat(item_price)*parseInt(quantity)
+        $("#id_price").text(item_price);
+    }
+
+}
+
+function get_price(eform_config_guid,eform_pricing_guid){
+    var price = 0
+    $.each(eform_detail, function (i, eform_config) {
+        if(eform_config.variant_config_guid==eform_config_guid){
+             $.each(eform_config.pricing, function (i, eform_pricing) {
+                if (eform_pricing.product_eform_pricing_guid == eform_pricing_guid){
+                    price = eform_pricing.price
+                }
+             });
+
+        }
+    });
+    return price
+}
+function remove_base_class(){
+    $('.selected-vwbp').each(function() {
+        $(this).removeClass("selected-vwbp");
+        $(this).removeClass("dummy_class_price_data");
+    });
+}
+function remove_additional_class(eform_config_guid){
+    $.each(eform_detail, function (i, eform_config) {
+        if(eform_config.variant_config_guid==eform_config_guid){
+             $.each(eform_config.pricing, function (i, eform_pricing) {
+                var id_value = 'VARIANT_ADDITIONAL_PRICING-'+eform_config.variant_config_guid+'-'+eform_pricing.product_eform_pricing_guid+'';
+                $("#"+id_value ).removeClass("selected-vwap");
+                $("#"+id_value).removeClass("dummy_class_price_data")
+             });
+
+        }
+    });
+}
+//###########################  start based on selected operator get sign #######################3
+function calculate_item_value_based_on_operator(differential_value,operator,item_price){
+    var item_value = 0;
+    switch(operator){
+        case 'PLUS':
+            item_value = parseInt(item_price)+parseInt(differential_value)
+            break;
+        case 'MINUS':
+            item_value = parseInt(item_price)-parseInt(differential_value)
+            break;
+        case 'PERCENTAGE':
+            item_value = (parseInt(item_price)*(100 - parseInt(differential_value)))/100
+            break;
+        default:
+            break;
+
+    }
+    return item_value
+
+}
+//########################### end based on selected operator get sign #######################3
+var quantity_range = '';
+function get_price_range(quantity){
+    var range = 0
+    var min  = 0
+    var range_flag = false
+    var max_flag = false
+    var max_quantity =0
+    var price_percentage =0
+    $.each(GLOBAL_QUANTITY.variant_data, function (i, item) {
+        if((GLOBAL_QUANTITY.variant_data.length)==(i)){
+            max_quantity = parseFloat(9999999999999999999999999)
+            max_flag = true
+        }
+        else{
+            max_quantity = item.discount_min_quantity
+        }
+
+        range_flag = inRange(parseFloat(quantity),min,parseFloat(max_quantity)-1)
+        if(range_flag){
+
+            var range = min
+            console.log("retutn 1")
+            quantity_range = min
+            return quantity_range
+        }
+        else{
+             if((GLOBAL_QUANTITY.variant_data.length-1)==(i))
+            {
+                if(parseFloat(quantity) >= parseFloat(max_quantity))
+                {
+                console.log("retutn 2")
+                quantity_range = max_quantity
+                price_percentage = item.discount_percentage_value
+                    return quantity_range
+                }
+            }
+            else{
+                min =item.discount_min_quantity
+            }
+        }
+    });
+    return quantity_range
+ }
+
+function get_percentage_by_quantity(quantity_range){
+    if(GLOBAL_QUANTITY.length != 0){
+         for(var i=0; i<GLOBAL_QUANTITY.variant_data.length; i++ ){
+            if (quantity_range == GLOBAL_QUANTITY.variant_data[i].discount_min_quantity){
+                return GLOBAL_QUANTITY.variant_data[i].discount_percentage_value;
+            }
+        }
+    }
+    return 0
+}
+
+
+function inRange(x, min, max) {
+    return ((x-min)*(x-max) <= 0);
+}
+
+
+var quantity_flag = true
+
+function on_change_quantity(action){
+
+    var range = 0
+    var min  = 0
+    var range_flag = false
+    quantity_flag = true
+    var quantity_range = 0
+    var price_percentage = 0
+    quantity = document.getElementById("catalog_quantity").value
+    if(!quantity){
+        quantity = 1
+        document.getElementById("catalog_quantity").value = quantity
+    }
+    if(parseInt(quantity) == 0){
+        quantity = 1
+        document.getElementById("catalog_quantity").value = quantity
+    }
+    if (action == 'INCREMENT'){
+        quantity = parseInt(quantity)+1;
+    }
+    else if(action == 'DECREMENT'){
+        if(parseInt(quantity) > 1)
+        {
+            //quantity_flag = false
+            quantity = parseInt(quantity)-1;
+        }
+    }
+    if (quantity_flag){
+        if(GLOBAL_QUANTITY.length != 0){
+            quantity_range = get_price_range(quantity)
+        }
+        //var without_discount = GLOBAL_BASE_PRICE
+        console.log(without_discount)
+        if(GLOBAL_QUANTITY.length != 0){
+            price_percentage = get_percentage_by_quantity(quantity_range)
+        }
+        $('.selected-vwbp').each(function() {
+                var select_value = this.id
+                var select_value_split = select_value.split('-')
+                if (select_value_split[0]=='VARIANT_BASE_PRICING'){
+                    GLOBAL_BASE_PRICE = get_price(select_value_split[1],select_value_split[2])
+                }
+           });
+           var without_discount = GLOBAL_BASE_PRICE
+        if(quantity_range !== 0)
+        {
+            GLOBAL_BASE_PRICE = GLOBAL_BASE_PRICE*(100 - parseFloat(price_percentage))/100
+        }
+        var item_price = GLOBAL_BASE_PRICE
+        console.log(item_price)
+            $('.selected-vwap').each(function() {
+                var select_value = this.id
+                var select_value_split = select_value.split('-')
+                if (select_value_split[0]=='VARIANT_ADDITIONAL_PRICING'){
+                    var additional_price = get_price(select_value_split[1],select_value_split[2])
+                    item_price = calculate_item_value_based_on_operator(additional_price,'PLUS',item_price)
+                    without_discount = calculate_item_value_based_on_operator(additional_price,'PLUS',without_discount)
+                }
+           });
+           var item_total_price = item_price*parseInt(quantity)
+           var without_discount_total_price = without_discount*parseInt(quantity)
+           var save = parseFloat(without_discount_total_price) - parseFloat(item_total_price);
+           $("#id_discount_section").empty();
+           if (price_percentage == 0){
+                $("#id_discount_section").empty();
+           }
+           else{
+            // var text = '<span  class="hg_subtext_color"><del>'+ without_discount_total_price +'</del>('+ price_percentage +'%) Save '+ save +'</span>';
+            var text = '<div class="pricing-ex-discount"><s> '+ GLOBAL_CURRENCY +' '+ without_discount_total_price + '</s></div>'+
+                       '<div class="discount-perc-text badge badge-pill badge_status_approved"><span>'+ price_percentage +'</span><span>% off</span></div>'
+                $("#id_discount_section").append(text);
+           }
+
+           console.log(item_price)
+            $("#id_price").text(item_total_price);
+    }
+}
+// Function to ADD TO CART from veiw product details pop up
+function add_catalog_popup(){
+    event.preventDefault();
+    let catalog_item = {};
+    catalog_item["prod_id"] = GLOBAL_PRODUCT_ID;
+    catalog_item["call_off"] = '01'
+    catalog_item["quantity"] = document.getElementById("catalog_quantity").value;
+    catalog_item['eform_id'] = ''
+    catalog_item['eform_detail'] = ''
+    catalog_item['item_total_value'] = $("#id_price").text();
+    let header_guid = '';
+    var eform_check = true;
+
+//    if(is_edit){
+//        header_guid = window.sessionStorage.getItem('sc_header_guid');
+//    }
+    catalog_item["document_number"] = document_number;
+    if(GLOBAL_EFORM_FLAG){
+        catalog_item['eform_id'] = GLOBAL_FROM_ID;
+        eform_check = validate_eform();
+        catalog_item['eform_detail'] = get_eform_data()
+        catalog_item['quantity_guid'] = GLOBAL_QUANTITY.variant_config_guid
+    }
+
+    if(eform_check){
+        OpenLoaderPopup();
+
+        // ajax Function to add catalog product
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}",
+            dataType :'json',
+            data: JSON.stringify(catalog_item),
+            success: function(response){
+                if (!is_edit) {
+                    if (response.cart_count) {
+                        //counter = document.getElementById('cart_counter').innerHTML
+                        CloseLoaderPopup();
+                        CartCounterView(response.cart_count);
+                        item_added_to_cart_success_popup();
+                    }
+                } else {
+                    $('#confirm_add_item').modal('show')
+                }
+                $('document').find('input:number').val('');
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        })
+    }
+    else{
+        $('#create_error_div').html(' Please enter all fields!');
+        $('#create_error_div').show();
+    }
+}
+
+//validate eform data
+function validate_eform(){
+    var check_flag = true
+    $('.dummy_eform_class').each(function() {
+        if(this.value === "") {
+            check_flag = false
+        }
+    });
+    return check_flag
+}
+
+
+// get eform data
+function get_eform_data(){
+    var eform_data = []
+    $('.dummy_class_price_data').each(function() {
+        var eform_data_dictionary ={}
+        var selected_price_id = this.id
+            drop_down = selected_price_id.split("-")
+            //eform_detail = get_eform_ui_detail(drop_down[1],drop_down[2])
+            eform_data_dictionary = {'pricing_type':drop_down[0],
+                                     'variant_config_guid':drop_down[1],
+                                     'eform_id':GLOBAL_FROM_ID,
+                                     'product_eform_pricing_guid':drop_down[2]}
+
+        eform_data.push(eform_data_dictionary)
+    });
+    $('.dummy_eform_class').each(function() {
+        var eform_data_dictionary ={}
+        var selected_price_id = this.value
+        drop_down = selected_price_id.split("-")
+        eform_data_dictionary = {'pricing_type':drop_down[0],
+                                 'variant_config_guid':drop_down[1],
+                                 'eform_id':GLOBAL_FROM_ID,
+                                 'data':drop_down[2],
+                                 'product_eform_pricing_guid':''}
+        eform_data.push(eform_data_dictionary)
+    });
+    return eform_data
+}
+function get_eform_ui_detail(eform_config_guid,eform_pricing_guid){
+    var eform_detail = {}
+    $.each(eform_detail, function (i, eform_config) {
+        if(eform_config.variant_config_guid==eform_config_guid){
+             $.each(eform_config.pricing, function (i, eform_pricing) {
+                if (eform_pricing.product_eform_pricing_guid == eform_pricing_guid){
+                    eform_detail = eform_pricing
+                }
+             });
+
+        }
+    });
+    return eform_detail
+}
+
+</script>
+
+{% endblock %}

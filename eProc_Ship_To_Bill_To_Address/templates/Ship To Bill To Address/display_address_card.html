@@ -1,0 +1,100 @@
+<!--  Shipping details section card section  -->
+<div class="card card-shadow-1" style="height:100%;">
+    <div class="card-body">
+        <h5 class="card-title">Shipping Address</h5>
+        {% if is_second_step %}
+
+            <div class="elements-space-between">
+                {% if addr_val_desc %}
+                <div>
+                    {% for addr in addr_val_desc %}
+                    <span id="address_number" hidden>{{ addr.address_number }}</span>
+                    <span id="street_output">{{ addr.street }},</span><br>
+                    <span id="area_output">{{ addr.area }},</span><br>
+                    <span id="landmark_output">{{ addr.landmark }},</span><br>
+                    <span id="city_output">{{ addr.city }}</span> - <span id="pcode_output">{{ addr.postal_code }}</span><br>
+                    <span id="region_output">{{ addr.region }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div>
+                    <span id="address_number" hidden></span>
+                    <span id="street_output"></span> <br>
+                    <span id="area_output"></span> <br>
+                    <span id="landmark_output"></span> <br>
+                    <span id="city_output"></span>  <span id="pcode_output"></span><br>
+                    <span id="region_output"></span>
+                </div>
+                {% endif %}
+                <div>
+                    {% if shipping_address_flag == '1'  %}
+                    <button type="button" class="hg_button_edit hg_display" data-toggle="modal" data-target="#ChngShipAddr"> change address</button>
+                    {% elif shipping_address_flag == '0' %}
+                    <button type="button" class="display-none" > change address</button>
+                    {% endif %}
+                    {% if edit_address_flag == '1'  %}
+                    <button type="button" class="hg_button_edit hg_display" data-toggle="modal" onclick="shippingAddress();">edit address</button>
+                    {% elif edit_address_flag == '0' %}
+                    <button type="button" class="display-none" >edit address</button>
+                    {% endif %}
+                </div>
+            </div>
+
+
+        <div class="alert alert-warning header-card-alert mt-2" role="alert" id="shipping_address_info" style="display: none;">
+            <div class="header-card-alert__body">
+                <span class="material-icons">error_outline </span><span>Multiple shipping address maintained</span>
+            </div>
+        </div>
+        <hr>
+        <div class="elements-space-between">
+            <div>
+                <span class="h6">Requested By: </span><span id="receiver" class="{{request.user.username}}">{{ receiver_name }}</span>
+            </div>
+            <div>
+                <button type="button" class="hg_button_edit hg_display" data-toggle="modal" onclick="ChangeGoodsReciever();"
+                        data-target="#ChangeGoodsReceiver"> change receiver</button>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if is_document_detail %}
+        <div class="elements-space-between">
+            <div>
+                <span id="ScAddresses-address_number-{{ header_level_addr.guid }}" hidden>{{ header_level_addr.address_number }}</span>
+                <span id="ScAddresses-street-{{ header_level_addr.guid }}">{{ header_level_addr.street }},</span><br>
+                <span id="ScAddresses-area-{{ header_level_addr.guid }}">{{ header_level_addr.area }},</span><br>
+                <span id="ScAddresses-landmark-{{ header_level_addr.guid }}">{{ header_level_addr.landmark }},</span><br>
+                <span id="ScAddresses-city-{{ header_level_addr.guid }}">{{ header_level_addr.city }}</span> - <span id="ScAddresses-postal_code-{{ header_level_addr.guid }}">{{ header_level_addr.postal_code }}</span><br>
+                <span id="ScAddresses-region-{{ header_level_addr.guid }}">{{ header_level_addr.region }}</span>
+            </div>
+            <div>
+                {% if edit_address_flag == '1'  %}
+                <button type="button" class="hg_button_edit editable_mode" data-toggle="modal" data-target="#ChngShipAddr"> change address</button>
+                {% elif edit_address_flag == '0' %}
+                <button type="button" class="display-none" > change address</button>
+                {% endif %}
+                {% if edit_address_flag == '1'  %}
+                <button type="button" class="hg_button_edit editable_mode" data-toggle="modal"
+                        onclick="shippingAddress();">edit address</button>
+                {% elif edit_address_flag == '0' %}
+                <button type="button" class="display-none" >edit address</button>
+                {% endif %}
+            </div>
+        </div>
+        <hr>
+        <div class="elements-space-between">
+            <div>
+                {% if not button_status %}
+                <span class="h6">Receiver: </span> <span id="ScHeader-requester-{{ sc_header_data.guid }}">{{ requester_full_name.first_name }} {{ requester_full_name.last_name }}</span>
+                {% endif %}
+            </div>
+            {% if edit_address_flag == '1' %}
+            <div>
+                <button type="button" class="hg_button_edit editable_mode" data-toggle="modal" onclick="ChangeGoodsReciever();" data-target="#ChangeGoodsReceiver"> change receiver</button>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>

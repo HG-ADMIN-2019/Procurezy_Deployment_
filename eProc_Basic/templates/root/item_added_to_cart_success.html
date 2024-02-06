@@ -1,0 +1,24 @@
+<!-- Item added to cart success popup  -->
+<div id="item_added2cart_success" class="modal fade item_added2cart_success" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content modal-confirm">
+            <div class="modal-body">
+                <div class="icon-box">
+                    <i class="fas fa-check" style="font-size: 58px;"></i>
+                </div>
+                <br>
+                <p class="h4 hg_subtext_color text-center">Item added to cart successfully</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-block item-success-btn" data-dismiss="modal">ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function item_added_to_cart_success_popup(){
+        $("#item_added2cart_success").modal('show');
+        setTimeout(function() {$('#item_added2cart_success').modal('hide');}, 4000);
+    }
+</script>

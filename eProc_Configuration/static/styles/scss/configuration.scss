@@ -1,0 +1,136 @@
+.upload-data-tab{
+    margin-block: 1rem;
+
+    .config-card{
+        margin-bottom: 2rem;
+        cursor: pointer;
+
+        i{
+            font-size: 6.5rem;
+        }
+        
+        .icon-wrapper{
+            height: 10rem;
+            width: 10rem;
+            border-radius: 50%;
+            margin: 0 auto;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-data-label{
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .blue{
+            background-color: $icon-home;
+        }
+
+        .orange{
+            background-color: $icon-personalize;
+        }
+
+        .green{
+            background-color: $icon-approvals;
+        }
+
+        .yellow{
+            background-color: $yellow;
+        }
+
+        .red{
+            background-color: $red;
+        }
+
+        .purple{
+            background-color: $icon-shop;
+        }
+
+        .light-blue{
+            background-color: $light-blue;
+        }
+
+        .pink{
+            background-color: $pink;
+        }
+
+        .light-green{
+            background-color: $light-green;
+        }
+        
+    }
+
+    .sub-menu-icon-wrapper {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 50%;
+        margin: 0 auto;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .sub-menu-main-icon-wrapper {
+        height: 10rem;
+        width: 10rem;
+        border-radius: 50%;
+        margin: 0 auto;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .small{
+        font-size: 2.5rem !important;   
+    }
+    
+    .big{
+        font-size: 8rem;
+    }
+    
+    .sub-menu-main-border {
+        border-right: solid 1.5px #d3d3d3;
+    }
+}
+
+.configuration-table {
+
+    &_wrapper {
+        padding: 1.5rem;
+    }
+
+    &_section {
+        margin-block: 2rem;
+
+        table.custom-table {
+            background-color: white;
+        }
+
+        .table-container {
+            margin: auto;
+
+            // 4 -5 coulmns
+            &.tcw-80 {
+                width: 80%;
+            }
+
+            // 2 -3 columns
+            &.tcw-60 {
+                width: 60%;
+            }
+        }
+        
+    }
+}
+
+#id_popup_table {
+    width: 100% !important;
+}
+
+.calendar-holiday-config.btn-disable{
+    opacity: 0.5;
+    pointer-events: none;
+}

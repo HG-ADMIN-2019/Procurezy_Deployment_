@@ -1,0 +1,195 @@
+{% extends 'user_sign_in_screen.html' %}
+
+{% block user_login_frame %}
+
+<!-- Admin login block -->
+<div class="admin-login-container" id="admin_login_container_id">
+
+  <h2 class="text-center mb-4">Sign in as Admin</h2>
+  <div class="alert alert-danger" id="admin_login_error_msg" style="display:none"></div>
+  <div class="form-group">
+    <label for="admin_email_id" class="font-weight-500">Email</label>
+    <input id="admin_email_id" type="email" name='admin-email-id' title="Email-Id" class="form-control form-control-lg"
+      placeholder="Email address" required />
+  </div>
+  <div class="form-group">
+    <label for="admin_password" class="font-weight-500">Password</label>
+    <input id="admin_password" type="password" name="password" title="Password" class="form-control form-control-lg"
+      placeholder="Password" required />
+  </div>
+  <!-- <button type="submit" name="submit" value="LOGIN" title="Click here to Login"
+            class="btn btn-primary btn-lg btn-block" onclick="sessionStorage.clear()" hidden> Sign in <i class="fas fa-arrow-right"></i>
+    </button> -->
+  <button title="Click here to Login" class="btn btn-primary btn-lg btn-block" onclick="submitForm();"> Admin Sign in 
+    <i class="fas fa-arrow-right"></i>
+  </button>
+</div>
+
+<!-- Otp verification block -->
+<div class="otp-container" id="otp_container_id" style="display: none;">
+  <div class="alert alert-danger" id="otp_error_msg" style="display:none"></div>
+  <h2 class="text-center mb-4">Enter Verification Code</h2>
+  <div class="sub-heading">
+    <p class="text-muted text-center">A 4-digit verification code has been sent to your registered email</span></p>
+  </div>
+  <div class="mb-4">
+    <div class="otp-input-section">
+      <input class="form-control form-control-lg" oninput='digitValidate(this)' maxlength="1" id="digit1" name="digit1"
+        type="text" maxlength=1>
+      <input class="form-control form-control-lg" oninput='digitValidate(this)' maxlength="1" id="digit2" name="digit2"
+        type="text" maxlength=1>
+      <input class="form-control form-control-lg" oninput='digitValidate(this)' maxlength="1" id="digit3" name="digit3"
+        type="text" maxlength=1>
+      <input class="form-control form-control-lg" oninput='digitValidate(this)' maxlength="1" id="digit4" name="digit4"
+        type="text" maxlength=1>
+    </div>
+    <button class='btn btn-primary btn-lg btn-block mt-4' onclick="verify_otp();">Verify</button>
+  </div>
+
+  <div id="section_otp_countdown" class="text-muted">
+
+  </div>
+
+  <div class="text-muted" id="section_otp_request_again" style="display: none;">
+    <p>Didn't receive code? <span class="btn-resend font-weight-bold">
+        <a onclick="regenerate_otp()" class="text-primary">Request again</a>
+      </span></p>
+  </div>
+</div>
+
+<script>
+  let digitValidate = function (ele) {
+    console.log(ele.value);
+    ele.value = ele.value.replace(/[^0-9]/g, '');
+  }
+
+  const otpInput = document.querySelectorAll('.otp-input-section input');
+
+  otpInput.forEach((input) => {
+    input.addEventListener('keyup', (e) => {
+      const element = e.target;
+
+      if (element.value.match(/\d/)) {
+        element.nextElementSibling.focus();
+      }
+    });
+  });
+
+  var timeLeft = 100;
+  var email = ''
+  $(document).ready(function () {
+    var elem = document.getElementById('section_otp_countdown');
+    var timerId = setInterval(countdown, 1000);
+
+    function countdown() {
+      if (timeLeft == -1) {
+        clearTimeout(timerId);
+        $('#section_otp_countdown').hide();
+        clear_otp()
+      } else {
+        elem.innerHTML = 'Your OTP wil expire in ' + timeLeft + ' seconds.';
+        timeLeft--;
+      }
+    }
+  });
+
+  function clear_otp() {
+    $.ajax({
+      type: "POST",
+      url: "{% url 'eProc_Generate_OTP:reset_otp' %}",
+      data: { 'email': email },
+      success: function (response) {
+        $('#section_otp_request_again').show();
+      },
+      error: function (response) {
+
+      }
+
+    });
+  }
+
+
+  function submitForm() {
+    OpenVerifyAdminLoaderPopup();
+    $('#admin_login_error_msg').hide()
+    $('#admin_login_error_msg').empty()
+    var user = {}
+    email = $('#admin_email_id').val();
+    user.email = email
+    user.password = $('#admin_password').val();
+    $.ajax({
+      type: 'POST',
+      data: user,
+      url: "{% url 'eProc_New_Client_Setup:admin_authentication' %}",
+      success: function (response) {
+        if (response.auth_data.authentication_flag) {
+          $('#otp_container_id').show();
+          $('#admin_login_container_id').hide();
+          CloseVerifyAdminLoaderPopup()
+        }
+        else {
+          $('#admin_login_error_msg').text(response.auth_data.error_msg)
+          $('#admin_login_error_msg').show()
+          CloseVerifyAdminLoaderPopup()
+        }
+      }
+    });
+  }
+
+
+  function verify_otp() {
+    $('#otp_error_msg').hide()
+    $('#otp_error_msg').empty()
+    var digit1 = $('#digit1').val();
+    var digit2 = $('#digit2').val();
+    var digit3 = $('#digit3').val();
+    var digit4 = $('#digit4').val();
+    otp = digit1 + digit2 + digit3 + digit4
+    data = { 'otp': otp, 'email': email }
+    $.ajax({
+      type: 'POST',
+      data: data,
+      url: "{% url 'eProc_Generate_OTP:otp_verification_views' %}",
+      success: function (response) {
+        if (response.verification_flag) {
+          window.location = "{% url 'eProc_New_Client_Setup:new_client_setup' %}";
+        }
+        else {
+          $('#otp_error_msg').text("Incorect OTP")
+          $('#otp_error_msg').show()
+
+        }
+      }
+    });
+  }
+
+
+  function regenerate_otp() {
+    OpenVerifyAdminLoaderPopup();
+    $.ajax({
+      type: 'POST',
+      data: { 'email': email },
+      url: "{% url 'eProc_Generate_OTP:generate_otp' %}",
+      success: function (response) {
+        $('#section_otp_request_again').hide();
+        $('#section_otp_countdown').show();
+        CloseVerifyAdminLoaderPopup();
+        var restartCounterElem = document.getElementById('section_otp_countdown');
+        var RestartTimerId = setInterval(restartCountDown, 1000);
+        timeLeft = 60;
+        function restartCountDown() {
+          if (timeLeft == -1) {
+              clearTimeout(RestartTimerId);
+              $('#section_otp_countdown').hide();
+              clear_otp();
+              timeLeft = 60;
+          } else {
+            restartCounterElem.innerHTML = 'Your OTP wil expire in ' + timeLeft + ' seconds.';
+            timeLeft--;
+          }
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

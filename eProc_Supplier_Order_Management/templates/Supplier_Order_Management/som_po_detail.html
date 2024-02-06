@@ -1,0 +1,742 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Purchase Order {% endblock %}
+
+{% block maincontent %}
+
+<style>
+
+    .po-footer-info-container {
+        display: flex;
+    }
+    .po-footer-info-pill {
+        padding: 5px 15px;
+        margin: 0 10px ;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    /* .related-doc-value-sec {
+        display: flex;
+        flex-direction: column;
+    } */
+
+    .card-body.card-related-doc {
+        padding: 1rem 1.25rem 1.25rem;
+    }
+
+</style>
+
+<div class="container-fluid">
+    <div style="padding: 1.5rem;">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Purchase Order #{{som_po_header_detail.doc_number}}</h3>
+            <div>
+                <a target="_blank">
+                    <button class="btn btn-primary"><i class="fas fa-print"></i> Print PDF</button>
+                </a>
+            </div>
+        </div>
+        <div class="card card-shadow-1 mt-4">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <span class="po-header-label">Document Number</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.doc_number}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Supplier</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.supplier_id}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Order On</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.ordered_at}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Status</span><br>
+                        <span class="badge badge-pill badge_status_approved po-header-desc po-header-desc__status ">{{som_po_header_detail.status}}</span>
+                    </div>
+
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <span class="po-header-label">Delivery Address</span><br>
+                        <span class="po-header-desc">
+                            {{som_po_delivery_addr.address_details}}
+                        </span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Invoice Address</span><br>
+                        <span class="po-header-desc">
+                            {{som_po_invoice_addr.address_details}}
+                        </span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <span class="po-header-label">Company Name</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.requester_company_name}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Requested By</span><br>
+                        <span class="po-header-desc"> {{som_po_header_detail.requester}}</span>
+                    </div>
+
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <span class="po-header-label">Payment Terms</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.payment_term}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Incoterm</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.incoterm}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Pdf Invoice Address</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.pdf_invoice_address}}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="po-header-label">Invoicing Detail</span><br>
+                        <span class="po-header-desc">{{som_po_header_detail.invoicing_detail}}</span>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card card-shadow-1">
+                    <div class="card-body elements-space-between">
+                        <h5>Items Overview</h5>
+                    </div>
+                    <div>
+                        <div class="table-responsive-lg">
+                            <table class="table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Item</th>
+                                    <th style="width: 20%;">Description</th>
+                                    <th>Delivery Date</th>
+                                    <th>Price Unit</th>
+                                    <th>Unit</th>
+                                    <th>Price per unit</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+
+                                </thead>
+                                <tbody>
+                                {% for po_item_detail in po_item_details %}
+                                <tr>
+                                    <td>{{po_item_detail.som_po_item_num}}</td>
+                                    <td>
+                                        <a href="#" onclick="view_detail('{{ po_item_detail.int_product_id}}','{{ po_item_detail.po_item_guid}}')">
+                                            <img class="sc-item-table__item-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{po_item_detail.image_url}}">
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ po_item_detail.description }}
+                                    </td>
+                                    <td>{{po_item_detail.item_del_date|date:'Y-m-d'}}</td>
+                                    <td>{{po_item_detail.price_unit}}</td>
+                                    <td>{{po_item_detail.unit}}</td>
+                                    <td>{{po_item_detail.price}} {{po_item_detail.currency}} </td>
+                                    <td>{{po_item_detail.quantity}}</td>
+                                    <td>{{po_item_detail.value}} {{som_po_header_detail.currency}}</td>
+
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-shadow-1 po-value-card">
+                    <div class="card-body">
+                        <div class="po-value-section">
+                            <span class="po-value-label">Total Value (Gross)</span>
+                            <span class="po-value-desc" >{{som_po_header_detail.total_value}} {{som_po_header_detail.currency}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card sc-completion-item-detail card-shadow-1">
+
+                    {% for itm in po_item_details %}
+                    <div class="hg_class_prod_desc card-body">
+                        <div class="prev-next-btn-group">
+                            <button id="{{forloop.counter0}}" class="btn btn-round" onclick="item_detail_previous(this)">
+                                <i  class="fas fa-arrow-left" title="Previous Item"></i>
+                            </button>
+                            <span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{itm.description}}</span>
+                            <button id="{{forloop.counter}}" class="btn btn-round" onclick="item_detail_next(this)">
+                                <i  class="fas fa-arrow-right" title="Next Item"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div>
+                        <ul class="sub-tabs h-scrollbar">
+                            <li data-tab-target="#item_basic_information" class="sub-tab active">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="material-icons">info</i><span> Basic Details</span>
+                                </div>
+                            </li>
+                            <li data-tab-target="#item_accountng_details" class="sub-tab">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="material-icons-outlined"> account_balance_wallet </i><span> Accounting Details</span>
+                                </div>
+                            </li>
+                            <li data-tab-target="#item_notes_and_attachments" class="sub-tab">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="material-icons-outlined">description</i><span> Notes & Attachments</span>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            {% for itm in po_item_details %}
+                            <div id="item_basic_information" data-tab-content class="active">
+                                <div class="m-4">
+
+                                    <div class="hg_class_item_data">
+
+                                        <div class="row">
+
+                                            <div class="col">
+                                                <h4>Identification</h4>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Description</label>
+                                                    <div class="col-8">
+                                                        <input class="form-control call_off-{{itm.call_off}}-description" type="text" name="{{itm.description}}"
+                                                               value="{{itm.description}}" id="ScItem-description-{{itm.guid}}" onchange="update_description(this.id);" disabled>
+                                                    </div>
+                                                </div>
+                                                <h4>Currency, Values and Delivery Date</h4>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Price/Currency/Price Unit</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{itm.price}}" value="{{itm.price}}" id="ScItem-price-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{itm.currency}}" value="{{itm.currency}}" id="ScItem-currency-{{itm.guid}}" disabled>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{itm.price_unit}}" value="{{itm.price_unit}}" id="ScItem-price_unit-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Quantity/Unit</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control call_off-{{itm.call_off}}-quantity check_number" name="{{itm.quantity}}" value="1" id="ScItem-quantity-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{itm.unit}}" value="{{itm.unit}}" id="EACH" disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Total Item Value </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control" name="{{itm.value}}" value="{{itm.value}}" id="ScItem-value-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Goods/Services Recipient </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control check_product_name" name="{{itm.goods_recep}}" value="{{som_po_header_detail.goods_recep}}" id="ScItem-goods_recep-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Delivery Date </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control read_only_field" name="{{itm.item_del_date}}" value="{{itm.item_del_date|date:'Y-m-d'}}" id="ScItem-item_del_date-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% if eform_details %}
+                                                <h4>Additional Information</h4>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Description </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control read_only_field" name="{{eform_details.0.eform_description}}" value="{{eform_details.0.eform_description}}" id="ScItem-eform_description-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% for eform_detail in eform_details%}
+                                                {% if eform_detail.som_po_item_guid_id == itm.som_po_item_guid %}
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">{{eform_detail.eform_field_name}} </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control read_only_field" name="{{eform_detail.eform_description}}" value="{{eform_detail.eform_field_data}}" id="ScItem-eform_field_data-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div id="item_accountng_details" data-tab-content >
+                                <div class="m-4">
+                                    {% for po_accounting_detail in som_po_accounting_details %}
+                                    <div class="hg_class_sc_acc_details">
+
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4>Accounting Details</h4>
+                                                <div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Number </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{po_accounting_detail.acc_item_num}}"
+                                                                   value="{{po_accounting_detail.acc_item_num}}" id="ScAccounting-acc_item_num-{{po_accounting_detail.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Percentage </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{po_accounting_detail.dist_perc}}"
+                                                                   value="{{po_accounting_detail.dist_perc}}" id="ScAccounting-dist_perc-{{ po_accounting_detail.guid }}" disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Account Assignment Category </label>
+                                                        <div class="col-8">
+                                                            <select class="form-control check_multiple_account_asign_type" id="ScAccounting-acc_cat-{{ po_accounting_detail.guid }}"
+                                                                    onchange="display_acc_val(this)" class="hg_modal_select_field" disabled>
+
+                                                                <option value="CC - Cost Center">{{ po_accounting_detail.acc_cat }}</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="id_cost_center{{ forloop.counter }}">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 col-form-label">Cost Center </label>
+                                                            <div class="col-8" id="input_costcenter{{forloop.counter}}">
+
+                                                                <input type="text" id="ScAccounting-cost_center-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{po_accounting_detail.cost_center}}" value="{{po_accounting_detail.cost_center}}" onclick="open_account_assign_values_modal(this);" disabled>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="id_asset{{ forloop.counter }}" style="display:none;">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 col-form-label">Asset </label>
+                                                            <div class="col-8" id="input_asset{{forloop.counter}}">
+                                                                <input type="text" id="ScAccounting-asset_number-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{po_accounting_detail.asset_number}}" value="{{po_accounting_detail.asset_number}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="id_int_ord{{ forloop.counter }}" style="display:none;">
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Internal Order </label>
+                                                        <div class="col-8" id="input_intorder{{forloop.counter}}">
+
+                                                            <input type="text" id="ScAccounting-internal_order-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ po_accounting_detail.internal_order}}" value="{{ po_accounting_detail.internal_order}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="id_wbs{{ forloop.counter }}" style="display:none;">
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">WBS </label>
+                                                        <div class="col-8" id="input_wbs{{forloop.counter}}">
+                                                            <input type="text" id="ScAccounting-wbs_ele-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{po_accounting_detail.wbs_ele}}" value="{{po_accounting_detail.wbs_ele}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">General Ledger Account </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control" value="{{po_accounting_detail.gl_acc_num}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled>
+
+                                                    </div>
+                                                </div>
+
+                                                <!--                        <div class="form-group row" id="id_generic_acc_ass{{ forloop.counter }}">-->
+                                                <!--                            <label class="col-4 col-form-label">General Ledger Description: </label>-->
+                                                <!--                            <div class="col-8">-->
+                                                <!--                                {% for gl_acc_append in gl_acc_value_append %}-->
+                                                <!--                                {% if gl_acc_append.account_assign_value == po_accounting_detail.gl_acc_num %}-->
+                                                <!--                                <input type="text" class="form-control" value="{{gl_acc_append.append_val}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled onclick="open_change_gl_account_modal(this.id);">-->
+                                                <!--                                {% endif %}-->
+                                                <!--                                {% endfor %}-->
+                                                <!--                            </div>-->
+                                                <!--                        </div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div id="item_notes_and_attachments" data-tab-content >
+                                <div class="m-4">
+
+                                    <div class="row">
+                                        <div class="col">
+                                            <h4>Notes</h4>
+                                            <div class="card">
+                                                <div>
+                                                    <div class="action-item-notes__buttons-section">
+                                                        <button class="note_type add-note-internal" onclick="sup_int_note_tab(event, 'id_int_tab_content')">Internal Note</button>
+                                                        <button class="note_type add-note-external" onclick="sup_int_note_tab(event, 'id_supp_tab_content')">Supplier Note</button>
+                                                    </div>
+
+                                                    <div id="id_supp_tab_content" class="hg_sup_int_note">
+                                                        {% for supp_note in supplier_notes %}
+                                                        <div id="intbtn{{ forloop.counter }}" class="hg_tabContent hg_supp_note_content action-item-notes__textarea">
+
+                                                            <textarea class="add_notes_textarea" id="Notes-note_text-{{ supp_note.guid }}-S" rows="4" disabled>{{supp_note.note_text}}</textarea>
+
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    <div id="id_int_tab_content" class="hg_sup_int_note" style="display:none">
+                                                        {% for int_note in internal_notes %}
+                                                        <div id="supbtn{{ forloop.counter }}" class="hg_tabContent hg_int_note_content action-item-notes__textarea" style="display:none;">
+
+                                                            <textarea class="add_notes_textarea" id="Notes-note_text-{{int_note.guid}}-I" rows="4" disabled>{{int_note.note_text}}</textarea>
+
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h4>Attachments</h4>
+                                            <div class="card">
+                                                <div class="card-body">
+
+                                                    {% if po_attachments %}
+                                                    {% for items in po_item_details %}
+
+                                                    <div id="attachments-{{ forloop.counter }}" class="hg_tabContent hg_attachment_content action-item-notes__textarea">
+
+                                                        {% for attachments in  po_attachments %}
+
+                                                        {% if attachments.item_guid == items.po_item_guid %}
+                                                        <table class="table">
+                                                            <thead class="thead-light">
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Type</th>
+                                                                <th>File</th>
+                                                                <th class="hg_is_hidden" hidden>Action</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="hg_attachment_table_tbody item_level_attachment-{{forloop.counter}}" id="attachment_tbody_id-{{forloop.counter}}">
+
+                                                            <tr id="available_attachments-{{attachments.attachment_guid}}">
+                                                                <td><a href="{% url 'eProc_Notes_Attachments:attach_download' %}?path={{attachments.file_path}}">{{attachments.attachment_name}}</a>
+                                                                </td>
+                                                                <td>{% if attachments.type == 'I' %} Internal Use{% else %} External Use{% endif %}</td>
+                                                                <td>{{attachments.file_name}}</td>
+                                                                <td class="hg_is_hidden" hidden>
+                                                                    <i id="{{forloop.parentloop.counter}}-{{attachments.attachment_guid}}-{{attachments.item_guid}}"
+                                                                       onclick="delete_attachments(this)" class="fas fa-trash-alt attachment-icon"></i>
+                                                                </td>
+                                                            </tr>
+
+                                                            </tbody>
+                                                        </table>
+
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <div class="hg_class_attachement">
+                                                        <p class="p-3 bg-light text-dark">No attachments available</p>
+                                                    </div>
+                                                    {% endif%}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% include 'ProductDetailPopup/basic_product_detail_popup.html' %}
+<script>
+    var acc_visible_div = 0;
+    var addr_visible_div = 0;
+    var sc_calloff = '';
+    var edit_flag = false;
+    var eform_display = false;
+    var item_detail_visible_div = 0;
+    var rendered_call_off = [];
+    var rendered_acc = [];
+    var rendered_acc_guid = [];
+    var rendered_item_guid = [];
+    var rendered_sc_addr = [];
+    var rendered_supp_note = [];
+    var rendered_int_note = [];
+    var rendered_price = [];
+    var rendered_price_unit = [];
+    var rendered_quantity = [];
+    var rendered_catalog_qty = [];
+    var rendered_eform = [];
+    var GLOBAL_MANAGER_DETAIL = [];
+    var internal_supplier_error_itemNumber = []
+    var highest_item_acc_asgn_cat = '';
+    var highest_item_change_acc_value = '';
+    var GLOBAL_TAB_ID = 'item_data';
+    var GLOBAL_ID_IGNORE_LIST = ['select_item']
+    // Store  header Guid and company code in global variable
+    var GLOBAL_SC_CO_CODE = '{{po_header_details.company_code_id}}';
+    var GLOBAL_HEADER_GUID = "{{po_header_details.guid}}";
+    var GLOBAL_DOCUMENT_NUMBER = "{{po_header_details.doc_number}}"
+    // store rendered highest item guid in global variable
+    //var GLOBAL_HIGHEST_ITEM_GUID = '{{highest_item_guid|safe}}';
+    var GLOBAL_HIGHEST_VALUE_ITEM_ROW
+
+$(document).ready(function () {
+    $('#nav_menu_items').remove();
+    $("body").css("padding-top", "3.7rem");
+    NavigateTabs(); // Custom function to switch tabs
+    {% for item in po_item_details %}
+        rendered_call_off.push('{{item.call_off|safe}}');
+        rendered_item_guid.push('{{item.guid|safe}}');
+        rendered_price.push('{{item.price|safe}}');
+        rendered_price_unit.push('{{item.price_unit|safe}}');
+        rendered_quantity.push('{{item.quantity|safe}}');
+        rendered_catalog_qty.push('{{item.catalog_qty|safe}}');
+        var eform_id = '{{item.eform_id|safe}}';
+        var call_off = '{{item.call_off|safe}}'
+        if(eform_id == ''){
+            rendered_eform.push('None');
+        }
+        else if(call_off == '02'){
+            rendered_eform.push('{{item.eform_id|safe}}');
+        }
+        else{
+            rendered_eform.push('None');
+        }
+        {% endfor %}
+        {% for po_addr in po_item_level_address %}
+        rendered_sc_addr.push('{{po_addr.guid|safe}}');
+        {% endfor %}
+        {% for supp_note in supplier_notes %}
+        rendered_supp_note.push('{{supp_note.guid|safe}}');
+        {% endfor %}
+        {% for int_note in internal_notes %}
+        rendered_int_note.push('{{int_note.guid|safe}}');
+        {% endfor %}
+        {% for po_accounting_detail in po_accounting_details %}
+        rendered_acc.push('{{po_accounting_detail.acc_cat|safe}}');
+        rendered_acc_guid.push('{{po_accounting_detail.guid|safe}}');
+        {% endfor %}
+        {% for po_approver_detail in po_approver_details %}
+        GLOBAL_MANAGER_DETAIL.push('{{po_approver_detail.app_id|safe}}');
+        {% endfor %}
+        show_item_detail_div();
+});
+function sup_int_note_tab(evt, cityName) {
+    var i, tabcontent, note_tab;
+    sup_int_note = document.getElementsByClassName("hg_sup_int_note");
+    for (i = 0; i < sup_int_note.length; i++) {
+        sup_int_note[i].style.display = "none";
+    }
+    note_tab = document.getElementsByClassName("note_type");
+    for (i = 0; i < note_tab.length; i++) {
+        note_tab[i].style.backgroundColor = '#FFFFFF'
+        note_tab[i].style.color = '#000000'
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.target.style.backgroundColor = "#007bff";
+    evt.target.style.color = '#FFFFFF'
+}
+
+function show_item_detail_div() {
+
+    $(".hg_class_item_data").hide();
+    $(".hg_class_prod_desc").hide();
+    $(".hg_class_sc_acc_details").hide();
+    $(".hg_supp_note_content").hide();
+    $(".hg_int_note_content").hide();
+    $(".dummy_eform_class").hide();
+    $(".hg_attachment_content").hide();
+    $(".hg_class_del_addrs").hide();
+    $(".hg_class_related_documents").hide();
+    $(".hg_class_attachement").hide();
+    $(".hg_supplier_class").hide();
+    $(".hg_class_item_data:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_prod_desc:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_sc_acc_details:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_supp_note_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_int_note_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_attachment_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_del_addrs:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_related_documents:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_attachement:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_supplier_class:eq(" + item_detail_visible_div + ")").show();
+    item_num = item_detail_visible_div + 1;
+    if (rendered_eform[item_detail_visible_div] !== "None") {
+        $('#eform_tab').show();
+        $('.hg_class_eform').hide()
+        $("#display_eform-" + rendered_item_guid[item_detail_visible_div]+"-"+item_detail_visible_div).show()
+        if (GLOBAL_TAB_ID == "eForm"){
+            document.getElementById("eForm").style.display = "block";
+        }
+    }
+    else{
+
+        //document.getElementById(GLOBAL_TAB_ID).style.display = "none";
+        $('#eform_tab').hide();
+        $('.hg_class_eform').hide()
+        if (GLOBAL_TAB_ID == "eForm"){
+            GLOBAL_TAB_ID ="item_data"
+            document.getElementById("item_tab_id").style.background = '#007BFF';
+            document.getElementById("item_tab_id").style.color = '#FFFFFF';
+            document.getElementById("eform_tab").style.background = '#FFFFFF';
+            document.getElementById("eform_tab").style.color = '#007BFF';
+            document.getElementById("item_data").style.display = "block";
+
+
+        }
+
+    }
+    if (edit_flag) {
+        // Item data
+        $('.pr_lead_time').prop('disabled', false)
+        $("#ScItem-purch_grp-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-silent_po-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-silent_po-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-catalog_qty-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-quantity-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-goods_recep-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-goods_marking-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        // Accounting data
+        $("#ScAccounting-acc_cat-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-cost_center-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-asset_number-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-internal_order-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-wbs_ele-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-account_assign_value-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        //$("#ScAccounting-gl_acc_num-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        // delivery address
+        $("#ScAddresses-name1-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-name2-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-fax_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-street-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-area-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-landmark-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-city-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-region-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-country_code-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-language_id-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-mobile_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-telephone_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-email-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-postalcode-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+
+        //Internal and external note
+        $("#Notes-note_text-" + rendered_int_note[item_detail_visible_div] + "-I").prop("disabled", false);
+        $("#Notes-note_text-" + rendered_supp_note[item_detail_visible_div] + "-S").prop("disabled", false);
+        //supplier data
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div] + "-drop").prop("disabled", false);
+        $("#ScItem-pref_supplier-" + rendered_item_guid[item_detail_visible_div] + "-drop").prop("disabled", false);
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-pref_supplier-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div] + "-drop-ft").prop("disabled", false);
+
+        if (rendered_call_off[item_detail_visible_div] === "01" || rendered_call_off[item_detail_visible_div] === "02") {
+        //if (sc_calloff === "Catalog" || sc_calloff === "Freetext") {
+            $("#ScItem-payment_term-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        }
+        if (rendered_call_off[item_detail_visible_div] == '03') {
+            $("#ScItem-description-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+            $("#ScItem-price-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+            $("#ScItem-price_unit-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        }
+
+    }
+}
+
+function item_detail_next(button) {
+    current_item_num = parseInt(button.id);
+    var item_count = rendered_call_off.length;
+    if (current_item_num >= item_count) {
+        current_item_num = 0;
+    }
+    sc_calloff = rendered_call_off[current_item_num];
+    sc_acc_cat = rendered_acc[current_item_num];
+
+    var item_count = $(".hg_class_item_data").length - 1
+    if (item_detail_visible_div == $(".hg_class_item_data").length - 1) {
+        item_detail_visible_div = 0;
+    }
+    else {
+        item_detail_visible_div++;
+    }
+    show_item_detail_div();
+}
+
+
+function item_detail_previous(button) {
+    current_item_num = parseInt(button.id) - 1;
+    var item_count = rendered_call_off.length;
+    if (current_item_num == -1) {
+        current_item_num = item_count - 1;
+    }
+    sc_calloff = rendered_call_off[current_item_num]
+    if (item_detail_visible_div == 0) {
+        item_detail_visible_div = $(".hg_class_item_data").length - 1;
+    }
+    else {
+        item_detail_visible_div--;
+    }
+    show_item_detail_div();
+}
+function show_image_div(){
+    $(".catalog_img").hide();
+    $(".catalog_img:eq(" + image_visible_div + ")").show();
+
+}
+
+</script>
+
+{% endblock %}

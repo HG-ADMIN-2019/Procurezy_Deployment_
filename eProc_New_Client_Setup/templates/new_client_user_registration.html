@@ -1,0 +1,127 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block maincontent %}
+
+<style>
+    .client-setup-card {
+        margin: 0 auto;
+        width: 85%;
+        min-width: 300px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper client-setup-card">
+        <form method="POST" id="regForm">
+            {% csrf_token %}
+            <div class="elements-space-between">
+                <h3>Create User</h3>
+                <div>
+                    <button class="btn btn-primary" type="submit" title="Click here to Register" id="user_registration_submit"><i class="fas fa-check"></i> register</button>
+                </div>
+            </div>
+            
+            <hr>
+
+            <div class="card card-shadow-1 mt-3">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">Basic Data</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>User Name:</label><span class="hg_required"></span><br>
+                            {{ reg_form.username }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Employee Id:</label><span class="hg_required"></span><br>
+                            {{ reg_form.employee_id }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>User Type:</label><span class="hg_required"></span><br>
+                            {{ reg_form.user_type }}
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>First Name:</label><span class="hg_required"></span><br>
+
+                            {{ reg_form.first_name }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Last Name:</label><br>
+                            {{ reg_form.last_name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Currency:</label><span class="hg_required"></span><br>
+                            {{ reg_form.currency_id }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Language:</label><span class="hg_required"></span><br>
+                            {{ reg_form.language_id }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Time Zone:</label><span class="hg_required"></span><br>
+                            {{ reg_form.time_zone }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--   contact information   -->
+            <div class="card card-shadow-1 mt-3">
+
+                <div class="card-body">
+                    <h5 class="card-title">Contact Information</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>E-mail:</label><span class="hg_required"></span><br>
+                            {{ reg_form.email }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Phone Number:</label><span class="hg_required"></span><br>
+                            {{ reg_form.phone_num }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--   Addtional information   -->
+            <div class="card card-shadow-1 mt-3">
+
+                <div class="card-body">
+                    <h5 class="card-title">Extended Data</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>Date Format:</label><span class="hg_required"></span><br>
+                            {{ reg_form.date_format }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Decimal Notation:</label><span class="hg_required"></span><br>
+                            {{ reg_form.decimal_notation }}
+                        </div>
+                        <div class="form-group col-md hg-mt-2rem" >
+                            <label>SSO User:</label>&nbsp;&nbsp;<input type="checkbox" name="SSO User" value="SSO User">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function(){
+        $('#nav_menu_items').remove();
+    });
+</script>
+
+{% endblock %}

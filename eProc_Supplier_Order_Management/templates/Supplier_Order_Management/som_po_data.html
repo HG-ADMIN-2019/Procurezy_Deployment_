@@ -1,0 +1,175 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Purchase Orders (SOM) {% endblock %}
+{% block maincontent %}
+<div class="container-fluid">
+  <div class="mep-form_wrapper">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="d-flex justify-content-between">
+        <h3>Purchase Orders</h3>
+        <div>
+          <input type="file" id="folder" name="folder" webkitdirectory>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="card card-shadow-1">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md">
+              <label for="">PO Number</label>
+              <input type="text" class="form-control check_for_search" id="po_number" name="po_number" >
+            </div>
+            <div class="col-md">
+              <label for="">Company Name</label>
+              <input type="text" class="form-control check_for_search" id="company_name" name="company_name">
+            </div>
+            <div class="col-md">
+              <label for="">Received Date</label>
+              <input type="date" class="form-control check_for_search" id="received_date" name='received_date'>
+            </div>
+
+            <div class="col-auto my-1">
+              <button class="button-search-users btn btn-primary" type="submit" name="som_po_search"
+                      title="Please click to get the search details!" onclick="reload()"><i class="fas fa-search"></i> search
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div class="elements-space-between" data-toggle="collapse" data-target="#supplier_adv_search">
+            <span class="h5">Advanced Search</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div id="supplier_adv_search" class="advanced-search-collapse collapse">
+            <div class="row">
+              <div class="col-md">
+                <label for="">Buyer Name</label>
+                <input type="text" class="form-control check_for_search" id="buyer_name" name="buyer_name">
+              </div>
+              <div class="col-md">
+                <label for="">Buyer Email ID</label>
+                <input type="text" class="form-control check_for_search" id="buyer_email_id" name="buyer_email_id">
+              </div>
+              <div class="col-md">
+                <label for="">Buyer Phone Number</label>
+                <input type="text" class="form-control check_for_search" id="buyer_phone_num" name="buyer_phone_num">
+              </div>
+
+            </div>
+          </div>
+          <br>
+          <div class="elements-space-between">
+            <input type="reset" value="Clear filters" class="ip-form-clear-filters">
+            <div>
+              <span class="badge help-text-badge help-text-star-search"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% if som_po_data|length > 0 %}
+      <div class="search_result_count_card card">
+        <div class="card-body">
+          <h6 class="card-title">Total number of results found :{{som_po_data|length}}</h6>
+        </div>
+      </div>
+      {% elif som_po_data|length == 0  %}
+      <div class="search_result_count_card card">
+        <div class="card-body">
+          <h6 class="card-title">No Results Found</h6>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if som_po_data %}
+      <div class="card">
+        <div style="margin-top: 17px;margin-left: 10px;">
+          <table id="som_po_table" class="table table_sort_filter_export_excel">
+            <thead class="thead-light">
+            <tr>
+              <th> PO Number  </th>
+              <th> Company Name </th>
+              <th> Buyer Name </th>
+              <th> Buyer Email </th>
+              <th> Buyer Phone No.</th>
+              <th> Received Date</th>
+              <th> Total Value</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="supplier_detail_tbody">
+            {% for results in som_po_data %}
+            <tr id="table-{{results.doc_number}}">
+              <td><a href="{% url 'eProc_Supplier_Order_Management:som_po_doc_details' results.encrypted_po_doc_num %}" id="{{results.doc_number}}" class="deletepop" target="_blank">{{results.doc_number}}</a></td>
+              <td>{{results.requester_company_name}}</td>
+              <td>{{results.requester}}</td>
+              <td>{{results.requester_email}}</td>
+              <td>{{results.requester_mobile_num}}</td>
+              <td>{{results.ordered_at}}</td>
+              <td>{{results.total_value}}</td>
+              <td><a href=\{{results.pdf_path}} type="application/pdf" target="_blank">View Po Pdf</a>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<script>
+
+$(document).ready( function() {
+  nav_bar_som()
+  table_sort_filter_export_excel();
+  $('#po_number').val(localStorage.getItem("po_number"));
+  $('#company_name').val(localStorage.getItem("company_name"));
+  $('#received_date').val(localStorage.getItem("received_date"));
+  $('#buyer_name').val(localStorage.getItem("buyer_name"));
+  $('#buyer_email_id').val(localStorage.getItem("buyer_email_id"));
+  $('#buyer_phone_num').val(localStorage.getItem("buyer_phone_num"));
+});
+function reload(){
+      localStorage.setItem("po_number", document.getElementById("po_number").value);
+      localStorage.setItem("company_name", document.getElementById("company_name").value);
+      localStorage.setItem("received_date", document.getElementById("received_date").value);
+      localStorage.setItem("buyer_name", document.getElementById("buyer_name").value);
+      localStorage.setItem("buyer_email_id", document.getElementById("buyer_email_id").value);
+      localStorage.setItem("buyer_phone_num", document.getElementById("buyer_phone_num").value);
+      OpenLoaderPopup();
+  }
+
+document.getElementById("folder").addEventListener("change", function(event) {
+  var output = document.querySelector("ul");
+    formdata = new FormData();
+  var attached_file = event.target.files;
+    for (var i=0; i<attached_file.length; i++) {
+    var item = document.createElement("li");
+    item.innerHTML = attached_file[i].webkitRelativePath;
+      formdata.append(i, $('input[type=file]')[0].files[i]);
+    output.appendChild(item);
+  };
+  $.ajax({
+    url: "{% url 'eProc_Supplier_Order_Management:upload_som' %}",
+    type: 'POST',
+    data: formdata,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      console.log(response);
+      location.reload();
+    },
+    error: function(xhr, status, error) {
+      console.log(xhr.responseText);
+    }
+});
+
+}, false);
+</script>
+{% endblock %}

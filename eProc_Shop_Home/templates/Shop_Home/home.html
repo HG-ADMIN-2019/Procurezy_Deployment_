@@ -1,0 +1,401 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Home {% endblock %}
+
+{% block maincontent %}
+
+<!-- body -->
+<div class="container-fluid">
+    <div class="home_wrapper">
+        <!-- Popular items in your company -->
+        {% if popular_product_array %}
+        {% if frequently_purchased_flag == "1" %}
+
+        <section>
+            <div class="home_section_heading">
+                    <p  style="float:right;">Quick Link : <a href="{% url 'eProc_Doc_Search_and_Display:search_shopping_carts' %}" target="_blank">My orders</a></p>
+            </div>
+            <div class="home_section_heading">
+                <p class="h4">Frequently purchased items in the company</p>
+                <hr>
+            </div>
+            <div class="home_section_container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="generic_carousel_slider_products owl-carousel">
+
+                            {% for product_data in popular_product_array %}
+                            <!-- product 1 -->
+                            <div class="popular_products_card">
+                                <div class="popular_products_img">
+                                    <a href="{% url 'eProc_Add_Item:get_product_service_product_details' product_data.encrypt_product_id  %}" target="_blank">
+                                        <img onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{product_data.image_url}}" alt="">
+                                    </a>
+                                </div>
+
+                                <div class="popular_products_body">
+                                    <span class="product_category_text text-muted">{{product_data.supplier_desc}}</span>
+                                    <div class="product-description">{{product_data.short_desc}}</div>
+                                    <div class="popular_products_footer">
+                                        <div class="product_price">
+                                            <span class="product-currency text-muted">{{product_data.currency_id}}</span> <span class="product-value">{{product_data.price}}</span>
+                                        </div>
+                                        <div>
+                                            {% if product_data.variant_id %}
+                                                <button type="button" onclick="add_catalog('{{product_data.encrypt_product_id}}','{{product_data.variant_id}}')" class="btn btn-primary btn-sm text-capitalize">Add to Cart</button>
+                                            {% else %}
+                                            <button type="button" onclick="add_catalog('{{product_data.product_id}}','{{product_data.variant_id}}')" class="btn btn-primary btn-sm text-capitalize">Add to Cart</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        {% endif %}
+        {% endif %}
+
+        <!-- Your favourite shopping cart -->
+
+        {% if fav_cart_num_list %}
+        <section>
+            <div class="home_section_heading">
+                <p class="h4">Favourite Shopping Carts</p>
+                <hr>
+            </div>
+
+            <div class="home_section_container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="generic_carousel_slider_fav_sc owl-carousel">
+                            {% for fav_cart_data in fav_cart_num_list %}
+                            <div class="card fav_sc_card" id="fav_sc_card_{{fav_cart_data.favourite_cart_number}}">
+                                <div class="card-body">
+                                    <div class="fav_sc_header">
+                                        <span class="text-muted">Favourite Cart Number </span><span class="h4">{{fav_cart_data.favourite_cart_number}}</span>
+                                    </div>
+                                    <hr>
+                                    <div class="fav_sc_name_section">
+                                        <span class="text-muted">Cart Name</span><br>
+                                        <span class="h6 fav_sc_name">{{fav_cart_data.favourite_cart_name}}</span>
+                                    </div>
+
+                                    <div class="fav_sc_items_list">
+                                        {% for fc_detail in fav_cart_detail %}
+                                        {% if fav_cart_data.favourite_cart_number == fc_detail.favourite_cart_number %}
+                                        <div class="fav_sc_item">
+                                            <div class="fav_sc_item_left">
+                                                {% for image_data in item_image_info%}
+                                                {% if fc_detail.int_product_id == image_data.image_id  %}
+                                                <img src="/media/{{image_data.image_url}}" onerror='this.src="/static/images/no-image-cropped.png"' alt="no image" class="fav_item_img">
+                                                {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="fav_sc_item_right">
+                                                <div class="fav_item_right_top">
+                                                    {{fc_detail.description}}
+                                                </div>
+                                                <div class="fav_item_right_bottom text-muted">
+                                                    <span>{{fc_detail.currency}} {{fc_detail.price}}</span>
+                                                    <span>Qty: {{fc_detail.quantity}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="fav_sc_value_section">
+                                        <div><span class="text-muted">x {{fav_cart_data.fc_count}} items</span> <span class="h5">{{fav_cart_data.fc_total_currency}} </span><span class="h5">{{fav_cart_data.fc_total_value}}</span></div>
+                                    </div>
+                                    <hr>
+                                    <div class="row fav_sc_footer">
+                                        <div class="col ft-btn1"><button type="button" class="btn btn-outline-primary btn-sm" onclick="FavScDelete({{fav_cart_data.favourite_cart_number}})">Delete</button></div>
+                                        <div class="col ft-btn2"><button  class="btn btn-primary btn-sm text-capitalize" onclick="add_favourite_cart({{fav_cart_data.favourite_cart_number}})">Add To Cart</button></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Your products/services search history -->
+        {% if recently_viewed_product_array %}
+        {% if recently_viewed_flag == "1" %}
+
+        <section id="recently_viewed_product">
+            <div class="home_section_heading">
+                <p class="h4" >Recently Viewed Products</p>
+                <hr>
+            </div>
+
+            <div class="home_section_container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="generic_carousel_slider_products owl-carousel">
+                            <!-- product 1 -->
+                            {% for viewed_data in recently_viewed_product_array %}
+                            <div class="popular_products_card" id="rvi_card_{{viewed_data.product_id}}">
+                                <button type="button" class="btn btn-round btn-sm" onclick="RviDelete('{{ viewed_data.product_id}}')"><i class="far fa-trash-alt"></i></button>
+                                <div class="popular_products_img">
+                                    <a href="{% url 'eProc_Add_Item:get_product_service_product_details' viewed_data.encrypt_product_id  %}" target="_blank">
+                                        <img onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{viewed_data.image_url}}" alt="">
+                                    </a>
+                                </div>
+                                <div class="popular_products_body">
+                                    <span class="product_category_text text-muted">{{viewed_data.supplier_desc}}</span>
+                                    <div class="product-description">{{viewed_data.short_desc}}</div>
+                                    <div class="popular_products_footer">
+                                        <div class="product_price">
+                                            <span class="product-currency text-muted">{{viewed_data.currency_id}}</span> <span class="product-value">{{viewed_data.price}}</span>
+                                        </div>
+                                        <div>
+                                            {% if viewed_data.eform_id %}
+                                                <button type="button" class="btn btn-primary btn-sm text-capitalize" id="{{viewed_data.eform_id}}" onclick="add_catalog('{{ viewed_data.encrypt_product_id}}','{{viewed_data.variant_id}}')">Add to Cart</button>
+                                            {% else %}
+                                                <button type="button" class="btn btn-primary btn-sm text-capitalize" onclick="add_catalog('{{ viewed_data.product_id}}','{{viewed_data.variant_id}}')">Add to Cart</button>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <hr>
+        {% endif %}
+        {% endif %}
+
+        <!-- Support and Announcements -->
+        <section>
+            <div class="row">
+                <div class="col">
+                    <div class="card sa-card">
+                        <div class="card-body">
+                            <div>
+                                <h5 class="card-title">Organizational Announcements</h5>
+                            </div>
+
+                            <div class="list-group announcements_lists">
+                                {% for data in org_announcements_data %}
+
+                                {% if data.priority == 'High' %}
+                                <div class="alert alert-warning">
+                                    <h6>{{data.announcement_subject}}</h6>
+                                    <p>{{data.announcement_description}}</p>
+                                </div>
+                                {% elif data.priority == 'Medium' %}
+                                <div class="alert alert-primary">
+                                    <h6>{{data.announcement_subject}}</h6>
+                                    <p>{{data.announcement_description}}</p>
+                                </div>
+                                {% elif data.priority == 'Low' %}
+                                <div class="alert alert-secondary">
+                                    <h6>{{data.announcement_subject}}</h6>
+                                    <p>{{data.announcement_description}}</p>
+                                </div>
+                                {% endif %}
+
+
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card sa-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Support</h5>
+                            <div class="support-card support-card-success">
+                                <i class="material-icons">help_outline</i>
+                                <span><a href="#" class="support-desc">Have A Query About Product/Service ?</a></span>
+                            </div>
+                            <div class="support-card support-card-info">
+                                <i class="material-icons">question_answer</i>
+                                <span><a href="javascript:chat_popup_display();" class="support-desc" >Chat With Us - <span id="support_chat_id"></span></a> </span>
+                            </div>
+                            <div class="support-card support-card-warning">
+                                <i class="material-icons">mail_outline</i>
+                                <span><a href="javascript:TriggerOutlook();" class="support-desc">Write Us An E-mail - <span id="support_email_id"></span></a> </span>
+                            </div>
+                            <div class="support-card support-card-primary">
+                                <i class="material-icons">support_agent</i>
+                                <span><a href="#" class="support-desc">Call Us - <span id="support_phone_id"></span></a> </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- Pop-Up to delete single item in shopping cart -->
+<div class="modal fade" id="delete-favourite-cart-popup">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Please Confirm</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                You are about to delete a favourite shopping cart. Are you sure?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button type="button" value="DELETE" name="delete" class="btn btn-primary delete_item" onclick="delete_favourite_cart()"><i class="fas fa-trash-alt"></i> &nbsp;delete</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% include 'ProductDetailPopup/product_complete_detail_popup.html' %}
+{% include 'root/loader.html' %}
+<script src="{% static 'scripts/shop_home.js' %}"></script>
+
+
+<script>
+    var num = {{support_phone|safe}};
+    var email = {{support_email|safe}};
+    var chat = {{support_chat|safe}};
+    const str_phone = num.toString();
+    const str_email = email.toString();
+    console.log("str_email ",str_email);
+    const str_chat = chat.toString();
+    $('#support_phone_id').text(str_phone);
+    $('#support_email_id').text(str_email);
+    $('#support_chat_id').text(str_chat);
+
+    const ajax_delete_rvi_url = "{% url 'eProc_Shop_Home:delete_recently_viewed_item' %}";
+
+    function ajax_add_fav_cart(fav_cart_num) {
+        urlLink =  "{% url 'eProc_Shop_Home:add_fav_sc_to_cart' %}";
+        response = AjaxCallAPIBasic(urlLink, fav_cart_num)
+        return response
+    }
+
+    function ajax_delete_favourite_shopping_cart(data) {
+        urlLink = "{% url 'eProc_Shop_Home:delete_favourite_shopping_cart' %}";
+        AjaxCallAPIBasic(urlLink, data)
+    }
+    function ajax_add_catalog_item(urlLink, data) {
+    let result = AjaxCallAPI(urlLink, data);
+    return result;
+    }
+
+    const freetext_url = (freetext_supp_id, freetext_prodcat) => {
+        if(document_number != 'create'){
+            send_doc_number = 'doc_number-' + document_number
+        } else {
+            send_doc_number = document_number
+        }
+        get_freetext_url = '/add_item/free_text/' + freetext_supp_id + '/' + freetext_prodcat + '/' + send_doc_number
+    // window.open(get_freetext_url)
+    add_freetext(freetext_supp_id, freetext_prodcat);
+    }
+
+<!--  function CustomeSupport() {-->
+<!--        $.ajax({-->
+<!--            type : 'POST',-->
+<!--            url  : "{% url 'eProc_Org_Support:customer_support_chat' %}",-->
+<!--            data: {-->
+<!--                'support_username':'siddarth',-->
+<!--          },-->
+<!--            success: function (response) {-->
+
+<!--             }-->
+<!--         });-->
+<!--     }-->
+     function chat_popup_display(){
+        localStorage.setItem("chatVisible", "True");
+        var res = $('#bot_popup_id').html();
+        localStorage.setItem("chatContent", res);
+        $("#bot_popup_id").show();
+
+     }
+
+
+// ajax Function to add catalog product
+function ajax_catalog_product(data) {
+    urlLink = "{% url 'eProc_Add_Item:update_or_create_item' 'create' %}";
+    let result = AjaxCallAPI(urlLink, data);
+    return result;
+}
+
+function add_catalog(prd_id,button_id) {
+//    let document_number = 'create';
+//    let is_edit = true;
+   if(button_id){
+        var url = "{% url 'eProc_Add_Item:get_product_service_product_details' 123 %}";
+        var href_link = url.replace('123', prd_id)
+        window.open(href_link,'_blank');
+        //view_detail(prd_id, 0)
+
+    }
+    else{
+        let catalog_item = {};
+        catalog_item["prod_id"] = prd_id;
+        catalog_item['call_off'] = '01';
+        catalog_item["quantity"] = 1;
+        catalog_item["document_number"] = document_number;
+        catalog_url = '/add_item/update_or_create_item/' + document_number;
+        OpenLoaderPopup();
+
+        // ajax Function to add catalog product
+        $.ajax({
+            type: "POST",
+            url: catalog_url,
+            dataType :'json',
+            data: JSON.stringify(catalog_item),
+            success: function(response){
+                if (!is_edit) {
+                    if (response.cart_count) {
+                        counter = document.getElementById('cart_counter').innerHTML;
+                        CloseLoaderPopup();
+                        CartCounterView(response.cart_count);
+                        item_added_to_cart_success_popup();
+                    }
+                } else {
+                    $('#confirm_add_item').modal('show');
+                }
+                $('document').find('input:number').val('');
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    };
+}
+</script>
+
+{% endblock %}

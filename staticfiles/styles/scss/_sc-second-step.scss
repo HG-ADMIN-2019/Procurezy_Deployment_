@@ -1,0 +1,51 @@
+// Approval process overview styles
+.approval-overview {
+
+    &__section {
+        display: flex;
+        overflow:auto;
+        flex-direction: row;
+    }
+
+    &__user-icon-container {
+        display: flex;
+        flex-direction: column;
+        align-items:center;
+        width:8rem; 
+    }
+
+    &__next-icon-container{
+        display: flex;
+        align-items:baseline;
+        margin-top: 1rem;
+    }
+
+    &__managers-section {
+        display: flex;
+    }
+
+}
+
+.ao-logged-in-user {
+    color:rgb(250, 189, 76);
+}
+
+.ao-workflow-user {
+    color:#676767;
+}
+
+.icon-workflow-auto {
+    font-size: 2.95em;
+    margin-left: 0.85rem;
+}
+
+.sc-button-group {
+    flex-wrap: wrap-reverse;
+    margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 992px) {
+    .account-assignment-card {
+        margin-top: 1rem;
+    }
+}

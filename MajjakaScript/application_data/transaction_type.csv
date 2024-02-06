@@ -1,0 +1,4 @@
+transaction_type,description,sequence,active_inactive,document_type,del_ind
+SPO,Order,20,1,DOC02,0
+SHC,Shopping,10,1,DOC01,0
+FSC,Favourite,30,1,DOC04,0

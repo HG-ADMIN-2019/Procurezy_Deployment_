@@ -1,0 +1,302 @@
+{% extends 'root/base.html' %}
+{% load static %}
+{% block title %} Purchase Requisition (Shop) {% endblock %}
+{% block maincontent %}
+
+<!-- Requisition form start -->
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <form method="POST" id="requisition_form">
+            {% csrf_token %}
+            <div>
+                <div class="elements-space-between" id="shopping_cart_heading">
+                    <h3>Purchase Requisition</h3>
+                    <div>
+                        <button class="btn btn-outline-primary" type="reset" value="Reset"><i class="fas fa-sync-alt"></i>
+                            &nbsp;reset</button>
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-shopping-cart"
+                                title="Shopping Cart"></i> &nbsp;add to cart</button>
+                    </div>
+                </div>
+                <hr>
+                <p class="text-muted" id="p_tag_head">To create an online requisition, complete the fields below and place
+                    the requisition in the shopping cart.
+                    Be sure to fill in the form as accurately as possible as this will enable the purchasing department
+                    (operational purchasing) to better serve you
+                    with high quality purchasing. Note that fields marked with an * are mandatory. When you check out the
+                    shopping cart the requisition will be
+                    submitted to the purchasing department (operational purchasing).
+                </p>
+
+            </div>
+
+            <div class="alert alert-warning display-none" role="alert" id="edit_message"></div>
+            <div class="alert alert-danger display-none" id="pr_errors" role="alert"></div>
+
+            <div class="card mt-4 card-shadow-1">
+                <div class="card-body">
+                    <div class="elements-space-between">
+                        <h5 class="card-title">Which Product/Service are you looking for ?</h5>
+                        <div>
+                            <span class="badge help-text-badge help-text-alpha-numeric"></span>    
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="id_prod_name">Product/Service Name</label><span class="hg_required"></span>
+                            <input type="text" id="id_prod_name" class="form-control check_product_name" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="id_prod_id">Product/Service ID</label>
+                            <input type="number" id="id_prod_id" class="form-control check_number">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="id_prod_desc"> Description</label><span class="hg_required"></span>
+                            <textarea class="form-control" rows="5" id="id_prod_desc" required></textarea>
+                            <small class="form-text text-muted">
+                                Help text here - Textarea help text
+                            </small>
+                        </div>
+                        
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="choose_product_cat">Product Category</label><span class="hg_required"></span>
+                            <input type="text" placeholder="Please select product category" class="form-control"
+                                id="choose_product_cat" onkeydown="return false;">
+                        </div>
+                   
+                        <div class="form-group col-md-4">
+                            <label for="uom_req">Unit Of Measure</label><span class="hg_required"></span>
+                            <select class="form-control selectpicker" required data-live-search="true" id="uom_req">
+                                <option value="">Please select unit of measure</option>
+                                {% for uom in unit %}
+                                <option value="{{uom.uom_id}}">{{uom.uom_id}} - {{uom}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="id_supplier">Preferred Supplier</label>
+                            <input type="text" placeholder="Please select supplier" class="form-control" id="id_supplier" onkeydown="return false;">                              
+                        </div>
+                    </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="id_prod_prz">Price <strong>(Approx)</strong><span class="hg_required"></span></label>
+                                <input type="text" min="1" id="id_prod_prz" step="0.01" class="form-control check_price" required>
+                            </div>
+                           
+                            <div class="form-group col-md-4">
+                                <label for="id_currency">Currency<span class="hg_required"></span></label>
+                                <select class="form-control selectpicker" required data-live-search="true" id="id_currency"
+                                    required>
+                                    <option value="">Please select currency</option>
+                                    {% for currencies in currency %}
+                                    <option value="{{currencies}}">{{currencies}} - {{currencies.description}} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="id_quantity">Quantity<span class="hg_required"></span></label>
+                                <input type="number" min="1" id="id_quantity" class="form-control check_number" required>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="card mt-3 card-shadow-1">
+                <div class="card-body">
+                    <h5 class="card-title">When Do You Need The Product/Service ?</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="id_lead_time">Lead Time <strong>(Business Days)</strong><span class="hg_required"></span></label>
+                            <input type="number" min="1" id="id_lead_time" class="form-control check_number" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Requisition form end -->
+
+
+
+<!--Select Product category popup -->
+{% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
+<!-- end Select Product category popup-->
+
+<!-- Select supplier popup -->
+{% include 'Shopping_Cart/select_supplier_modal/select_supplier.html' %}
+<!-- End of Select supplier popup -->
+
+<div class="modal fade" id="confirm_add_item" tabindex="-1" role="dialog" aria-labelledby="confirm_label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirm_label">Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Item added to cart successfully.
+                Do you wish to add another Item to the cart?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    onclick="open_close_document_detail('NO')">no</button>
+                <button type="button" class="btn btn-primary" onclick="open_close_document_detail('YES')">yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'Doc_Details/add_item_confirmation_popup.html' %}
+
+<script>
+
+    // variable to decrypted store document number 
+    var document_number_decrypted = '{{document_number_decrypted}}';
+
+    // $('#requisition_form').submit(function (e) {
+    //     e.preventDefault();
+    //     OpenLoaderPopup();
+    //     var item_details = {}
+    //     item_details.description = document.getElementById("id_prod_name").value
+    //     item_details.long_desc = document.getElementById("id_prod_desc").value
+    //     item_details.price = document.getElementById("id_prod_prz").value
+    //     item_details.prod_cat_id = (document.getElementById("choose_product_cat").value).split(' - ')[0]
+    //     item_details.currency = document.getElementById("id_currency").value
+    //     item_details.unit = document.getElementById("uom_req").value
+    //     item_details.lead_time = document.getElementById("id_lead_time").value
+    //     item_details.quantity = document.getElementById("id_quantity").value
+    //     item_details.pref_supplier = document.getElementById("id_supplier").value
+    //     item_details.call_off = '03'
+
+    //     // PR form validations
+    //     is_valid = pr_form_validation(item_details.description, item_details.price, item_details.lead_time, item_details.quantity)
+    //     if (is_valid != true) {
+    //         document.getElementById('pr_errors').innerHTML = is_valid;
+    //         $('#pr_errors').show()
+    //         CloseLoaderPopup();
+    //         scroll_top();
+    //         return false;
+    //     } else {
+    //         $('#pr_errors').hide()
+    //     }
+
+    //     pr_url = '/add_item/update_or_create_item/' + document_number
+
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: pr_url,
+    //         data: {
+    //             item_details: JSON.stringify(item_details),
+    //             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+    //         },
+
+    //         success: function (response) {
+    //             $('#requisition_form').trigger("reset");
+    //             // resets fields from selectpicker
+    //             $('.selectpicker').selectpicker('refresh'); 
+    //             if (!is_edit) {
+    //                 counter = document.getElementById('cart_counter').innerHTML
+    //                 $('#cart_counter').html(parseInt(counter) + 1)
+    //                 CloseLoaderPopup();
+    //                 item_added_to_cart_success_popup();
+    //             } else {
+    //                 CloseLoaderPopup();
+    //                 $('#confirm_add_item').modal('show')
+    //             }
+    //             $('#pr_errors').hide()
+    //             scroll_top()
+    //         },
+    //         error: function (response) {
+    //             // document.getElementById('pr_errors').innerHTML = response.responseJSON.error;
+    //             $('#pr_errors').show()
+    //             scroll_top()
+    //         }
+    //     })
+    // });
+
+    $('#requisition_form').submit(function (e) {
+        e.preventDefault();
+        OpenLoaderPopup();
+        let item_name = document.getElementById("id_prod_name").value
+        let prod_desc = document.getElementById("id_prod_desc").value
+        let price = document.getElementById("id_prod_prz").value
+        let prod_cat = (document.getElementById("choose_product_cat").value).split(' - ')[0]
+        let currency = document.getElementById("id_currency").value
+        let unit = document.getElementById("uom_req").value
+        let lead_time = document.getElementById("id_lead_time").value
+        let quantity = document.getElementById("id_quantity").value
+        let int_product_id = document.getElementById("id_prod_id").value
+        let pref_supplier = document.getElementById("id_supplier").value
+        if(pref_supplier){
+            pref_supplier = pref_supplier.split(' - ')[0]
+        }
+
+        // PR form validations
+        is_valid = pr_form_validation(item_name, price, lead_time, quantity)
+        if (is_valid != true) {
+            document.getElementById('pr_errors').innerHTML = is_valid;
+            $('#pr_errors').show()
+            scroll_top();
+            return false;
+        } else {
+            $('#pr_errors').hide()
+        }
+
+        pr_url = '/add_item/update_or_create_item/' + document_number
+
+        $.ajax({
+            type: 'POST',
+            url: pr_url,
+            data: JSON.stringify({
+                description: item_name,
+                price: price,
+                prod_cat_id: prod_cat,
+                currency: currency,
+                unit: unit,
+                lead_time: lead_time,
+                quantity: quantity,
+                call_off: '03',
+                long_desc:prod_desc,
+                int_product_id:int_product_id,
+                pref_supplier:pref_supplier,
+            }),
+            success: function (response) {
+                $('#requisition_form').trigger("reset");
+                $('.selectpicker').selectpicker('refresh'); // resets fields from selectpicker
+                if (!is_edit) {
+                    // counter = document.getElementById('cart_counter').innerHTML
+                    // $('#cart_counter').html(parseInt(counter) + 1)
+                    CartCounterView(response.cart_count)
+                    CloseLoaderPopup();
+                    item_added_to_cart_success_popup();
+                } else {
+                    CloseLoaderPopup();
+                    $('#confirm_add_item').modal('show')
+                }
+                $('#pr_errors').hide()
+                scroll_top()
+            },
+            error: function (response) {
+                document.getElementById('pr_errors').innerHTML = response.responseJSON.error.message_desc[0];
+                $('#pr_errors').show()
+                scroll_top()
+            }
+        })
+    });
+
+</script>
+
+
+<script src="{% static 'scripts/purchase_requisition.js' %}"></script>
+{% endblock %}

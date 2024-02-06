@@ -1,0 +1,115 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Basic settings {% endblock %}
+{% block maincontent %}
+
+<div class="container-fluid">
+    <div id="upload-configuration-data" class="upload-data-tab">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card config-card" onclick="window.open('{% url 'eProc_Basic_Settings:upload_countries' %}', '_blank');">
+
+                    <div class="card-body text-center">
+
+                        <div class="icon-wrapper blue" >
+                            <i class="material-icons-outlined" >
+                                travel_explore
+                            </i>
+                        </div>
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label" title="Country">Countries</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card" onclick="window.open('{% url 'eProc_Basic_Settings:upload_currencies' %}', '_blank');">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper orange" >
+                            <i class="material-icons-outlined" >
+                                attach_money
+                            </i>
+                        </div>
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label" title="Currency">Currencies</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card" onclick="window.open('{% url 'eProc_Basic_Settings:upload_languages' %}', '_blank');">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper green" >
+                            <i class="material-icons-outlined" >
+                                translate
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label" title="Language">Languages</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card config-card" onclick="window.open('{% url 'eProc_Basic_Settings:upload_timezone' %}', '_blank');">
+
+                    <div class="card-body text-center">
+                        <div class="icon-wrapper red">
+                            <i class="material-icons-outlined" >
+                                schedule
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label" title="Time Zone">Time Zones</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="card config-card" onclick="window.open('{% url 'eProc_Basic_Settings:upload_unit_of_measure' %}', '_blank');">
+
+                    <div class="card-body text-center" >
+                        <div class="icon-wrapper purple">
+                            <i class="material-icons-outlined" >
+                                science
+                            </i>
+                        </div>
+
+                        <a onclick="">
+                            <div class="mt-3">
+                                <span class="upload-data-label" title="Unit Of Measure">Unit Of Measures</span>
+                            </div>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    nav_bar_configuration()
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,1027 @@
+<!--Display details of a Document-->
+
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Shopping Cart Completion {% endblock %}
+
+{% block maincontent %}
+
+<!--Display header based on document type-->        
+
+<!-- <div class="mt-3 m-4">
+    <div class="sc-status-page-title">
+        <h3 id="document_header">Display Shopping Cart</h5>
+    </div>
+</div> -->
+
+<div class="container-fluid">
+
+    <div class="mo-doc-button-container">
+        <h3>Complete Shopping Cart #{{hdr_det.0.doc_number}}</h3>
+        <div hidden>
+            {% for hdr in hdr_det %}
+            <h5 class="mb-3" hidden>Buy on Behalf: <input type="text" id="shopping_cart_requester" value="{{hdr.requester}}" disabled style="border: none;"></h5>
+            {% endfor %}
+
+            <h5 class="mb-3" hidden>Silent PO: <input type="checkbox" id="silent_po" class="hg_disabled" disabled></h5>
+        </div>
+        <div id="display_div_id" class="">
+            <button id="id_cancel_sc" class="btn btn-outline-primary" onclick="window.close()" type="button">
+                <i class="fas fa-times"></i> close
+            </button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#add_approver_note">
+                <i class="far fa-sticky-note"></i> view approver note
+            </button>
+            <button id="id_check_sc" onclick="check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value);" class="btn btn-primary hide_in_display_mode">
+                <i class="fa fa-check" aria-hidden="true"></i> check
+            </button>
+            <button id="id_save_sc" class="btn btn-primary hide_in_display_mode">
+                <i class="fa fa-save"aria-hidden="true"></i> save
+            </button>
+            <button id="id_submit_sc" class="btn btn-primary hide_in_display_mode">
+                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> submit
+            </button>             
+            {% for hdr in hdr_det %}
+            {% if hdr.status == 'PURCHASER_WORKLIST' %}
+            <button id="id_edit_sc" class="btn btn-primary">
+                <i class="fas fa-edit"></i> edit
+            </button>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mo-doc-body-wrapper">
+
+        <div class="mo-doc-header">
+            <div class="card card-shadow-1">
+                <div class="card-body mo-doc-header__doc-details" >
+                    {% for hdr in hdr_det %}
+                    <input id="header_guid" value="{{ hdr.guid }}" hidden>
+
+                    <div class="row">
+                        <div class="col-md">
+                            <span class="po-header-label">Document Name</span><br>
+                            <span class="po-header-desc" id="ScHeader-description-{{ hdr.guid }}">{{ hdr.description }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Document Number</span><br>
+                            <span class="po-header-desc" id="document_number">{{ hdr.doc_number }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Created On</span><br>
+                            <span class="po-header-desc">{{ hdr.created_at }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Created By</span><br>
+                            <span class="po-header-desc">{{ requester_first_name }}</span>
+                        </div>
+                        <div class="col-md">
+                            <span class="po-header-label">Status</span><br>
+                            {% if hdr.status == 'APPROVED' %}
+                            <span class="badge badge-pill badge_status_approved">APPROVED</span>
+                            {% elif hdr.status == 'SAVED' %}
+                            <span class="badge badge-pill badge_status_save">SAVED</span>
+                            {% elif hdr.status == 'REJECT' %}
+                            <span class="badge badge-pill badge_status_rejected">REJECTED</span>
+                            {% elif hdr.status == 'PURCHASER_WORKLIST' %}
+                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span hidden id="requester_hidden_span">{{hdr.requester}}</span>
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <div class="mo-doc-header__alerts-wrapper">
+                {% for hdr in hdr_det %}
+                {% if hdr.status == 'AWAITING_APPROVAL' %}
+                <div class="alert alert-success" role="alert">Shopping cart {{hdr.description}} with number {{hdr.doc_number}} submitted successfully</div>
+                {% endif %}
+                {% endfor %}
+                <div id="sc_error_messages" class="alert alert-danger"  style="display: none;" role="alert"></div>
+                <div id="sc_warning_messages" class="alert alert-warning"  style="display: none;" role="alert"></div>
+                <div id="sc_success_messages" class="alert alert-success"  style="display: none;" role="alert"></div>    
+            </div>
+    
+        </div>
+
+        <!--  Item overview card section  -->
+        <div class="card mb-4 mr-2 ml-2 card-shadow-1">
+            <div class="card-body elements-space-between">
+                <h4>Cart Overview</h4>
+                <div class="dropdown" id="add_id" style="display:none;">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-plus" aria-hidden="true"></i> add new item 
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" onclick="add_item_to_saved_cart('01')" href="#">Catalog</a>
+                        <a class="dropdown-item" onclick="add_item_to_saved_cart('02')" href="#">Free Text</a>
+                        <a class="dropdown-item" onclick="add_item_to_saved_cart('03')" href="#">Requisition</a>
+                    </div>
+                </div>
+
+            </div>
+            <div>
+                {% include 'Doc_Details/sc_item_details.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--start of change shipping address pop-up-->
+<div class="modal fade" id="ChngShipAddr">
+    <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 55rem;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Shipping Address</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="mydatatable table" id="shipping_address_table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for address in delivery_addr_desc %}
+                        <tr>
+                            <td>
+                                <input type="radio" name="select_value" id="selectAddr-{{forloop.counter}}" onclick="select_addr_radio_btn(this.id);">
+                            </td>
+                            <td>
+                                <span id="address_name-{{forloop.counter}}">{{address.name1}} - {{address.name2}}</span>
+                            </td>
+                            <td>
+                                <span id="address_email-{{forloop.counter}}">{{address.email}}</span>
+                            </td>
+                            <td>
+                                <span id="addr_num-{{forloop.counter}}">{{ address.address_number }}</span> - <span id="street-{{forloop.counter}}">{{ address.street }}</span><br>
+                                <span id="area-{{forloop.counter}}" >{{ address.area }}</span><br>
+                                <span id="landmark-{{forloop.counter}}">{{ address.landmark }}</span><br>
+                                <span id="city-{{forloop.counter}}">{{ address.city }}</span> - <span id="postal_code-{{forloop.counter}}">{{ address.postal_code }}</span><br>
+                                <span id="region-{{forloop.counter}}">{{ address.region }}</span>        
+                            </td>
+                            <td>
+                                <span id="address_mob_no">{{address.mobile_number}}</span>
+                            </td>
+
+                            <!-- <td>
+                                <button class="btn btn-primary" id="select_address-{{forloop.counter}}" onclick="select_address(this.id);"><i class="fas fa-check"></i>  Select address details</button>
+                            </td> -->
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button type="button" class="btn btn-primary" id="select_shipping_address"><i class="fas fa-check"></i> select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--end of change shipping address pop-up-->
+
+<!-- start additional information popup-->
+<div id="add_info" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Additional Information</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                The document is in approval<br>
+                Any document changes may trigger workflow process
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button type="button" value="DELETE" name="delete" class="btn btn-primary delete_item"
+                    id="add_info_ok"><i class="fas fa-check"></i> continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end additional information popup-->
+
+<!--start of Add approver note pop-up -->
+<div class="modal fade" id="add_approver_note">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Approver Note</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <textarea class="form-control" id="approver_text" rows="4" disabled>{{appr_notes.note_text}} </textarea>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary hide_in_display_mode" data-dismiss="modal"><i class="fa fa-check" aria-hidden="true"></i> save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end of Add approver note pop-up -->
+
+
+<!-- start of change GL account popup -->
+<div class="modal fade" id="change_gl_account_modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change GL Account Values</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="table" id="select_gl_account_table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>GL Account Values</th>
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        {% for gl_acc_append in gl_acc_value_append %}
+                        <tr>
+                            <td><input type="radio" name="select_value"></td>
+                            <td>{{gl_acc_append.append_val}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="select_gl_account"><i class="fa fa-check" aria-hidden="true"></i> Select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- start of change Supplier ID popup -->
+<div class="modal fade" id="change_supplier_modal">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Supplier</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="table select_supplier_datatable" id="select_supplier_table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Supplier ID</th>
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        {% for supplier in supplier_data %}
+                        <tr>
+                            <td><input type="radio" name="select_value"></td>
+                            <td>{{supplier.supp_desc}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="select_supplier_value"><i class="fa fa-check" aria-hidden="true"></i> Select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- start of change account assignmnt values popup -->
+<div class="modal fade" id="change_account_assignment_modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Account Assignment Values</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="table" id="select_acc_table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th id="acc_assign_type"></th>
+                        </tr>    
+                    </thead>
+                    <tbody id="select_acc_tbody">
+                        
+                    </tbody>
+                    
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="select_account_assignment_value"><i class="fa fa-check" aria-hidden="true"></i> Select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{{ total_value_of_item_converted|json_script:"total_value_of_item_converted" }}
+<!--  start of manager detail pop up-->
+{% include 'Workflow/manager_detail_modal.html' %}
+
+{% include 'root/loader.html' %}
+
+
+<script>
+
+    item_table_css();
+
+
+    var acc_visible_div = 0;
+    var addr_visible_div = 0;
+    var sc_calloff = '';
+    var edit_flag = false;
+    var eform_display = false;
+    var item_detail_visible_div = 0;
+    var rendered_call_off = [];
+    var rendered_acc = [];
+    var rendered_acc_guid = [];
+    var rendered_item_guid = [];
+    var rendered_sc_addr = [];
+    var rendered_supp_note = [];
+    var rendered_int_note = [];
+    var rendered_price = [];
+    var rendered_price_unit = [];
+    var rendered_quantity = [];
+    var rendered_catalog_qty = [];
+    var rendered_eform = [];
+    var GLOBAL_MANAGER_DETAIL = [];
+    var internal_supplier_error_itemNumber = []
+    var highest_item_acc_asgn_cat = '';
+    var highest_item_change_acc_value = '';
+    var GLOBAL_TAB_ID = 'item_data';
+    var GLOBAL_ID_IGNORE_LIST = ['select_item']
+    // Store  header Guid and company code in global variable
+    var GLOBAL_SC_CO_CODE = '{{sc_header_data.co_code}}';
+    var GLOBAL_HEADER_GUID = "{{sc_header_data.guid}}";
+    var GLOBAL_DOCUMENT_NUMBER = "{{sc_header_data.doc_number}}"
+    // store rendered highest item guid in global variable
+    var GLOBAL_HIGHEST_ITEM_GUID = '{{highest_item_guid|safe}}';
+    var GLOBAL_HIGHEST_VALUE_ITEM_ROW
+    var editable_flag = '{{editable_flag|safe}}';
+
+
+    $(document).ready(function () {
+        $('#nav_menu_items').remove();
+        $("body").css("padding-top", "3.7rem");
+        NavigateTabs(); // Custom function to switch tabs
+
+        {% for item in itm_det %}
+        rendered_call_off.push('{{item.call_off|safe}}');
+        rendered_item_guid.push('{{item.guid|safe}}');
+        rendered_price.push('{{item.price|safe}}');
+        rendered_price_unit.push('{{item.price_unit|safe}}');
+        rendered_quantity.push('{{item.quantity|safe}}');
+        rendered_catalog_qty.push('{{item.catalog_qty|safe}}');
+        var eform_id = '{{item.eform_id|safe}}';
+        var call_off = '{{item.call_off|safe}}'
+        if(eform_id == ''){
+            rendered_eform.push('None');
+        }
+        else if(call_off == '02'){
+            rendered_eform.push('{{item.eform_id|safe}}');
+        }
+        else{
+            rendered_eform.push('None');
+        }
+        {% endfor %}
+        {% for sc_addr in del_addr %}
+        rendered_sc_addr.push('{{sc_addr.guid|safe}}');
+        {% endfor %}
+        {% for supp_note in supp_notes %}
+        rendered_supp_note.push('{{supp_note.guid|safe}}');
+        {% endfor %}
+        {% for int_note in int_notes %}
+        rendered_int_note.push('{{int_note.guid|safe}}');
+        {% endfor %}
+        {% for sc_acc in acc_det %}
+        rendered_acc.push('{{sc_acc.acc_cat|safe}}');
+        rendered_acc_guid.push('{{sc_acc.guid|safe}}');
+        {% endfor %}
+        {% for sc_app in app_det %}
+        GLOBAL_MANAGER_DETAIL.push('{{sc_app.app_id|safe}}');
+        {% endfor %}
+        //######################################## Start HIHEST ACCOUNT ASSIGN CATEGORY AND ITS VALUE ######################################
+
+        checkbox_name = document.getElementsByName('True')[0]
+        if (checkbox_name) {
+            check_for_silent_po = checkbox_name.checked;
+            if (check_for_silent_po) {
+                document.getElementById('silent_po').checked = true;
+            }
+        }
+
+        // add class to
+        $("#ScIem-value-" + GLOBAL_HIGHEST_ITEM_GUID).addClass('hg_dummy_highest_item');
+
+        // Assign Highest item value's row in table
+        var GLOBAL_HIGHEST_VALUE_ITEM_ROW = rendered_item_guid.indexOf(GLOBAL_HIGHEST_ITEM_GUID) + 1;
+
+        // assign highest Account Assignment category
+        highest_item_acc_asgn_cat = (document.getElementById('ScAccounting-acc_cat-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).value).split(' - ')[0]
+        highest_item_acc_asgn_cat = highest_item_acc_asgn_cat.replace(/\s/g, '');
+        let document_url = location.href.split('/')
+        // assign highest Account Assignment Value
+        if (highest_item_acc_asgn_cat == 'CC') {
+            highest_item_change_acc_value = (document.getElementById('ScAccounting-cost_center-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).value).split(' - ')[0]
+            highest_item_change_acc_value = highest_item_change_acc_value.replace(/\s/g, '');
+        }
+        else if (highest_item_acc_asgn_cat == 'WBS') {
+            highest_item_change_acc_value = (document.getElementById('ScAccounting-wbs_ele-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).value).split(' - ')[0]
+            highest_item_change_acc_value = highest_item_change_acc_value.replace(/\s/g, '');
+        }
+        else if (highest_item_acc_asgn_cat == 'AS') {
+            highest_item_change_acc_value = (document.getElementById('ScAccounting-asset_number-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).value).split(' - ')[0]
+            highest_item_change_acc_value = highest_item_change_acc_value.replace(/\s/g, '');
+        }
+        else if (highest_item_acc_asgn_cat == 'OR') {
+            highest_item_change_acc_value = (document.getElementById('ScAccounting-internal_order-' + rendered_acc_guid[GLOBAL_HIGHEST_VALUE_ITEM_ROW - 1]).value).split(' - ')[0]
+            highest_item_change_acc_value = highest_item_change_acc_value.replace(/\s/g, '');
+        }
+        //######################################## Start HIHEST ACCOUNT ASSIGN CATEGORY AND ITS VALUE ######################################
+
+        if(document_url.includes('edit')){
+            document_edit_mode();
+            check_shopping_cart('check', 'sc_data', highest_item_acc_asgn_cat, highest_item_change_acc_value);
+        }
+
+
+        // on change in input or select or textarea, add 'sc_changed' class
+        $('#eform_tab').hide();
+        // $('input, select, textarea').on('change', function () {
+        //     var sc_id = $(this).attr("id");
+        //     for(k = 0; k < GLOBAL_ID_IGNORE_LIST.length; k++){
+        //         if(!sc_id.includes(GLOBAL_ID_IGNORE_LIST[k])){
+        //             $(this).addClass('sc_changed');
+        //         }
+        //     }
+        // });
+
+        $('input, select, textarea').on('change', function () {
+            element_id = this.id
+            if (!(GLOBAL_ID_IGNORE_LIST.includes(element_id)) ){
+                var sc_id = $(this).attr("id");
+                $(this).addClass('sc_changed');
+                
+            }
+        });
+
+ //       total_value_of_item_converted = JSON.parse(document.getElementById('total_value_of_item_converted').textContent);
+  //      get_update_converted_value_class = document.getElementsByClassName('update_converted_value');
+ //       for(j = 0; j < get_update_converted_value_class.length; j++) {
+ //           get_update_converted_value_class[j].innerHTML = total_value_of_item_converted[j].toFixed(2)
+//        }
+        $('#shopping_cart_requester').val($('#requester_hidden_span').html())
+    });
+
+
+
+    // Ajax request to send selected address from drop-down to views (sc_second_step.py)
+    function selectAddress() {
+        OpenLoaderPopup();
+        var addr = document.getElementById("ship_address");
+        ship_adr = addr.options[addr.selectedIndex].value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Shopping_Cart:change_ship_adr' %}",
+            data: {
+                'ship_adr': ship_adr,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (response) {
+                item_no = parseInt(item_detail_visible_div) + 1;
+                // document.getElementById('ChngShipAddr').style.display = 'none';
+                $("#ScAddresses-street-" + rendered_sc_addr[item_detail_visible_div]).val(response["new_ship_add"][0]);
+                $("#ScAddresses-street-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                $("#ScAddresses-area-" + rendered_sc_addr[item_detail_visible_div]).val('');
+                $("#ScAddresses-area-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                $("#ScAddresses-landmark-" + rendered_sc_addr[item_detail_visible_div]).val(response["new_ship_add"][1]);
+                $("#ScAddresses-landmark-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                $("#ScAddresses-city-" + rendered_sc_addr[item_detail_visible_div]).val(response["new_ship_add"][2]);
+                $("#ScAddresses-city-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                $("#ScAddresses-country_code-" + rendered_sc_addr[item_detail_visible_div]).val(response["new_ship_add"][3]);
+                $("#ScAddresses-country_code-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                $("#ScAddresses-region-" + rendered_sc_addr[item_detail_visible_div]).val(response["new_ship_add"][5]);
+                $("#ScAddresses-region-" + rendered_sc_addr[item_detail_visible_div]).addClass('sc_changed');
+                CloseLoaderPopup();
+
+            }
+        })
+    }
+
+    //==================================== START ON CLICK OF CHECK BUTTON========================================================
+    // on click of check button
+    function check_shopping_cart(type, sc_data, acc_default, acc_default_val) {
+        OpenLoaderPopup();
+        $('#sc_error_messages').hide()
+        $('#sc_success_messages').hide()
+        $('#sc_warning_messages').hide()
+        var error_messages = '';
+        var check_sc_data = '';
+        if (type != 'approval_workflow') {
+            check_sc_data = get_data_for_check()
+        }
+        var total_val = $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).text();
+        data = {
+            'acc_default': acc_default.split(' - ')[0],
+            'acc_default_val': acc_default_val.split(' - ')[0],
+            'total_val': total_val,
+            'check_sc_data': check_sc_data,
+            'type': type,
+            'requester': $('#shopping_cart_requester').val(),
+            'sc_header_guid': GLOBAL_HEADER_GUID,
+            'check_type':'sc_completion'
+        }
+        $('#hg_loader').modal('show');
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Shopping_Cart:check_shopping_cart' %}",
+            data: JSON.stringify(data),
+            success: function (response) {
+                error_messages += sc_completion_ui_checks()
+                manager_detail = response.manager_detail.length
+                sc_errors = response.sc_error
+                if (sc_errors.length == 0 && manager_detail != 0 && internal_supplier_error_itemNumber.length == 0) {
+                       
+                            var msg = "JMSG042";
+                            var msg_type ;
+                          msg_type = message_config_details(msg);
+                          $("#error_msg_id").prop("hidden", false)
+
+                          if(msg_type.message_type == "ERROR"){
+                                display_message("error_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "WARNING"){
+                             display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                          }
+                          else if(msg_type.message_type == "INFORMATION"){
+                             display_message("id_info_msg_id", msg_type.messages_id_desc)
+                          }
+                          var display = msg_type.messages_id_desc;
+                          $('#sc_success_messages').html(display)
+
+
+                    $('#sc_success_messages').show()
+                    if (type == 'submit' && manager_detail != 0) {
+                        save_my_order_doc_detail('submit')
+                    }
+                } else {
+                    $('#sc_success_messages').hide()
+                    if (type == 'submit') {
+                            
+                                var msg = "JMSG046";
+                                var msg_type ;
+                              msg_type = message_config_details(msg);
+                              $("#error_msg_id").prop("hidden", false)
+
+                              if(msg_type.message_type == "ERROR"){
+                                    display_message("error_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "WARNING"){
+                                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "INFORMATION"){
+                                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+                              }
+                              var display = msg_type.messages_id_desc;
+                               error_messages += display ;
+                   }
+                    for (i = 0; i < sc_errors.length; i++) {
+                        dict_obj = sc_errors[i]
+                        for (var key in dict_obj) {
+                            error_messages += 'Error at item ' + key + ': ' + dict_obj[key] + '<br>'
+                        }
+                    }
+                }
+                if (type == 'save') {
+                    save_shopping_cart_ajax(sc_data)
+                }
+                GLOBAL_MANAGER_DETAIL = response.approver_id;
+                $('#div_manager_detail').empty();
+                var manager_icon = '';
+                $('#id_dynamic').empty();
+                if (response.manager_detail) {
+                    $.each(response.manager_detail, function (i, item) {
+                        double_angular = '<div class="workflow-overview__next-icon-container"><i class="fas fa-angle-double-right fa-3x"></i></div>';
+                        manager_icon += '' + double_angular + '<div class="workflow-overview__user-icon-container"><div class="workflow-user-bg workflow-inactive"><i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i></div><button type="button" class="button-workflow-user">' + item.first_name + '</button></div>';
+                    });
+                }
+                if (response.msg_info) {
+                    error_messages += response.msg_info + '<br>'
+                }
+                // $('#id_dynamic').append(error_msg);
+                $('#div_manager_detail').append(manager_icon);
+                $('#sc_error_messages').html(error_messages);
+                if(error_messages == ''){
+                    $('#sc_error_messages').hide()
+                } else{
+                    $('#sc_error_messages').show()
+                }
+                CloseLoaderPopup();
+            }
+        });
+
+    }
+
+    //==================================== END ON CLICK OF CHECK BUTTON========================================================
+
+
+    //==================================== START ON CLICK OF EDIT BUTTON======================================================================
+
+    const update_delivery_date = (type, delivery_item_guid) => {
+        OpenLoaderPopup();
+        update_date_requirements = {}
+        if(type == 'on_lead_time_change'){
+            update_item_guid = delivery_item_guid.split('-')[2]
+            get_supplier_id = document.getElementById('supp-' + update_item_guid).innerHTML
+            update_supplier_id = get_supplier_id.split('-')[1].trim()
+            update_date_requirements['header_guid'] = GLOBAL_HEADER_GUID
+            update_date_requirements['item_guid'] = update_item_guid
+            update_date_requirements['lead_time'] = $('#ScItem-lead_time-' + delete_item_guid).val()
+            update_date_requirements['supplier_id'] = update_supplier_id
+
+        } else {
+            var delivery_dates = new Array()
+            var supplier_id_array = new Array()
+            td_id = $('td[id^="item_del_date-"]')
+            for (i = 0; i < td_id.length; i++) {
+                element_date_id = td_id[i].id
+                get_item_guid = element_date_id.split('-')[1]
+                get_supplier_id = (document.getElementById('supp-' + get_item_guid).innerHTML).split('-')[1].trim()
+                supplier_id_array.push(get_supplier_id)
+                delivery_dates.push(element_date_id)
+            }
+
+            update_date_requirements['header_guid'] = GLOBAL_HEADER_GUID
+            update_date_requirements['delivery_dates'] = delivery_dates
+            update_date_requirements['supplier_id'] = supplier_id_array
+        }
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Doc_Details:update_delivery_date' %}",
+            data: JSON.stringify(update_date_requirements),
+            success: function (response) {
+                if(type == 'on_lead_time_change'){
+                    updated_date = response.updated_date[update_item_guid]
+                    $('#ScItem-item_del_date-' + update_item_guid).val(updated_date)
+                    $('#item_del_date-' + update_item_guid).html(updated_date)                    
+                } else {
+                    $.each(response.updated_date, function (key, value) {
+                    $('#' + key).text(value);
+                    });
+                    $.each(response.updated_payment_incoterms, function (key_item_guid, updated_value) {
+                        payterm = updated_value[0]
+                        incoterm = updated_value[1]
+                        $('#ScItem-payment_term-' + key_item_guid).val(payterm);
+                        $('#ScItem-incoterm-' + key_item_guid).val(incoterm);
+                    });
+                    $.each(response.updated_currency, function (key, value) {
+                    $('#ScIem-value-' + key).text(value);
+                    $('#ScItem-value-' + key).val(value);
+                });
+                $('#ScHeader-total_value-' + GLOBAL_HEADER_GUID).text(response.total_value_sc);
+                    document_edit_mode()
+                }
+                CloseLoaderPopup();
+            },
+            error: function (response) {
+
+            }
+        })
+    }
+
+    //==================================== END ON CLICK OF EDIT ======================================================================
+
+
+
+    //========================================================= START SAVE ============================================================
+    $("#id_save_sc").on("click", function () {
+        OpenLoaderPopup();
+        save_my_order_doc_detail('save');
+        CloseLoaderPopup();
+    });
+
+
+    function save_my_order_doc_detail(type) {
+        var sc_item_dictionary = {};
+        var data = new FormData();
+        var nochange_flag = false
+        purch_worklist_flag = 1;
+        $(".sc_changed").each(function () {
+            nochange_flag = true;
+            var sc_id = $(this).attr("id");
+            if (sc_id != undefined){
+                var field_value = $(this).val();
+                dbname = sc_id.split('-')
+
+                if (dbname[0] === 'ScAccounting') {
+                    if (dbname[1] === 'acc_cat') {
+                        switch (field_value) {
+                            case "CC":
+                                acc_value = "ScAccounting-cost_center-" + dbname[2];
+                                break;
+                            case "WBS":
+                                acc_value = "ScAccounting-wbs_ele-" + dbname[2];
+                                break;
+                            case "OR":
+                                acc_value = "ScAccounting-internal_order-" + dbname[2];
+                                break;
+                            case "AS":
+                                acc_value = "ScAccounting-asset_number-" + dbname[2];
+                                break;
+                            default:
+                        }
+                        if (sc_item_dictionary[acc_value] === undefined) {
+                            acc_val_desc = $("#" + acc_value).val();
+                            acc_val = acc_val_desc.split(' - ');
+                            sc_item_dictionary[acc_value] = acc_val[0];
+                        }
+                    }
+                    field_split_value = field_value.split(' - ');
+                    field_value = field_split_value[0];
+                }
+                else {
+                    field_split_value = field_value.split(' - ');
+                    field_value = field_split_value[0];
+                    sc_item_dictionary[sc_id] = field_value;
+                }
+                data.append('update', JSON.stringify(sc_item_dictionary))
+            }
+        });
+        data.append('type', type)
+        data.append('header_guid', GLOBAL_HEADER_GUID)
+        data.append('purch_worklist_flag', purch_worklist_flag)
+        data.append('manger_detail' , JSON.stringify(GLOBAL_MANAGER_DETAIL))
+        type = 'submit' ? nochange_flag = true : nochange_flag = false
+        if (nochange_flag) {
+        OpenLoaderPopup();
+            $.ajax({
+                url: "{% url 'eProc_Doc_Details:update_sc' %}",
+                type: "post",
+                dataType: 'json',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if(type == 'save'){
+                        message_type = 'saved'
+                    } else {message_type = 'submitted'}
+                    success_message = 'Shopping cart ' + response.document_detail.sc_name + ' with number ' + response.document_detail.document_number + ' saved successfully'
+                    $('#sc_success_messages').html(success_message);
+                    $('#sc_success_messages').show();
+                    CloseLoaderPopup();
+                    setTimeout(function() {OpenLoaderPopup();}, 2000);
+                    scroll_top()
+                    url = location.href.split('/')
+                    url.pop()
+                    url.push('display')
+                    url = url.join('/')
+                    location.href = url
+                },
+                cache: false,
+                processData: false,
+                contentType: false,
+            });
+             CloseLoaderPopup();
+        }
+
+
+    }
+    //========================================================= END SAVE ============================================================
+
+
+    //======================================================== start on change in ACC ==============================================
+
+
+    var total_value = '';
+    var quantity = '';
+    var sc_header_co_code = '{{sc_header_data.co_code|safe}}'
+    function approve_tab_click_trigger_wf(evt, detail_tab_name,type) {
+        changed_val = {};
+        var requester_name = '{{receiver_name}}';
+        item_calculate = get_item_detail();
+        quantity = item_calculate[0];
+        price_unit = item_calculate[1];
+        price = item_calculate[2];
+        overall_limit = item_calculate[3];
+        catalog_qty = item_calculate[4];
+        call_off = rendered_call_off;
+        acc_detail = get_acc_detail();
+        acc_cat = acc_detail[0];
+        acc_val = acc_detail[1];
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Doc_Details:manger_detail' %}",
+
+            data: {
+                'quantity': quantity,
+                'price_unit': price_unit,
+                'price': price,
+                'overall_limit': overall_limit,
+                'catalog_qty': catalog_qty,
+                'call_off': rendered_call_off,
+                'acc_cat': acc_cat,
+                'acc_val': acc_val,
+                'co_code': sc_header_co_code,
+                'requester_name': requester_name,
+                'item_guid':rendered_item_guid[item_detail_visible_div],
+                'header_guid':GLOBAL_HEADER_GUID
+            },
+            success: function (response) {
+                GLOBAL_MANAGER_DETAIL = response.manager_detail;
+                $('#div_manager_detail').empty();
+                var manager_icon = '';
+                $('#id_dynamic').empty();
+                if (response.manager_detail) {
+                    $.each(response.manager_detail, function (i, item) {
+                        if (item == 'Auto') {
+                              
+                                var msg = "JMSG034";
+                                var msg_type ;
+                              msg_type = message_config_details(msg);
+                              $("#error_msg_id").prop("hidden", false)
+
+                              if(msg_type.message_type == "ERROR"){
+                                    display_message("error_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "WARNING"){
+                                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "INFORMATION"){
+                                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+                              }
+                              var display = msg_type.messages_id_desc;
+
+                            error_msg = '<br><br><span>display</span>'
+                        }
+                        else {
+                             
+                                var msg = "JMSG038";
+                                var msg_type ;
+                              msg_type = message_config_details(msg);
+                              $("#error_msg_id").prop("hidden", false)
+
+                              if(msg_type.message_type == "ERROR"){
+                                    display_message("error_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "WARNING"){
+                                 display_message("id_warning_msg_id", msg_type.messages_id_desc)
+                              }
+                              else if(msg_type.message_type == "INFORMATION"){
+                                 display_message("id_info_msg_id", msg_type.messages_id_desc)
+                              }
+                              var display = msg_type.messages_id_desc;
+                               error_msg = '<br><br><span>display</span>'
+
+                        }
+                        double_angular = '<div class="workflow-overview__next-icon-container"><i class="fas fa-angle-double-right fa-3x"></i></div>';
+                        manager_icon += '' + double_angular + '<div class="workflow-overview__user-icon-container"><div class="workflow-user-bg workflow-inactive"><i class="fas fa-user-tie fa-3x" aria-hidden="true"> </i></div><button type="button" class="button-workflow-user">' + item.first_name + '</button></div>';
+                    });
+                }
+                if (response.msg_info) {
+                    error_msg = '<br><br><span>' + response.msg_info + '</span>'
+                }
+                //$('#id_dynamic').append(error_msg);
+                $('#div_manager_detail').append(manager_icon);
+                //if(type == 'APPROVE_TYPE'){
+               //     display_tab(evt, detail_tab_name);
+              //  }
+                document.getElementById("ScHeader-total_value-" + GLOBAL_HEADER_GUID).innerHTML = response.total_value;
+                document.getElementById("actual_price").innerHTML = response.actual_value;
+                document.getElementById("discount_value").innerHTML = response.discount_value;
+
+                //$("#quantity-"+rendered_item_guid[item_detail_visible_div]).html(response.quantity);
+                $.each(rendered_item_guid, function (index, item_guid) {
+                    $("#value-" + item_guid).html(response.value[index]);
+                    $("#price_unit-" + item_guid).html(response.price_unit[index]);
+                    if (rendered_call_off[index] === "01") {
+                        $("#catalog_qty-" + item_guid).html(response.catalog_qty[index]);
+                    }
+                    else {
+                        $("#quantity-" + item_guid).html(response.quantity[index]);
+                    }
+                    $("#ScItem-value-" + item_guid).val(response.value[index]);
+                    $("#price-" + item_guid).html(response.item_price[index]);
+                    $("#ScItem-price-" + item_guid).val(response.item_price[index]);
+                    if (item_guid == rendered_item_guid[item_detail_visible_div]){
+                        $("#ScItem-price-" + item_guid).addClass('sc_changed');
+                    }
+
+                });
+            }
+        });
+
+    }
+
+    //======================================================== end on change in ACC ==============================================
+
+    const display_approval_process = () => {
+        $('#id_display_item_detail').show()
+        open_item_details('evt', 'approval_process_summary')
+    }
+
+    // Script from sc item details.html 
+    var  doc_number_encrypted = "{{doc_number_encrypted}}"
+
+
+    // Ajax call to delete an item from the cart and update in the UI using ajax call
+    function ajax_delete_cart_item(data) {
+        urlLink = "{% url 'eProc_Shopping_Cart:edit_saved_shopping_cart' %}";
+        let result = AjaxCallAPIBasic(urlLink, data);
+        return result;
+    }
+    
+    const ajax_delete_cart_item_url = "{% url 'eProc_Shopping_Cart:edit_saved_shopping_cart' %}";
+    // End of sc item details script
+
+
+// Assign account assignment values to a variable
+var accout_assigment_values = {{acc_value_append|safe}}
+function show_image_div(){
+    $(".catalog_img").hide();
+    $(".catalog_img:eq(" + image_visible_div + ")").show();
+
+}
+function display_acc_val(button) {
+    var select_id = button.id;
+    var acc_field_item_guid = select_id.split("-")[2]
+     var acc_type = document.getElementById(select_id).value;
+    var acc_index = jQuery.inArray(acc_field_item_guid, rendered_acc_guid)
+    var item_prod_cat = $('#ScItem-prod_cat_id-'+rendered_item_guid[acc_index]).val()
+    var item_total_value =$('#ScItem-value-'+rendered_item_guid[acc_index]).val()
+    var item_currency = $('#ScItem-currency-'+rendered_item_guid[acc_index]).val()
+    $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Account_Assignment:change_acc_assignment_cat' %}",
+            data: {
+                'acc_type': acc_type,
+                'default_company_code':GLOBAL_SC_CO_CODE,
+                'item_prod_cat':item_prod_cat,
+                'item_total_value':item_total_value,
+                'item_currency':item_currency,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (response) {
+                display_acc_onselect(acc_type);
+                $('#ScAccounting-gl_acc_num-'+acc_field_item_guid).val(response.default_gl_account)
+            }
+    })
+}
+</script>
+
+<script src="{% static 'scripts/sc_completion_doc_details.js' %}"></script>
+
+{% endblock %}

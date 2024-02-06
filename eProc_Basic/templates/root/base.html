@@ -1,0 +1,353 @@
+<!--Base for all html web pages -->
+<!DOCTYPE html>
+<!--Load static files-->
+{% load static %}
+<html lang="en">
+
+<head>
+    <!-- Link to JQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="shortcut icon" type="image/jpg" href="{% static 'images/majjaka_shop_logo.png' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'styles/css/main.css' %}?v={{ cache_version }}">
+    <!-- review -->
+    <link rel="stylesheet" href="{% static 'styles/sc.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/search.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/toggle-button.css' %}" />
+    <!-- review -->
+    <script src="{% static 'scripts/script.js' %}?v={{ cache_version }}"></script>
+    <!-- Font awesome -->
+    <script defer src="{% static 'font/js/all.js' %}"></script>
+    <script src="{% static 'scripts/main.js' %}"></script>
+    <script src="{% static 'messages/messages.js' %}"></script>
+    <script src="{% static 'constants/constants.js' %}"></script>
+
+    <!--Block for putting extra page specific links-->
+    {% block pagelinks %} {% endblock %}
+    <!--Block for giving page title-->
+    <title> {% block title %} {% endblock %} </title>
+
+    <!-- BootStrap CDN URLS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <!--    bootstrap dataTable links-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- export to excel link start -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.4/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+
+    <!--    auto completion search -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="shortcut icon" href="#" />
+
+    <!-- Latest compiled and minified JavaScript for Bootstrap multi-select dropdowns-->
+    <!-- Latest compiled and minified CSS for Bootstrap multi-select dropdowns-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!--  Google materials icon	link -->
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+
+    <!-- owl carousel -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js" crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Nunito+Sans&display=swap" rel="stylesheet">
+    
+    <!-- Boot strap datepicker   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body {% if inc_nav %} class="navbar-exist" {% endif %}>
+    {% include 'root/loader-screen.html' %}
+    
+    {% if is_slide_menu %}
+    {% include 'root/slidemenu.html' %}
+    {% endif %}
+    {% if inc_nav %}
+    {% include 'root/navbar.html' %}
+    {% endif %}
+    <div {% if is_slide_menu %} class="sidenav-exist" {% endif %} id="main_div">
+        {% block maincontent %}
+        {% endblock %}
+    </div>
+
+    {% include 'root/ajax-api.html' %}
+    {% include 'root/item_added_to_cart_success.html' %}
+    {% include 'Shop_Home/chat_bot_popup.html' %}
+</body>
+
+<script>
+    var msg_display_interval = {{msg_display_time_value|safe}}; // Success message display time variable
+    var GLOBAL_SPECIAL_CHAR_LIST = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+    function validate_row(input_data){
+        var special_char_flag = false
+        $.each(input_data, function(i, value) {
+            if (GLOBAL_SPECIAL_CHAR_LIST.test(value)){
+                special_char_flag = true
+                return special_char_flag
+            }
+        });
+        return special_char_flag
+    }
+    $(document).ready(function (){
+    var chat = localStorage.getItem("chatVisible");
+    var chat_content = localStorage.getItem("chatContent");
+    if(chat == "True")
+     {
+       $("#bot_popup_id").show();
+       $("#first_msg").prop("hidden", false);
+     }
+     else{
+       $("#bot_popup_id").hide();
+     }
+
+<!--     setTimeout(function() {-->
+<!--                    $('.alert-success').prop("hidden", true);-->
+<!--         }, msg_display_interval*1000);-->
+
+ });
+
+ // Validations based on class name
+ // Allows alpha numeric values with space, No Special Characters
+    $("body").on("keypress", ".check_special_char", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Allows alpha numeric values without space, No Special Characters
+    $("body").on("keypress", ".check_special_char_nospace", function (event) {
+    var regex = new RegExp("^[a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+  // Allows only characters with space
+    $("body").on("keypress", ".check_only_character", function (event) {
+    var regex = new RegExp("^[ a-zA-Z]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Allows only characters without space
+    $("body").on("keypress", ".check_character_no_space", function (event) {
+    var regex = new RegExp("^[a-zA-Z]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+
+     // Allows only characters without space
+    $("body").on("keypress", ".check_alpha_no_space", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+
+      // Allows only characters without space
+    $("body").on("keypress", ".check_alphastar_no_space", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9*]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+ // Allows only characters without space for currency
+    $("body").on("keypress", ".check_character_no_space_currency", function (event) {
+    var input = this.value + String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (input.length >= 3 || /\s/.test(input)) {
+        event.preventDefault();
+        return false;
+    }
+  });
+
+    $("body").on("keypress", ".check_special_character", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+
+  // Allows only numbers
+    $("body").on("keypress", ".check_number", function (event) {
+        var regex = new RegExp("^[0-9]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+    // Search for numbers with *
+    $("body").on("keypress", ".check_number_search", function (event) {
+        var regex = new RegExp("^[0-9*]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+    // Restrict special characters , alphabets for number type input field across the application
+    $("input[type=number]").keypress(function(event){
+         var regex = new RegExp("^[0-9]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+     $(".check_price").keypress(function(e){
+          var newVal=$(this).val()+(e.charCode!==0?String.fromCharCode(e.charCode):'');
+            if($(this).val().search(/(.*)\.[0-9][0-9]/)===0 && newVal.length>$(this).val().length){
+                e.preventDefault();
+            }
+  });
+    // Allows numbers with + , - and space
+    $("body").on("keypress", ".check_phone_number", function (event) {
+        var regex = new RegExp("^[ 0-9+-]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+    // Allows numbers with .
+    $("body").on("keypress", ".check_price", function (event) {
+        var regex = new RegExp("^[0-9.]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+  // Search field characters, allows alphanumeric values with *
+    $("body").on("keypress", ".check_for_search", function (event) {
+    var regex = new RegExp("^[a-zA-Z0-9*]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+     // Allows characters, numbers and +, :, -
+    $("body").on("keypress", ".check_UTC_Difference", function (event) {
+    var regex = new RegExp("^[a-zA-Z0-9:+-]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Allows numbers with / and -
+    $("body").on("keypress", ".check_for_date", function (event) {
+        var regex = new RegExp("^[0-9/-]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+    // Validation for SC name
+    $("body").on("keypress", ".check_sc_name", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9:-_]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Validation for Notes
+    $("body").on("keypress", ".check_notes", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9,]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Allows alpha numeric values with space, No Special Characters
+    $("body").on("keypress", ".check_address", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9#,_-]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Validation for Product name
+    $("body").on("keypress", ".check_product_name", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9-_]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+      // Validation for Postal code
+    $("body").on("keypress", ".check_postal_code", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9-+]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+     // Validation for Region
+    $("body").on("keypress", ".check_region", function (event) {
+    var regex = new RegExp("^[ a-zA-Z0-9]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+     // Validation for City
+    $("body").on("keypress", ".check_city", function (event) {
+    var regex = new RegExp("^[ a-zA-Z]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+        }
+    });
+    // Check Mobile Number
+    $("body").on("keypress", ".check_mobile_number", function (event) {
+        var regex = new RegExp("^[0-9+]+$");
+        var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        if (!regex.test(key)) {
+           event.preventDefault();
+           return false;
+            }
+    });
+
+
+
+</script>
+</html>

@@ -1,0 +1,13 @@
+
+<script>
+    // To show please wait pop-up
+    $(document).ready(function () {
+        $(document)
+        .ajaxStart(function () {
+            $('#hg_loader').modal('show');
+        })
+        .ajaxStop(function () {
+            $('#hg_loader').modal('hide');
+        });
+    });
+</script>

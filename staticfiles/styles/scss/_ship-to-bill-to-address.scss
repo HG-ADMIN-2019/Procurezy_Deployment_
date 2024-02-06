@@ -1,0 +1,12 @@
+table.table-change-address {
+    border: 1px solid #ddd !important;
+
+    & tr:nth-child(even) {
+        background-color: white;
+    }
+
+    & tbody td {
+        padding: 2%;
+        border-bottom: 1px solid #ddd;
+    }
+} 

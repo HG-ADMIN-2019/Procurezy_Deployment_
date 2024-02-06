@@ -1,0 +1,260 @@
+MESSAGES_ID,MESSAGES_ID_DESC,MESSAGES_CATEGORY,LANGUAGE_IDdel_ind,
+JMSG001,Duplicate Entry,F,EN,0
+JMSG002,Please Enter Valid Value,F,EN,0
+JMSG003,Special Characters In ,F,EN,0
+JMSG004,Maximum Length Exceeded For,F,EN,0
+JMSG005,Please Select,F,EN,0
+JMSG006,Empty File : Please Fill Data And Try Again,F,EN,0
+JMSG007,Please Enter,F,EN,0
+JMSG008,Utc Difference Has Characters Which Are Not Allowed,F,EN,0
+JMSG009,Starting Value Greater Than Ending Value,F,EN,0
+JMSG010,Number Of Active Records In Database :,F,EN,0
+JMSG011,Number Of Records In Input File : ,F,EN,0
+JMSG012,Number Of Records To Be Inserted :,F,EN,0
+JMSG013,Number Of Records To Be Updated :,F,EN,0
+JMSG014,Number Of Records To Be Deleted :,F,EN,0
+JMSG015,Number Of Duplicate :,F,EN,0
+JMSG016,Current Value Out Of Range,F,EN,0
+JMSG017,From Date Is Greater Than To Date,F,EN,0
+JMSG018,An Error Occurred,F,EN,0
+JMSG019,Uploaded Successfully,F,EN,0
+JMSG020,Please Fill The Required Details,F,EN,0
+JMSG021,Please Attach Image Before Setting It To Default,F,EN,0
+JMSG022,You Are Not Allowed To Edit Form: ,F,EN,0
+JMSG023,You Are Not Allowed To Edit Form: ,F,EN,0
+JMSG024,Duplicate Email Id,F,EN,0
+JMSG025,Please Remove To Date Before Removing From Date,F,EN,0
+JMSG026,You Have Maintained Multiple Delivery Addresses,F,EN,0
+JMSG027,Account Assignment Category Is Not Maintained. Please Contact Admin,F,EN,0
+JMSG028,Item Name Must Contain At Least 3 Characters,F,EN,0
+JMSG029,"Please Select Default Language English For New Product Id",F,EN,0
+JMSG030,To Date Cannot Be Less Than From Date,F,EN,0
+JMSG031,Expected Value Cannot Be Greater Than Overall Limi,F,EN,0
+JMSG032,"Please Attach Jpg, Jpeg, Png, Bmp, Tif, Tiff Or Gif",F,EN,0
+JMSG033,You Are Currently Adding Item To Cart,F,EN,0
+JMSG034,Status:Auto Approved,F,EN,0
+JMSG035,Ending Number Cannot Be Less Than Starting Number,F,EN,0
+JMSG036,Current Number Cannot Be Less Than Starting Number,F,EN,0
+JMSG037,Current Number Cannot Be Greater Than Ending Number,F,EN,0
+JMSG038,Status:Waiting For Approval By Financial Approval,F,EN,0
+JMSG039,Data Saved Successfully,F,EN,0
+JMSG040,Responsibility Not Applicable,F,EN,0
+JMSG041,Attachment Size Cannot Exceed More Than,F,EN,0
+JMSG042,Your Shopping Cart Has No Errors.,F,EN,0
+JMSG043,Order Cannot Be Placed Due To Errors,F,EN,0
+JMSG044,Your Browser Doesnot Support A Stable Version Of Indexeddb.,F,EN,0
+JMSG045,Please Attach Valid File Extension,F,EN,0
+JMSG046,Failed To Add Attachments,F,EN,0
+JMSG047,You Have Maintained Multiple Account Assignment Categories,F,EN,0
+JMSG048,Your Shopping Cart Has Mixed Account Assignment Values And Can Impact Your Approval Process,F,EN,0
+JMSG049,You Have Maintained Multiple Purchasing Groups,F,EN,0
+JMSG050,Deleted Database Successfully,F,EN,0
+JMSG051,Extended  Product Category Not Applicable,F,EN,0
+JMSG052,Please Select An Account Assignment Value From Dropdown As The One In Data File Doesnt Seem To Be Matching,F,EN,0
+JMSG053,Number Of Invalid Records :,F,EN,0
+JMSG108,Deleted Database Successfully,F,EN,0
+JMSG109,Duplicate Range Entry,F,EN,0
+JMSG110,Please Attach Csv File,F,EN,0
+MSG001,User Not Assigned To Any Organization,B,EN,0
+MSG002,Purchase Setting Data Is Saved Successfully,B,EN,0
+MSG003,Personal Settings Data Is Saved Successfully,B,EN,0
+MSG004,Personal Settings Data Is Not Saved Successfully,B,EN,0
+MSG005,Incomplete Attributes Maintained For User,B,EN,0
+MSG006,Please Enter At Least Three Characters For Creator Search,B,EN,0
+MSG007,Please Enter A Valid Creator User Id/Name,B,EN,0
+MSG008,Please Enter A Valid Number,B,EN,0
+MSG009,Please Enter At Least Three Characters For Requester Search,B,EN,0
+MSG010,Please Enter A Valid Requester User Id/Name,B,EN,0
+MSG011,Please Enter At Least Three Characters For Supplier Search ,B,EN,0
+MSG012,Please Enter A Valid Supplier User Id/Name,B,EN,0
+MSG013,Please Enter Any One Search Criteria,B,EN,0
+MSG014,Please Enter From And To Date,B,EN,0
+MSG015,\'From Date\' Cannot Be Greater Than \'To Date\',B,EN,0
+MSG016,Item Added To Cart Successfully,B,EN,0
+MSG017,Registration Is Successful,B,EN,0
+MSG018,Free Text Form Has Been Successfully Configured,B,EN,0
+MSG019,Form Fields Cannot Contain Any Special Characters,B,EN,0
+MSG0199,Item Cannot Be Added To Cart Successfully,B,EN,0
+MSG020,Product Name Should Be Greater Than 3,B,EN,0
+MSG021,Description Should Not Be Greater Than 250 Characters,B,EN,0
+MSG022,Value Should Not Be Greater Than 7 Digits,B,EN,0
+MSG023,Enter Unit Of Measure,B,EN,0
+MSG024,Date Cannot Be In The Past,B,EN,0
+MSG025,Quantity Should Not Be Greater Than 7 Digits,B,EN,0
+MSG026,Item Name Cannot Contain Any Special Character,B,EN,0
+MSG027,Item Name Should Be Less Than 255 Characters,B,EN,0
+MSG028,Item Name Should Be Greater Than 3,B,EN,0
+MSG029,Invalid Email Or Password,B,EN,0
+MSG030,Please Select Currency,B,EN,0
+MSG031,Date Cannot Be In The Past,B,EN,0
+MSG032,Incomplete Profile For User,B,EN,0
+MSG033,From Or To Date Cannot Be In The Past,B,EN,0
+MSG034,Note Added Successfully,B,EN,0
+MSG035,Attachment Added Successfully,B,EN,0
+MSG036,Supplier Description Cannot Contain Any Mathematical Symbols,B,EN,0
+MSG037,Data Saved Successfully,B,EN,0
+MSG038,Expected Value Cannot Be Greater Than Overall Limit,B,EN,0
+MSG039,Please Select Date,B,EN,0
+MSG040,Please Select From Or To Date,B,EN,0
+MSG041,Please Select Follow Up Actions,B,EN,0
+MSG042,Lead Time Cannot Contain More Than 3 Digits,B,EN,0
+MSG043,Data Is Not Saved Successfully,B,EN,0
+MSG044,Please Attach Csv File,B,EN,0
+MSG045,Please Upload Sc Data In Csv Format,B,EN,0
+MSG046,Please Upload Po Data In Csv Format,B,EN,0
+MSG047,Please Upload User Data In Csv Format,B,EN,0
+MSG048,Please Upload Country Data In Csv Format,B,EN,0
+MSG049,Please Upload Currency Data In Csv Format,B,EN,0
+MSG050,Please Upload Languages Data In Csv Format,B,EN,0
+MSG051,Please Upload Timezone Data In Csv Format,B,EN,0
+MSG052,Please Upload Unit Of Measure Data In Csv Format,B,EN,0
+MSG053,Please Upload Supplier Master Data In Csv Format,B,EN,0
+MSG054,Please Upload Clients Data In Csv Format,B,EN,0
+MSG055,Email Id Does Not Exist,B,EN,0
+MSG056,User Locked Contact Your Admin,B,EN,0
+MSG057,           Login Attempt Left,B,EN,0
+MSG058,Please Upload Product Details Data In Csv Format,B,EN,0
+MSG059,Please Upload Product Category Cust Data In Csv Format,B,EN,0
+MSG060,Please Upload Document Type Data In Csv Format,B,EN,0
+MSG061,Please Upload Account Assignment Category Data In Csv Format,B,EN,0
+MSG062,Please Upload Account Data Description Data In Csv Format,B,EN,0
+MSG063,Please Upload Address Data In Csv Format,B,EN,0
+MSG064,Please Upload Address Map Data In Csv Format,B,EN,0
+MSG065,Please Upload Approver Limit Data In Csv Format,B,EN,0
+MSG066,Please Upload Approver Limit Description Data In Csv Format,B,EN,0
+MSG067,Please Upload Approval Types Data In Csv Format,B,EN,0
+MSG068,Please Upload Incoterms Data In Csv Format,B,EN,0
+MSG069,Please Upload Org Companies Data In Csv Format,B,EN,0
+MSG070,Please Upload Purchase Group Data In Csv Format,B,EN,0
+MSG071,Please Upload Purchase Organisation Data In Csv Format,B,EN,0
+MSG072,Please Upload Payment Terms Data In Csv Format,B,EN,0
+MSG073,Please Upload Spend Limit Data In Csv Format,B,EN,0
+MSG074,Please Upload Spend Limit Description Data In Csv Format,B,EN,0
+MSG075,Please Upload Notification Keywords Data In Csv Format,B,EN,0
+MSG076,Please Upload Notification Settings Data In Csv Format,B,EN,0
+MSG077,Must Contain At Least 10 Digits,B,EN,0
+MSG078,Your Username Must Contain At Least Four Alphanumeric Characters Exist,B,EN,0
+MSG079,Must Contain Min Four Characters Without Special Characters/Numbers,B,EN,0
+MSG080,Must Contain Min One Character Without Special Characters/Numbers',B,EN,0
+MSG081,Please Select A Language,B,EN,0
+MSG082,Please Select A Country,B,EN,0
+MSG083,Email Id Already Exists,B,EN,0
+MSG084,Username Already Exists,B,EN,0
+MSG085,Supplier Id Already Exists,B,EN,0
+MSG086,Please Upload Product Category Data In Csv Format,B,EN,0
+MSG087,You Cannot Add Limit Item With Other Call Off,B,EN,0
+MSG088,Limit Item Already Exists In The Current Cart,B,EN,0
+MSG089,Parent Record Not Found On Clients Table,B,EN,0
+MSG090,Parent Record Not Found On Product Category Table,B,EN,0
+MSG091,Parent Record Not Found On Country Table,B,EN,0
+MSG092,Parent Record Not Found On Languages Table,B,EN,0
+MSG093,Parent Record Not Found On Timezone Table,B,EN,0
+MSG094,Duplicate Record Exists On Client And Address Number,B,EN,0
+MSG095,Parent Record Not Found On Orgaddress Table,B,EN,0
+MSG096,Duplicate Record Exists On Client And Company Id,B,EN,0
+MSG097,Parent Record Not Found On Accountassignmentcategory Table,B,EN,0
+MSG098,Parent Record Not Found On Accountingdata Table,B,EN,0
+MSG099,Parent Record Not Found On Orgcompanies Table,B,EN,0
+MSG100,Your New Password Cannot Be Same As Old Password,B,EN,0
+MSG101,Parent Record Not Found On Orgmodel Table.,B,EN,0
+MSG102,Parent Record Not Found On Purchase Org Table.,B,EN,0
+MSG103,Parent Record Not Found On Notification Settings Table.,B,EN,0
+MSG104,Duplicate Record Exists On Org Id And Client.,B,EN,0
+MSG105,Duplicate Record Exists On Variant Name And Client.,B,EN,0
+MSG106,Duplicate Record Exists On Variant Name And Client.,B,EN,0
+MSG107,Duplicate Record Exists On Supplier Id And Client.,B,EN,0
+MSG108,Duplicate Record Exists On Email Id And Client.,B,EN,0
+MSG109,Please Contact You Admin To Assign Default Company Code,B,EN,0
+MSG110,Please Enter At Least Three Characters For Sc Name,B,EN,0
+MSG111,Please Enter A Valid Sc Name,B,EN,0
+MSG112,Data Has Been Saved Successfully,B,EN,0
+MSG113,Data Has Been Deleted Successfully,B,EN,0
+MSG114,Please Check The Uploaded Csv File,B,EN,0
+MSG115,   Please Maintain Default Value For ,B,EN,0
+MSG116,  No Attributes Maintained For,B,EN,0
+MSG117,   Missing Descriptions For ,B,EN,0
+MSG118,User Is Not Assign To Any Organization,B,EN,0
+MSG119,Your New Password Cannot Be Same As Old Password,B,EN,0
+MSG120,Your Password Was Updated Successfully,B,EN,0
+MSG121,Password Requirement Not Met: <Br> Minimum Length   8 Characters Long <Br> ' \          'Atleast One Numeric Value (0 9) <Br> Atleast One Upper Case And One Lower Case ' \          'Values (A Z)(A Z) <Br> Atleast One Special Character (!@#%),B,EN,0
+MSG122,Please Enter A Valid Password,B,EN,0
+MSG123,No Sc Transaction Type Is Maintained. Contact Your Admin,B,EN,0
+MSG124,Invalid Currency,B,EN,0
+MSG125,Item Added To Sc Tables,B,EN,0
+MSG126,Number Ranges Updated Successfully,B,EN,0
+MSG127,Transaction Types Updated Successfully,B,EN,0
+MSG128,Unable To Upload Product Images,B,EN,0
+MSG129,You Cannot Delete The Current Freetext Form,B,EN,0
+MSG130,Form Deleted Successfully,B,EN,0
+MSG131,Freetext Form Saved Successfully,B,EN,0
+MSG132,Freetext Form Created Successfully With Id,B,EN,0
+MSG133,No Matching Data Found,B,EN,0
+MSG134,Invalid Request,B,EN,0
+MSG135,Delete Children First,B,EN,0
+MSG136,Invalid Node Name,B,EN,0
+MSG137,Cannot Create Root Node Underneath The Node,B,EN,0
+MSG138,Cannot Create This Node Under P Group,B,EN,0
+MSG139,P Group Should Be Created Under P Org,B,EN,0
+MSG140,Cannot Create This Node Under P Org,B,EN,0
+MSG141,Cannot Create Cc Under Cc,B,EN,0
+MSG142,Cannot Create P Org Under P Org,B,EN,0
+MSG143,Parent Node Doesnot Exist,B,EN,0
+MSG144,Invalid Parent,B,EN,0
+MSG145,Map Id Length Should Not Be Lesser Than 8,B,EN,0
+MSG146,Map Id Already Exist,B,EN,0
+MSG147,Invalid Map Id,B,EN,0
+MSG148,Parent Should Be Null For Root Node,B,EN,0
+MSG149,No Children Found,B,EN,0
+MSG150,Invalid Org Name,B,EN,0
+MSG151,Org Name Already Exist,B,EN,0
+MSG152,User Id Already Exist,B,EN,0
+MSG153,Invalid User Id,B,EN,0
+MSG154,Users Cannot Be Assigned Under This Node,B,EN,0
+MSG155,Saved Org Announcement Details Successfully,B,EN,0
+MSG156,Updated Successfully,B,EN,0
+MSG157,Saved Org Support Details Successfully,B,EN,0
+MSG158,Cannot Add More To Favourites,B,EN,0
+MSG159,Favourite Shopping Cart Name Already Exists,B,EN,0
+MSG160,Shopping Cart Added To Favourites!,B,EN,0
+MSG161,User Not Assigned To Any Company Please Contact Your Admin,B,EN,0
+MSG162,Address Is Not Valid,B,EN,0
+MSG163,Default Address Is Not Maintained Please Contact Your Admin,B,EN,0
+MSG164,Gl Account Number Is Not Valid,B,EN,0
+MSG165,Account Assignment Value Is Not Valid,B,EN,0
+MSG166,Account Assignment Category Is Not Valid,B,EN,0
+MSG167,No Default Calendar Is Maintained,B,EN,0
+MSG168,Supplier Working Days Is Not Maintained. Please Contact Your Admin!,B,EN,0
+MSG169,The Current Delivery Date Is Holiday For The Buyer,B,EN,0
+MSG170,Delivery Date Is Not Valid,B,EN,0
+MSG171,Delivery Date Cannot Be In Past,B,EN,0
+MSG172,Insufficient Approval Limit. Please Contact Your Admin,B,EN,0
+MSG173,Approver Cannot Be Determined.Please Contact Ur Admin,B,EN,0
+MSG174,Spending Limit Is Not Defined.Please Contact Ur Admin,B,EN,0
+MSG175,No Workflow Schema Exists.Please Contact Ur Admin,B,EN,0
+MSG176,User Name Doesnot Exist,B,EN,0
+MSG177,Supplier Saved Successfully,B,EN,0
+MSG178,Saved Supplier Purchasing Details Successfully,B,EN,0
+MSG179,User Name Doesnot Exist,B,EN,0
+MSG180,Please Upload Products & Services Data In Csv Format,B,EN,0
+MSG181,Please Upload Wfacc  Data In Csv Format,B,EN,0
+MSG182,Please Upload Org Model Data In Csv Format,B,EN,0
+MSG183,Saved User Details Successfully ,B,EN,0
+MSG184,Status Saved Successfully,B,EN,0
+MSG185,No Approval Required,B,EN,0
+MSG186,Duplicate Entry,B,EN,0
+MSG187,Please Attach Valid File Extension,B,EN,0
+MSG188,Superior  Accounting Data Is Not Maintained,B,EN,0
+MSG189,Incorrect Header Fields. Please Check Your Attached Csv,B,EN,0
+MSG190,Supplier Id Already Exists,B,EN,0
+MSG191,Supplier Registration Number Already Exists,B,EN,0
+MSG192,No Po Transaction Type Is Maintained. Contact Your Admin,B,EN,0
+MSG193,Number of Active Records in Database :,B,EN,0
+MSG194,Total no of Records : ,B,EN,0
+MSG195,Number of Records to be Inserted : ,B,EN,0
+MSG196,Number of Records to be Updated : ,B,EN,0
+MSG197,Number of Records to be Deleted :,B,EN,0
+MSG198,Number of Duplicate Records : ,B,EN,0
+MSG199,Number of Invalid Records: ,B,EN,0
+MSG200,Number of missing records in dependent table: ,B,EN,0
+MSG201,Client Id already exists,B,EN,0
+MSG202,Client data saved successfully,B,EN,0

@@ -1,0 +1,134 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} User Settings {% endblock %}
+
+{% block maincontent %}
+
+<!--  user setting user_setting_form start -->
+<div class="container-fluid">
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mep-form_wrapper">
+
+            <div>
+                <div class="elements-space-between">
+                    <h3>User Settings</h3>
+                    <div>
+                        <button type="submit" class="btn btn-primary pop-up-loader" id="edit_id" name="Edit">
+                            <i class="fas fa-edit"></i> edit
+                        </button>
+                        <button type="submit" class="btn btn-outline-primary d-none pop-up-loader" id="cancel_id" name="cancel">
+                            <i class="fas fa-times"></i> cancel
+                        </button>
+                        <button type="button" class="btn btn-primary d-none" id="change_password">
+                            <i class="fas fa-key"></i> change password
+                        </button>
+                        <button type="submit" class="btn btn-primary d-none pop-up-loader" id="save_id" name="Save">
+                            <i class="fas fa-save"></i> save
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- <div class="required-fields">
+                {{ user_setting_form.non_field_errors }}
+            </div> -->
+            <div class="required-fields">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}&nbsp;&nbsp;{{attempts_left}}</div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="card card-shadow-1 mt-4" id="personal-details">
+                <div class="card-body">
+                    <h5 class="card-title">Personal Details</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> User Name<span class="hg_required"></span></label>
+                            {{ personal_settings.username }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label> First Name<span class="hg_required"></span></label>
+                            {{ personal_settings.first_name }}
+                            
+                            {% for error in personal_settings.first_name.errors %}
+                            <span style="color: red;">{{error}}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Last Name<span class="hg_required"></span></label>
+                            {{ personal_settings.last_name }}
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label> Email<span class="hg_required"></span></label>
+                            {{ personal_settings.email }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label> Language ID<span class="hg_required"></span></label>
+                            {{ personal_settings.language_id }}
+                        </div>
+                    </div>
+
+                    <span class="badge generic-help-text-badge"></span>
+                </div>
+            </div>
+    
+            <div class="card card-shadow-1 mt-3" id="extented-details">
+                <div class="card-body">
+                    <h5 class="card-title">Extended Details</h5>
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>Time zone<span class="hg_required"></span></label>
+                            {{ personal_settings.time_zone }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Date Format<span class="hg_required"></span></label>
+                            {{ personal_settings.date_format }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Employee ID<span class="hg_required"></span></label>
+                            {{ personal_settings.employee_id }}
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="form-group col-md">
+                            <label>Decimal Notation<span class="hg_required"></span></label>
+                            {{ personal_settings.decimal_notation }}
+                        </div>
+                        <div class="form-group col-md">
+                            <label>Currency ID<span class="hg_required"></span></label>
+                            {{ personal_settings.currency_id }}
+                        </div>
+                    </div>
+
+                    <span class="badge generic-help-text-badge"></span>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+    <!-- User Setting form end -->
+    {% include 'Password_Change/change_password.html' %}
+</div>
+
+
+<script>
+
+    action = '{{action_flag|safe}}'
+
+</script>
+
+<script src="{% static 'scripts/personal_settings_display.js'%}"></script>
+{% endblock %}

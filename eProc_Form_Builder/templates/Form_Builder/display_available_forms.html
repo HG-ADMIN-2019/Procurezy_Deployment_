@@ -1,0 +1,334 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Available Freetext Form {% endblock %}
+{% block maincontent %}
+
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+        <div class="d-flex justify-content-between">
+            <h3>Available Freetext Forms</h3>
+
+            <div>
+                <button class="btn btn-primary" onclick="window.open(href = '{% url 'eProc_Form_Builder:create-freetext' encrypted_freetext_id %}')">
+                    <i class="fa fa-plus"></i> create freetext form
+                </button>
+            </div>
+        </div>
+
+        <hr>
+        <div class="card card-shadow-1">
+            <div class="card-body">
+                <div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md">
+                                <label for="">Form ID</label>
+                                <input type="text" class="form-control check_for_search" id="ft_form_id" name="ft_form_id">
+                            </div>
+                            <div class="col-md">
+                                <label for="">Description</label>
+                                <input type="text" class="form-control check_for_search" id="ft_description" name="ft_description">
+                            </div>
+
+                            <div class="col-md">
+                                <label for="">Supplier</label>
+                                <input type="text" class="form-control check_for_search" id="ft_supplier_id" name="ft_supplier_id">
+                            </div>
+
+                            <div class="col-md">
+                                <label for="">Product Category</label>
+                                <input type="text" class="form-control check_for_search" id="ft_prod_cat_id" name="ft_prod_cat_id">
+                            </div>
+                            <div class="col-auto">
+                                <label for="">Search Count</label>
+                                <input name="search_count" type = "number" value="10" id="search_count"  class="form-control">
+                            </div>
+
+                            <div class="col-auto my-1">
+                                <button class="button-search-users btn btn-primary" type="button"
+                                        title="Please click to get the search details!" id="submit_freetext"><i class="fas fa-search"></i> search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <span class="badge help-text-badge help-text-star-search"></span>
+                </div>
+                
+            </div>
+        </div>
+        <div id="err_msg_app_settings_t" class="alert alert-success mt-3" hidden><span id="success_msg_id"></span></div>
+
+        <div class="card mt-5">
+            <div>
+                <button class="btn btn-primary btn-sm mt-2 ml-2"  title="Delete" id="id_delete_freetext" value="country_delete" data-toggle="modal" data-target="#id_delete_confirm_popup" style="display:none;">
+                    <i class="fa fa-trash"></i> Delete
+                </button>
+
+                <div id="display_form_div">
+                    <div class="alert alert-success" role="alert" id="display_success_message" style="display: none;"></div>
+                    <div class="alert alert-danger" role="alert" id="display_error_message" style="display: none;"></div>
+                    {% if display_available_forms %}
+                    <table id="freetext_table" class="table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col"> <input type="checkbox" onclick="checkAll(this)"></th>
+                            <th scope="col">FreeText Id</th>
+                            <th scope="col">Supplier</th>
+                            <th scope="col">Product Category</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Supplier Product Number</th>
+                            <th scope="col">Leadtime</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="freetext_tbody">
+                        {% for freetext_form in display_available_forms %}
+                        <tr id="{{freetext_form.freetext_id}}">
+                            <td><input type="checkbox" class="freetext_checkbox" onclick="valueChanged();"  {% if freetext_form.ft_transaction %} disabled {% endif %} ></td>
+                            <td><a href="{% url 'eProc_Form_Builder:create-freetext' freetext_form.encrypted_freetext_id %}"
+                                target="_blank" class="link-highlight">{{freetext_form.freetext_id}}</a></td>
+                            <td>{{freetext_form.supplier_id}}</td>
+                            <td>{{freetext_form.prod_cat_id}}</td>
+                            <td>{{freetext_form.description}}</td>
+                            <td>{{freetext_form.supp_product_id }}</td>
+                            <td>{{freetext_form.lead_time}}</td>
+                            <td><i class="material-icons hg-icon-blue-primary" title="Delete Form" id="'{{freetext_form.freetext_id}}'-{{freetext_form.ft_transaction}}"
+                                onclick="get_form_id_to_delete(this.id)">delete_outline</i></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        There are no freetext forms configured
+                    </div>
+                    {% endif %}
+                </div>
+                <div id="form_field_div" style="display: none;">
+                    {% include 'Form_Builder/form_fields.html' %}
+                </div>
+            </div>
+             
+        </div>
+
+        <div class="modal fade" id="confirm_delete_pop_up" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        You are about to delete form <b id="form_id_del"></b>. Are you sure?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="delete_form()"><i class="fa fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="button" onclick="main_table_delete()" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of delete confirmation popup-->
+{% include 'root/loader.html' %}
+
+<script src="{% static 'scripts/display_available_forms.js' %}"></script>
+<script>
+
+    $(document).ready(function () {
+        table_sort_filter('freetext_table');
+    })
+
+
+    var GLOBAL_TYPE = 'edit_mode';
+    //var used_forms = {{used_forms|safe}};
+
+
+// Function to delete freetext form
+function delete_form() {
+    OpenLoaderPopup();
+    var freetext_id_list = [delete_form_id]
+    $('#confirm_delete_pop_up').modal('hide');
+    data = {'data':freetext_id_list}
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Manage_Content:delete_freetext_form' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            Response;
+            display_freetext_data(Response.freetext_info);
+            $('#success_msg_id').text(Response.success_message)
+            //document.getElementById("success_msg_id").text = Response.success_message;
+            $("#err_msg_app_settings_t").prop("hidden",false);
+            CloseLoaderPopup();
+<!--            setTimeout(function(){$("#err_msg_app_settings_t").prop("hidden",true);},5000)-->
+            message_display_time();
+        }
+    });
+
+}
+
+$('#submit_freetext').click(function(e){
+    e.preventDefault();
+    OpenLoaderPopup();
+    var freetext_data = {};
+    freetext_data.supplier_id = $('#ft_supplier_id').val();
+    freetext_data.description = $('#ft_description').val();
+    freetext_data.prod_cat_id = $('#ft_prod_cat_id').val();
+    freetext_data.form_id = $('#ft_form_id').val();
+    freetext_data.search_count = $('#search_count').val();
+    var urlLink = "{% url 'eProc_Form_Builder:display-freetext-forms' %}";
+    jQuery.ajax({
+       type: 'POST',
+       url: urlLink,
+       dataType :'json',
+       data: JSON.stringify(freetext_data),
+       success: function(result){
+           response = result;
+           var freetext_form_detail_html = '';
+           $('#freetext_tbody').empty();
+            var product_detail_html = '';
+            var checkbox_input
+            $.each(result, function (i, freetext_form) {
+                if(freetext_form.ft_transaction){
+                    checkbox_input = '<input type="checkbox" class="freetext_checkbox" onclick="valueChanged();" disabled >'
+                }
+                else{
+                    checkbox_input = '<input type="checkbox" class="freetext_checkbox" onclick="valueChanged();" >'
+                }
+                freetext_form_detail_html += '<tr id="'+freetext_form.freetext_id+'"><td>'+ checkbox_input +'</td>'+
+                        '<td><a href="#" class="dummy_freetext_detail"  id="'+freetext_form.encrypted_freetext_id+'">'+freetext_form.freetext_id+'</a></td>'+
+                        '<td>' +freetext_form.supplier_id +'</td>'+
+                        '<td>'+freetext_form.prod_cat_id+'</td>'+
+                        '<td>'+freetext_form.description+'</td>'+
+                        '<td>'+freetext_form.supp_product_id +'</td>'+
+                        '<td>'+freetext_form.lead_time+'</td>'+
+                        '<td><i class="material-icons hg-icon-blue-primary" id="'+freetext_form.freetext_id+'-'+freetext_form.ft_transaction+'" title="Delete Form" onclick="get_form_id_to_delete(this.id)">delete_outline</i></td></tr>'
+            });
+            $('#freetext_tbody').append(freetext_form_detail_html);
+            CloseLoaderPopup();
+        },
+       error: function(xhr, resp, text) {
+       },
+       cache: false,
+       processData: false,
+       contentType: false,
+   });
+});
+
+$(document).on('click', '.dummy_freetext_detail', function () {
+    var url = "{% url 'eProc_Form_Builder:create-freetext' 123 %}";
+    var id = $(this).attr('id');
+    var href_link = url.replace('123', id)
+    window.open(href_link,'_blank');
+});
+
+function valueChanged() {
+    if ($('.freetext_checkbox').is(":checked")) {
+        $("#id_delete_freetext").show();
+    } else {
+        $("#id_delete_freetext").hide();
+    }
+}
+
+//onclick of select all checkbox
+function checkAll(ele) {
+    if (ele.checked) {
+        $('.freetext_checkbox').each(function() {
+            var disable_check = this.disabled
+            if(disable_check == false){
+                this.checked = true;
+                $("#id_delete_freetext").show();
+            }
+        });
+    }
+    else{
+        $('.freetext_checkbox').each(function() {
+            var disable_check = this.disabled
+            if(disable_check == false){
+                this.checked = false;
+                $("#id_delete_freetext").hide();
+            }
+        });
+    }
+}
+
+function main_table_delete(){
+    main_table_freetext_checked = [];
+    $("#freetext_table TBODY TR").each(function () {
+        var row = $(this);
+        var abc = row[0].id
+        var country_arr_obj ={};
+        var check_status = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+        if(check_status){
+            main_table_freetext_checked.push(abc);
+        }
+    });
+    $('#id_delete_confirm_popup').modal('hide');
+    data = {'data':main_table_freetext_checked}
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Manage_Content:delete_freetext_form' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            Response;
+            display_freetext_data(Response.freetext_info);
+            $('#success_msg_id').text(Response.success_message)
+            //document.getElementById("success_msg_id").text = Response[2];
+            $("#err_msg_app_settings_t").prop("hidden",false)
+<!--            setTimeout(function(){$("#err_msg_app_settings_t").prop("hidden",true);},5000)-->
+            message_display_time();
+        }
+    });
+}
+function display_freetext_data(freetext_data){
+    var freetext_form_detail_html = '';
+    $("#freetext_tbody").empty();
+    $.each(freetext_data, function (i, freetext_form) {
+         freetext_form_detail_html += '<tr id="'+freetext_form.freetext_id+'"><td><input type="checkbox" class="freetext_checkbox" onclick="valueChanged();"></td>'+
+         '<td><a href="#" class="dummy_freetext_detail"  id="'+freetext_form.encrypted_freetext_id+'">'+freetext_form.freetext_id+'</a></td>'+
+                        '<td>' +freetext_form.supplier_id +'</td>'+
+                        '<td>'+freetext_form.prod_cat_id+'</td>'+
+                        '<td>'+freetext_form.description+'</td>'+
+                        '<td>'+freetext_form.supp_product_id +'</td>'+
+                        '<td>'+freetext_form.lead_time+'</td>'+
+                        '<td><i class="fas fa-trash-alt hg-icon-blue-primary" id="'+freetext_form.freetext_id+'-'+freetext_form.ft_transaction+'"  title="Delete Form" onclick="get_form_id_to_delete(this.id)"></i></td></tr>'
+    });
+    $("#freetext_tbody").append(freetext_form_detail_html);
+}
+</script>
+
+{% endblock %}

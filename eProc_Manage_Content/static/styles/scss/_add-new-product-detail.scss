@@ -1,0 +1,114 @@
+.product-id-label {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+}
+
+.product-id-text {
+    font-weight: 500;
+    font-size: 20px;
+    font-style: normal;
+}
+
+.upload-prod-img-wrapper {
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+
+    .upload-img-style {
+        width: 15rem; 
+        height: 15rem; 
+        border: 1px solid #e9ecef;
+        object-fit: cover;
+    }
+}
+
+.prod-image-container {
+    height: 15rem;
+    width: 15rem;
+    border-radius: 3px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    position: relative;
+
+    &.bg-upload-img1 {
+        background-image: url("/static/images/Upload_Image_1.png"); 
+    }
+
+    &.bg-upload-img2 {
+        background-image: url("/static/images/Upload_Image_2.png"); 
+    }
+
+    &.bg-upload-img3 {
+        background-image: url("/static/images/Upload_Image_3.png"); 
+    }
+
+    &:hover {
+        opacity: 0.8; 
+    }
+}
+
+#product_detail_form_id button.btn.dropdown-toggle.btn-light {
+    background-color: white;
+    border: 1px solid #ced4da;
+}
+
+.prod-image-container .btn-round{
+    display: none;
+}
+.prod-image-container:hover .btn-round {
+    position: absolute;
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    top:10px;
+    right: 10px;
+    background:rgba(238, 238, 238, 0.75)
+}
+
+.variant-select-card {
+    width: 100%;
+    margin: 0.45rem;
+
+    .variant-select-card__wrapper {
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        padding: 0.5rem;
+        cursor: pointer;
+
+        &.selected {
+            border: 1px solid #80bdff;
+            box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.4)
+        }
+    }
+
+    .vo-select-card-disable {
+        opacity: 0.5; 
+        pointer-events: none;
+    }
+}
+
+.new-option-row-button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}   
+
+.row-delete-btn.btn-round {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    top:10px;
+    right: 10px;
+    background:#F8D7DA;
+    color: indianred;
+
+    &:hover {
+        background: #f8bfc4;
+        color: indianred;
+    }
+}

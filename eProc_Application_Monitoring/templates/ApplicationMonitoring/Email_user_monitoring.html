@@ -1,0 +1,736 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Application Monitoring (Admin Tool) {% endblock %}
+
+{% block maincontent %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+    #id_email_user_wrapper .row:nth-child(1) {
+    margin-right: 1px;
+    margin-left: 1px;
+    margin-top: 15px;
+}
+    #id_email_user_wrapper .row:nth-child(3) {
+    margin-right: 1px;
+    margin-left: 1px;
+    margin-bottom: 15px;
+}
+</style>
+
+{% include 'root/loader.html' %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+
+        <div class="elements-space-between">
+            <h3>Email Monitoring</h3>
+            <div></div>
+        </div>
+        <hr>
+
+<!--        <ul class="sub-tabs">-->
+<!--            <li data-tab-target="#basic_data_tab" class="sub-tab active">-->
+<!--                <div class="sub-tab-link">-->
+<!--                    <i class="fas fa-info-circle"></i><span> Internal Emails</span>-->
+<!--                </div>-->
+<!--            </li>-->
+<!--            <li data-tab-target="#org_data_tab" class="sub-tab">-->
+<!--                <div class="sub-tab-link">-->
+<!--                    <i class="fas fa-sitemap"></i><span> External Emails</span>-->
+<!--                </div>-->
+<!--            </li>-->
+<!--        </ul>-->
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary sub-tab-link active">
+                      <input type="radio" name="options" id="id_internal_email" autocomplete="off" checked onchange="showEmailTypeInternal(this);">
+                        <i class="fas fa-info-circle"></i><span> Internal</span>
+                    </label>
+                    <label class="btn btn-outline-primary">
+                      <input type="radio" name="options" id="id_external_email" autocomplete="off" onchange="showEmailType(this);">
+                        <i class="fas fa-sitemap"></i><span> External</span>
+                    </label>
+
+                  </div>
+
+        <div class="tab-content">
+            <div id="basic_data_tab" data-tab-content class="active">
+                <div class="mt-3">
+
+                    <!-- Display the success message -->
+                    <div>
+                        {% if messages %}
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                            <div class="{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="error_msg_div" class="alert alert-danger" hidden><span id="success_msg_id"></span></div>
+
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <form method="post" action="{% url 'eProc_Admin_Tool:email_user_monitoring' %}" id="email_monitor_form">
+                                {% csrf_token %}
+                                 {% if error_messages %}
+                                    <div class="alert alert-danger" id="err_msg">
+                                    {% for  key, value in error_messages.items %}
+                                        <span class="fieldWrapper">
+                                            {{ value }}
+                                        </span>
+                                    {% endfor %}
+                                    </div>
+                                 {% endif %}
+
+                                <!-- The new set up UI changes-->
+                                <div class="row" id="{{ email_user_monitoring_form.name }}" title="{{ email_user_monitoring_form.label }}">
+                                    <div class="col-md" id="id_email_type_select">
+                                        <label>Email Type </label>
+                                        {{ email_user_monitoring_form.email_types }}
+                                    </div>
+                                     <div class="col-md" id="id_email_type_input" hidden>
+                                        <label>Email Type </label>
+                                            {{ email_user_monitoring_form.email_types_ext }}
+                                     </div>
+                                    <div class="col-md">
+                                        <label>From Date</label>
+                                        {{ email_user_monitoring_form.from_date }}
+                                    </div>
+                                    <div class="col-md">
+                                        <label>To Date</label>
+                                        {{ email_user_monitoring_form.to_date }}
+                                    </div>
+                                    <div class="col-md">
+                                        <label>Status</label>
+                                        {{ email_user_monitoring_form.email_status }}
+                                    </div>
+                                    <div class="col-md" hidden>
+                                        <label>Type</label>
+                                        <input type="text" name="type" id="id_type" class="form-control" hidden>
+                                    </div>
+
+                                    <div class="col-auto my-1">
+                                        <button class="btn btn-primary button-search-users" id="hg_user_report_search" type="submit"
+                                                title="Please click to get the search details!" onclick="reload()"><i class="fas fa-search"></i> search
+                                        </button>
+                                    </div>
+                                </div>
+                                <br>
+
+                                <div>
+                                    <button class="btn btn-link" type="reset" value="Reset" onclick="clear()">clear filters</button>
+                                </div>
+
+                            </form>
+                    <!--User register form-->
+                </div>
+            </div>
+
+            <div id="org_data_tab" data-tab-content>
+                <div class="mt-3">
+                    <!-- Display the success message -->
+                    <div>
+                        {% if messages %}
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                            <div class="{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="error_msg_div_external" class="alert alert-danger" hidden><span id="success_msg_id_external"></span></div>
+
+                    <div class="card card-shadow-1 mt-3">
+                        <div class="card-body">
+                            <h3>External Emails</h3>
+                            <p>External Emails</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+<!--            </div>-->
+            <div id="error_msg_div_resend" class="alert alert-success" hidden><span id="success_msg_id_resend"></span></div>
+
+        {% if t_count > 0 %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">Total number of results found
+                    :{{t_count}}</h6>
+            </div>
+        </div>
+        {% elif t_count == 0  %}
+        <div class="search_result_count_card card">
+            <div class="card-body">
+                <h6 class="card-title">No Results Found</h6>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <div class="card mt-5">
+            <div>
+                 <button class="btn btn-primary  btn-sm mt-2 ml-2"  title="Delete" id="id_email_resend" value="email_resend" style="display:none;" onclick="resend()">
+                    <i></i> resend
+                 </button>
+
+                 <div id="email_user" style="display:none;">
+                    <table class="table table_sort_filter_export_excel w-100" id="id_email_user" >
+                        <thead class="thead-light">
+                        <tr>
+                            {% if inp_email_status == 1 %}
+                                <th hidden> <input type="checkbox" onclick="checkAll(this)"></th>
+                            {% elif inp_email_status == 2 %}
+                                <th> <input type="checkbox" onclick="checkAll(this)"></th>
+                            {% endif %}
+                            <th scope="col">Email Type</th>
+                            {% if inp_email_type == 'SC_APPROVAL' or inp_email_type_ext == 'PO_SUPPLIER' %}
+                                <th scope="col">Document Number</th>
+                            {% elif inp_email_type == 'REGISTRATION' %}
+                                <th scope="col">Username</th>
+                            {% endif %}
+                            <th scope="col">Receiver Email</th>
+                            <th scope="col">Sent Date</th>
+                            <th scope="col">Email Status</th>
+                            <th scope="col">Error Type</th>
+                            <th scope="col" hidden>Email Contents Guid</th>
+                        </tr>
+                        </thead>
+                        <tbody id="email_user_tbody">
+                        <!--   Looping over the cart_items to get individual fields         -->
+                            {% for items in email_data %}
+                            <tr>
+                                {% if items.email_status == 1  %}
+                                    <td hidden><input type="checkbox" class="email_checkbox" onclick="valueChanged();"></td>
+                                {% elif items.email_status == 2 %}
+                                    <td><input type="checkbox" class="email_checkbox" onclick="valueChanged();" id="{{items.doc_number}}"></td>
+                                {% endif %}
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">SC Approval</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">Supplier Order</td>
+                                {% else %}
+                                    <td scope="row">{{items.object_type}}</td>
+                                {% endif %}
+                                {%  if items.object_type == 'SC_APPROVAL' or items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row" class="class_doc_num" >{{ items.doc_number }}</td>
+                                {% else %}
+                                    <td scope="row">{{ items.username }}</td>
+                                {% endif %}
+                                <td scope="row">{{ items.receiver_email }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">{{ items.email_document_monitoring_created_at }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">{{ items.email_supplier_monitoring_created_at }}</td>
+                                {% else %}
+                                    <td scope="row">{{ items.email_user_monitoring_created_at }}</td>
+                                {% endif %}
+                                {% if items.email_status == 1 %}
+                                    <td scope="row"> <span>SENT</span> </td>
+                                {% elif items.email_status == 2 %}
+                                    <td scope="row"> <span>FAILED</span></td>
+                                {% elif items.email_status == 3 %}
+                                    <td scope="row"> <span>PROCESSING</span></td>
+                                {% endif %}
+                                <td scope="row">{{ items.error_type }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL'%}
+                                    <td scope="row" hidden>{{ items.email_document_monitoring_guid }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row" hidden>{{ items.email_supplier_monitoring_guid }}</td>
+                                {% else %}
+                                    <td scope="row" hidden>{{ items.email_user_monitoring_guid }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                 </div>
+                 <!----------------- table for External emails-------------->
+                <div class="spacer2 col"> &nbsp; </div>
+                 <div class="" id="supplier_email" style="display:none;">
+                     <table class="table table_sort_filter_export_excel w-100" id="id_email_supplier" >
+                        <thead class="thead-light">
+                        <tr>
+                            {% if inp_email_status == 1 %}
+                                <th hidden> <input type="checkbox" onclick="checkAll(this)"></th>{% elif inp_email_status == 2 %}
+                                <th> <input type="checkbox" onclick="checkAll(this)"></th>
+                            {% endif %}
+                            <th scope="col">Email Type</th>
+                            <th scope="col">Document Number</th>
+                            <th scope="col">Receiver Email</th>
+                            <th scope="col">Sent Date</th>
+                            <th scope="col">Email Status</th>
+                            <th scope="col">Error Type</th>
+                            <th scope="col" hidden>Email Contents Guid</th>
+                        </tr>
+                        </thead>
+                        <tbody id="email_supp_tbody">
+                        <!--   Looping over the cart_items to get individual fields         -->
+                            {% for items in email_list_supp %}
+                            <tr>
+                                {% if items.email_status == 1  %}
+                                    <td hidden><input type="checkbox" class="email_checkbox" onclick="valueChanged();"></td>
+                                {% elif items.email_status == 2 %}
+                                    <td><input type="checkbox" class="email_checkbox" onclick="valueChanged();" id="{{items.doc_number}}1"></td>
+                                {% endif %}
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">SC Approval</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">Supplier Order</td>
+                                {% else %}
+                                    <td scope="row">{{items.object_type}}</td>
+                                {% endif %}
+                                <td scope="row" class="class_doc_num" >{{ items.doc_number }}</td>
+                                <td scope="row">{{ items.receiver_email }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">{{ items.email_document_monitoring_created_at }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">{{ items.email_supplier_monitoring_created_at }}</td>
+                                {% else %}
+                                    <td scope="row">{{ items.email_user_monitoring_created_at }}</td>
+                                {% endif %}
+                                {% if items.email_status == 1 %}
+                                    <td scope="row"> <span>SENT</span> </td>
+                                {% elif items.email_status == 2 %}
+                                    <td scope="row"> <span>FAILED</span></td>
+                                {% elif items.email_status == 3 %}
+                                    <td scope="row"> <span>PROCESSING</span></td>
+                                {% endif %}
+                                <td scope="row">{{ items.error_type }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL'%}
+                                    <td scope="row" hidden>{{ items.email_document_monitoring_guid }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row" hidden>{{ items.email_supplier_monitoring_guid }}</td>
+                                {% else %}
+                                    <td scope="row" hidden>{{ items.email_user_monitoring_guid }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                     </table>
+                 </div>
+                <!----------------------- table for internal emails-------------->
+                 <div id="user_email_def" style="display:none;">
+                     <table class="table table_sort_filter_export_excel w-100" id="id_email_user_def" >
+                        <thead class="thead-light">
+                        <tr>
+                            {% if inp_email_status == 1 %}
+                                <th hidden> <input type="checkbox" onclick="checkAll(this)"></th>
+                            {% elif inp_email_status == 2 %}
+                                <th> <input type="checkbox" onclick="checkAll(this)"></th>
+                            {% endif %}
+                            <th scope="col">Email Type</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Receiver Email</th>
+                            <th scope="col">Sent Date</th>
+                            <th scope="col">Email Status</th>
+                            <th scope="col">Error Type</th>
+                            <th scope="col" hidden>Email Contents Guid</th>
+                        </tr>
+                        </thead>
+                        <tbody id="email_user_def_tbody">
+                        <!--   Looping over the cart_items to get individual fields         -->
+                            {% for items in email_list_default %}
+                            <tr>
+                                {% if items.email_status == 1  %}
+                                    <td hidden><input type="checkbox" class="email_checkbox" onclick="valueChanged();"></td>
+                                {% elif items.email_status == 2 %}
+                                    <td><input type="checkbox" class="email_checkbox" onclick="valueChanged();" id="{{items.doc_number}}2"></td>
+                                {% endif %}
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">SC Approval</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">Supplier Order</td>
+                                {% else %}
+                                    <td scope="row">{{items.object_type}}</td>
+                                {% endif %}
+                                <td scope="row">{{ items.username }}</td>
+                                <td scope="row">{{ items.receiver_email }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL' %}
+                                    <td scope="row">{{ items.email_document_monitoring_created_at }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row">{{ items.email_supplier_monitoring_created_at }}</td>
+                                {% else %}
+                                    <td scope="row">{{ items.email_user_monitoring_created_at }}</td>
+                                {% endif %}
+                                {% if items.email_status == 1 %}
+                                    <td scope="row"> <span>SENT</span> </td>
+                                {% elif items.email_status == 2 %}
+                                    <td scope="row"> <span>FAILED</span></td>
+                                {% elif items.email_status == 3 %}
+                                    <td scope="row"> <span>PROCESSING</span></td>
+                                {% endif %}
+                                <td scope="row">{{ items.error_type }}</td>
+                                {%  if items.object_type == 'SC_APPROVAL'%}
+                                    <td scope="row" hidden>{{ items.email_document_monitoring_guid }}</td>
+                                {% elif items.object_type == 'PO_SUPPLIER' %}
+                                    <td scope="row" hidden>{{ items.email_supplier_monitoring_guid }}</td>
+                                {% else %}
+                                    <td scope="row" hidden>{{ items.email_user_monitoring_guid }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                     </table>
+                 </div>
+            </div>
+        </div>
+
+<!--        </div>-->
+    </div>
+    </div>
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="d-flex justify-content-end">
+                    <div>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    This Shopping Cart Approved
+                </div>
+
+                <!-- Modal footer -->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>-->
+<!--                    <button type="button" class="btn btn-primary" id="resend_email" onclick="resend()">Yes</button>-->
+<!--                </div>-->
+
+            </div>
+        </div>
+    </div>
+
+
+
+<!--<div class="hg_spacer2"> &nbsp; </div>-->
+<div class="modal fade" id="product_list_popup">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="catalog_mapping_title"> Email Status</h5>
+                <button type="button" class="close remove_upload_data" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body scrollbox">
+<!--                <ul class="sub-tabs">-->
+<!--                    <li data-tab-target="#prod_detail_table_div" class="sub-tab active">-->
+<!--                        <div class="sub-tab-link">-->
+<!--                            <span> Valid Shopping Cart</span>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li data-tab-target="#freetext_table_div" class="sub-tab">-->
+<!--                        <div class="sub-tab-link">-->
+<!--                            <span> Invalid Shopping Cart </span>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+                <div id="id_check_success_messages_product" class="alert alert-success check_success_message" hidden></div>
+                <div id="id_check_error_messages_product" class="alert alert-danger check_error_messages" hidden></div>
+                <div id="id_check_special_character_messages_product" class="alert alert-danger check_special_character_messages" hidden>
+                    <p id="id_error_msg_country_code" ></p>
+                    <p id="id_error_msg_country_name" ></p>
+                    <p id="id_error_msg_country_length" ></p>
+                </div>
+                <div >
+                    <p id="id_error_msg_product" class="alert alert-danger" hidden></p>
+                </div>
+
+                <div class="tab-content">
+                    <div id="prod_detail_table_div" data-tab-content class="active mt-4 pl-3 pr-3" >
+                        <table class="class_popup_table table table-bordered mt-2" id="id_product_list_popup_table" >
+                            <thead>
+                            <tr>
+                                <th>Doc Number</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody id=id_valid_sc_tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+<!--                    <button class="btn btn-primary dummy_assign_unassign_button" id="resend"><i class="fas fa-save"></i> Resend Email</button>-->
+<!--                    <button class="btn btn-outline-secondary dummy_assign_unassign_button" id="unassign_button_id" onclick=""><i class="fas fa-save"></i> Cancel</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var inp_email_type = '{{inp_email_type | safe}}';
+var inp_email_status = '{{inp_email_status | safe}}';
+var inp_email_type_ext = '{{inp_email_type_ext | safe}}';
+var inp_search_type = '{{search_type | safe}}';
+<!--var email_data = {{email_data | safe}};-->
+<!--var data = email_data;-->
+
+$(document).ready(function(){
+  table_sort_filter_basic("table_sort_filter_basic");
+  table_sort_filter_export_excel();
+  $("#email_user").show();
+  $("#user_form_reset").click(function(){
+    $('#user_register_form')[0].reset();
+    $('#myModal').modal('hide');
+  });
+  var today = new Date().toISOString().split('T')[0];
+  NavigateTabs(); // Custom function to switch tabs
+  nav_bar_admin();
+<!--  document.getElementById('id_from_date').setAttribute('max', getTodaysDate());-->
+  $('#id_email_status').val(inp_email_status).attr('selected', 'selected');
+});
+
+// Get the element with id="defaultOpen" and click on it
+<!--document.getElementById("defaultOpen").click();-->
+
+$('#user_registration_submit').click(function () {
+    OpenLoaderPopup();
+});
+window.onload = function () {
+        emailType = inp_email_type;
+        emailStatus = inp_email_status;
+        extEmailType = inp_email_type_ext;
+        searchType = inp_search_type;
+        var today = new Date().toISOString().split('T')[0];
+        from_date = $('#id_from_date').val();
+        to_date = $('#id_to_date').val();
+        $('#id_from_date').val(from_date);
+        $('#id_to_date').val(to_date);
+        $('#id_email_status').val(emailStatus).attr('selected', 'selected');
+        if(inp_search_type == 'PO_SUPPLIER'){
+            $("#id_email_type_select").prop("hidden", true);
+            $("#id_email_type_input").prop("hidden", false);
+            $('#id_email_types_ext').val(extEmailType).attr('selected', 'selected');
+            $("#id_type").val('External');
+        }
+        else{
+            $("#id_email_type_select").prop("hidden", false);
+            $("#id_email_type_input").prop("hidden", true);
+            $("#id_email_types").val(emailType).attr('selected', 'selected');
+            $("#id_type").val('Internal');
+        }
+    }
+function reload()
+{
+    nav_bar_admin();
+    var from_date, to_date;
+    localStorage.setItem("from_date", document.getElementById("id_from_date").value);
+    localStorage.setItem("to_date", document.getElementById("id_to_date").value);
+    from_date = $('#id_from_date').val();
+    to_date = $('#id_to_date').val()
+    validate_date(from_date, to_date);
+<!--    OpenLoaderPopup();-->
+}
+
+function validate_date(id_from_date, id_to_date){
+    if ((Date.parse(id_to_date) < Date.parse(id_from_date)) == true) {
+        $('#success_msg_id').text("To date cannot be less than From date")
+        $("#error_msg_div").prop("hidden",false)
+    }
+}
+    //onclick of select all checkbox
+function checkAll(ele) {
+    if (ele.checked) {
+        $('.email_checkbox').each(function() {
+            var disable_check = this.disabled
+            if(disable_check == false){
+                this.checked = true;
+                $("#id_email_resend").show();
+            }
+        });
+    }
+    else{
+        $('.email_checkbox').each(function() {
+            var disable_check = this.disabled
+            if(disable_check == false){
+                this.checked = false;
+                $("#id_email_resend").hide();
+            }
+        });
+    }
+}
+function valueChanged() {
+    if ($('.email_checkbox').is(":checked")) {
+        $("#id_email_resend").show();
+    } else {
+        $("#id_email_resend").hide();
+    }
+}
+function resend(){
+    OpenLoaderPopup();
+    main_table_email_checked = [];
+    var email_type, username, email;
+    $("#id_email_user TBODY TR").each(function () {
+        var row = $(this);
+        var email_arr_obj ={};
+        var check_status = row.find("TD").eq(0).find('input[type="checkbox"]').is(':checked');
+        if(check_status){
+            email_arr_obj.email_type = row.find("TD").eq(1).html();
+            email_arr_obj.username = row.find("TD").eq(2).html();
+            email_arr_obj.email = row.find("TD").eq(3).html();
+            email_arr_obj.email_user_monitoring_guid = row.find("TD").eq(7).html();
+            main_table_email_checked.push(email_arr_obj);
+        }
+    });
+    console.log('main_table_email_checked ', main_table_email_checked);
+    data = main_table_email_checked
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'eProc_Emails:resend_user_mail' %}",
+        data:JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (Response) {
+            if(Response.appr_flag == 1){
+                var msg = 'SC Already Approved. ';
+                $("#product_list_popup").modal('show');
+                display_check_popup(Response.result, msg);
+            }
+            display_email_data(Response.email_list);
+            $("#error_msg_div_resend").prop("hidden",false)
+            $("#id_email_resend").hide();
+<!--            setTimeout(function(){$("#error_msg_div_resend").prop("hidden",true);},5000)-->
+            message_display_time();
+             $("#myModal").modal('hide');
+             CloseLoaderPopup();
+        }
+    });
+}
+function display_email_data(email_list){
+    var email_detail_html = '';
+    $('#id_email_user').DataTable().destroy();
+    $("#email_user_tbody").empty();
+    var status, field;
+    $.each(email_list, function (i, email) {
+        console.log(email.email_status);
+        if(email.email_status == 2){
+            status = 'FAILED';
+        }
+        if(email.email_status == 1){
+          status = 'SENT';
+          }
+        if(email.object_type == 'SC_APPROVAL'){
+            field = email.doc_num;
+            sent_date = email.email_document_monitoring_created_at
+        }
+        else if(email.object_type == 'PO_SUPPLIER'){
+            field = email.doc_num;
+            sent_date = email.email_supplier_monitoring_created_at
+        }
+        else{
+            field = email.username;
+            sent_date = email.email_user_monitoring_created_at;
+        }
+
+        email_detail_html += '<tr><td><input type="checkbox" class="email_checkbox" onclick="valueChanged();"></td> '+
+         '<td>'+ email.object_type +'</td>'+
+         '<td>'+ field +'</td>'+
+         '<td>'+ email.receiver_email +'</td>'+
+         '<td>'+ sent_date +'</td>'+
+         '<td>' + status + '</td>'+
+         '<td>' + email.error_type + '</td>'+
+         '<td hidden>' + email.email_user_monitoring_guid + '</td></tr>';
+            });
+    $("#email_user_tbody").append(email_detail_html);
+    table_sort_filter('id_email_user');
+}
+function showEmailType(a) {
+  if (a.checked == true) {
+     OpenLoaderPopup();
+     $("#id_email_type_select").prop("hidden", true);
+     $("#id_email_type_input").prop("hidden", false);
+     $("#id_type").val('External');
+     $("#supplier_email").show();
+     $("#email_user").hide();
+     $("#user_email_def").hide();
+     $("#id_internal_email").prop('checked', false);
+     $("#id_external_email").prop('checked', true);
+  }
+    CloseLoaderPopup();
+}
+function showEmailTypeInternal(a) {
+  if (a.checked == true) {
+     OpenLoaderPopup();
+     $("#id_email_type_select").prop("hidden", false);
+     $("#id_email_type_input").prop("hidden", true);
+     $("#id_type").val('Internal');
+     document.getElementById("email_monitor_form").reset();
+     $("#supplier_email").hide();
+     $("#email_user").hide();
+     $("#user_email_def").show();
+     $('#id_email_status').val(inp_email_status).attr('selected', 'selected');
+     CloseLoaderPopup();
+  }
+}
+function clear(){
+        var today = new Date().toISOString().split('T')[0];
+        $('#id_from_date').val(today);
+        $('#id_to_date').val(today);
+        $('#id_email_types').val(emailType).attr('selected', 'selected');
+        $('#id_email_status').val(emailStatus).attr('selected', 'selected');
+        window.onload();
+}
+//------------------------------------
+$('#reprocess').click(function () {
+    doc_num_list = get_doc_list("email_checkbox")
+    if (doc_num_list.length > 0 ){
+        OpenLoaderPopup();
+        $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Admin_Tool:check_resend' %}",
+                data: {
+                    'doc_num': doc_num_list,
+                },
+                success: function (response) {
+                    display_reprocess_po_data(response.sc_header_list)
+                    CloseLoaderPopup();
+                }
+        });
+    }
+ });
+
+
+function get_doc_list(class_name){
+ var checkBoxes = document.getElementsByClassName(class_name);
+    var doc_num_list = []
+    for (var i = 0; i < checkBoxes.length; i++) {
+            if (checkBoxes[i].checked) {
+                doc_num_list.push(checkBoxes[i].id)
+            }
+    }
+    return doc_num_list
+}
+function display_check_popup(valid_list,msg){
+    $('#id_valid_sc_tbody').empty();
+    var edit_valid_data;
+    console.log(valid_list['doc_num']);
+    $.each(valid_list, function (i, items) {
+        edit_valid_data += '<tr>'+
+                            '<td>'+ items['doc_num'] +'</td>'+
+                             '<td>' + msg + items['message'] + '</td>'+
+                            '</tr>'
+    });
+    $('#id_valid_sc_tbody').append(edit_valid_data);
+
+}
+
+
+</script>
+
+{% endblock %}

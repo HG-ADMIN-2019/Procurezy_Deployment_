@@ -1,0 +1,49 @@
+<!-- Product category popup -->
+<div class="modal fade" id="select_prod_cat_modal">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Select Product Category</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="table prod_cat_datatable" id="product_category_table" style="table-layout: auto">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Select</th>
+                            <th>Product Category</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product_category_tbody">
+                        {% for pr_prod in product_category %}
+                        <tr>
+                            <td><input type="radio" name="select_value"></td>
+                            <td>{{pr_prod.prod_cat_id}}</td>
+                            <td>{{pr_prod.category_desc}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button class="btn btn-primary" id="select_product_category"><i class="fas fa-check"></i> select</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // remove bootstrap alert classes on close
+    $('#select_prod_cat_modal').on('hidden.bs.modal', function (e) {
+        $('.prod_cat_datatable').DataTable().destroy()
+    })
+</script>

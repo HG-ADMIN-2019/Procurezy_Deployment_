@@ -1,0 +1,53 @@
+
+<!-- Select supplier popup -->
+<div class="modal fade" id="select_supplier_modal">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Select Supplier</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <table class="table select_supplier_datatable" id="supplier_table" style="table-layout: auto">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Select</th>
+                            <th>Supplier Name</th>
+                            <th>Supplier ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="select_supplier_tbody">
+                        {% for supp_info in supplier_details %}
+                        <tr>
+                            <td><input type="radio" name="select_value"></td>
+                            <td>{{supp_info.1}} {{supp_info.2}}</td>
+                            <td>{{supp_info.0}}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fas fa-times"></i> close</button>
+                <button class="btn btn-primary" id="select_supplier"><i class="fas fa-check"></i> select</button>
+            </div>
+
+        </div>
+    </div>
+</div> 
+
+<script>
+
+    // remove bootstrap alert classes on close
+    $('#select_supplier_modal').on('hidden.bs.modal', function (e) {
+        $('.select_supplier_datatable').DataTable().destroy()
+    })
+
+</script>

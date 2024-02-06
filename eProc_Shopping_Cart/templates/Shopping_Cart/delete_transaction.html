@@ -1,0 +1,21 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Transaction Data Delete (Admin Tool){% endblock %}
+{% block maincontent %}
+<style>
+
+
+</style>
+
+<div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" name="delete" id="trans_delete" value="Delete Transaction Data" />
+    </form>
+</div>
+
+<script>
+
+</script>
+{% endblock %}

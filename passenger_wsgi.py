@@ -1,6 +1,6 @@
 import Majjaka_eProcure.wsgi
 
-SCRIPT_NAME = 'home/a98zy7m9c1gd/repositories/procurezy_deploy'
+SCRIPT_NAME = 'home/a98zy7m9c1gd/repositories/Procurezy_Deployment_'
 
 
 class PassengerPathInfoFix(object):

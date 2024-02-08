@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 # import django_heroku
 import os
-
+SEARCH_FORM1 = "X"  # To enable or disable Extended search form
 # import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'eProc_Projects',
     'eProc_Supplier_Order_Management',
     'eProc_Rfq',
+    'eProc_Archiving',
     # 'eProc_Marketing',
 ]
 

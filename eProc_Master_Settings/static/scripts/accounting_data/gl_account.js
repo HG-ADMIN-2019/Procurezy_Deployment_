@@ -11,6 +11,7 @@ function hideModal() {
 //onclick of upload button display id_data_upload popup and set GLOBAL_ACTION button value
 function onclick_upload_button() {
     GLOBAL_ACTION = "detgl_upload"
+    display_button();
     $("#id_error_msg_upload").prop("hidden",true)
     $("#id_popup_tbody").empty();
     $('#id_data_upload').modal('show');
@@ -44,67 +45,7 @@ function enableDeleteButton() {
     $deleteButton.prop('disabled', !anyCheckboxChecked || $popupCheckboxes.length === 0);
 }
 
-// on click add icon display the row in to add the new entries
-function add_popup_row() {
-    $("#error_msg_id").css("display", "none");
-    basic_add_new_html = '';
-    var display_db_data = '';
-    $('#id_popup_table').DataTable().destroy();
-    $(".modal").on("hidden.bs.modal", function () {
-        $("#id_error_msg").html("");
-    });
 
-    if (GLOBAL_ACTION == "detgl_upload") {
-        basic_add_new_html = '<tr><td><input type="checkbox" required></td>' +
-            '<td><select class="form-control">' + prod_cat_dropdown + '</select></td>' +
-            '<td><select class="form-control">' + company_dropdown + '</select></td>' +
-            '<td><select class="form-control">' + accasscat_dropdown + '</select></td>' +
-            '<td><select class="form-control">' + glacc_dropdown + '</select></td>' +
-            '<td><input type="checkbox" name="gl_acc_default" required></td>' +
-            '<td><input class="form-control" type="number" min="1" name="From_value" required></td>' +
-            '<td><input class="form-control" type="number" min="1" name="To_value" required></td>' +
-            '<td><select class="form-control">' + currency_dropdown + '</select></td>' +
-            '<td hidden><input type="text" class="form-control" value="GUID"></td>' +
-            '<td class="class_del_checkbox"><input type="checkbox" required></td></tr>';
-        $('#id_popup_tbody').append(basic_add_new_html);
-        table_sort_filter('id_popup_table');
-        $(".class_del_checkbox").prop("hidden", false);
-        $("#id_del_ind_checkbox").prop("hidden", false);
-        var company_num = '';
-        $("#id_popup_table TBODY TR").each(function () {
-            var row = $(this);
-            row.find("TD").eq(3).find("select").empty();
-            row.find("TD").eq(4).find("select").empty();
-            company_num = row.find("TD").eq(2).find("select option:selected").val();
-            var assign_val = account_assignment_value_find(company_num);
-            row.find("TD").eq(3).find("select").append(assign_val.acc_ass_dropdwn);
-            row.find("TD").eq(4).find("select").append(assign_val.acc_ass_val_dropdwn);
-            $(row.find("TD").eq(2).find("select")).change(function () {
-                company_dropdwn_change(row);
-            });
-        });
-    }
-    else {
-        new_row_data();   // Add a new row in popup
-        var company_num = '';
-        $("#id_popup_table").on("change", "select[name='company_dropdown']", function () {
-            var row = $(this).closest("tr");
-            company_dropdwn_change(row);
-        });
-        $("#id_popup_table").on("draw.dt", function () {
-            $("#id_popup_table TBODY TR").each(function () {
-                var row = $(this);
-                row.find("TD").eq(3).find("select").empty();
-                row.find("TD").eq(4).find("select").empty();
-                company_num = row.find("TD").eq(2).find("select option:selected").val();
-                var assign_val = account_assignment_value_find(company_num);
-                row.find("TD").eq(3).find("select").append(assign_val.acc_ass_dropdwn);
-                row.find("TD").eq(4).find("select").append(assign_val.acc_ass_val_dropdwn);
-            });
-        });
-        $('#delete_data').hide();
-    }
-}
 
 
 
@@ -147,7 +88,7 @@ function delete_duplicate() {
     $("#id_popup_table TBODY TR").each(function () {
         var row = $(this);
         //*************** reading data from the pop-up ***************
-        prod_cat_id = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase();
+        prod_cat_id = row.find("TD").eq(1).find('select option:selected').val();
         gl_acc_num = row.find("TD").eq(4).find("select option:selected").val();
         gl_acc_default = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked');
         account_assign_cat = row.find("TD").eq(3).find("select option:selected").val();
@@ -155,17 +96,26 @@ function delete_duplicate() {
         item_from_value = row.find("TD").eq(6).find('input[type="number"]').val();
         item_to_value = row.find("TD").eq(7).find('input[type="number"]').val();
         currency_id = row.find("TD").eq(8).find("select option:selected").val();
-        checked_box = row.find("TD").eq(5).find('input[type="checkbox"]').is(':checked');
-        var compare = gl_acc_num + '-' + company_id + '-' + account_assign_cat
-        if (detgl_code_check.includes(compare)) {
-            $(row).remove();
+        checked_box = row.find("TD").eq(10).find('input[type="checkbox"]').is(':checked');
+        var compare = prod_cat_id + '-' + company_id + '-' + account_assign_cat + '-' + gl_acc_num + '-' + currency_id
+        if (checked_box) {
+         // Keep rows with the checkbox checked
+           del_ind = '1';
+        } else {
+             del_ind = '0';
+              // Only proceed if gl_acc_num and company_id && account_assign_cat are not empty
+             if (gl_acc_num && company_id && account_assign_cat && item_from_value && item_to_value) {
+                if (detgl_code_check.includes(compare)) {
+                    $(row).remove();
+                }
+                detgl_code_check.push(compare);
+                main_table_low_value = get_main_table_data_upload(); //Read data from main table
+                if (main_table_low_value.includes(compare)) {
+                    $(row).remove();
+                }
+                main_table_low_value.push(compare);
+             }
         }
-        detgl_code_check.push(compare);
-        main_table_low_value = get_main_table_data_upload(); //Read data from main table
-        if (main_table_low_value.includes(compare)) {
-            $(row).remove();
-        }
-        main_table_low_value.push(compare);
     });
 
     table_sort_filter_popup_pagination('id_popup_table')
@@ -197,7 +147,7 @@ function read_popup_data() {
         detgl.item_to_value = row.find("TD").eq(7).find('input[type="number"]').val();
         detgl.currency_id = row.find("TD").eq(8).find("select option:selected").val();
         detgl.det_gl_acc_guid = row.find("TD").eq(9).find('input[type="text"]').val();
-        var compare = detgl.prod_cat_id + '-' + detgl.company_id + '-' + detgl.account_assign_cat +'-'+ detgl.gl_acc_num
+        var compare = detgl.prod_cat_id + '-' + detgl.company_id + '-' + detgl.account_assign_cat +'-'+ detgl.gl_acc_num +'-'+ detgl.currency_id
         if (detgl == undefined) {
             detgl.prod_cat_id = row.find("TD").eq(1).find('input[type="text"]').val();
         }
@@ -208,21 +158,7 @@ function read_popup_data() {
     return detgl_data;
 }
 
-// Function for add a new row data
-function new_row_data() {
-    basic_add_new_html = '<tr ><td><input type="checkbox" required></td>'+
-    '<td><select class="form-control">' + prod_cat_dropdown + '</select></td>'+
-    '<td><select name="company_dropdown" class="form-control">' + company_dropdown + '</select></td>'+
-    '<td><select class="form-control">' + accasscat_dropdown + '</select></td>'+
-    '<td><select class="form-control">' + glacc_dropdown + '</select></td>'+
-    '<td><input type="checkbox" name="gl_acc_default" required></td>'+
-    '<td><input class="form-control" type="number"  min="1" name="From_value"  required></td>'+
-    '<td><input class="form-control" type="number"  min="1" name="To_value"  required></td>'+
-    '<td><select class="form-control">' + currency_dropdown + '</select></td><td hidden><input type="text" class="form-control"  value="GUID"</td><td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
-    var table = $('#id_popup_table').DataTable();
-    table.row.add($(basic_add_new_html)).draw();
-    table_sort_filter('id_popup_table');
-}
+
 
 // Function to get main table data
 function get_main_table_data() {
@@ -258,7 +194,7 @@ function get_main_table_data_upload() {
         main_attribute.item_from_value = row.find("TD").eq(6).html();
         main_attribute.item_to_value = row.find("TD").eq(7).html();
         main_attribute.currency_id = row.find("TD").eq(8).html();
-        var detgl_compare = main_attribute.prod_cat_id + '-' + main_attribute.company_id + '-' + main_attribute.account_assign_cat +'-'+ main_attribute.gl_acc_num
+        var detgl_compare = main_attribute.prod_cat_id + '-' + main_attribute.company_id + '-' + main_attribute.account_assign_cat +'-'+ main_attribute.gl_acc_num +'-'+ main_attribute.currency_id
         main_table_low_value.push(detgl_compare);
     });
     table_sort_filter('display_basic_table');

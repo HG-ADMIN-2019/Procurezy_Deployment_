@@ -377,7 +377,8 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                                                                         <div class="col-md-3">
                                                                             <div class="row">
                                                                                 <div class="col-12 product-results-catalog__quantity">
-                                                                                    <span class="h5">Quantity </span> <input type = "number" value="1" id="Q{{i.product_id}}" onkeypress="return event.charCode >= 49" onchange="check_quantity(this)"  class="quanity-input-field">
+                                                                                    <span class="h5">Quantity </span>
+                                                                                    <input type="text" maxlength="6" min="1" value="1" id="Q{{i.product_id}}" oninput="this.value = this.value.slice(0, 6).replace(/\D/g, ''); check_quantity(this);" class="quanity-input-field">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">

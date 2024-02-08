@@ -562,6 +562,7 @@
         document.getElementById("id_error_msg_aav_length").innerHTML = "";
         Duplicate_count = 0;
         count = 0;
+        flag = 0;
         var aav_array = new Array
         var DB_array = new Array
         var aav_list = new Array
@@ -586,49 +587,92 @@
             }
             aav_list.push(accval_dic)
             get_main_table_data(); //Read data from main table
-            var compare = accval_dic.account_assign_value + '-' + accval_dic.account_assign_cat + '-' + accval_dic.company_id +
-            '-' + accval_dic.valid_from + '-' + accval_dic.valid_to
+            var compare = accval_dic.company_id + '-' + accval_dic.account_assign_cat + '-' + accval_dic.account_assign_value
             var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
             var format_aav = /[A-Z`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
             var d1=new Date(accval_dic.valid_from); //yyyy-mm-dd
             var d2=new Date(accval_dic.valid_to); //yyyy-mm-dd
+          if(accval_dic.del_ind == '0'){
             if (d2< d1){
-                get_message_details("JMSG017"); // Get message details
-                var display4 = msg_type.messages_id_desc;
-                document.getElementById("id_error_msg_aav_code").innerHTML = display4;
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                count = count + 1;
+                    get_message_details("JMSG017"); // Get message details
+                    var display4 = msg_type.messages_id_desc;
+                    document.getElementById("id_error_msg_aav_code").innerHTML = display4;
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    count = count + 1;
             } else {
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
+                    $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
             }
             //*************** checking for max length for aav code (max length = 2) ***************
             if (accval_dic.account_assign_value < 0) {
-                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                row_color_highlight_empty(row);
-                $("#id_error_msg_country_length").prop("hidden",false);
-                error_message = ui_messeges("JMSG002")// Get message details
-                var display8 = error_message;
-                document.getElementById("id_error_msg_aav_length").innerHTML = display8+ "Account assignment value";
-                $("#id_check_special_character_messages").prop("hidden",false);
-                count = count +1;
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_country_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_length").innerHTML = display8+ "Account assignment value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
             }
+            //*************** checking for empty records for item_from_value id  (max length = 2) ***************
+            else if(accval_dic.account_assign_value.length == 0 || /\s/.test(accval_dic.account_assign_value)) {
+                    $(row.find("TD").eq(3).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_aav_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_length").innerHTML = display8+ " for Account Assignment Value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+            }
+            //*************** checking for empty records for item_from_value id  (max length = 2) ***************
+            else if(accval_dic.valid_from.length == 0 || /\s/.test(accval_dic.valid_from)) {
+                    $(row.find("TD").eq(4).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_aav_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_length").innerHTML = display8+ " for Valid From Date";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+            }
+            //*************** checking for empty records for item_from_value id  (max length = 2) ***************
+            else if(accval_dic.valid_to.length == 0 || /\s/.test(accval_dic.valid_to)) {
+                    $(row.find("TD").eq(5).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_aav_length").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_length").innerHTML = display8+ " for Valid To Date";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+            }
+            else if(accval_dic.valid_from > accval_dic.valid_to) {
+                    $(row.find("TD").eq(4).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_msg_aav_code").prop("hidden",false);
+                    error_message = ui_messeges("JMSG017")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_msg_aav_code").innerHTML = display8;
+                    $("#id_check_special_character_messages").prop("hidden", false);
+                    count = count +1;
+              }
             //*************** checking for special characters for aav code ***************
             else if (format_aav.test(accval_dic.account_assign_value)) {
-                $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                row_color_highlight_special(row);
-                $("#id_error_msg_aav_code").prop("hidden",false);
-                error_message = ui_messeges("JMSG003")// Get message details
-                var display4 = error_message;
-                document.getElementById("id_error_msg_aav_name").innerHTML = display4+ "Account assignment value";
-                $("#id_check_special_character_messages").prop("hidden",false);
-                count = count +1;
+                    $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_special(row);
+                    $("#id_error_msg_aav_code").prop("hidden",false);
+                    error_message = ui_messeges("JMSG003")// Get message details
+                    var display4 = error_message;
+                    document.getElementById("id_error_msg_aav_name").innerHTML = display4+ "Account assignment value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
             } else {
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
-                row_color_no_highlight(row);
-                $(row).css("border", "");
-                $("#id_delete_duplicate").hide()
+                    $(row.find("TD").eq(5).find('input[type="text"]')).css("border", "1px solid #ced4da");
+                    row_color_no_highlight(row);
+                    $(row).css("border", "");
+    <!--                $("#id_delete_duplicate").hide()-->
             }
-            if(aav_code_check.includes((compare)&&(accval_dic.del_ind))){
+            if(aav_code_check.includes(compare)){
                  $(row).css("border", "#f8d7da");
                  row_color_highlight(row);
                  $("#id_check_error_messages").prop("hidden",false);
@@ -638,8 +682,9 @@
                  $("#id_delete_duplicate").show()
                  $("#id_check_data").prop("hidden", false);
                  count = count +1;
+                 flag = flag + 1;
             }
-            else if(main_table_low_value.includes((compare)&&(accval_dic.del_ind))){
+            else if(main_table_low_value.includes(compare)){
                  $(row).css("border", "#f8d7da");
                  row_color_highlight(row);
                  $("#id_check_error_messages").prop("hidden",false);
@@ -649,6 +694,7 @@
                  $("#id_delete_duplicate").show()
                  $("#id_check_data").prop("hidden", false);
                  count = count +1;
+                 flag = flag + 1;
             }
             else{
                 $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
@@ -656,12 +702,25 @@
                 $(row).css("border", "");
                 $("#id_delete_duplicate").hide()
             }
-            aav_code_check.push(accval_dic.account_assign_value)
-            main_table_low_value.push(accval_dic.account_assign_value)
+            aav_code_check.push(compare)
+            main_table_low_value.push(compare)
             table_sort_filter_popup_pagination('id_popup_table');
+          }
+          if(flag == 0){
+              $("#id_delete_duplicate").hide()
+          }
+          else{
+                $("#id_delete_duplicate").show()
+          }
+          if(count == 0){
+                $(row.find("TD").eq(4).find('input[type="text"]')).css("border", "1px solid #ced4da");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+          }
         });
     //*************** shows save button if there are no errors(special characters and max length) ***************
         if(count == 0){
+            $("#id_delete_duplicate").hide()
             $('#id_popup_table').DataTable().destroy();
             $("#id_popup_table").find("input,button,textarea,select").attr("disabled", "disabled");
             document.getElementById("id_del_add_button").style.display = "none";
@@ -832,9 +891,8 @@
         });
     }
 
-    // on click add icon display the row in to add the new entries
     function add_popup_row() {
-        $('#save_id').show();
+<!--        $('#save_id').show();-->
         on_page_load_dropdown();
         $("#error_msg_id").css("display", "none")
         basic_add_new_html = '';
@@ -844,20 +902,47 @@
             $("#id_error_msg").html("");
         });
         if (GLOBAL_ACTION == "aav_upload") {
-            basic_add_new_html = '<tr><td><input type="checkbox" required></td>'+
-            '<td><select class="form-control" id="company_dropdw" onchange="GetUnusedAccAssCat(this)">' + company_dropdwn + '</select></td>'+
-            '<td><select class="form-control" id="acc_ass_val_dropdw">' + acc_ass_dropdwn + ' </select></td>'+
-            '<td><input class="form-control check_number" type="number" minlength="4" maxlength="40" name="Account Assignment Value" required></td>'+
-            '<td><input class="form-control formatDate" type="text"  name="valid_from" required></td>'+
-            '<td><input class="form-control formatDate" type="text"  name="Valid To Date" required></td>'+
-            '<td hidden><input value=""></td>'+
-            '<td class="class_del_checkbox"><input type="checkbox" required></td>'+
-            '<td class="class_del_checkbox1" hidden><input type="checkbox" required></td></tr>';
-            $('#id_popup_tbody').append(basic_add_new_html);
-            DatePicker();
-            $(".class_del_checkbox").prop("hidden", false);
-            $("#id_del_ind_checkbox").prop("hidden", false);
-            table_sort_filter('id_popup_table');
+            OpenLoaderPopup();
+        var data = {'table_name':'AccountingData'}
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+            data: JSON.stringify(data),
+            success: function(response) {
+                rendered_aac_data = response.upload_data_acccat
+                rendered_company_data = response.upload_company_data
+                display_tb_data() // Read data from the main table
+                on_page_load_dropdown();
+<!--                acc_value_dropdown()-->
+                basic_add_new_html = '<tr><td><input type="checkbox" required></td>'+
+                '<td><select class="form-control" id="company_dropdw" onchange="GetUnusedAccAssCat(this)">' + company_dropdwn + '</select></td>'+
+                '<td><select class="form-control" id="acc_ass_val_dropdw">' + acc_ass_dropdwn + ' </select></td>'+
+                '<td><input class="form-control check_number" type="number" minlength="4" maxlength="40" name="Account Assignment Value" required></td>'+
+                '<td><input class="form-control formatDate" type="text"  name="valid_from" required></td>'+
+                '<td><input class="form-control formatDate" type="text"  name="Valid To Date" required></td>'+
+                '<td hidden><input value=""></td>'+
+                '<td class="class_del_checkbox"><input type="checkbox" required></td></tr>';
+                $('#id_popup_tbody').append(basic_add_new_html);
+                DatePicker();
+                $(".class_del_checkbox").prop("hidden", false);
+                $("#id_del_ind_checkbox").prop("hidden", false);
+                table_sort_filter('id_popup_table');
+<!--                $("#error_msg_id").css("display", "none")-->
+<!--                $("#header_select").prop( "hidden", false );-->
+<!--                GLOBAL_ACTION = button.value-->
+<!--                $('#id_popup_table').DataTable().destroy();-->
+<!--                $("#id_popup_tbody").empty();-->
+<!--                $('#aav_Modal').modal('show');-->
+<!--                new_row_data();   // Add a new row in popup-->
+<!--                table_sort_filter('id_popup_table');-->
+                $("#id_del_ind_checkbox").prop("hidden", true);
+                document.getElementById("id_del_add_button").style.display = "block";
+                $("#delete_data").prop("hidden", true);
+<!--                $("#save_id").prop("hidden", false);-->
+                CloseLoaderPopup();
+            }
+        });
+
         }
         else{
             new_row_data();   // Add a new row in popup}

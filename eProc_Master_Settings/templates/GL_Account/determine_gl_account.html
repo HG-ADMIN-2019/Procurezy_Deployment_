@@ -120,6 +120,7 @@
                             <p id="id_error_Prod_cat_id"></p>
                             <p id="id_error_Fromvalue_lesserthan_Tovalue"></p>
                             <p id="id_error_FromvalueTovalue_positive_num"></p>
+                            <p id="id_error_empty_FromvalueTovalue"></p>
                         </div>
                         <div id="error_msg_id" class="alert alert-danger display-none" role="alert"><span id="error_message"></span></div>
                         <div id="id_warning_msg_id" class="alert alert-warning display-none" role="alert"></div>
@@ -224,7 +225,22 @@
             company_dropdown += '<option value="' + item.company_id + '">' + item.company_id + '</option>'
         });
     }
-
+    // Function for add a new row data
+    function new_row_data() {
+        gl_account_dropdown()
+        basic_add_new_html = '<tr ><td><input type="checkbox" required></td>'+
+        '<td><select class="form-control">' + prod_cat_dropdown + '</select></td>'+
+        '<td><select name="company_dropdown" class="form-control">' + company_dropdown + '</select></td>'+
+        '<td><select class="form-control">' + accasscat_dropdown + '</select></td>'+
+        '<td><select class="form-control">' + glacc_dropdown + '</select></td>'+
+        '<td><input type="checkbox" name="gl_acc_default" required></td>'+
+        '<td><input class="form-control" type="number"  min="1" name="From_value"  required></td>'+
+        '<td><input class="form-control" type="number"  min="1" name="To_value"  required></td>'+
+        '<td><select class="form-control">' + currency_dropdown + '</select></td><td hidden><input type="text" class="form-control"  value="GUID"</td><td class="class_del_checkbox" hidden><input type="checkbox" required></td></tr>';
+        var table = $('#id_popup_table').DataTable();
+        table.row.add($(basic_add_new_html)).draw();
+        table_sort_filter('id_popup_table');
+    }
 
     //onclick of cancel display the table in display mode............
     function display_basic_db_data() {
@@ -306,7 +322,7 @@
             }
             else if (error_message){
                 display_error_message(error_message)
-            } 
+            }
         }
         table_sort_filter('id_popup_table');
     }
@@ -579,6 +595,7 @@
     }
     //check function restricting special char and diaplay the data count of csv file
     function check_data() {
+        $("#id_delete_duplicate").hide()
         $('#id_popup_table').DataTable().destroy();
         $("#id_check_success_messages").empty()
         $("#id_check_error_messages").empty()
@@ -588,7 +605,9 @@
         document.getElementById("id_error_Prod_cat_id").innerHTML = "";
         document.getElementById("id_error_Fromvalue_lesserthan_Tovalue").innerHTML = "";
         document.getElementById("id_error_FromvalueTovalue_positive_num").innerHTML = "";
+        document.getElementById("id_error_empty_FromvalueTovalue").innerHTML = "";
         count = 0;
+        flag = 0;
         var detgl_array = new Array
         var DB_array = new Array
         var detgl_list = new Array
@@ -615,9 +634,10 @@
                 detgl_code_dic.del_ind = '0'
             }
             detgl_list.push(detgl_code_dic)
-            var compare = detgl_code_dic.gl_acc_num + '-' + detgl_code_dic.company_id + '-' + detgl_code_dic.account_assign_cat
+            var compare = detgl_code_dic.prod_cat_id + '-' + detgl_code_dic.company_id + '-' + detgl_code_dic.account_assign_cat + '-' + detgl_code_dic.gl_acc_num + '-' + detgl_code_dic.currency_id
             get_main_table_data();
             var format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+          if(detgl_code_dic.del_ind == '0'){
             //*************** checking for empty records for product id name (max length = 2) ***************
             if((detgl_code_dic.item_from_value < 0) || (detgl_code_dic.item_to_value < 0)){
                 $(row.find("TD").eq(1).find('input[type="text"]')).css("border", "1px solid #FF0000");
@@ -629,17 +649,39 @@
                 $("#id_check_special_character_messages").prop("hidden",false);
                 count = count +1;
             }
+            //*************** checking for empty records for item_from_value id  (max length = 2) ***************
+            else if(detgl_code_dic.item_from_value.length == 0 || /\s/.test(detgl_code_dic.item_from_value)) {
+                    $(row.find("TD").eq(6).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_empty_FromvalueTovalue").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_empty_FromvalueTovalue").innerHTML = display8+ " for From Value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+            }
+            //*************** checking for empty records for item_from_value id  (max length = 2) ***************
+            else if(detgl_code_dic.item_to_value.length == 0 || /\s/.test(detgl_code_dic.item_to_value)) {
+                    $(row.find("TD").eq(7).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                    row_color_highlight_empty(row);
+                    $("#id_error_empty_FromvalueTovalue").prop("hidden",false);
+                    error_message = ui_messeges("JMSG002")// Get message details
+                    var display8 = error_message;
+                    document.getElementById("id_error_empty_FromvalueTovalue").innerHTML = display8+ " for To Value";
+                    $("#id_check_special_character_messages").prop("hidden",false);
+                    count = count +1;
+            }
             else if(detgl_code_dic.item_from_value > detgl_code_dic.item_to_value){
-                $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "1px solid #FF0000");
-                row_color_highlight_special(row);
-                $("#id_error_msg_language_id").prop("hidden",false);
-                error_message = ui_messeges("JMSG003")// Get message details
-                var display3 = error_message;
-                document.getElementById("id_error_FromvalueTovalue_positive_num").innerHTML = display3+ "From value and To value";
+                $(row.find("TD").eq(6).find('input[type="text"]')).css("border", "1px solid #FF0000");
+                row_color_highlight_empty(row);
+                $("#id_error_FromvalueTovalue_positive_num").prop("hidden",false);
+                error_message = ui_messeges("JMSG002")// Get message details
+                var display8 = error_message;
+                document.getElementById("id_error_FromvalueTovalue_positive_num").innerHTML = display8+ " for From value and To value";
                 $("#id_check_special_character_messages").prop("hidden",false);
                 count = count +1;
             }
-            else if(detgl_code_check.includes((compare)&&(detgl_code_dic.del_ind))){
+            else if(detgl_code_check.includes(compare)){
                  $(row).css("border", "#f8d7da");
                  row_color_highlight(row);
                  $("#id_check_error_messages").prop("hidden",false);
@@ -649,8 +691,9 @@
                  $("#id_delete_duplicate").show()
                  $("#id_check_data").prop("hidden", false);
                  count = count +1;
+                 flag = flag + 1;
             }
-            else if(main_table_low_value.includes((compare)&&(detgl_code_dic.del_ind))){
+            else if(main_table_low_value.includes(compare)){
                  $(row).css("border", "#f8d7da");
                  row_color_highlight(row);
                  $("#id_check_error_messages").prop("hidden",false);
@@ -660,6 +703,7 @@
                  $("#id_delete_duplicate").show()
                  $("#id_check_data").prop("hidden", false);
                  count = count +1;
+                 flag = flag + 1;
             }
             else{
                 $(row.find("TD").eq(2).find('input[type="text"]')).css("border", "none");
@@ -670,10 +714,23 @@
             detgl_code_check.push(compare)
             main_table_low_value.push(compare)
             table_sort_filter_popup_pagination('id_popup_table');
+          }
+          if(flag == 0){
+              $("#id_delete_duplicate").hide()
+          }
+          else{
+                $("#id_delete_duplicate").show()
+          }
+          if(count == 0){
+                $(row.find("TD").eq(4).find('input[type="text"]')).css("border", "1px solid #ced4da");
+                row_color_no_highlight(row);
+                $(row).css("border", "");
+          }
         });
 
         //*************** shows save button if there are no errors(special characters and max length) ***************
          if(count == 0){
+            $("#id_delete_duplicate").hide()
             $('#id_popup_table').DataTable().destroy();
             $("#id_popup_table").find("input,button,textarea,select").attr("disabled", "disabled");
             document.getElementById("id_del_add_button").style.display = "none";
@@ -700,7 +757,7 @@
                 }
             });
          }
-}
+    }
 
 
     // validating the  popup table for duplicate entries
@@ -738,6 +795,94 @@
         }
         return [no_duplicate_value,error_message]
     }
+   // on click add icon display the row in to add the new entries
+    function add_popup_row() {
+        $("#error_msg_id").css("display", "none");
+        basic_add_new_html = '';
+        var display_db_data = '';
+        $('#id_popup_table').DataTable().destroy();
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#id_error_msg").html("");
+        });
+
+        if (GLOBAL_ACTION == "detgl_upload") {
+            OpenLoaderPopup();
+            var data = {'table_name':'DetermineGLAccount'}
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'eProc_Configuration:get_dropdown_data' %}",
+                data: JSON.stringify(data),
+                success: function(response) {
+                    rendered_glacc_data = response.upload_value_glacc
+                    rendered_accasscat_data = response.upload_value_accasscat
+                    rendered_currency_data = response.upload_value_currency
+                    rendered_company_data = response.upload_value_company
+                    rendered_prod_category = response.prod_catogories
+                    rendered_acc_value_list = response.acc_value_list
+                    gl_account_dropdown()
+<!--                    $("#error_msg_id").css("display", "none")-->
+<!--                    $( "#header_select").prop( "hidden", false );-->
+
+<!--                    display_button(); // Call the display_button function to show/hide the buttons-->
+<!--                    $('#id_popup_table').DataTable().destroy();-->
+<!--                    $("#id_popup_tbody").empty();-->
+<!--                    $('#Detgl_Modal').modal('show');-->
+                    basic_add_new_html = '<tr><td><input type="checkbox" required></td>' +
+                    '<td><select class="form-control">' + prod_cat_dropdown + '</select></td>' +
+                    '<td><select class="form-control">' + company_dropdown + '</select></td>' +
+                    '<td><select class="form-control">' + accasscat_dropdown + '</select></td>' +
+                    '<td><select class="form-control">' + glacc_dropdown + '</select></td>' +
+                    '<td><input type="checkbox" name="gl_acc_default" required></td>' +
+                    '<td><input class="form-control" type="number" min="1" name="From_value" required></td>' +
+                    '<td><input class="form-control" type="number" min="1" name="To_value" required></td>' +
+                    '<td><select class="form-control">' + currency_dropdown + '</select></td>' +
+                    '<td hidden><input type="text" class="form-control" value="GUID"></td>' +
+                    '<td class="class_del_checkbox"><input type="checkbox" required></td></tr>';
+                    $('#id_popup_tbody').append(basic_add_new_html);
+                    table_sort_filter('id_popup_table');
+                    $(".class_del_checkbox").prop("hidden", false);
+                    $("#id_del_ind_checkbox").prop("hidden", false);
+                    var company_num = '';
+                    $("#id_popup_table TBODY TR").each(function () {
+                        var row = $(this);
+                        row.find("TD").eq(3).find("select").empty();
+                        row.find("TD").eq(4).find("select").empty();
+                        company_num = row.find("TD").eq(2).find("select option:selected").val();
+                        var assign_val = account_assignment_value_find(company_num);
+                        row.find("TD").eq(3).find("select").append(assign_val.acc_ass_dropdwn);
+                        row.find("TD").eq(4).find("select").append(assign_val.acc_ass_val_dropdwn);
+                        $(row.find("TD").eq(2).find("select")).change(function () {
+                            company_dropdwn_change(row);
+                        });
+                    });
+                    $("#id_del_ind_checkbox").prop("hidden", true);
+                    document.getElementById("id_del_add_button").style.display = "block";
+                    CloseLoaderPopup();
+                }
+            });
+        }
+        else {
+            new_row_data();   // Add a new row in popup
+            var company_num = '';
+            $("#id_popup_table").on("change", "select[name='company_dropdown']", function () {
+                var row = $(this).closest("tr");
+                company_dropdwn_change(row);
+            });
+            $("#id_popup_table").on("draw.dt", function () {
+                $("#id_popup_table TBODY TR").each(function () {
+                    var row = $(this);
+                    row.find("TD").eq(3).find("select").empty();
+                    row.find("TD").eq(4).find("select").empty();
+                    company_num = row.find("TD").eq(2).find("select option:selected").val();
+                    var assign_val = account_assignment_value_find(company_num);
+                    row.find("TD").eq(3).find("select").append(assign_val.acc_ass_dropdwn);
+                    row.find("TD").eq(4).find("select").append(assign_val.acc_ass_val_dropdwn);
+                });
+            });
+            $('#delete_data').hide();
+        }
+    }
+
 
     //onclick of add button display Detgl_Modal popup and set GLOBAL_ACTION button value
     function onclick_add_button(button) {

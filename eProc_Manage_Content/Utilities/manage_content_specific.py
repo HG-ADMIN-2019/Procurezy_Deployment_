@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 
 from Majjaka_eProcure import settings
+from eProc_Attributes.models.org_attribute_models import OrgAttributesLevel
 from eProc_Basic.Utilities.constants.constants import CONST_PRODUCT_SPECIFICATION, CONST_CATALOG_CALLOFF, \
     CONST_FREETEXT_CALLOFF, \
     CONST_SEARCH_COUNT, CONST_VARIANT_WITHOUT_PRICING, CONST_CATALOG_ITEM_VARIANT, CONST_DROPDOWN_DATA_TYPE, \
@@ -131,7 +132,24 @@ def get_catalog_filter_list(filter, query_count):
     """
     catalog_details = django_query_instance.django_filter_query_with_entry_count(Catalogs, filter, ['catalog_id'], None,
                                                                                  int(query_count))
+    catalog_details = get_catalog_values(catalog_details)
 
+    return catalog_details
+
+
+def get_catalog_values(catalog_details):
+    """
+
+    :param catalog_details:
+    :return
+    """
+    for catalog_detail in catalog_details:
+        catalog_detail['catalog_transaction'] = False
+        if django_query_instance.django_existence_check(OrgAttributesLevel,
+                                                        {'low': catalog_detail['catalog_id'],
+                                                         'client': global_variables.GLOBAL_CLIENT,
+                                                         'del_ind': False}):
+            catalog_detail['catalog_transaction'] = True
     return catalog_details
 
 
@@ -155,6 +173,22 @@ def save_catalog_to_db(catalog_data):
                                                                            'catalog_id__in': catalog_id},
                                                                           None,
                                                                           None)
+    elif catalog_data['catalog_action'] == 'DELETE':
+        catalog_id = catalog_data.get('catalog_id')
+        django_query_instance.django_filter_delete_query(Catalogs,
+                                                         {'client': global_variables.GLOBAL_CLIENT,
+                                                          'catalog_id__in': catalog_id})
+        remaining_catalogs = django_query_instance.django_filter_query(Catalogs,
+                                                                       {'client': global_variables.GLOBAL_CLIENT},
+                                                                       None,
+                                                                       None)
+        if remaining_catalogs:
+            for catalog_detail in remaining_catalogs:
+                catalog_detail['catalog_transaction'] = django_query_instance.django_existence_check(OrgAttributesLevel,
+                                                                                                     {'low': catalog_detail['catalog_id'],
+                                                                                                      'client': global_variables.GLOBAL_CLIENT,
+                                                                                                      'del_ind': False})
+            catalog_data_response = get_catalog_values(remaining_catalogs)
     else:
         for data in catalog_data['catalog_data']:
             catalog_dictionary = {'catalog_guid': guid_generator(),
@@ -522,14 +556,14 @@ def save_products_specifications(product_specification_data):
     return product_info_id
 
 
-def get_product_info_id(product_spec_list,product_id):
+def get_product_info_id(product_spec_list, product_id):
     """
 
     """
-    product_info_id = [product_spec['product_info_id'] for product_spec in product_spec_list if product_spec['product_id'] == product_id]
+    product_info_id = [product_spec['product_info_id'] for product_spec in product_spec_list if
+                       product_spec['product_id'] == product_id]
     if product_info_id:
         product_info_id = product_info_id[0]
     else:
         product_info_id = None
-    return  product_info_id
-
+    return product_info_id

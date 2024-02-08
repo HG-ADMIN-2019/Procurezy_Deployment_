@@ -602,11 +602,7 @@ def remove_invalid_workflowacc(convertion_list):
                                                                         {'del_ind': False,
                                                                          'account_assign_value': conversion[
                                                                              'acc_value']}):
-                            # Check for existence of Username
-                            if django_query_instance.django_existence_check(AccountingData,
-                                                                            {'del_ind': False,
-                                                                             'account_assign_value': conversion[
-                                                                                 'sup_acc_value']}):
+
                                 # Check for existence of Username
                                 if django_query_instance.django_existence_check(UserData,
                                                                                 {'del_ind': False,
@@ -1017,7 +1013,7 @@ def srm_currency(request):
 
 def extract_country_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=' + CONST_COUNTRIES_CSV
+    response['Content-Disposition'] = 'attachment; filename="Maintain Countries.CSV"'
 
     writer = csv.writer(response)
 
@@ -1037,7 +1033,7 @@ def extract_country_data(request):
 
 def extract_country_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Countries Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Countries Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1047,7 +1043,7 @@ def extract_country_template(request):
 
 def extract_timezone_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Timezone Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Timezones Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1057,7 +1053,7 @@ def extract_timezone_template(request):
 
 def extract_currency_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Currency Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Currencies Template.CSV"'
 
     writer = csv.writer(response)
 
@@ -1176,7 +1172,7 @@ def extract_calendar_holiday_data(request):
 
 def extract_language_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Languages.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Languages.CSV"'
 
     writer = csv.writer(response)
     writer.writerow(['LANGUAGE_ID', 'DESCRIPTION', 'del_ind'])
@@ -1196,7 +1192,7 @@ def extract_language_data(request):
 
 def extract_language_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Languages Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Languages Template.CSV"'
 
     writer = csv.writer(response)
     writer.writerow(['LANGUAGE_ID', 'DESCRIPTION', 'del_ind'])
@@ -1206,7 +1202,7 @@ def extract_language_template(request):
 
 def extract_currency_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=' + CONST_CURRENCY_CSV
+    response['Content-Disposition'] = 'attachment; filename="Maintain Currencies.CSV"'
     writer = csv.writer(response)
 
     writer.writerow(['CURRENCY_ID', 'DESCRIPTION', 'del_ind'])
@@ -1354,7 +1350,7 @@ def work_item_doc_num_extract(request):
 
 def extract_timezone_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=' + CONST_TIMEZONE_CSV
+    response['Content-Disposition'] = 'attachment; filename="Maintain Timezones.CSV"'
     writer = csv.writer(response)
     writer.writerow(['TIME_ZONE', 'DESCRIPTION', 'UTC_DIFFERENCE', 'DAYLIGHT_SAVE_RULE', 'del_ind'])
 
@@ -1408,7 +1404,7 @@ def extract_workflowaccount_data(request):
 
 def extract_unitofmeasure_data(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Unit Of Measure.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Unit Of Measures.CSV"'
 
     writer = csv.writer(response)
     writer.writerow(['UOM_ID', 'UOM_DESCRIPTION', 'ISO_CODE_ID', 'del_ind'])
@@ -1428,7 +1424,7 @@ def extract_unitofmeasure_data(request):
 
 def extract_unitofmeasure_template(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Unit Of Measure Template.CSV"'
+    response['Content-Disposition'] = 'attachment; filename="Maintain Unit Of Measures Template.CSV"'
 
     writer = csv.writer(response)
     writer.writerow(['UOM_ID', 'UOM_DESCRIPTION', 'ISO_CODE_ID', 'del_ind'])

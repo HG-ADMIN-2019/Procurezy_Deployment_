@@ -82,70 +82,81 @@
 
                                         <div class="form-group">
                                             <label for="product_name">Product Name</label> <span class="hg_required"></span>
-                                            <input type="text" class="form-control input-disable-class check_special_char" id="prd_desc" placeholder="Eg. Notebook PC" required maxlength="225">
+                                            <input type="text" class="form-control mandatory_fields input-disable-class check_special_char" id="prd_desc" placeholder="Eg. Notebook PC" required maxlength="225">
+                                            <span id="err_prd_desc" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="product_name">Product Description</label> <span class="hg_required"></span>
-                                            <textarea rows="4" id = "prd_lng_txt" class="form-control input-disable-class check_special_char" required maxlength="1000"></textarea>
+                                            <textarea rows="4" id = "prd_lng_txt" class="form-control mandatory_fields input-disable-class check_special_char" required maxlength="1000"></textarea>
+                                            <span id="err_prd_lng_txt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="product_price">Price</label> <span class="hg_required"></span>
-                                                <input type="number" class="form-control input-disable-class" id="prd_prc" required>
+                                                <input type="number" class="form-control mandatory_fields input-disable-class" id="prd_prc" required>
+                                                <span id="err_prd_prc" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="product_currency">Currency</label> <span class="hg_required"></span>
-                                                <select class="form-control input-disable-class  selectpicker" data-live-search="true" id="pfm_currency_list" name="currencies" required>
+                                                <select class="form-control mandatory_fields input-disable-class  selectpicker custom-select" data-live-search="true" id="pfm_currency_list" name="currencies" required>
                                                     <option value="">Please select Currency</option>
                                                     {% for currency in currency_desc %}
                                                     <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_currency_list" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
-                                                <select name="units_l" class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_units_list" required>
+                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_units_list" required>
                                                     <option value="">Please select unit of measure</option>
                                                     {% for unit in unit_desc %}
                                                     <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_units_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prs_unit">Price Unit</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_prs_unit" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_prs_unit" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_prs_unit" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_unspsc_list">Product Category(UNSPSC)</label> <span class="hg_required"></span>
-                                                <input type="text" placeholder="Click to select product category" class="form-control input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required>
+                                                <input type="text" placeholder="Click to select product category" class="form-control mandatory_fields input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required>
+                                                <span id="err_pfm_unspsc_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_lead" class="form-control input-disable-class" required>
+                                                <label for="prd_lead">Lead Time </label><span class="hg_required"></span>
                                                 <small id="leadtimelHelp" class="form-text text-muted">In number of days</small>
+                                                <input type="number" id="prd_lead" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_lead" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Minimum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_qnt" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_mini_qnt" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_mini_qnt" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_value">Minimum Order Value</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_value" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_mini_value" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_mini_value" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_max_qnt">Maximum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_max_qnt" class="form-control input-disable-class" required>
+                                                <input type="number" id="prd_max_qnt" class="form-control mandatory_fields input-disable-class" required>
+                                                <span id="err_prd_max_qnt" class="error_message" hidden></span>
                                             </div>
 
                                         </div>
@@ -187,7 +198,8 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mnf">Manufacturer</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_mnf" class="form-control input-disable-class check_special_char" required>
+                                                <input type="text" id="prd_mnf" class="form-control mandatory_fields input-disable-class check_special_char" required>
+                                                <span id="err_prd_mnf" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-4">
@@ -252,7 +264,8 @@
                                                     <img id="image-preview3" class="upload-img-style">
                                                 </div>
                                             </div>
-                                            <small class="form-text text-muted"> Application help text - supported image type</small>
+                                            <small class="form-text text-muted"> Supported images types - jpg, jpeg, png, bmp, tif, tiff or gif </small>
+                                            <small class="form-text text-muted"> Supported Image size - less than 200KB  </small>
                                         </div>
                                     </div>
 
@@ -280,35 +293,39 @@
 
                                         <div class="form-group">
                                             <label for="pro_type"> Product type</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class" id="pro_type" name="prod_types" required>
+                                            <select class="form-control mandatory_fields input-disable-class" id="pro_type" name="prod_types" required>
                                                 <option value="01"> 01 Product</option>
                                                 <option value="02"> 02 Service</option>
                                             </select>
+                                            <span id="err_pro_type" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="prd_qnt"> Quantity Available</label>
-                                            <input type="text" id="prd_qnt" class="form-control input-disable-class check_number" >
+                                            <label for="prd_qnt"> Quantity Available</label> <span class="hg_required"></span>
+                                            <input type="text" id="prd_qnt" class="form-control hg_edit_display_mode mandatory_fields input-disable-class check_number" placeholder="Enter Quantity" required>
+                                            <span id="err_prd_qnt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_country_list" name="countries_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_country_list" name="countries_l" required>
                                                 <option value="">Please select Country of Origin</option>
                                                 {% for country in country_desc %}
                                                 <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <span id="err_pfm_country_list" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class selectpicker" data-live-search="true" id="pfm_language_list" name="Language_l" required>
+                                            <select class="form-control mandatory_fields input-disable-class selectpicker custom-select" data-live-search="true" id="pfm_language_list" name="Language_l" required>
                                                 <option value="">Please select Product Language</option>
                                                 {% for language in language_desc %}
                                                 <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <span id="err_pfm_language_list" class="error_message" hidden></span>
                                         </div>
 
                                     </div>
@@ -333,13 +350,15 @@
 
                                         <div class="form-group">
                                             <label for="pfm_supplier_list">Supplier Details</label> <span class="hg_required"></span>
-                                            <input name="suppliers" type="text" placeholder="Please select supplier" class="form-control input-disable-class" id="pfm_supplier_list" required>
+                                            <input name="suppliers" type="text" placeholder="Please select supplier" class="form-control hg_edit_display_mode mandatory_fields input-disable-class" id="pfm_supplier_list" required>
+                                            <span id="err_pfm_supplier_list" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="pfm_supplier_prod_num">Supplier Product Number</label><span class="hg_required"></span>
-                                            <input type="text" id="pfm_supplier_prod_num" class="form-control input-disable-class check_special_char" required>
-                                            <small class="form-text text-muted help-text-alpha-numeric"> Valid characters are  A-Z a-z 0-9 </small>
+                                            <label for="pfm_supplier_prod_num">Supplier Product Number</label>
+                                            <span class="hg_required"></span><small class="form-text text-muted help-text-alpha-numeric"> Valid characters are  A-Z a-z 0-9 </small>
+                                            <input type="text" id="pfm_supplier_prod_num" class="form-control mandatory_fields input-disable-class check_special_char" required>
+                                            <span id="err_pfm_supplier_prod_num" class="error_message" hidden></span>
                                         </div>
 
                                     </div>
@@ -577,7 +596,26 @@
     </div>
 </div>
 <!-- End Create New Variant field Popup -->
-
+ <!--delete confirmation popup-->
+    <div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="variant_option_delete(this)" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <!-- Start Create New specification field Popup -->
 <div class="modal fade" id="create_product_spec_popup" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -692,6 +730,7 @@
 <!-- End of Select supplier popup -->
 
 <script>
+var is_valid = true;
 
 $(document).ready(function(){
     $('#nav_menu_items').remove();
@@ -732,6 +771,53 @@ function triggerFileUpload(id) {
     }
 
 }
+
+    $(".mandatory_fields").on("input", function () {
+        var currentValue = $(this).val().trim();
+        var errorSpan = $(this).next('.error_message');
+
+        if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+            errorSpan.prop('hidden', false);
+            errorSpan.text("Please enter valid value");
+        } else {
+            errorSpan.prop('hidden', true);
+        }
+    });
+
+$("#save_product_details").on("click", function () {
+    // Iterate over each mandatory field and trigger the input event
+    $(".mandatory_fields").each(function () {
+        $(this).trigger("input");
+    });
+
+    // Check if there are no visible error messages, then proceed with saving the form
+    var errorsExist = $(".error_message:visible").length > 0;
+    if (!errorsExist) {
+        // Additional logic for saving the form if needed
+        console.log('Form submitted successfully.');
+    }
+
+    // Add change event to remove error message when a value is selected
+    $(".custom-select").on("change", function () {
+        var errorSpan = $(this).next('.error_message');
+        errorSpan.prop('hidden', true);
+    });
+
+    // Iterate over each dropdown with class .custom-select and check if it is empty
+        $(".custom-select").each(function () {
+            var currentValue = $(this).val();
+            var errorSpan = $(this).next('.error_message');
+
+            // If the dropdown is empty, show red border and error message
+            if (currentValue === "") {
+                errorSpan.prop('hidden', false);
+                errorSpan.text('Please select a value.');
+            } else {
+                // If the dropdown has a value, hide the error message
+                errorSpan.prop('hidden', true);
+            }
+        });
+});
 
 function loadFile1(event) {
     $('#image-upload-errors').html('');
@@ -939,7 +1025,7 @@ function variant_fields_clear () {
     $("#table_vo_wi_apbp").hide();
     $('#tbody_vo_wi_apbp').empty();
 }
-//############################ END Function to display create pop based on conditions #######################
+//############################ END Function to display create pop based on conditions ######################
 
 var eform_data_new = new Array();
 
@@ -960,7 +1046,7 @@ const create_fields = () => {
 
     if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
         var error_flag = false;
-        
+
         $("#table_id_vo_wo_iobp TBODY TR").each(function() {
             var row = $(this);
             var vo_table_data = {};
@@ -971,7 +1057,7 @@ const create_fields = () => {
             if (vo_table_data.option_value == '') {
                 error_flag = true;
             }
-            
+
             table_data.push(vo_table_data);
         });
 
@@ -983,7 +1069,7 @@ const create_fields = () => {
             eform_data_new.push(variant_option_data)
             create_prod_variant_table(eform_data_new);
         }
-        
+
 
     } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
         var error_flag = false;
@@ -1136,7 +1222,7 @@ function create_prod_variant_table(eform_data_new) {
         // variant_option_section.append(line_seperator);
 
         // Create a div to display variant option name and functional button group
-        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" onclick="variant_option_delete(this)"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
+        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
 
         // Create <table> element
         var create_tbl = document.createElement("table");
@@ -1397,7 +1483,7 @@ $('#product_detail_form_id').on('submit', function(e){
     console.log(attachment_data_array);
 
 });
-//######################## end of on click of save ###################################################
+//######################## end of on click of save ##################################################
 
 function view_edit_product_details(){
     // on click of cancel button display only edit
@@ -1475,10 +1561,12 @@ $("#table_id_product_discount").on('click','.row-delete-btn',function(){
 
 
 function variant_option_delete(obj) {
+    $('#id_delete_confirm_popup').modal('show');
     var id = obj.id;
     var get_index = id.split('-')[1];
     eform_data_new.splice(get_index, 1)
     create_prod_variant_table(eform_data_new);
+    $('#id_delete_confirm_popup').modal('hide');
 }
 
 function create_product_discount_popup(){

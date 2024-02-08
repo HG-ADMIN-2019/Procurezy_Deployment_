@@ -38,6 +38,4 @@ function displayToggle(element) {
     element.dataset.target = '#collapseSearch'+id
 }
 
-$('#search_button_id').click(function () {
-    OpenLoaderPopup();
-})
+

@@ -157,7 +157,8 @@
                                         <td>{{product_detail.price}}</td>
                                         <td>{{product_detail.currency}}</td>
                                         <td >{{product_detail.prod_cat_id}}</td>
-                                        <td><i class="material-icons hg-icon-blue-primary  {% if product_detail.product_transaction %} hg-delete-icon-disabled  {% endif %}" title="Delete Form" id="{{product_detail.product_id}}-{{product_detail.product_transaction}}"
+                                        <td><i class="material-icons hg-icon-blue-primary  {% if product_detail.product_transaction %} hg-delete-icon-disabled  {% endif %}"
+                                               title="Delete Form" id="{{product_detail.product_id}}-{{product_detail.product_transaction}}"
                                                onclick="get_form_id_to_delete(this.id)" >delete_outline</i>
                                         </td>
                                     </tr>

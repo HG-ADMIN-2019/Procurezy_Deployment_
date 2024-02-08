@@ -204,28 +204,43 @@ def org_support_save(request):
 
         for data in org_support_data:
             guid = data['org_support_guid']
-            if guid == '':
-                guid = guid_generator()
+            try:
+                existing_record = OrgSupport.objects.get(org_support_guid=guid)
+                existing_record.org_support_types = data['support_type']
+                existing_record.org_support_email = data['support_email']
+                existing_record.org_support_number = data['support_number']
+                existing_record.username = data['username']
+                existing_record.client = client
+                existing_record.del_ind = False
+                existing_record.object_id = obj_id
+                existing_record.org_support_changed_at = datetime.datetime.now()
+                existing_record.org_support_changed_by = global_variables.GLOBAL_LOGIN_USERNAME
+                existing_record.save()
+                msgid = 'MSG157'
+                error_msg = get_message_desc(msgid)[1]
+            except OrgSupport.DoesNotExist:
+                defaults = {
+                    'org_support_guid': guid,
+                    'org_support_types': data['support_type'],
+                    'org_support_email': data['support_email'],
+                    'org_support_number': data['support_number'],
+                    'username': data['username'],
+                    'client': client,
+                    'del_ind': False,
+                    'object_id': obj_id,
+                    'org_support_created_at': datetime.datetime.now(),
+                    'org_support_created_by': global_variables.GLOBAL_LOGIN_USERNAME,
+                    'org_support_changed_at': datetime.datetime.now(),
+                    'org_support_changed_by': global_variables.GLOBAL_LOGIN_USERNAME,
+                }
 
-            defaults = {
-                'org_support_guid': guid,
-                'org_support_types': data['support_type'],
-                'org_support_email': data['support_email'],
-                'org_support_number': data['support_number'],
-                'username': data['username'],
-                'client': client,
-                'del_ind': False,
-                'object_id': obj_id,
-                'org_support_created_at': datetime.datetime.now(),
-                'org_support_created_by': global_variables.GLOBAL_LOGIN_USERNAME,  # Assuming the user is logged in
-                'org_support_changed_at': datetime.datetime.now(),
-                'org_support_changed_by': global_variables.GLOBAL_LOGIN_USERNAME,
-            }
-
-            django_query_instance.django_update_or_create_query(OrgSupport, {'org_support_guid': guid},
-                                                                defaults)
-            msgid = 'MSG157'
-            error_msg = get_message_desc(msgid)[1]
+                try:
+                    django_query_instance.django_create_query(OrgSupport, defaults)
+                    msgid = 'MSG157'
+                    error_msg = get_message_desc(msgid)[1]
+                except IntegrityError:
+                    msgid = 'MSG158'
+                    error_msg = get_message_desc(msgid)[1]
 
         return JsonResponse({'message': error_msg, 'updated_guid': guid})
 
@@ -328,17 +343,24 @@ def get_support_data(request):
     for val in chat_support_data:
         username_str = val.username  # Assuming val.username = '\'CHAITRA\''
         username_str = username_str.replace('\\', '')  # Remove backslashes
-        username = ast.literal_eval(username_str)  # Convert to Python object
 
-        selected_user_data = django_query_instance.django_filter_only_query(UserData, {
-            'client': global_variables.GLOBAL_CLIENT, 'del_ind': False, 'username__in': username
-        })
-        for names in selected_user_data:
-            user_names = names.first_name + ' ' + names.last_name + ' - ' + names.email
-            user_data_values.append(user_names)
+        try:
+            # Use ast.literal_eval only if the string is a valid Python literal
+            username = ast.literal_eval(username_str)
 
-        chat_support_data_array = username
-        chat_support_guid_array.append(val.org_support_guid)
+            selected_user_data = django_query_instance.django_filter_only_query(UserData, {
+                'client': global_variables.GLOBAL_CLIENT, 'del_ind': False, 'username__in': username
+            })
+
+            for names in selected_user_data:
+                user_names = names.first_name + ' ' + names.last_name + ' - ' + names.email
+                user_data_values.append(user_names)
+
+            chat_support_data_array = username
+            chat_support_guid_array.append(val.org_support_guid)
+        except (SyntaxError, ValueError) as e:
+            # Handle the exception (e.g., log it, ignore it, or provide a default value)
+            print(f"Error evaluating username: {e}")
 
     return JsonResponse(
         {'call_support_data_array': call_support_data_array, 'call_support_guid_array': call_support_guid_array,

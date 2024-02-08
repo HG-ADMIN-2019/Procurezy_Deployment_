@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from eProc_Basic.Utilities.constants.constants import CONST_UNSPSC_IMAGE_TYPE, CONST_SEARCH_COUNT, CONST_FREETEXT_CALLOFF, \
+from eProc_Attributes.models.org_attribute_models import OrgAttributesLevel
+from eProc_Basic.Utilities.constants.constants import CONST_UNSPSC_IMAGE_TYPE, CONST_SEARCH_COUNT, \
+    CONST_FREETEXT_CALLOFF, \
     CONST_CATALOG_CALLOFF
 from eProc_Basic.Utilities.functions.django_query_set import DjangoQueries
 from eProc_Basic.Utilities.functions.encryption_util import encrypt
@@ -107,11 +109,7 @@ def catalog_config(request):
         'inc_footer': True,
         'is_slide_menu': True,
         'is_content_mgmnt_active': True,
-        'catalog_query': catalog_query
+        'catalog_query': catalog_query,
     }
     return render(request,
                   'ManageContent/catalog_config.html', context)
-
-
-
-

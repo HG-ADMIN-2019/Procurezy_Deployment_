@@ -130,12 +130,6 @@ function get_acct_assmt_val(rowid){
     var acct_cat_val = account_assignment_cat(acct_cat.company_num)
     row[0].parentNode.nextElementSibling.childNodes[0].innerHTML = acct_cat.acc_ass_val_dropdwn;
 }
-function acc_ass_cat_dropdwn(row,company_num){
-    acct_cat = row.find("TD").eq(2).find("select option:selected").val();
-    row.find("TD").eq(3).find("select").empty();
-    var acct_cat_val = account_assignment_cat(acct_cat,company_num)
-    row.find("TD").eq(3).find("select").append(acct_cat_val.acc_ass_val_dropdwn)
-}
 
 //onclick of cancel empty the popup table body and error messages
 $(".remove_upload_data").click(() => {

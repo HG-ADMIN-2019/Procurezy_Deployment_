@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 # import django_heroku
 import os
-
+SEARCH_FORM1 = "X"  # To enable or disable Extended search form
 # import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,8 +29,8 @@ SECRET_KEY = '-p^#04gmm3jl$93p3jx9rm+t1nj4$xl9b_#%192&e_usmw*&nr'
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['www.procurezy.com', 'procurezy.com'] # for deployment
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['www.procurezy.com', 'procurezy.com'] # for deployment
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'eProc_Projects',
     'eProc_Supplier_Order_Management',
     'eProc_Rfq',
+    'eProc_Archiving',
     # 'eProc_Marketing',
 ]
 
@@ -163,7 +164,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # Database engine
         'HOST': 'sg2plzcpnl489587.prod.sin2.secureserver.net',  # Database host
-        'NAME': 'MEP_DEPLOY',
+        'NAME': 'MEP_MIGRATE_DEV',
         # Database name MEP_MIGRATE_DEV MEP_FIXING MEP_DEPLOYED_NEW_QA_23 MEP_DEPLOYED_NEW_29 MEP_DEPLOYED_NEW_QA_0506
         'USER': 'MajjakaShopEProcure',  # Database username
         'PASSWORD': 'Project@2019',  # Database credentialsgi

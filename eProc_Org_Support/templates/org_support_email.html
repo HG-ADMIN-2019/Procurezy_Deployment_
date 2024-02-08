@@ -163,11 +163,12 @@ function save_email_support_data() {
         if (isValid) {
             // Check for additional condition: presence of "." after "@" in the email
             isValid = support_data.support_email.indexOf('@') !== -1 && support_data.support_email.indexOf('.', support_data.support_email.indexOf('@')) !== -1;
+            $('#id_error_msg_mail').prop('hidden', true);
         }
         if (!isValid) {
             console.log("Invalid email:", support_data.support_email);
-            $('#org_support_email_success').text("Invalid email: " + support_data.support_email);
-            $('#org_support_email_success').prop('hidden', false);
+            $('#id_error_msg_mail').text("Invalid email: " + support_data.support_email);
+            $('#id_error_msg_mail').prop('hidden', false);
         } else {
             form_data.push(support_data);
         }
@@ -204,6 +205,39 @@ function save_email_support_data() {
     // Email validation function
     function email(inputtxt) {
         var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/; // Modified the regex pattern
+         if (!(event.currentTarget.value).match(mailformat)) {
+                 var msg = "JMSG002";
+                 var msg_type ;
+                 msg_type = message_config_details(msg);
+                 var display1 = msg_type.messages_id_desc;
+<!--                 $(".id_error_msg_mail").prop("hidden", false);-->
+                var display_id = event.currentTarget.nextElementSibling.id;
+<!--                $('#'+display_id).prop('hidden', false);-->
+<!--                document.getElementById(display_id).style.display = "block";-->
+<!--                event.currentTarget.nextElementSibling.innerHTML = display1 + " for Email Id";-->
+               is_valid = false;
+         }
         return inputtxt.match(mailformat);
     }
+
+    // Function to get message details
+function message_config_details(msgId){
+var msg_type, result;
+ $.ajax({
+            async: false,
+            type: 'POST',
+            url: "/Majjaka-Shop/get_message_description",
+          data: JSON.stringify(msgId),
+          dataType: 'json',
+            success: function (response) {
+               result = response;
+               console.log(response);
+            },
+            error: function (error) {
+
+            }
+        })
+       return  result;
+}
+
 </script>

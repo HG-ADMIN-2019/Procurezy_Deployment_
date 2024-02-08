@@ -203,6 +203,28 @@
             </ul>
         </div>
 
+                <div id="archiving_sub_menu" >
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__search">
+                    {% if sub_menu.SEARCH %}
+                    {% url 'eProc_Archiving:docsearch'  as archiv_url %}
+                    <div class="nav-link" id="archiv_btn">
+                        <a href="{{archiv_url}}" {% if request.path == archiv_url %} class="active"{% endif %} > Arch_Doc_Search</a>
+                    </div>
+                    {% endif %}
+                </li>
+<!--                <li class="nav-item" id="nav-item__effort">-->
+<!--                    {% if sub_menu.EFFORTS %}-->
+<!--                    {% url 'eProc_Time_Sheet:get_project_details'  as time_sheet_url %}-->
+<!--                    <div class="nav-link" id="effort_btn">-->
+<!--                        <a href="{{time_sheet_url}}" {% if request.path == time_sheet_url %} class="active"{% endif %} >Efforts</a>-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+<!--                </li>-->
+
+            </ul>
+        </div>
+
 
         <div id="content_management_sub_menu" style="display:none">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">

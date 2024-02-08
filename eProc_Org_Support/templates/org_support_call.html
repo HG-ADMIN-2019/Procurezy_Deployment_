@@ -60,7 +60,7 @@ function onclick_add_button(button) {
                 document.getElementById('save_cancel_btn').style.display = 'block';
                 document.getElementById('edit_id').style.display = 'none';
                 basic_add_new_html = '<tr><td id="call_checkbox" class="class_call_checkbox" hidden><input type="checkbox" onchange="call_delete_check(this);" required></td>' +
-                    '<td><input class="input form-control check_phone_number" type="text" id="support_number" name="support_number" required></td>' +
+                    '<td><input class="input form-control check_phone_number" type="text" maxlength="10" id="support_number" name="support_number" required></td>' +
                     '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>' +
                     '<td hidden><input type="text" id="org_support_guid"></td></tr>';
                 $('#id_popup_tbody').append(basic_add_new_html);
@@ -72,7 +72,7 @@ function onclick_add_button(button) {
                 content = '';
                 for (i = 0; i < response['call_support_data_array'].length; i++) {
                     content += '<tr><td id="call_checkbox" class="class_call_checkbox" hidden><input type="checkbox" onchange="call_delete_check(this);" required></td>';
-                    content += '<td><input class="input form-control hg_edit_display_mode check_phone_number" id="support_number" required type="text" name="support_number" value="' + response['call_support_data_array'][i] + '" onkeypress="return /[a-z 0-9]/i.test(event.key)"></td>';
+                    content += '<td><input class="input form-control hg_edit_display_mode check_phone_number" maxlength="10" id="support_number" required type="text" name="support_number" value="' + response['call_support_data_array'][i] + '" onkeypress="return /[a-z 0-9]/i.test(event.key)"></td>';
                     content += '<td hidden><input type="checkbox" name="del_ind"></td>';
                     content += '<td hidden><input class="input" type="text" name="org_support_guid" value="' + response['call_support_guid_array'][i] + '" /></td>';
                     content += '</tr>';
@@ -104,7 +104,7 @@ function onclick_add_button(button) {
             $("#id_error_msg").html("");
         });
         basic_add_new_html = '<tr ><td class="call_checkbox_row"><input type="checkbox" onchange="call_delete_check(this)" required></td>'+
-            '<td><input class="input form-control check_phone_number"  type="text" id="support_number" name="support_number"  required></td>'+
+            '<td><input class="input form-control check_phone_number"  type="text" maxlength="10" id="support_number" name="support_number"  required></td>'+
             '<td class="class_del_checkbox" hidden><input type="checkbox" required></td>'+
             '<td hidden><input type="text" id="org_support_guid"></td></tr>';
             $('#id_popup_tbody').append(basic_add_new_html);

@@ -62,7 +62,7 @@ def docsearch(request):
                 page = request.GET.get('page', 1)
 
                 # Pagination for search results
-                paginator = Paginator(result, 10)
+                paginator = Paginator(result, total_number_results)
 
                 if paginator.count > 0:
                     try:

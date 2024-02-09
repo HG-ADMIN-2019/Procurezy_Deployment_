@@ -18,7 +18,7 @@ class SearchForm1(forms.Form):
         label='Select Document Type',
         choices=doc_types,
         widget=forms.Select(
-            attrs={"onchange": 'docchanged(this.value)', "class": "form-control", "style": "width:101%"}),
+            attrs={"onchange": 'docchanged(this.value)', "class": "form-control"}),
     )
     doc_num = forms.IntegerField(
         label=mark_safe('Enter Document Number'),
@@ -26,17 +26,17 @@ class SearchForm1(forms.Form):
         min_value=10000,
         max_value=9999999999,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control", }),
+        widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     from_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'style': 'width:15%'}),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         label=mark_safe('From Date'),
         required=False,
         initial=date.today().replace(day=1, month=1, year=2018),
     )
     to_date = forms.DateField(
 
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-left:8px'}),
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         label='To Date',
         required=False,
         initial=date.today()
@@ -45,13 +45,13 @@ class SearchForm1(forms.Form):
         label='Enter supplier ID',
         max_length=20,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control", 'style': 'width:37.8%; padding-right:5px;'}),
+        widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     po_number = forms.CharField(
         label='PO Number',
         max_length=20,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control", 'style': 'width:37.8%'}),
+        widget=forms.TextInput(attrs={"class": "form-control"}),
     )
 
     # Form field validation

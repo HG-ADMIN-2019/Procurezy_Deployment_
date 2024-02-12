@@ -1028,16 +1028,16 @@ function variant_fields_clear () {
 //############################ END Function to display create pop based on conditions ######################
 
 var eform_data_new = new Array();
-var canAddRow = true; // Define canAddRow at the outer scope
+
 const create_fields = () => {
     var variant_type_selected_id = $('input:radio[name="variant_type"]:checked').attr('id');
 
-<!--    validations = create_popup_validations(variant_type_selected_id)-->
-<!--    if (validations != '') {-->
-<!--        $('#create_error_div').html(validations);-->
-<!--        $('#create_error_div').show();-->
-<!--        return-->
-<!--    } else $('#create_error_div').hide()-->
+    validations = create_popup_validations(variant_type_selected_id)
+    if (validations != '') {
+        $('#create_error_div').html(validations);
+        $('#create_error_div').show();
+        return
+    } else $('#create_error_div').hide()
 
     var variant_option_data = {};
     var table_data = new Array();
@@ -1062,17 +1062,14 @@ const create_fields = () => {
         });
 
         variant_option_data.variant_data = table_data
-if (error_flag) {
+        if(error_flag) {
             $('#create_error_div').html('Please fill the options');
             $('#create_error_div').show();
         } else {
-            if (canAddRow) {
-                eform_data_new.push(variant_option_data);
-                create_prod_variant_table(eform_data_new);
-                canAddRow = false; // Set to false to prevent further additions
-            }
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
         }
-$('#create_new_fields_popup').modal('hide');
+
 
     } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
         var error_flag = false;
@@ -1225,8 +1222,8 @@ function create_prod_variant_table(eform_data_new) {
         // variant_option_section.append(line_seperator);
 
         // Create a div to display variant option name and functional button group
+        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" value="DELETE" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button> <button class="btn btn-outline-primary btn-sm"> edit</button> </div>  </div>'
 
-        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" onclick="variant_option_delete(this)"> Delete</button> <button class="btn btn-outline-primary btn-sm" onclick="editVariantOption(' + index + ')"> Edit</button> </div>  </div>'
         // Create <table> element
         var create_tbl = document.createElement("table");
         create_tbl.className = 'table table-bordered';
@@ -1281,51 +1278,6 @@ function create_prod_variant_table(eform_data_new) {
     $('#create_product_discount_popup').modal('hide');
     $("html, body").animate({ scrollTop: document.body.scrollHeight }, "slow");
 
-}
-function editVariantOption(index) {
-    // Retrieve the data of the field to edit
-    var fieldToEdit = eform_data_new[index];
-
-    // Assuming you have input fields with IDs in your popup
-    $('#field_name_input').val(fieldToEdit.field_name);
-    // Repeat for other fields
-
-    // Disable all input fields initially
-    $('input[type="text"]').prop('disabled', true);
-    $('input[type="number"]').prop('disabled', true);
-
-    // Enable input fields based on the selected option
-    if (fieldToEdit.field_type === 'VARIANT_WITHOUT_PRICING') {
-        // Enable only the relevant input fields for this option type
-        $('#table_id_vo_wo_iobp input[type="text"]').prop('disabled', false);
-    } else if (fieldToEdit.field_type === 'VARIANT_BASE_PRICING') {
-        // Enable only the relevant input fields for this option type
-        $('#table_id_vo_wi_iobp input[type="text"], #table_id_vo_wi_iobp input[type="number"]').prop('disabled', false);
-    } else if (fieldToEdit.field_type === 'VARIANT_ADDITIONAL_PRICING') {
-        // Enable only the relevant input fields for this option type
-        $('#table_id_vo_wi_apbp input[type="text"], #table_id_vo_wi_apbp input[type="number"]').prop('disabled', false);
-    }
-
-    // Disable select variant type option
-    $('input:radio[name="variant_type"]').prop('disabled', true);
-
-    // Enable the selected variant type option
-    $('#' + fieldToEdit.field_type).prop('disabled', false);
-
-    // Show the popup
-    $('#create_new_fields_popup').modal('show');
-
-    // Update the row with edited data on save
-    $('#create_new_fields_popup').on('hide.bs.modal', function () {
-        // Update the data in eform_data_new
-        eform_data_new[index].field_name = $('#field_name_input').val();
-        // Update other fields similarly
-
-        // Update the corresponding row in the table
-        var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ eform_data_new[index].field_name +'</span> '+ variant_type_badge +' </div> <div> <button class="btn btn-outline-danger btn-sm" id="variant_option_delete-'+index+'" onclick="variant_option_delete(this)"> Delete</button> <button class="btn btn-outline-primary btn-sm" onclick="editVariantOption(' + index + ')"> Edit</button> </div>  </div>';
-        // Update the corresponding row in the table
-        $('#table_id_vo_wi_apbp tbody tr:eq(' + index + ')').html(table_heading_section);
-    });
 }
 
 //###################### end Function to create form fields and appends it to array ######################
@@ -1550,17 +1502,17 @@ $('input:radio[name="variant_type"]').change(function() {
 
         if(id == "VARIANT_WITHOUT_PRICING") {
             $("#table_vo_wo_iobp").show();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wo_iobp();
         } else if (id == "VARIANT_BASE_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").show(); 
+            $("#table_vo_wi_iobp").show();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wi_iobp();
         } else if (id == "VARIANT_ADDITIONAL_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").show();
             AddNewRow_vo_wi_apbp();
         }
@@ -1631,7 +1583,7 @@ function create_fields_product_discount() {
     } else $('#create_prod_discount_error_div').hide()
 
     var variant_option_data = {};
-    var table_data = new Array(); 
+    var table_data = new Array();
     variant_option_data.field_name = $('#discount_field_name').val();
     variant_option_data.field_type = "QUANTITY_BASED_DISCOUNT";
 
@@ -1642,7 +1594,7 @@ function create_fields_product_discount() {
         vo_table_data.discount_min_quantity = row.find("TD").eq(0).find('input[type="number"]').val();
         vo_table_data.discount_percentage_value = row.find("TD").eq(1).find('input[type="number"]').val();
         table_data.push(vo_table_data);
-        
+
     });
 
     variant_option_data.variant_data = table_data;

@@ -14,6 +14,22 @@ from eProc_Archiving.models import ConfHeader, ConfAccounting, arch_ScItem, arch
     arch_PoHeader, arch_PoItem, arch_PoAccounting, arch_PoApproval, ConfItem, arch_ScHeader
 from eProc_Basic.Utilities.functions.get_db_query import getUsername, getClients
 
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from eProc_Basic.Utilities.functions.guid_generator import guid_generator
+from eProc_Basic.Utilities.functions.json_parser import JsonParser
+from eProc_Basic.Utilities.db_queries import getClients
+from eProc_Archiving.models import arch_Country, arch_CompanyCode, arch_OrgClients
+from eProc_Archiving.models import arch_CountryCompCode
+from django.views.decorators.csrf import csrf_exempt
+
+from django.shortcuts import render
+import io
+from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.decorators import login_required
+from eProc_Archiving.Utilites.upload_specific import UploadScPO
+
 
 @login_required
 def docsearch(request):
@@ -157,7 +173,6 @@ def arch_downloadattach(request):
         raise
 
 
-
 def download(path):
     file_path = os.path.join(settings.MEDIA_ROOT, path)
     print("Full file path:", file_path)
@@ -291,3 +306,728 @@ def arch_attachmentspage(request, guid):
                                                 'is_home_active': False,
                                                 'attachments': attachments_list,
                                                 'popdf': popdf_list})
+
+
+# data upload logic
+
+@login_required
+def data_upload(request):
+    # context = {
+    #     'inc_nav': True,
+    #     'inc_footer': True,
+    #     'nav_title': 'Upload data',
+    #     'inc_side_panel': True
+    # }
+
+
+    return render(request, 'data_upload.html', {'inc_nav': True,
+                                                'inc_footer': True,
+                                                'is_slide_menu': True,
+                                                'is_home_active': False,
+                                                'is_Archiving_active': True,
+
+                                                })
+
+
+@login_required
+def upload_sc(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload SC data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload SC data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            Upload_SC = UploadScPO()
+            is_saved = Upload_SC.upload_SC(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload SC data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload SC data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload SC data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload SC data in CSV format',
+        'inc_side_panel': True,
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_po(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload PO data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload PO data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            Upload_PO = UploadScPO()
+            is_saved = Upload_PO.upload_PO(request, final_upload_data)
+            if (is_saved):
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload PO data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload PO data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload PO data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload PO data in CSV format',
+        'inc_side_panel': True,
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_confirmation(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload Confirmation data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload Confirmation data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            upload_conf = UploadScPO()
+            is_saved = upload_conf.upload_confirmation(request, final_upload_data)
+            if (is_saved):
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload Confirmation data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload Confirmation data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload Confirmation data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload Confirmation data in CSV format',
+        'inc_side_panel': True,
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_user(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload User data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload User data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            next(final_upload_data)
+            Upload = UploadScPO()
+            is_saved = Upload.upload_user(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload User data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload User data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload User data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload User data in CSV format',
+        'inc_side_panel': True,
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_supplier_master(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload Supplier master data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload Supplier master data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            next(final_upload_data)
+            Upload = UploadScPO()
+            is_saved = Upload.upload_supplier(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload Supplier master data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload Supplier master data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload Supplier master data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload Supplier master data in CSV format',
+        'inc_side_panel': True,
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_country_cocode(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload Country and Company code data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload Country and Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            next(final_upload_data)
+            Upload_SC = UploadScPO()
+            is_saved = Upload_SC.upload_country_ccode(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload Country and Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload Country and Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload Country and Company code data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload Country and Company code data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_country(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please upload Country data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload Country data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            next(final_upload_data)
+            Upload_SC = UploadScPO()
+            is_saved = Upload_SC.Upload_country(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload Country data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload Country data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload Country data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload Country data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+@login_required
+def upload_cocode(request):
+    template = "upload_csv_attachment.html"
+    prompt = {
+        'order': 'Please Company code data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    if request.method == "GET":
+        return render(request, template, prompt)
+    if request.method == 'POST':
+        try:
+            csv_file = request.FILES['file']
+            if not csv_file.name.endswith('.csv'):
+                message = {
+                    'error': 'Please attach CSV file',
+                    'order': 'Please upload Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, message)
+            data_set = csv_file.read().decode('utf8')
+            final_upload_data = io.StringIO(data_set)
+            next(final_upload_data)
+            Upload_SC = UploadScPO()
+            is_saved = Upload_SC.Upload_cocode(request, final_upload_data)
+            if is_saved:
+                response1 = "Data saved successfully"
+                context = {
+                    'response1': response1,
+                    'order': 'Please upload Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+            else:
+                response = "Data is not saved successfully"
+                context = {
+                    'response': response,
+                    'order': 'Please upload Company code data in CSV format',
+                    'inc_nav': True,
+                    'inc_footer': True,
+                    'is_slide_menu': True,
+                    'is_home_active': False,
+                    'is_Archiving_active': True
+                }
+                return render(request, template, context)
+        except MultiValueDictKeyError:
+            csv_file = False
+            context = {
+                'order': 'Please upload Company code data in CSV format',
+                'inc_nav': True,
+                'inc_footer': True,
+                'is_slide_menu': True,
+                'is_home_active': False,
+                'is_Archiving_active': True
+            }
+            return render(request, template, context)
+    context = {
+        'order': 'Please upload Company code data in CSV format',
+        'inc_nav': True,
+        'inc_footer': True,
+        'is_slide_menu': True,
+        'is_home_active': False,
+        'is_Archiving_active': True
+    }
+    return render(request, template, context)
+
+
+# countrycompcode
+
+def get_country_ccode(request):
+    """
+    :param request:
+    :return:
+    """
+
+    country_ccode = list(
+        arch_CountryCompCode.objects.filter(client=getClients(request), del_ind=0).values('country', 'company_code_id',
+                                                                                          'country_comp_code_guid'))
+    country_data = list(arch_Country.objects.filter(del_ind=0).values_list('country_code', flat=True))
+    ccode_data = list(arch_CompanyCode.objects.filter(del_ind=0).values_list('company_code_id', flat=True))
+    context = {'inc_nav': True,
+               'inc_footer': True,
+               'inc_side_panel': True,
+               'country_ccode': country_ccode,
+               'country_data': country_data,
+               'ccode_data': ccode_data
+               }
+    return render(request, 'config_comp_code.html', context)
+    # return render(request,context)
+
+
+JsonParser_obj = JsonParser()
+
+
+@csrf_exempt
+def save_cccode(request):
+    cccode_data = JsonParser_obj.get_json_from_req(request)
+    Success_message = "Data Saved Successfully"
+
+    client = getClients(request)
+
+    CtryCmpCd_not_exist: object = arch_CountryCompCode.objects.filter(del_ind=False).exclude \
+        (country_comp_code_guid=[CtryCmpCd['country_comp_code_guid'] for CtryCmpCd in cccode_data])
+
+    for set_del_int in CtryCmpCd_not_exist:
+        set_del_int.del_ind = True
+        set_del_int.save()
+
+    for save_CtryCmpCd in cccode_data:
+        guid = save_CtryCmpCd['country_comp_code_guid']
+        if guid == 'GUID':
+            guid = guid_generator()
+
+        # print( save_CtryCmpCd['company_code_id'], save_CtryCmpCd['country_comp_code_guid'], save_CtryCmpCd['country'])
+        # Below logic is for existing records changed.
+        if arch_CountryCompCode.objects.filter(country_comp_code_guid=guid,
+                                               company_code_id=save_CtryCmpCd['company_code_id'],
+                                               client=client, del_ind=0).exists():
+            continue
+        elif arch_CountryCompCode.objects.filter(company_code_id=save_CtryCmpCd['company_code_id'],
+                                                 client=client, del_ind=1).exists():
+            arch_CountryCompCode.objects.filter(company_code_id=save_CtryCmpCd['company_code_id'],
+                                                client=client, del_ind=1).update(
+                country=arch_Country.objects.get(country_code=save_CtryCmpCd['country']),
+                del_ind=0)
+        else:
+            # Check if there is any change in the record if no then skip the record
+            arch_CountryCompCode.objects.update_or_create(country_comp_code_guid=guid, defaults={
+                'country_comp_code_guid': guid,
+                'company_code_id': save_CtryCmpCd['company_code_id'],
+                'del_ind': False,
+                'country': arch_Country.objects.get(country_code=save_CtryCmpCd['country']),
+                'client_id': arch_OrgClients.objects.get(client=client)
+            }, )
+
+    country_ccode = list(arch_CountryCompCode.objects.filter(client=getClients(request), del_ind=0).values('country',
+                                                                                                           'company_code_id',
+                                                                                                           'country_comp_code_guid'))
+    # Upload_response = list (chain( country_ccode) )
+    # return JsonParser_obj.get_json_from_obj ( Upload_response )
+
+    return JsonResponse({'country_ccode': country_ccode, 'message': 'Data updated successfully'})

@@ -400,19 +400,79 @@ class arch_PoAccounting(models.Model):
         return arch_PoAccounting.objects.filter(item_guid__in=itm_guid).order_by('acc_item_num')
 
 
-# class arch_UserSearch(models.Model):
-#     username = models.CharField(db_column='USERNAME', max_length=16, null=False)
-#     first_name = models.CharField(db_column='FIRST_NAME', max_length=40, null=True)
-#     last_name = models.CharField(db_column='LAST_NAME', max_length=40, null=True)
-#     map_id = models.CharField(db_column='MAP_ID', max_length=8, null=False, primary_key=True)
-#     client = models.ForeignKey('eProc_Configuration.OrgClients', on_delete=models.PROTECT, null=False,
-#                                db_column='CLIENT')
-#
-#     class Meta:
-#         unique_together = ('client', 'username')
-#         managed = True
-#         db_table = 'MMD_USER_INFO'
+class arch_UserSearch(models.Model):
+    username = models.CharField(db_column='USERNAME', max_length=16, null=False)
+    first_name = models.CharField(db_column='FIRST_NAME', max_length=40, null=True)
+    last_name = models.CharField(db_column='LAST_NAME', max_length=40, null=True)
+    map_id = models.CharField(db_column='MAP_ID', max_length=8, null=False, primary_key=True)
+    client = models.ForeignKey('eProc_Configuration.OrgClients', on_delete=models.PROTECT, null=False,
+                               db_column='CLIENT')
 
+    class Meta:
+        unique_together = ('client', 'username')
+        managed = True
+        db_table = 'MSS_USER_INFO'
+
+
+class arch_CompanyCode(models.Model):
+    """
+    Contains a list of Countries (General application tables)
+    """
+    company_code_guid = models.CharField(db_column='COMPANY_CODE_GUID', primary_key=True, max_length=32,null=False,default=True)
+    company_code_id = models.CharField(db_column='COMPANY_CODE_ID', max_length=20,null=False)
+    company_code_desc = models.CharField(db_column='COMPANY_CODE_DESC', max_length=100, null=False)
+    client = models.ForeignKey('eProc_Configuration.OrgClients', on_delete=models.PROTECT, null=False,
+                               db_column='CLIENT')
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        unique_together = ('client', 'company_code_id')
+        db_table = 'MMD_CCODES'
+
+class arch_CountryCompCode(models.Model):
+    """
+    Contains company code description
+    """
+    country_comp_code_guid = models.CharField(db_column='COMPANY_GUID', primary_key=True, max_length=32)
+    company_code_id = models.CharField(db_column='COMPANY_CODE_ID', max_length=20, null=False)
+    country = models.ForeignKey('eProc_Configuration.Country', db_column='COUNTRY', on_delete=models.PROTECT, null=False)
+    client = models.ForeignKey('eProc_Configuration.OrgClients', on_delete=models.PROTECT, null=False,
+                               db_column='CLIENT')
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        db_table = "MSS_COUNTRY_COMP_CODE"
+        unique_together = ('client', 'company_code_id')
+        managed = True
+
+
+class arch_Country(models.Model):
+    """
+    Contains a list of Countries (General application tables)
+    """
+    country_code = models.CharField(db_column='COUNTRY_CODE', primary_key=True, max_length=2)
+    country_name = models.CharField(db_column='COUNTRY_NAME', max_length=100, null=False)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        managed = True
+        db_table = 'MMD_COUNTRY'
+
+class arch_OrgClients(models.Model):
+    """
+    Table contains client details
+    """
+    client = models.CharField(primary_key=True, max_length=5)
+    description = models.CharField(max_length=30, null=False)
+    del_ind = models.BooleanField(default=False, null=False)
+
+    class Meta:
+        db_table = "MMD_CLIENTS"
+        managed = True
+
+    def __str__(self):
+        return self.pk
 
 class arch_SupplierSearch(models.Model):
     supplier_id = models.CharField(db_column='USERNAME', max_length=16, null=False)

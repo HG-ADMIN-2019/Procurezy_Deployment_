@@ -4,6 +4,7 @@
 {% block title %} Search Documents {% endblock %}
 
 {% block maincontent %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <style>
     h6{
         float:right;
@@ -66,6 +67,7 @@
 
 <!--        <h2>{{ total_count }}</h2>-->
 
+
 <!--Display the result-->
 <div class="card mt-5">
     <table id="doc_list" class="table table_sort_filter_export_excel">
@@ -115,33 +117,11 @@
     {{ results }}
 </div>
 {% endif %}
-{% if total_count > 5 %}
+<!--{% if total_count > 5 %}-->
 <!--<div class="top"><a style="padding-right:30px;" href="#top"> Back to top </a></div>-->
 {% endif %}
 
-<!--<div style="overflow:auto;">-->
-<!--    {% if results.has_other_pages %}-->
-<!--    <ul class="pagination justify-content-center">-->
-<!--        {% if results.has_previous %}-->
-<!--        <li class="page-item"><a class="page-link" href="?page={{ results.previous_page_number }}">PREVIOUS</a></li>-->
-<!--        {% else %}-->
-<!--        <li class="disabled page-item"><span class="page-link">PREVIOUS</span></li>-->
-<!--        {% endif %}-->
-<!--        {% for i in results.paginator.page_range %}-->
-<!--        {% if results.number == i %}-->
-<!--        <li class="active page-item"><span class="page-link">{{ i }} <span class="sr-only ">(current)</span></span></li>-->
-<!--        {% else %}-->
-<!--        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>-->
-<!--        {% endif %}-->
-<!--        {% endfor %}-->
-<!--        {% if results.has_next %}-->
-<!--        <li class="page-item"><a class="page-link" href="?page={{ results.next_page_number }}">NEXT</a></li>-->
-<!--        {% else %}-->
-<!--        <li class="disabled page-item"><span class="page-link">NEXT</span></li>-->
-<!--        {% endif %}-->
-<!--    </ul>-->
-<!--    {% endif %}-->
-<!--</div>-->
+
 <div style="height:30px; font-size:12px; text-align:right; padding-right:10px;" >© 2022 Hiranya-Garbha Consultancy. All rights reserved.</div>
 
 <!--Script to toggle supplier field in SC and PO-->

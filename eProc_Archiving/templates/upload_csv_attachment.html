@@ -1,0 +1,68 @@
+{% extends 'root/base.html' %}
+
+{% block title %} Upload {% endblock %}
+
+{% block maincontent %}
+<form method="post" enctype="multipart/form-data">
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+    <div class="reg-body">
+	<div class="login-body" style="height:height:100%; margin-left:0px;">
+    	<div class="login-block">
+        	<div class="login-content4" style="height:auto;">
+				<div class="login-header" style="background-color:#343a40;">Upload Data <div class="clsbtn-outr"><span aria-hidden="true" style="color:white;" onclick="window.close()" >&times;</span></div></div>
+					<div class="login-field txtbx" >
+                    <div>{%if messages%}
+                    {%for message in message.tags %}
+                        <div>
+                            <strong>{{message}}</strong>
+                        </div>
+                    {%endfor%}
+                    {%else%}
+                    <div class="daup-error">{{error}}
+                        <div style="color: red;"> {{response}}</div>
+                        <div style="color: green;">{{response1}}</div>
+                    </div>
+                    <div style="font-weight:bold;">{{order}}</div>
+					<p class="m-auto p-2">
+                        {% csrf_token %}
+                        <label>Upload a file</label>
+                        <input type="file" name="file">
+                        <p> only accepts CSV files</p>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </p>
+                    {%endif%}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+    </div></div>
+
+
+</div></form>
+
+
+<script>
+    	$(document).ready( function() {
+        nav_bar_archiving()
+<!--        table_sort_filter_export_excel()-->
+        $("#created_by, #id_requester").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url  : "{% url 'eProc_Archiving:docsearch' %}",
+                    dataType: "json",
+                    data: {
+                        term : request.term,
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            min_length: 3,
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,233 @@
+<!--Search for documents template-->
+{% extends 'root/base.html' %}
+
+{% block title %} Set up Countries and Companies {% endblock %}
+
+{% block maincontent %}
+
+<h3> &nbsp;Set up Countries and Companies</h3><br>
+<div id="edit_config_cccode" class="hg_button_bottom_padding" style="display: block; margin-left:10px;">
+    <button class="btn btn-primary" onclick="cccode_edit()"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</button>
+</div>
+<div id="add_delete_config_cccode" style="display: none; margin-left:10px;" class="hg_button_bottom_padding">
+    <input type="checkbox" name="all" id="checkall" class="btn btn-primary" /> Select All &nbsp;
+    <button class="btn btn-primary hg_button_margin" onclick="cccode_add_new_line();">
+        <i class="fa fa-plus" aria-hidden="true" id="add_line" title="Add Line"></i> &nbsp;Add</button>
+    <button class="btn btn-primary" onclick="cccode_delete_Row('cccode_table_id')">
+        <i class="fa fa-trash-o" aria-hidden="true"></i>    Delete</button>
+</div>
+<div id="App_msg_display" style="font-weight:bold; margin-left:10px;"> </div>
+
+    <table id="cccode_table_id" class="table table-striped table-sm" style="width:50%; margin-left:10px;">
+        <thead>
+        <tr>
+            <th class="hg_select_class" hidden>Select</th>
+            <th>Country</th>
+            <th>Company Code</th>
+        </tr>
+        </thead>
+        <tbody id="cccode_tbody">
+        {% for ctry_ccode in country_ccode %}
+        <tr>
+            <td>{{ctry_ccode.country}}</td>
+            <td>{{ctry_ccode.company_code_id}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+    <div id="basic_edit_save" class="hg_cancel_save_button_align" style="display:none; margin-left:10px;">
+        <button type="button" class="btn btn-primary hg_button_margin" onclick="display_basic_db_data()"><i class="fa fa-times" aria-hidden="true"></i> CANCEL</button>
+        <button onclick="cccode_save()" class="btn btn-primary hg_button_margin"> <i class="fa fa-floppy-o" aria-hidden="true"></i> SAVE</button>
+        <button class="btn btn-primary hg_button_margin" id="basic_save_upld_redirect" onclick="basic_save_upld_redirect()" type="button"><i class="fa fa-upload" aria-hidden="true"></i> DATA UPLOAD </button>
+        <br>
+    </div>
+
+<div style="height: 30px;">&nbsp;</div>
+<div style="width:90%; height:30px; font-size:12px; text-align:right; padding-right:10px; position:absolute; bottom:10px;" >© 2022 Hiranya-Garbha Consultancy. All rights reserved.</div>
+{% if inc_footer %}
+{% endif %}
+<script>
+
+    var country_ccode = {{country_ccode|safe}};
+
+function display_basic_db_data(){
+  var cccode_html = '';
+
+      $("#cccode_tbody").empty();
+        $.each(country_ccode, function (i, item) {
+            cccode_html += '<tr ><td>'+ item.country +'</td><td>'+ item.company_code_id+ '</td></tr>';
+         });
+
+     $( ".hg_select_class").prop( "hidden", true );
+     $('#cccode_tbody').append(cccode_html);
+
+    document.getElementById("add_delete_config_cccode").style.display="none";
+    document.getElementById("basic_edit_save").style.display="none";
+    document.getElementById("edit_config_cccode").style.display="block";
+
+}
+
+
+function edit_basic(){
+
+    document.getElementById("App_msg_display").innerHTML = "";
+
+    document.getElementById("add_delete_config_cccode").style.display = "block";
+    document.getElementById("basic_edit_save").style.display = "block";
+    document.getElementById("edit_config_cccode").style.display = "none";
+}
+
+function basic_save_upld_redirect(){
+    window.open(href = '{% url 'eProc_Upload:upload_country_cocode' %}', "_blank");
+}
+
+    var countries = {{country_data|safe}};
+    var ccode_data = {{ccode_data|safe}};
+
+function cccode_add_new_line(){
+
+
+  var cccode_html = '';
+  var country_option = '<option selected disabled hidden>  Select  </option>';
+  var ccode_option = '<option selected disabled hidden>  Select  </option>';
+    $.each(countries, function (i, country) {
+    country_option += '<option> ' + country + '</option>';
+    });
+    $.each(ccode_data, function (i, ccode) {
+    ccode_option += '<option> ' + ccode + '</option>';
+    });
+    cccode_html = '<tr ><td><input type="checkbox" required></td><td><select> ' + country_option + ' </select> </td><td><select> ' + ccode_option + ' </select> </td><td><input  type="hidden"  value ="GUID"  </td></tr>';
+    $('#cccode_tbody').append(cccode_html);
+}
+function cccode_edit(){
+    var country_option = '';
+    var country_concat = '';
+    var cccode_html = '';
+    var ccode_option_default = '';
+    var ccode_option = '';
+    var ccode_concat = '';
+    document.getElementById("App_msg_display").innerHTML = "";
+
+
+    $("#cccode_tbody").empty();
+
+    $.each(country_ccode, function (i, cccode) {
+        ccode_option = '';
+        country_option = '';
+        country_option_default = '<option value ="' + cccode.country + '" >' + cccode.country + ' </option>';
+        $.each(countries, function (i, country) {
+        if (country != cccode.country ){
+            country_option += '<option value ="' + country + '"> ' + country + '</option>';
+            }
+        });
+        ccode_option_default = '<option value ="' + cccode.company_code_id + '">' + cccode.company_code_id + ' </option>';
+        $.each(ccode_data, function (i, ccode) {
+        if (ccode != cccode.company_code_id ){
+            ccode_option += '<option  value ="' + ccode + '"> ' + ccode + '</option>';
+            }
+        });
+        var ccode_concat = ccode_option_default.concat(ccode_option);
+        var country_concat = country_option_default.concat(country_option);
+        cccode_html += '<tr ><td><input class="hg_select_check_box" type="checkbox"></td><td><select>' + country_concat + ' </select></td><td><select>' + ccode_concat + ' </select></td><td><input  type="hidden"  value ="' + cccode.country_comp_code_guid + '"  </td></tr>';
+
+     });
+
+     $( ".hg_select_class").prop( "hidden", false );
+    $('#cccode_tbody').append(cccode_html);
+    document.getElementById("add_delete_config_cccode").style.display = "block";
+    document.getElementById("basic_edit_save").style.display = "block";
+    document.getElementById("edit_config_cccode").style.display = "none";
+}
+
+function cccode_delete_Row(myTable) {
+            try {
+                var table = document.getElementById(myTable);
+                var rowCount = table.rows.length;
+
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var chkbox = row.cells[0].childNodes[0];
+                    if (null != chkbox && true == chkbox.checked) {
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
+                    }
+                }
+                return rowCount;
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+function cccode_save(){
+    var cccode_array = new Array();
+    var validate_ccode = []
+    var ccode_unique_list = []
+    var ccode_duplicates_list =[];
+
+    document.getElementById("App_msg_display").innerHTML = "PROCESSING...";
+    document.getElementById("App_msg_display").style.color = "Black";
+
+    $("#cccode_table_id TBODY TR").each(function () {
+        var row = $(this);
+        var cccode_drop = {};
+        cccode_drop.country = row.find("TD").eq(1).find("select option:selected").val();
+        cccode_drop.company_code_id = row.find("TD").eq(2).find("select option:selected").val();
+        cccode_drop.country_comp_code_guid= (row.find("TD").eq(3).find('input').val());
+
+        cccode_array.push(cccode_drop);
+        validate_ccode.push(cccode_drop.company_code_id);
+
+
+
+    });
+    // check duplicate entry in array
+    $.each(validate_ccode, function (index, value) {
+        if($.inArray(value, ccode_unique_list ) == -1){
+            ccode_unique_list.push(value);
+        }else{
+            if($.inArray(value, ccode_duplicates_list ) == -1){
+                ccode_duplicates_list.push(value);
+            }
+        }
+    });
+
+    if(ccode_duplicates_list.length != 0){
+            document.getElementById("App_msg_display").innerHTML = "Duplicate Entry";
+            document.getElementById("App_msg_display").style.color = "Red";
+    }
+    else{
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'eProc_Configure_Comp_Code:save_cccode' %}",
+            data: JSON.stringify(cccode_array),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+            country_ccode = response.country_ccode
+            document.getElementById("App_msg_display").innerHTML = "Data Saved Successfully";
+            document.getElementById("App_msg_display").style.color = "Green";
+            display_basic_db_data()
+           }
+        });
+    }
+}
+
+$('#checkall').change(function () {
+    $('.hg_select_check_box').prop('checked',this.checked);
+});
+
+$('.hg_select_check_box').change(function () {
+ if ($('.hg_select_check_box:checked').length == $('.hg_select_check_box').length){
+  $('#checkall').prop('checked',true);
+ }
+ else {
+  $('#checkall').prop('checked',false);
+ }
+});
+
+//$("#table_1 tr:eq(100)").css(/*...*/);
+</script>
+{% endblock %}

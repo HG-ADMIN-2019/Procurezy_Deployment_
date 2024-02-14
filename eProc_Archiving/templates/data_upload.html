@@ -1,0 +1,63 @@
+{% extends 'root/base.html' %}
+{% load static %}
+
+{% block title %} Upload data {% endblock %}
+
+{% block maincontent %}
+
+<form method="POST" action="{% url 'eProc_Archiving:data_upload' %}">
+{% csrf_token %}
+
+<div class="container-fluid">
+    <div class="mep-form_wrapper">
+<!--        <div class="d-flex justify-content-between">-->
+<div class="reg-body">
+	<div class="login-body" style="height:height:100%; margin-left:0px;">
+    	<div class="login-block">
+        	<div class="login-content3" style="margin-top:5px; border:solid 4px #343a40; width:45%;">
+				<div class="login-header" style="background-color:#343a40;">Upload Data <div class="clsbtn-outr"><span aria-hidden="true" style="color:white;" onclick="window.close()" >&times;</span></div></div>
+					<div class="login-field txtbx" >
+					<p class="m-auto p-2">Upload shopping cart data: &nbsp;&nbsp;<input type="button" value="Upload SC" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_sc' %}';" target="_blank" title = "SC_PO_Upload" /></p>
+					<p class="m-auto p-2">Upload purchase order data: <input type="button" value="Upload PO" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_po' %}';" target="_blank" title = "SC_PO_Upload" /></p>
+					<p class="m-auto p-2">Upload Confirmation data: <input type="button" value="Upload Confirmation" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_confirmation' %}';" target="_blank" title = "Confirmation_Upload" /></p>
+					<p class="m-auto p-2">Upload User data: <input type="button" value="Upload User" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_user' %}';" target="_blank" title = "SC_PO_Upload" /></p>
+					<p class="m-auto p-2">Upload Supplier master data: <input type="button" value="Upload Supplier" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_supplier_master' %}';" target="_blank" title = "SC_PO_Upload" /></p>
+					<p class="m-auto p-2">Upload Country-Company Master Data: <input type="button" value="Upload Country-Company " class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_country_cocode' %}';" target="_blank" title = "Country_Company_Upload" /></p>
+					<p class="m-auto p-2">Upload Country Master data: <input type="button" value="Upload Country" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_country' %}';" target="_blank" title = "Country_Upload" /></p>
+					<p class="m-auto p-2">Upload Company Master data: <input type="button" value="Upload Company" class="btn btn-primary btn-sm" onclick="window.location.href = '{% url 'eProc_Archiving:upload_cocode' %}';" target="_blank" title = "Company_Upload" /></p>
+					<p class="m-auto p-2">Upload other attachments: &nbsp;<a href="{% static 'DocumentAttachment.pdf' %}" target="_blank"><input type="button" value="Upload Attachments" class="btn btn-primary btn-sm" title = "Upload Attachments" /></a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+		</div>
+	</div>
+
+
+
+</form>
+
+<script>
+	$(document).ready( function() {
+        nav_bar_archiving()
+<!--        table_sort_filter_export_excel()-->
+        $("#created_by, #id_requester").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url  : "{% url 'eProc_Archiving:docsearch' %}",
+                    dataType: "json",
+                    data: {
+                        term : request.term,
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            min_length: 3,
+        });
+    });
+</script>
+
+{% endblock %}

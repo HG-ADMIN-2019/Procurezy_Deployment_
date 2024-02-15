@@ -73,6 +73,7 @@
     <table id="doc_list" class="table table_sort_filter_export_excel">
         <thead class="thead-light">
             <tr>
+                {% if inp_doc_type == 'SC' %}
                 <th scope="col">SC Number</th>
                 <th scope="col">SC Name</th>
                 <th scope="col">Total Value</th>
@@ -85,12 +86,58 @@
                 <th scope="col">Changed By</th>
                 <th scope="col">Ordered At</th>
                 <th scope="col">Time Zone</th>
-                <th scope="col">Supplier Id</th> <!-- Assuming supplier ID is common for all document types -->
+                {% endif%}
+                {% if inp_doc_type == 'PO' %}
+                <th scope="col">PO Number</th>
+                <th scope="col">PO Name</th>
+                <th scope="col">Total Value</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Requester</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Creator</th>
+                <th scope="col">Changed At</th>
+                <th scope="col">Changed By</th>
+                <th scope="col">Ordered At</th>
+                <th scope="col">Time Zone</th>
+                <th scope="col">Supplier Id</th>
+                {% endif %}
+                {% if inp_doc_type == 'CONF' %}
+                <th scope="col">Conf Number</th>
+                <th scope="col">Conf Name</th>
+                <th scope="col">Total Value</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Requester</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Creator</th>
+                <th scope="col">Changed At</th>
+                <th scope="col">Changed By</th>
+                <th scope="col">Ordered At</th>
+                <th scope="col">Time Zone</th>
+                <th scope="col">Supplier Id</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
             {% for header_data in results %}
             <tr>
+                {% if inp_doc_type == 'SC' %}
+                <td><a href="{% url 'eProc_Archiving:doc_details' inp_doc_type header_data.guid  %}"
+                        target="_blank">{{ header_data.doc_number }}</a></td>
+                <td>{{header_data.description}}</td>
+                <td>{{header_data.total_value}}</td>
+                <td>{{header_data.currency}}</td>
+                <td>{{header_data.requester}}</td>
+                <td>{{header_data.status}}</td>
+                <td>{{header_data.created_at}}</td>
+                <td>{{header_data.created_by}}</td>
+                <td>{{header_data.changed_at}}</td>
+                <td>{{header_data.changed_by}}</td>
+                <td>{{header_data.ordered_at}}</td>
+                <td>{{header_data.time_zone}}</td>
+                {% endif %}
+                {% if inp_doc_type == 'PO' %}
                 <td><a href="{% url 'eProc_Archiving:doc_details' inp_doc_type header_data.guid  %}"
                         target="_blank">{{ header_data.doc_number }}</a></td>
                 <td>{{header_data.description}}</td>
@@ -105,6 +152,23 @@
                 <td>{{header_data.ordered_at}}</td>
                 <td>{{header_data.time_zone}}</td>
                 <td>{{header_data.supplier_id}}</td>
+                {% endif %}
+                {% if inp_doc_type == 'CONF' %}
+                <td><a href="{% url 'eProc_Archiving:doc_details' inp_doc_type header_data.guid  %}"
+                        target="_blank">{{ header_data.doc_number }}</a></td>
+                <td>{{header_data.description}}</td>
+                <td>{{header_data.total_value}}</td>
+                <td>{{header_data.currency}}</td>
+                <td>{{header_data.requester}}</td>
+                <td>{{header_data.status}}</td>
+                <td>{{header_data.created_at}}</td>
+                <td>{{header_data.created_by}}</td>
+                <td>{{header_data.changed_at}}</td>
+                <td>{{header_data.changed_by}}</td>
+                <td>{{header_data.ordered_at}}</td>
+                <td>{{header_data.time_zone}}</td>
+                <td>{{header_data.supplier_id}}</td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

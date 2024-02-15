@@ -137,56 +137,75 @@
                                                 {% if prev_detail.acc_cat %}
                                                     <div>
                                                         <span class="h6"> Account Assignment Category:</span>
-                                                        <span style="color:#00000080;">{{ accounting_data.acc_cat }}</span>
-                                                        <span class="badge badge-pill badge_primary_acc">Primary</span>
+                                                        {% if accounting_details|length > 1 and prev_detail.acc_cat != accounting_details.1.acc_cat %}
+                                                             <span style="color:#00000080;">Multiple</span>
+                                                        {% else %}
+                                                            <span style="color:#00000080;">{{ accounting_data.acc_cat }}</span>
+                                                            <span class="badge badge-pill badge_primary_acc">Primary</span>
+                                                        {% endif %}
                                                     </div>
                                                 {% endif %}
-                                                {% if accounting_data.dist_perc %}
+                                                {% if prev_detail.dist_perc %}
                                                                 <div>
                                                                     <span class="h6"> Distribution Percentage:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.dist_perc }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.dist_perc != accounting_details.1.dist_perc %}
+                                                                          <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                         <span style="color:#00000080;">{{ accounting_data.dist_perc }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
-                                                {% if accounting_data.cost_center %}
+                                                {% if prev_detail.cost_center %}
                                                                 <div>
                                                                     <span class="h6"> Cost Center:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.cost_center }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.cost_center != accounting_details.1.cost_center %}
+                                                                         <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                         <span style="color:#00000080;">{{ accounting_data.cost_center }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
-                                                {% if accounting_data.generic_acc_ass %}
+                                                {% if prev_detail.generic_acc_ass %}
                                                                 <div>
                                                                     <span class="h6"> Generic Account Assignment:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.generic_acc_ass }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.generic_acc_ass != accounting_details.1.generic_acc_ass %}
+                                                                         <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                         <span style="color:#00000080;">{{ accounting_data.generic_acc_ass }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
-                                                {% if accounting_data.internal_order %}
+                                                {% if prev_detail.internal_order %}
                                                                 <div>
                                                                     <span class="h6"> Internal Order:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.internal_order }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.internal_order != accounting_details.1.internal_order %}
+                                                                        <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                        <span style="color:#00000080;">{{ accounting_data.internal_order }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
-                                                {% if accounting_data.wbs_ele %}
+                                                {% if prev_detail.wbs_ele %}
                                                                 <div>
                                                                     <span class="h6"> WBS Element:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.wbs_ele }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.wbs_ele != accounting_details.1.wbs_ele %}
+                                                                        <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                        <span style="color:#00000080;">{{ accounting_data.wbs_ele }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
-                                                {% if accounting_data.gl_acc_num %}
+                                                {% if prev_detail.gl_acc_num %}
                                                                 <div>
                                                                     <span class="h6"> General Ledger Account:</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.gl_acc_num }}</span>
+                                                                    {% if accounting_details|length > 1 and prev_detail.gl_acc_num != accounting_details.1.gl_acc_num %}
+                                                                      <span style="color:#00000080;">Multiple</span>
+                                                                    {% else %}
+                                                                       <span style="color:#00000080;">{{ accounting_data.gl_acc_num }}</span>
+                                                                    {% endif %}
                                                                 </div>
                                                 {% endif %}
                                             </div>
-                                        {% endwith %}
-                                        {% with accounting_details|slice:"1:" as remaining_details %}
-                                                    {% for accounting_data in accounting_details|slice:"1:" %}
-                                                        {% if accounting_data.acc_cat != prev_detail.acc_cat %}
-                                                            <div class="mb-2">
-                                                                <p>Multiple</p>
-                                                            </div>
-                                                        {% endif %}
-                                                    {% endfor %}
                                         {% endwith %}
                                     {% endwith %}
                                 {% else %}

@@ -86,6 +86,14 @@
             {% endif %}
         </div>
 
+<!--        {% if spend_limit_value > items.item_total_value or spend_limit_value == null %}-->
+<!--        {% if sc_head.status == 'SAVED' %}-->
+<!--        <span class="badge badge-pill badge_status_save">SAVED</span>-->
+<!--        {% endif %}-->
+<!--        {% endif %}-->
+
+
+
         <!--    To Display Header Details only if there are any results-->
         {% if t_count > 0 %}
         <div id="table-container">
@@ -148,14 +156,13 @@
 
                                             {% elif sc_head.status == 'SAVED' %}
                                             <span class="badge badge-pill badge_status_save">SAVED</span>
-
                                             {% elif sc_head.status == 'APPROVED' %}
                                             <span class="badge badge-pill badge_status_approved">APPROVED</span>
                                             <!-- <a href="{% url 'eProc_Doc_Search:generate_sc_details_pdf' sc_head.doc_number %}" target="_blank"><button style="float: right;" class="btn btn-primary">print pdf</button></a> -->
                                             {% elif sc_head.status == 'ORDERED' %}
                                             <span class="badge badge-pill badge_status_approved">ORDERED</span>
                                             {% elif sc_head.status == 'PURCHASER_WORKLIST' %}
-                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span> 
+                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
                                             {% elif sc_head.status == 'DELETED' %}
                                             <span class="badge badge-pill badge_status_rejected">DELETED</span>
                                             {% elif sc_head.status == 'REJECTED' %}

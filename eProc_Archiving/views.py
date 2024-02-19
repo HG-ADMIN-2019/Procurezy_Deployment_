@@ -149,7 +149,7 @@ def m_det_meth(request, type, guid):
                                                'item_details': itm_data,
                                                'accounting_details': acc_data,
                                                'approval_details': appr_data,
-                                               'inc_nav': True,
+                                               # 'inc_nav': True,
                                                'inc_footer': True,
                                                'inc_side_panel': True})
 

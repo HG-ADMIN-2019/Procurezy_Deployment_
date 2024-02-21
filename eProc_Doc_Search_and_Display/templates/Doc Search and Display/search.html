@@ -281,6 +281,7 @@
 
     // Loader implementation on search button
     $('#search_button_id').click(function () {
+        $('#table-container').show();
         OpenLoaderPopup();
         var formData = {
             documentType: $('#id_document_type').val(),
@@ -371,6 +372,9 @@
         resetFields();
     });
 
+
+
+
 // Code for * in Document Number field
 document.addEventListener('DOMContentLoaded', function () {
     var docNumInput = document.getElementById('{{ sform.doc_num.id_for_label }}');
@@ -391,12 +395,6 @@ document.addEventListener('DOMContentLoaded', function () {
         event.target.value = currentValue.replace(/\*{2,}/g, '*');
     });
 });
-
- $(document).ready(function () {
-<!--    $('.multiple_select').selectpicker();-->
-<!--    $('.multiple_select').selectpicker('selectAll');-->
-    $('.multiple_select').selectpicker('val', storedFormData)
-<!--    $('#id_acc_assgn_cat').selectpicker('val', acc_assgn_cat)-->
-});
 </script>
+
 {% endblock %}

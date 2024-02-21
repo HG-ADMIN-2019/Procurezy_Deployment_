@@ -102,7 +102,7 @@
                     <button type="submit" id="ajax_add_favourite_cart" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> save </button>
                 </div>
                 </form>
-                
+
 
             </div>
         </div>
@@ -118,8 +118,17 @@
     function ajax_add_favourite_cart(data) {
         urlLink = "{% url 'eProc_Shop_Home:add_favourite_shopping_cart' %}";
         let status = AjaxCallAPIBasic(urlLink, data);
+        setTimeout(function() {
+                           CloseLoaderPopup();
+                }, 500);
         return status;
+
     }
+
+    document.getElementById("ajax_add_favourite_cart").addEventListener("click", function() {
+    $('#favourite_sc_name_window').modal('hide'); // Close the modal
+});
+
 
     // Function to get guid of the item and displays confirmation pop-up before deleting
 var delete_item_guid = '';

@@ -176,21 +176,21 @@
 <!--                                            -->
                                             {% else %}
                                             <span class="badge badge-pill badge_status_approved">APPROVED</span>
-                                            
+
                                             {% endif %}
                                             {% endif %}
                                             {% endif %}
                                             {% endfor %}
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                                 <div id="collapseSearch{{ forloop.counter }}" class="collapse">
                                     <div class="card-body">
                                         <div class="row" >
                                             <div class="col-md-3 grey-border">
-                                            
+
                                                 <div class="row mt-2">
                                                     <div class="col-md-2">
                                                         <!-- To display cart logo when document type is shopping cart   -->
@@ -205,12 +205,12 @@
                                                         <span class="hg_subtext_color">Shopping Cart Number</span><br>
                                                         <div class="h5 link-blue"> {{ sc_head.doc_number }} </div>
                                                         {% endif %}
-                    
+
                                                         {% if inp_doc_type == 'DOC02' %}
                                                         <span class="hg_subtext_color">Purchase Order Number</span><br>
                                                         <div class="h5 link-blue"> {{ sc_head.doc_number }} </div>
                                                         {% endif %}
-                    
+
                                                         <span class="hg_subtext_color">Requested By</span><br>
                                                         <div class="h5 link-blue"> {{ requester_first_name }} </div>
 
@@ -233,23 +233,23 @@
                                                         {% endif %}
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
                                             <div class="col-md-9">
                                                 {% include 'Workflow/manager_detail.html' %}
                                             </div>
                                         </div>
-                    
+
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-    
+
         </div>
         {% endif %}
     </div>
@@ -397,6 +397,11 @@ document.addEventListener('DOMContentLoaded', function () {
 <!--    $('.multiple_select').selectpicker('selectAll');-->
     $('.multiple_select').selectpicker('val', storedFormData)
 <!--    $('#id_acc_assgn_cat').selectpicker('val', acc_assgn_cat)-->
+});
+
+
+$(document).ready(function (){
+    $('.multiple_select').selectpicker();
 });
 </script>
 {% endblock %}

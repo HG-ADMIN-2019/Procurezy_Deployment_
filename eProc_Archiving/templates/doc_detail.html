@@ -249,18 +249,6 @@
                                         <th scope="col">PO  Number</th>
                                     {% endif %}
                                     <th scope="col">Action</th>
- <!--                                    <th scope="col">Item Number</th>-->
-<!--                                    <th scope="col">Company Code</th>-->
-<!--                                    <th scope="col">Purchasing Group</th>-->
-<!--                                    <th scope="col">Supplier ID</th>-->
-<!--                                    <th scope="col">Product Category</th>-->
-<!--                                    <th scope="col">Catalog ID</th>-->
-<!--                                    <th scope="col">UNSPSC</th>-->
-<!--                                    <th scope="col">Price</th>-->
-<!--                                    <th scope="col">Gross Price</th>-->
-<!--                                    <th scope="col">Supplier Product Number</th>-->
-<!--                                    <th scope="col">Status</th>-->
-<!--                                    <th scope="col">Goods Recipient</th>-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -285,23 +273,11 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="color:#00000080;">
                                                     <a class="dropdown-item detailingData-{{ forloop.counter }}" onclick="showSection(this, 'detailingData-{{ forloop.counter }}')">Details</a>
-                                                    <a class="dropdown-item detailingData-1" onclick="showSection(this, 'accoutingData-{{ forloop.counter }}')">Cost Assignment</a>
+                                                    <a class="dropdown-item accoutingData-{{ forloop.counter }}" onclick="showSection(this, 'accoutingData-{{ forloop.counter }}')">Cost Assignment</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-<!--                                    <td>{{item_data.item_num}}</td>-->
-<!--                                    <td>{{item_data.comp_code}}</td>-->
-<!--                                    <td>{{item_data.purch_grp}}</td>-->
-<!--                                    <td>{{item_data.supplier_id}}</td>-->
-<!--                                    <td>{{item_data.prod_cat}}</td>-->
-<!--                                    <td>{{item_data.catalog_id}}</td>-->
-<!--                                    <td>{{item_data.unspsc}}</td>-->
-<!--                                    <td>{{item_data.price}}</td>-->
-<!--                                    <td>{{item_data.gross_price}}</td>-->
-<!--                                    <td>{{item_data.supp_prod_num}}</td>-->
-<!--                                    <td>{{item_data.status}}</td>-->
-<!--                                    <td>{{item_data.goods_recep}}</td>-->
                                 </tr>
                                 <!--start of hideable section containing sc item action-->
                                 <tr class="item-table-action__section">
@@ -311,7 +287,7 @@
                                             <div class="card">
                                                 <div class="card-header item-table-action__header"><span> Details </span>
                                                     <span onclick="closeAttachSection(this, 'detailingData-{{ forloop.counter }}')">
-                                                    <svg class="svg-inline--fa fa-times fa-w-11" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" data-fa-i2svg=""><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+                                                    <i class="fas fa-times"></i>
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
@@ -393,30 +369,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-    <!--                                                            <span class="h6">Item Number: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.item_num}}</span><br>-->
-    <!--                                                            <span class="h6">Company Code: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.comp_code}}</span><br>-->
-    <!--                                                            <span class="h6">Purchasing Group: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.purch_grp}}</span><br>-->
-    <!--                                                            <span class="h6">Supplier ID: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.supplier_id}}</span><br>-->
-    <!--                                                            <span class="h6">Product Category: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.prod_cat}}</span><br>-->
-    <!--                                                            <span class="h6">Catalog ID: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.catalog_id}}</span><br>-->
-    <!--                                                            <span class="h6">UNSPSC: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.unspsc}}</span><br>-->
-    <!--                                                            <span class="h6">Price: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.price}}</span><br>-->
-    <!--                                                            <span class="h6">Gross Price: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.gross_price}}</span><br>-->
-    <!--                                                            <span class="h6">Supplier Product Number: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.supp_prod_num}}</span><br>-->
-    <!--                                                            <span class="h6">Status: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.status}}</span><br>-->
-    <!--                                                            <span class="h6">Goods Recipient: </span>-->
-    <!--                                                            <span style="color:#00000080;">{{item_data.goods_recep}}</span><br>-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -424,35 +376,36 @@
                                         </div>
                                         <!-- end of hideable content which lets the user change Detail Section -->
                                         <!-- start of hideable content which lets the user change cost assignment -->
-                                        {% for item_data in item_details %}
-                                            <div id="accoutingData-{{ forloop.counter }}" style="display: none;" class="item">
-                                                <div class="card">
-                                                    <div class="card-header item-table-action__header">
-                                                        <span>Account assignment category</span>
-                                                        <span onclick="closeAttachSection(this, 'accoutingData-{{ forloop.counter }}')">
-                                                            <i class="fas fa-times"></i>
-                                                        </span>
-                                                    </div>
+                                        <div id="accoutingData-{{ forloop.counter }}" style="display: none;" class="item{{ forloop.counter }}">
+                                            <div class="card">
 
-                                                    {% for accounting_data in accounting_details %}
-                                                        {% if accounting_data.item_guid_id == item_data.guid %}
-                                                            <div class="card-body">
-                                                                <div>
-                                                                    <span class="h6">Account Assignment Category :</span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.acc_cat }}</span><br>
-                                                                    <span class="h6">Cost Center: </span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.cost_center }}</span><br>
-                                                                    <div id="secondary_accounting-{{ accounting_data.guid }}"></div>
-                                                                    <span class="h6">GL Account Number: </span>
-                                                                    <span style="color:#00000080;">{{ accounting_data.gl_acc_num }}</span>
-                                                                    <br><br>
-                                                                </div>
-                                                            </div>
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                <div class="card-header item-table-action__header">
+                                                    <span>Account assignment category</span>
+                                                    <span onclick="closeAttachSection(this, 'accoutingData-{{ forloop.counter }}')">
+                                                        <i class="fas fa-times"></i>
+                                                    </span>
                                                 </div>
+                                                 <div class="card-body">
+                                                    <div>
+                                                        {% for accounting_data in accounting_details %}
+                                                             {% if accounting_data.item_guid_id == item_data.guid %}
+                                                                <span class="h6">Account Assignment Category :</span>
+                                                                <span >{{ accounting_data.acc_cat }}</span><br>
+                                                                <span class="h6"> Distribution Percentage : </span>
+                                                                <span >{{ accounting_data.dist_perc }}</span><br>
+                                                                <span class="h6">Cost Center: </span>
+                                                                <span>{{ accounting_data.cost_center }} </span><br>
+                                                                <span class="h6"> Generic Account Assignment : </span>
+                                                                <span>{{ accounting_data.generic_acc_ass }}</span><br>
+                                                                <span class="h6">GL Account Number: </span>
+                                                                <span>{{ accounting_data.gl_acc_num }}</span><br>
+                                                             {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                 </div>
                                             </div>
-                                        {% endfor %}
+                                        </div>
+                                        <!-- end of hideable content which lets the user change cost assignment -->
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -463,6 +416,93 @@
                 </div>
             </div>
         </div>
+
+         <!--  Approval Process overview card section  -->
+        <div class="mr-2 ml-2">
+            <div class="card card-shadow-1" id="approval_process_overview">
+                <div class="card-body">
+                    <div>
+                        <div id="id_dynamic"></div>
+                        <div class="workflow-overview">
+                            <div class="card text-dark workflow-overview__process-card" id="workflow_status_div">
+                                <div class="card-body">
+                                    <span class="h3">Approval Process Overview</span>
+                                </div>
+                            </div>
+                            <div class="workflow-overview__section">
+                                <div class="workflow-overview__user-icon-container ao-logged-in-user">
+                                    <div class="workflow-user-bg">
+                                        <i class="fa fa-user fa-3x" aria-hidden="true"> </i>
+                                    </div>
+                                    {% for header_data in header_details %}
+                                     <button type="button" class="button-workflow-user">{{header_data.requester}}</button>
+                                    {% endfor %}
+                                </div>
+<!--                                <div class="workflow-overview__next-icon-container">-->
+<!--                                    <i class="fas fa-angle-double-right fa-3x"></i>-->
+<!--                                </div>-->
+                                <div id="div_manager_detail" class="workflow-overview__managers-section">
+                                    <div class="workflow-overview__next-icon-container">
+                                        <i class="fas fa-angle-double-right fa-3x"></i>
+                                    </div>
+                                    <div class="workflow-overview__user-icon-container">
+                                        <div class="workflow-user-bg workflow-completed">
+                                            <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>
+                                        </div>
+                                        {% for approval_data in approval_details %}
+                                        <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  start of manager detail pop up-->
+<!--        <div class="modal fade show" id="manager-detail-popup" tabindex="-1" style="display: block; padding-right: 22px;" role="dialog">-->
+<!--            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">-->
+<!--                <div class="modal-content">-->
+<!--                    <div class="modal-header">-->
+<!--                        <h5 class="modal-title">Financial Approval</h5>-->
+<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="close">-->
+<!--                            <span aria-hidden="true">x</span>-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                    <div class="">-->
+<!--                        <table class="table table-bordered" id="manager_detail_table">-->
+<!--                            <thead class="thead-light">-->
+<!--                                <tr>-->
+<!--                                    <th scope="col">Approval Type</th>-->
+<!--                                    <th scope="col">Step Number</th>-->
+<!--                                    <th scope="col">Process Level Status</th>-->
+<!--                                    <th scope="col">Approval Status</th>-->
+<!--                                    <th scope="col">Approver</th>-->
+<!--                                    <th scope="col">Processed On</th>-->
+<!--                                    <th scope="col">Received On</th>-->
+<!--                                </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody id="manager_detail_body">-->
+<!--                               {% for approval_data in approval_details %}-->
+<!--                                    <tr>-->
+<!--                                        <td>{{approval_data.app_desc}}</td>-->
+<!--                                        <td>{{approval_data.step_num }}</td>-->
+<!--                                        <td>{{approval_data.proc_lvl_sts}}</td>-->
+<!--                                        <td>{{approval_data.app_sts}}</td>-->
+<!--                                        <td>{{approval_data.app_id}}</td>-->
+<!--                                        <td>{{approval_data.proc_time}}</td>-->
+<!--                                        <td>{{approval_data.recevied_time}}</td>-->
+<!--&lt;!&ndash;                                        <td>{{approval_data.time_zone}}</td>&ndash;&gt;-->
+<!--                                    </tr>-->
+<!--                                    {% endfor %}-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <!--Display Accounting details-->
 
         <div class="header-details">
@@ -541,6 +581,8 @@
     </div>
     <div style="height:30px; font-size:12px; text-align:right; padding-right:10px;" >© 2022 Hiranya-Garbha Consultancy. All rights reserved.</div>
 </div>
+{% include 'ProductDetailPopup/basic_product_detail_popup.html' %}
+<script src="{% static 'scripts/manager-details.js' %}"></script>
 <script>
     var GLOBAL_SELECT_ITEM_NUM = 0
     // Close action sections i item details table
@@ -604,8 +646,28 @@
                 activeNoteBtn[i].style.color = '#000000';
             }
         }
-
     }
+
+ function show_manager_detail(id) {
+    sc_app_guid_data = {};
+    sc_app_guid_data['guid'] = id;
+
+    ajax_get_manager_detail(sc_app_guid_data)
+
+    $('#manager_detail_body').empty();
+    trHTML = '<tr></tr>';
+    $.each(response, function (i, sc_app) {
+        trHTML += '<tr><td>' + sc_app.fields.app_desc + '</td><td >' + sc_app.fields.step_num + '</td><td>' + sc_app.fields.proc_lvl_sts + '</td><td>' + sc_app.fields.app_sts + '</td><td>' + sc_app.fields.app_id + '</td><td>' + sc_app.fields.proc_time + '</td><td>' + sc_app.fields.received_time + '</td></tr>';
+    });
+    $('#manager_detail_body').append(trHTML);
+    $('#manager-detail-popup').modal('show');
+
+}
+
+function ajax_get_manager_detail(data) {
+    urlLink = "{% url 'eProc_Doc_Search:get_sc_app_data' %}";
+    AjaxCallAPI(urlLink, data);
+}
 </script>
 {% endblock %}
 

@@ -142,43 +142,43 @@
                                             {% for doc_approver_detail in doc_approver_details %}
                                             {% if doc_approver_detail.header_guid_id in sc_head.guid and doc_approver_detail.step_num == '1'  %}
 
+                                            {% endif %}
+
+                                            {% if doc_approver_detail.app_id == 'Auto' %}
+                                                {% if sc_head.status == 'PURCHASER_WORKLIST' %}
+                                                <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
+
+                                                {% elif sc_head.status == 'SAVED' %}
+                                                <span class="badge badge-pill badge_status_save">SAVED</span>
+                                                {% elif sc_head.status == 'AWAITING_APPROVAL' %}
+                                                <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
+                                                {% elif sc_head.status == 'DELETED' %}
+                                                <span class="badge badge-pill badge_status_rejected">DELETED</span>
+                                                {% else %}
+                                                <span class="badge badge-pill badge_status_approved">APPROVED</span>
+                                                {% endif %}
+                                            {% endif %}
                                             {% if doc_approver_detail.app_id != 'Auto'  %}
-                                            {% if sc_head.status == 'AWAITING_APPROVAL'%}
-                                            <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
+                                                {% if sc_head.status == 'AWAITING_APPROVAL'%}
+                                                <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
 
-                                            {% elif sc_head.status == 'SAVED' %}
-                                            <span class="badge badge-pill badge_status_save">SAVED</span>
+                                                {% elif sc_head.status == 'SAVED' %}
+                                                <span class="badge badge-pill badge_status_save">SAVED</span>
 
-                                            {% elif sc_head.status == 'APPROVED' %}
-                                            <span class="badge badge-pill badge_status_approved">APPROVED</span>
-                                            <!-- <a href="{% url 'eProc_Doc_Search:generate_sc_details_pdf' sc_head.doc_number %}" target="_blank"><button style="float: right;" class="btn btn-primary">print pdf</button></a> -->
-                                            {% elif sc_head.status == 'ORDERED' %}
-                                            <span class="badge badge-pill badge_status_approved">ORDERED</span>
-                                            {% elif sc_head.status == 'PURCHASER_WORKLIST' %}
-                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
-                                            {% elif sc_head.status == 'DELETED' %}
-                                            <span class="badge badge-pill badge_status_rejected">DELETED</span>
-                                            {% elif sc_head.status == 'REJECTED' %}
-                                            <span class="badge badge-pill badge_status_rejected">REJECTED</span>
-
+                                                {% elif sc_head.status == 'APPROVED' %}
+                                                <span class="badge badge-pill badge_status_approved">APPROVED</span>
+                                                <!-- <a href="{% url 'eProc_Doc_Search:generate_sc_details_pdf' sc_head.doc_number %}" target="_blank"><button style="float: right;" class="btn btn-primary">print pdf</button></a> -->
+                                                {% elif sc_head.status == 'ORDERED' %}
+                                                <span class="badge badge-pill badge_status_approved">ORDERED</span>
+                                                {% elif sc_head.status == 'PURCHASER_WORKLIST' %}
+                                                <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
+                                                {% elif sc_head.status == 'DELETED' %}
+                                                <span class="badge badge-pill badge_status_rejected">DELETED</span>
+                                                {% elif sc_head.status == 'REJECTED' %}
+                                                <span class="badge badge-pill badge_status_rejected">REJECTED</span>
+                                                {% endif %}
                                             {% endif %}
 
-                                            {% elif doc_approver_detail.app_id == 'Auto' %}
-                                            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
-                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
-
-                                            {% elif sc_head.status == 'SAVED' %}
-                                            <span class="badge badge-pill badge_status_save">SAVED</span>
-                                            {% elif sc_head.status == 'AWAITING_APPROVAL' %}
-                                            <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
-                                            {% elif sc_head.status == 'DELETED' %}
-                                            <span class="badge badge-pill badge_status_rejected">DELETED</span>
-                                            {% else %}
-                                            <span class="badge badge-pill badge_status_approved">APPROVED</span>
-
-                                            {% endif %}
-                                            {% endif %}
-                                            {% endif %}
                                             {% endfor %}
                                         </div>
 

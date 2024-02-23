@@ -428,9 +428,9 @@ function check_shopping_cart(type, sc_data, acc_default, acc_default_val){
             sc_errors = response.sc_error
             sc_info_messsages_check = response.sc_info
             var error_msg_info = response.error_msg_info
-          //  if (shopping_cart_errors['error_msg_info']) {
-      //  error_messages += shopping_cart_errors['error_msg_info']
-   // }
+            if (shopping_cart_errors['error_msg_info']) {
+                 error_messages += shopping_cart_errors['error_msg_info']
+            }
             if (response.error_msg_info){
                 $.each(response.error_msg_info, function (i, item) {
                     error_messages += item + '<br>'
@@ -709,6 +709,7 @@ const ajax_update_goods_reciever = (data) => {
 
 // Function to store shipping details & sc name data in session storage
 window.onbeforeunload = function () {
+    return "Are you sure you want to refresh the page?";
     sessionStorage.setItem("sc_name", $('#sc_name_id').text());
     sessionStorage.setItem("approver_text", $('#approver_text').val());
 
@@ -796,6 +797,8 @@ var msg_type, result;
        return  result;
 }
 
+<!--window.onbeforeunload = function() {-->
+<!--   return "Are you sure you want to refresh the page?";-->
 
 </script>
 

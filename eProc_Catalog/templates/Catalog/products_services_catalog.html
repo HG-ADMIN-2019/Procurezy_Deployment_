@@ -378,7 +378,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                                                                             <div class="row">
                                                                                 <div class="col-12 product-results-catalog__quantity">
                                                                                     <span class="h5">Quantity </span>
-                                                                                    <input type="text" maxlength="6" min="1" value="1" id="Q{{i.product_id}}" oninput="this.value = this.value.slice(0, 6).replace(/\D/g, ''); check_quantity(this);" class="quanity-input-field">
+                                                                                    <input type="text" maxlength="6" value="1" oninput="this.value = this.value.slice(0, 6).replace(/\D/g, ''); check_quantity(this); on_change_quantity('INPUT')" class="quanity-input-field" id="catalog_quantity" name="catalog_quantity">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
@@ -825,6 +825,85 @@ function check_quantity(detail){
     }
 }
 
+var quantity_flag = true
+
+function on_change_quantity(action){
+
+    var range = 0
+    var min  = 0
+    var range_flag = false
+    quantity_flag = true
+    var quantity_range = 0
+    var price_percentage = 0
+    quantity = document.getElementById("catalog_quantity").value
+    if(!quantity){
+        quantity = 1
+        document.getElementById("catalog_quantity").value = quantity
+    }
+    if(parseInt(quantity) == 0){
+        quantity = 1
+        document.getElementById("catalog_quantity").value = quantity
+    }
+    if (action == 'INCREMENT'){
+        quantity = parseInt(quantity)+1;
+    }
+    else if(action == 'DECREMENT'){
+        if(parseInt(quantity) > 1)
+        {
+            //quantity_flag = false
+            quantity = parseInt(quantity)-1;
+        }
+    }
+    if (quantity_flag){
+        if(GLOBAL_QUANTITY.length != 0){
+            quantity_range = get_price_range(quantity)
+        }
+        //var without_discount = GLOBAL_BASE_PRICE
+        console.log(without_discount)
+        if(GLOBAL_QUANTITY.length != 0){
+            price_percentage = get_percentage_by_quantity(quantity_range)
+        }
+        $('.selected-vwbp').each(function() {
+                var select_value = this.id
+                var select_value_split = select_value.split('-')
+                if (select_value_split[0]=='VARIANT_BASE_PRICING'){
+                    GLOBAL_BASE_PRICE = get_price(select_value_split[1],select_value_split[2])
+                }
+           });
+           var without_discount = GLOBAL_BASE_PRICE
+        if(quantity_range !== 0)
+        {
+            GLOBAL_BASE_PRICE = GLOBAL_BASE_PRICE*(100 - parseFloat(price_percentage))/100
+        }
+        var item_price = GLOBAL_BASE_PRICE
+        console.log(item_price)
+            $('.selected-vwap').each(function() {
+                var select_value = this.id
+                var select_value_split = select_value.split('-')
+                if (select_value_split[0]=='VARIANT_ADDITIONAL_PRICING'){
+                    var additional_price = get_price(select_value_split[1],select_value_split[2])
+                    item_price = calculate_item_value_based_on_operator(additional_price,'PLUS',item_price)
+                    without_discount = calculate_item_value_based_on_operator(additional_price,'PLUS',without_discount)
+                }
+           });
+           var item_total_price = item_price*parseInt(quantity)
+           var without_discount_total_price = without_discount*parseInt(quantity)
+           var save = parseFloat(without_discount_total_price) - parseFloat(item_total_price);
+           $("#id_discount_section").empty();
+           if (price_percentage == 0){
+                $("#id_discount_section").empty();
+           }
+           else{
+            // var text = '<span  class="hg_subtext_color"><del>'+ without_discount_total_price +'</del>('+ price_percentage +'%) Save '+ save +'</span>';
+            var text = '<div class="pricing-ex-discount"><s> '+ GLOBAL_CURRENCY +' '+ without_discount_total_price + '</s></div>'+
+                       '<div class="discount-perc-text badge badge-pill badge_status_approved"><span>'+ price_percentage +'</span><span>% off</span></div>'
+                $("#id_discount_section").append(text);
+           }
+
+           console.log(item_price)
+            $("#id_price").text(item_total_price);
+    }
+}
 </script>
 
 {% endblock %}

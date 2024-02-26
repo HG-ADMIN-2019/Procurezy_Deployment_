@@ -161,16 +161,12 @@ function edit_sc_name(){
 
 // Function to submit edit SC name
 function submitSCname(){
-   var errorMessageContainer = document.getElementById('error-message');
-   var sc_name = document.getElementById('sc_name_input').value
-   if(sc_name == ""){
-       errorMessageContainer.textContent = 'Please enter valid name';
-       $('#edit_sc_name_window').modal('show');
-   }else {
-       errorMessageContainer.textContent = '';
-       document.getElementById('sc_name_id').innerHTML = sc_name
-       $('#edit_sc_name_window').modal('hide');
-   }
+    var sc_name = document.getElementById('sc_name_input').value
+
+    document.getElementById('sc_name_id').innerHTML   = sc_name
+
+    $('#edit_sc_name_window').modal('hide');
+}
 }
 
 

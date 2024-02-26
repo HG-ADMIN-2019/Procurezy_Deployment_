@@ -152,19 +152,25 @@ var highest_item_change_acc_value = (document.getElementById('change_acc_value_'
 // Function to edit cart name in sc second step
 function edit_sc_name(){
     $('#edit_sc_name_window').modal('show');
-
+    var errorMessageContainer = document.getElementById('error-message')
     var sc_name = document.getElementById('sc_name_id').innerHTML;
-
-    document.getElementById('sc_name_input').value   = sc_name
+    if(sc_name != ""){
+        $('#error-message').modal('hide');
+    }
 }
 
 // Function to submit edit SC name
 function submitSCname(){
+    var errorMessageContainer = document.getElementById('error-message');
     var sc_name = document.getElementById('sc_name_input').value
-
-    document.getElementById('sc_name_id').innerHTML   = sc_name
-
-    $('#edit_sc_name_window').modal('hide');
+    if(sc_name == ""){
+        errorMessageContainer.textContent = 'Please enter valid name';
+        $('#edit_sc_name_window').modal('show');
+    }else {
+        errorMessageContainer.textContent = '';
+        document.getElementById('sc_name_id').innerHTML = sc_name
+        $('#edit_sc_name_window').modal('hide');
+    }
 }
 
 

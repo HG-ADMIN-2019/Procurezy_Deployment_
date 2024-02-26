@@ -39,17 +39,21 @@ function TriggerOutlook() {
  // Delete favourite shopping cart
  let delete_favourite_cart_num = '';
  function FavScDelete(fav_cart_num) {
+    OpenLoaderPopup();
     delete_favourite_cart_num = fav_cart_num;
     $('#delete-favourite-cart-popup').modal('show');
+    CloseLoaderPopup();
 }
 
 
-function delete_favourite_cart () {
+function delete_favourite_cart() {
     let data = {}
+    OpenLoaderPopup();
     data.fav_cart_num = delete_favourite_cart_num
     ajax_delete_favourite_shopping_cart(data)
     $('#delete-favourite-cart-popup').modal('hide');
     $("#fav_sc_card_"+delete_favourite_cart_num).remove();
+    CloseLoaderPopup();
 }
 
 // Delete recently viewed items

@@ -142,20 +142,7 @@
                                             {% for doc_approver_detail in doc_approver_details %}
                                             {% if doc_approver_detail.header_guid_id in sc_head.guid and doc_approver_detail.step_num == '1'  %}
 
-                                            {% endif %}
-
-                                            {% if doc_approver_detail.app_id == 'Auto' %}
-                                            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
-                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
-
-                                            {% elif sc_head.status == 'SAVED' %}
-                                            <span class="badge badge-pill badge_status_save">SAVED</span>
-                                            {% elif sc_head.status == 'AWAITING_APPROVAL' %}
-                                            <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
-                                            {% elif sc_head.status == 'DELETED' %}
-                                            <span class="badge badge-pill badge_status_rejected">DELETED</span>
-
-                                            {% elif doc_approver_detail.app_id != 'Auto'  %}
+                                            {% if doc_approver_detail.app_id != 'Auto'  %}
                                             {% if sc_head.status == 'AWAITING_APPROVAL'%}
                                             <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
 
@@ -173,24 +160,36 @@
                                             <span class="badge badge-pill badge_status_rejected">DELETED</span>
                                             {% elif sc_head.status == 'REJECTED' %}
                                             <span class="badge badge-pill badge_status_rejected">REJECTED</span>
-<!--                                            -->
+
+                                            {% endif %}
+
+                                            {% elif doc_approver_detail.app_id == 'Auto' %}
+                                            {% if sc_head.status == 'PURCHASER_WORKLIST' %}
+                                            <span class="badge badge-pill badge_status_purch_wrkl">IN PURCHASER's WORK LIST</span>
+
+                                            {% elif sc_head.status == 'SAVED' %}
+                                            <span class="badge badge-pill badge_status_save">SAVED</span>
+                                            {% elif sc_head.status == 'AWAITING_APPROVAL' %}
+                                            <span class="badge badge-pill badge_status_await_approval">WAITING FOR APPROVAL</span>
+                                            {% elif sc_head.status == 'DELETED' %}
+                                            <span class="badge badge-pill badge_status_rejected">DELETED</span>
                                             {% else %}
                                             <span class="badge badge-pill badge_status_approved">APPROVED</span>
-                                            
+
                                             {% endif %}
                                             {% endif %}
                                             {% endif %}
                                             {% endfor %}
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                                 <div id="collapseSearch{{ forloop.counter }}" class="collapse">
                                     <div class="card-body">
                                         <div class="row" >
                                             <div class="col-md-3 grey-border">
-                                            
+
                                                 <div class="row mt-2">
                                                     <div class="col-md-2">
                                                         <!-- To display cart logo when document type is shopping cart   -->
@@ -205,12 +204,12 @@
                                                         <span class="hg_subtext_color">Shopping Cart Number</span><br>
                                                         <div class="h5 link-blue"> {{ sc_head.doc_number }} </div>
                                                         {% endif %}
-                    
+
                                                         {% if inp_doc_type == 'DOC02' %}
                                                         <span class="hg_subtext_color">Purchase Order Number</span><br>
                                                         <div class="h5 link-blue"> {{ sc_head.doc_number }} </div>
                                                         {% endif %}
-                    
+
                                                         <span class="hg_subtext_color">Requested By</span><br>
                                                         <div class="h5 link-blue"> {{ requester_first_name }} </div>
 
@@ -233,23 +232,23 @@
                                                         {% endif %}
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
                                             <div class="col-md-9">
                                                 {% include 'Workflow/manager_detail.html' %}
                                             </div>
                                         </div>
-                    
+
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-    
+
         </div>
         {% endif %}
     </div>
@@ -383,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Use * as a wild card search criteria (eg. Apple - App*, *ple, *ppl*) in Document Name input field
+// Use  as a wild card search criteria (eg. Apple - App, ple, ppl*) in Document Name input field
 document.addEventListener('DOMContentLoaded', function () {
     var docNameInput = document.getElementById('{{ sform.SCName.id_for_label }}');
     docNameInput.addEventListener('input', function (event) {
@@ -393,10 +392,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
  $(document).ready(function () {
-<!--    $('.multiple_select').selectpicker();-->
-<!--    $('.multiple_select').selectpicker('selectAll');-->
-    $('.multiple_select').selectpicker('val', storedFormData)
-<!--    $('#id_acc_assgn_cat').selectpicker('val', acc_assgn_cat)-->
+    $('.multiple_select').selectpicker();
+    $('.multiple_select').selectpicker('selectAll');
 });
 </script>
 {% endblock %}

@@ -991,28 +991,29 @@ $('#select_supplier').click(function(){
 
 const create_new_field_popup = () => {
     if (eform_data_new.length == 10) {
-        $('#save_error_div').html('You have entered maximum number of fields')
-        $('#save_error_div').show()
-        scroll_top()
-        return
+        $('#save_error_div').html('You have entered the maximum number of fields');
+        $('#save_error_div').show();
+        scroll_top();
+        return;
     } else {
-        $('#save_error_div').hide()
-        $('#create_error_div').hide()
+        $('#save_error_div').hide();
+        $('#create_error_div').hide();
         variant_fields_clear();
-        $('#create_new_fields_popup').modal('show')
+        $('#create_new_fields_popup').modal('show');
     }
 
-    if(eform_data_new.some(variant_option_data => variant_option_data.field_type == 'VARIANT_BASE_PRICING')) {
+    // Check if at least one variant field of type 'VARIANT_BASE_PRICING' exists
+    if (eform_data_new.some(variant_option_data => variant_option_data.field_type == 'VARIANT_BASE_PRICING')) {
         console.log('Exists');
-        $('.variant-card-vwibp').addClass("vo-select-card-disable");
-        $('.variant-card-vwiapbp').removeClass("vo-select-card-disable");
-
-    } else {
-        $('.variant-card-vwibp').removeClass("vo-select-card-disable");
+        // Disable the visual indicator for 'VARIANT_ADDITIONAL_PRICING'
         $('.variant-card-vwiapbp').addClass("vo-select-card-disable");
+    } else {
+        // Enable the VARIANT_ADDITIONAL_PRICING radio button and remove the visual indicator
+        $('#VARIANT_ADDITIONAL_PRICING').prop('disabled', false);
+        $('.variant-card-vwiapbp').removeClass("vo-select-card-disable");
     }
-
 }
+
 
 function variant_fields_clear () {
     $('#field_name').val('')
@@ -1579,26 +1580,35 @@ function populateVariantTable(variantOptions, tbodyId, variantType) {
 
     // Add or update rows for each variant option
     variantOptions.forEach(function(option) {
-        // Check if there's an existing row for this option
-        var existingRow = $("#" + tbodyId + " tr[data-option-value='" + option.option_value + "']");
-        if (existingRow.length) {
-            // Update existing row
-            existingRow.find("input[type='radio']").prop("checked", option.default_option);
-            existingRow.find("input[type='text']").val(option.option_value);
-            if (option.option_price !== undefined) {
-                existingRow.find("input[type='number']").val(option.option_price);
-                existingRow.find("input[type='text']").val(option.option_description);
-            }
-        } else {
-            // Add new row
-            var add_new_row = '<tr data-option-value="' + option.option_value + '"> <td><input type="radio" id="" name="vo_wo_iobp"' + (option.default_option ? 'checked' : '') + '></td>';
+        if(variantType === "VARIANT_ADDITIONAL_PRICING") {
+            // Add new row for VARIANT_ADDITIONAL_PRICING
+            var add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_apbp"' + (option.default_option ? ' checked' : '') + '></td>';
             add_new_row += '<td><input type="text" class="form-control" placeholder="Options" value="' + option.option_value + '"></td>';
-            if (option.option_price !== undefined) {
-                add_new_row += '<td><input type="number" class="form-control" placeholder="Price" value="' + option.option_price + '"></td>';
-                add_new_row += '<td><input type="text" class="form-control" placeholder="Description" value="' + option.option_description + '"></td>';
-            }
+            add_new_row += '<td><input type="number" class="form-control" placeholder="Price" value="' + (option.option_price ? option.option_price : '') + '"></td>';
             add_new_row += '<td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
             $("#" + tbodyId).append(add_new_row);
+        } else {
+            // Check if there's an existing row for this option
+            var existingRow = $("#" + tbodyId + " tr[data-option-value='" + option.option_value + "']");
+            if (existingRow.length) {
+                // Update existing row
+                existingRow.find("input[type='radio']").prop("checked", option.default_option);
+                existingRow.find("input[type='text']").val(option.option_value);
+                if (option.option_price !== undefined) {
+                    existingRow.find("input[type='number']").val(option.option_price);
+                    existingRow.find("input[type='text']").val(option.option_description);
+                }
+            } else {
+                // Add new row
+                var add_new_row = '<tr data-option-value="' + option.option_value + '"> <td><input type="radio" id="" name="vo_wo_iobp"' + (option.default_option ? 'checked' : '') + '></td>';
+                add_new_row += '<td><input type="text" class="form-control" placeholder="Options" value="' + option.option_value + '"></td>';
+                if (option.option_price !== undefined) {
+                    add_new_row += '<td><input type="number" class="form-control" placeholder="Price" value="' + option.option_price + '"></td>';
+                    add_new_row += '<td><input type="text" class="form-control" placeholder="Description" value="' + option.option_description + '"></td>';
+                }
+                add_new_row += '<td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
+                $("#" + tbodyId).append(add_new_row);
+            }
         }
     });
 }

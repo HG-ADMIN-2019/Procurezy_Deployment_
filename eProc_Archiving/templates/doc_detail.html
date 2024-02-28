@@ -19,13 +19,13 @@
         {% if type == 'SC' %}
         <h3>&nbsp;&nbsp;Shopping Cart #{{ header_data.doc_number }}</h3>
         {% endif %}
+        {% endfor %}
         {% if type == 'PO' %}
         <h3>&nbsp;&nbsp;Details of Purchase Order</h3>
         {% endif %}
         {% if type == 'CONF' %}
         <h3>&nbsp;&nbsp;Details of Confirmation</h3>
         {% endif %}
-        {% endfor %}
         <div class="d-flex">
             <div id="on_page_load">
                 {% if hdr_det.status == 'SAVED' %}
@@ -230,9 +230,6 @@
             <div>
                 <div class="mo-items-table">
                     <div class="table-responsive-lg">
-<!--                        <div class="header-details">-->
-<!--                            <div style="font-weight:normal;">Item Details&nbsp;&nbsp;</div>-->
-<!--                        </div>-->
                         <div>
                             <table id="cart_details" class="table mo-item-table">
                                 <thead class="thead-light">
@@ -438,22 +435,19 @@
                                      <button type="button" class="button-workflow-user">{{header_data.requester}}</button>
                                     {% endfor %}
                                 </div>
-<!--                                <div class="workflow-overview__next-icon-container">-->
-<!--                                    <i class="fas fa-angle-double-right fa-3x"></i>-->
-<!--                                </div>-->
-                                <div id="div_manager_detail" class="workflow-overview__managers-section">
-                                    <div class="workflow-overview__next-icon-container">
-                                        <i class="fas fa-angle-double-right fa-3x"></i>
-                                    </div>
-                                    <div class="workflow-overview__user-icon-container">
-                                        <div class="workflow-user-bg workflow-completed">
-                                            <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>
+                               {% for approval_data in approval_details %}
+                                    <div id="div_manager_detail_{{approval_data.app_id}}" class="workflow-overview__managers-section">
+                                        <div class="workflow-overview__next-icon-container">
+                                            <i class="fas fa-angle-double-right fa-3x"></i>
                                         </div>
-                                        {% for approval_data in approval_details %}
-                                        <button id="{{sc_app.guid}}" onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
-                                        {% endfor %}
+                                        <div class="workflow-overview__user-icon-container">
+                                            <div class="workflow-user-bg workflow-completed">
+                                                <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"></i>
+                                            </div>
+                                            <button id="{{approval_data.app_id}}" onclick="show_manager_detail(this.id)" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
+                                        </div>
                                     </div>
-                                </div>
+                               {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -462,122 +456,48 @@
         </div>
 
         <!--  start of manager detail pop up-->
-<!--        <div class="modal fade show" id="manager-detail-popup" tabindex="-1" style="display: block; padding-right: 22px;" role="dialog">-->
-<!--            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">-->
-<!--                <div class="modal-content">-->
-<!--                    <div class="modal-header">-->
-<!--                        <h5 class="modal-title">Financial Approval</h5>-->
-<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="close">-->
-<!--                            <span aria-hidden="true">x</span>-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                    <div class="">-->
-<!--                        <table class="table table-bordered" id="manager_detail_table">-->
-<!--                            <thead class="thead-light">-->
-<!--                                <tr>-->
-<!--                                    <th scope="col">Approval Type</th>-->
-<!--                                    <th scope="col">Step Number</th>-->
-<!--                                    <th scope="col">Process Level Status</th>-->
-<!--                                    <th scope="col">Approval Status</th>-->
-<!--                                    <th scope="col">Approver</th>-->
-<!--                                    <th scope="col">Processed On</th>-->
-<!--                                    <th scope="col">Received On</th>-->
-<!--                                </tr>-->
-<!--                            </thead>-->
-<!--                            <tbody id="manager_detail_body">-->
-<!--                               {% for approval_data in approval_details %}-->
-<!--                                    <tr>-->
-<!--                                        <td>{{approval_data.app_desc}}</td>-->
-<!--                                        <td>{{approval_data.step_num }}</td>-->
-<!--                                        <td>{{approval_data.proc_lvl_sts}}</td>-->
-<!--                                        <td>{{approval_data.app_sts}}</td>-->
-<!--                                        <td>{{approval_data.app_id}}</td>-->
-<!--                                        <td>{{approval_data.proc_time}}</td>-->
-<!--                                        <td>{{approval_data.recevied_time}}</td>-->
-<!--&lt;!&ndash;                                        <td>{{approval_data.time_zone}}</td>&ndash;&gt;-->
-<!--                                    </tr>-->
-<!--                                    {% endfor %}-->
-<!--                            </tbody>-->
-<!--                        </table>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-        <!--Display Accounting details-->
-
-        <div class="header-details">
-            <div style="font-weight:normal;">Accounting Details&nbsp;&nbsp;</div>
-        </div><br><br>
-        <div>
-            <table class="table table-striped table-sm" style="margin:0px 10px 0px 10px; width:98%;">
-                <thead>
-                <tr>
-
-                    <th scope="col">Number</th>
-                    <th scope="col">Account Assignment Category</th>
-                    <th scope="col">Distribution Percentage</th>
-                    <th scope="col">General Ledger Account</th>
-                    <th scope="col">Cost Center</th>
-                    <th scope="col">Internal Order</th>
-                    <th scope="col">Generic Account Assignment</th>
-                    <th scope="col">WBS Element</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for accounting_data in accounting_details %}
-                <tr>
-                    <td>{{accounting_data.acc_item_num }}</td>
-                    <td>{{accounting_data.acc_cat}}</td>
-                    <td>{{accounting_data.dist_perc}}</td>
-                    <td>{{accounting_data.gl_acc_num}}</td>
-                    <td>{{accounting_data.cost_center}}</td>
-                    <td>{{accounting_data.internal_order}}</td>
-                    <td>{{accounting_data.generic_acc_ass}}</td>
-                    <td>{{accounting_data.wbs_ele}}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="modal fade show" id="manager-detail-popup" tabindex="-1" aria-hidden="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Financial Approval</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <div class="">
+                        <table class="table table-bordered" id="manager_detail_table">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Approval Type</th>
+                                    <th scope="col">Step Number</th>
+                                    <th scope="col">Process Level Status</th>
+                                    <th scope="col">Approval Status</th>
+                                    <th scope="col">Approver</th>
+                                    <th scope="col">Processed On</th>
+                                    <th scope="col">Received On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr></tr>
+                                {% for approval_data in approval_details %}
+                                    <tr>
+                                        <td>{{approval_data.app_desc}}</td>
+                                        <td>{{approval_data.step_num }}</td>
+                                        <td>{{approval_data.proc_lvl_sts}}</td>
+                                        <td>{{approval_data.app_sts}}</td>
+                                        <td>{{approval_data.app_id}}</td>
+                                        <td>{{approval_data.proc_time}}</td>
+                                        <td>{{approval_data.recevied_time}}</td>
+<!--                                        <td>{{approval_data.time_zone}}</td>-->
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!--Diaplay approval if show_appr flag is set-->
-        {% if show_appr %}
-
-        <div class="header-details">
-            <div style="font-weight:normal;">Approval Details</div>
-        </div><br><br>
-        <div>
-            <table class="table table-striped table-sm" style="margin:0px 10px 0px 10px; width:98%;">
-                <thead>
-                <tr>
-                    <th scope="col">Sequence</th>
-                    <th scope="col">Agent Discrimination</th>
-                    <th scope="col">Level Status</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Processor</th>
-                    <th scope="col">Received On</th>
-                    <th scope="col">Processed On</th>
-                    <th scope="col">Timezone</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for approval_data in approval_details %}
-                <tr>
-                    <td>{{approval_data.step_num }}</td>
-                    <td>{{approval_data.app_desc}}</td>
-                    <td>{{approval_data.proc_lvl_sts}}</td>
-                    <td>{{approval_data.app_sts}}</td>
-                    <td>{{approval_data.app_id}}</td>
-                    <td>{{approval_data.recevied_time}}</td>
-                    <td>{{approval_data.proc_time}}</td>
-                    <td>{{approval_data.time_zone}}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table><br><br>
-        </div>
-        {% endif %}
     </div>
     <div style="height:30px; font-size:12px; text-align:right; padding-right:10px;" >© 2022 Hiranya-Garbha Consultancy. All rights reserved.</div>
 </div>

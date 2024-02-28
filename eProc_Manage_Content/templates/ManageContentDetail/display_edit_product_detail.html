@@ -937,109 +937,88 @@ function create_new_specification_popup(){
 var eform_data_new = new Array();
 
 const create_fields = () => {
-    GLOBAL_EDIT_VARIANT_FLAG = true
     var variant_type_selected_id = $('input:radio[name="variant_type"]:checked').attr('id');
+    var variant_option_data = {};
+    var table_data = new Array();
+    variant_option_data.field_name = $('#field_name').val();
+    variant_option_data.field_type = variant_type_selected_id;
 
-    validations = create_popup_validations(variant_type_selected_id)
-    if (validations != '') {
-        $('#create_error_div').html(validations);
-        $('#create_error_div').show();
-        return
-    } else $('#create_error_div').hide()
-
-    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
-
+    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING' || variant_type_selected_id == 'VARIANT_BASE_PRICING' || variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
         var error_flag = false;
-        var variant_option_data = {};
-        var table_data = new Array();
-        variant_option_data.field_name = $('#field_name').val();
-        variant_option_data.field_type = variant_type_selected_id;
-        $("#table_id_vo_wo_iobp TBODY TR").each(function() {
-            var row = $(this);
-            var vo_table_data = {};
+        var existingIndex = -1;
 
-            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-
-            if (vo_table_data.option_value == '') {
-                error_flag = true;
+        // Check if the variant being added already exists in eform_data_new
+        eform_data_new.forEach(function(existingVariant, index) {
+            if (existingVariant.field_name === variant_option_data.field_name && existingVariant.field_type === variant_option_data.field_type) {
+                existingIndex = index;
             }
-            
-            table_data.push(vo_table_data);
         });
 
-        variant_option_data.variant_data = table_data
-        if(error_flag) {
-            $('#create_error_div').html('Please fill the options');
-            $('#create_error_div').show();
-        } else {
-            eform_data_new.push(variant_option_data)
-            create_prod_variant_table(eform_data_new);
-        }
-        
+        // Populate table_data based on the selected variant type
+        if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+            $("#table_id_vo_wo_iobp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
 
-    } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
-        var error_flag = false;
-        var variant_option_data = {};
-        var table_data = new Array();
-        variant_option_data.field_name = $('#field_name').val();
-        variant_option_data.field_type = variant_type_selected_id;
-        $("#table_id_vo_wi_iobp TBODY TR").each(function() {
-            var row = $(this);
-            var vo_table_data = {};
+                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
 
-            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
-            vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
+                if (vo_table_data.option_value == '') {
+                    error_flag = true;
+                }
 
-            if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '' ) {
-                error_flag = true;
-            }
+                table_data.push(vo_table_data);
+            });
+        } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING') {
+            $("#table_id_vo_wi_iobp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
 
-            table_data.push(vo_table_data);
-        });
+                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+                vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
 
-        variant_option_data.variant_data = table_data
-        if(error_flag) {
-            $('#create_error_div').html('Please fill the options');
-            $('#create_error_div').show();
-        } else {
-            eform_data_new.push(variant_option_data)
-            create_prod_variant_table(eform_data_new);
+                if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '') {
+                    error_flag = true;
+                }
+
+                table_data.push(vo_table_data);
+            });
+        } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+            $("#table_id_vo_wi_apbp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
+
+                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+
+                if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
+                    error_flag = true;
+                }
+
+                table_data.push(vo_table_data);
+            });
         }
 
-    } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
-        var error_flag = false;
-        var variant_option_data = {};
-        var table_data = new Array();
-        variant_option_data.field_name = $('#field_name').val();
-        variant_option_data.field_type = variant_type_selected_id;
-        $("#table_id_vo_wi_apbp TBODY TR").each(function() {
-            var row = $(this);
-            var vo_table_data = {};
+        // Add variant_data to variant_option_data if there's no error
+        if (!error_flag) {
+            variant_option_data.variant_data = table_data;
 
-            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
-
-            if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
-                error_flag = true;
+            // If the variant already exists, update the existing record; otherwise, add a new record
+            if (existingIndex !== -1) {
+                eform_data_new[existingIndex] = variant_option_data;
+            } else {
+                eform_data_new.push(variant_option_data);
             }
 
-            table_data.push(vo_table_data);
-        });
-
-        variant_option_data.variant_data = table_data
-        if(error_flag) {
-            $('#create_error_div').html('Please fill the options');
-            $('#create_error_div').show();
-        } else {
-            eform_data_new.push(variant_option_data)
             create_prod_variant_table(eform_data_new);
+        } else {
+            $('#create_error_div').html('Please fill all the options');
+            $('#create_error_div').show();
         }
     }
-    $('.eform_button_dummy_class').prop('disabled', false);
 }
 
 function create_prod_variant_table(eform_data_new) {
@@ -1620,30 +1599,40 @@ const create_product_discounts_validations = () => {
     return error_message;
 }
 
-function edit_popup(variant_index){
-    GLOBAL_VARIANT_INDEX = variant_index.split('-')[1]
-    var eform_data = ''
-    $.each(eform_data_new, function (i, item) {
-        if(i == GLOBAL_VARIANT_INDEX){
-            eform_data = item
-        }
+function edit_popup(variant_index) {
+    GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
+    var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+    console.log('eform_data:', eform_data);
+    // Update the modal with the eform_data
+    update_new_field_popup(eform_data);
 
-    })
-    update_new_field_popup(eform_data)
+    // Set the value of Variant name
+    $('#field_name').val(eform_data.field_name);
+
+    // Determine which radio button to select based on the field_type
+    if (eform_data.field_type === "VARIANT_WITHOUT_PRICING") {
+        $('#VARIANT_WITHOUT_PRICING').prop('checked', true);
+    } else if (eform_data.field_type === "VARIANT_BASE_PRICING") {
+        $('#VARIANT_BASE_PRICING').prop('checked', true);
+    } else if (eform_data.field_type === "VARIANT_ADDITIONAL_PRICING") {
+        $('#VARIANT_ADDITIONAL_PRICING').prop('checked', true);
+    }
+
+    // If you have a "Default" value, you can set it here
+    // $('#default_value').val(eform_data.default_value);
 }
+
 
 const update_new_field_popup = (eform_data) => {
-
-    update_table(eform_data)
+    update_table(eform_data);
 }
 
-
-function update_table(eform_data){
-    $('#create_new_fields_popup').modal('show')
+function update_table(eform_data) {
+    $('#create_new_fields_popup').modal('show');
     $('#tbody_vo_wo_iobp').empty();
     $('#tbody_vo_wi_iobp').empty();
     $('#tbody_vo_wi_apbp').empty();
-    if(eform_data.field_type == "VARIANT_WITHOUT_PRICING") {
+    if (eform_data.field_type == "VARIANT_WITHOUT_PRICING") {
         $("#table_vo_wo_iobp").show();
         $("#table_vo_wi_iobp").hide();
         $("#table_vo_wi_apbp").hide();
@@ -1661,34 +1650,36 @@ function update_table(eform_data){
     }
 }
 
-
 function update_row_vo_wo_iobp(eform_data) {
-
-    var add_new_row = "";
-    variant_data
-    $.each(eform_data.variant_data, function (i, item) {
-        add_new_row = '<tr> <td><input type="radio" id="" name="vo_wo_iobp"></td> <td><input type="text" value="'+item.option_value+'" class="form-control" placeholder="Options"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>'
+    $.each(eform_data.variant_data, function(i, item) {
+        var add_new_row = '<tr> <td><input type="radio" id="" name="vo_wo_iobp"></td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Options"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>';
+        $('#tbody_vo_wo_iobp').append(add_new_row);
     });
-    $('#tbody_vo_wo_iobp').append(add_new_row);
 }
 
 function update_row_vo_wi_iobp(eform_data) {
-
-    var add_new_row = "";
-    $.each(eform_data.variant_data, function (i, item) {
-    add_new_row += '<tr> <td><input type="radio" id="" name="vo_wi_iobp"></td> <td><input type="text" value="'+item.option_value+'" class="form-control" placeholder="Options"></td> <td><input type="number" value="'+item.option_price+'" class="form-control" placeholder="Price"></td> <td><input type="text" value="'+item.option_value+'" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+    $.each(eform_data.variant_data, function(i, item) {
+        // Create a radio button for the variant type
+        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        // Construct the row with the radio button and checkbox for the default option
+        var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Options"></td> <td><input type="number" value="' + item.option_price + '" class="form-control" placeholder="Price"></td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
+        $('#tbody_vo_wi_iobp').append(add_new_row);
     });
-    $('#tbody_vo_wi_iobp').append(add_new_row);
 }
+
 
 function update_row_vo_wi_apbp(eform_data) {
+    $.each(eform_data.variant_data, function(i, item) {
+        // Create a new row with input fields populated with data from variant_data
+        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
 
-    var add_new_row = "";
-    $.each(eform_data.variant_data, function (i, item) {
-        add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_apbp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><input type="number" class="form-control" placeholder="Price"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+        var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" class="form-control" placeholder="Options" value="' + item.option_value + '"></td> <td><input type="number" class="form-control" placeholder="Price" value="' + item.option_price + '"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
+        // Append the new row to the table body
+        $('#tbody_vo_wi_apbp').append(add_new_row);
     });
-    $('#tbody_vo_wi_apbp').append(add_new_row);
 }
+
+
 
 function AddNewRow_product_discount(eform_data) {
     var add_new_row = "";

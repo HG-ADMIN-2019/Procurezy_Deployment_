@@ -185,7 +185,9 @@ def save_catalog_to_db(catalog_data):
         if remaining_catalogs:
             for catalog_detail in remaining_catalogs:
                 catalog_detail['catalog_transaction'] = django_query_instance.django_existence_check(OrgAttributesLevel,
-                                                                                                     {'low': catalog_detail['catalog_id'],
+                                                                                                     {'low':
+                                                                                                          catalog_detail[
+                                                                                                              'catalog_id'],
                                                                                                       'client': global_variables.GLOBAL_CLIENT,
                                                                                                       'del_ind': False})
             catalog_data_response = get_catalog_values(remaining_catalogs)
@@ -567,3 +569,18 @@ def get_product_info_id(product_spec_list, product_id):
     else:
         product_info_id = None
     return product_info_id
+
+
+def update_success_status(catalog_block_data):
+    """
+
+    """
+    if django_query_instance.django_existence_check(Catalogs,
+                                                    {'catalog_id': catalog_block_data['catalog_id'],
+                                                     'client': global_variables.GLOBAL_CLIENT,
+                                                     'del_ind': False}):
+        django_query_instance.django_update_query(Catalogs,
+                                                  {'catalog_id': catalog_block_data['catalog_id'],
+                                                   'client': global_variables.GLOBAL_CLIENT,
+                                                   'del_ind': False},
+                                                  {'purch_block': catalog_block_data['flag']})

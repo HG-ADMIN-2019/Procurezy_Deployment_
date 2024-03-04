@@ -41,7 +41,7 @@ from eProc_Manage_Content.Utilities.manage_content_generic import get_product_de
 from eProc_Manage_Content.Utilities.manage_content_specific import save_product_details_eform, \
     save_product_specification, save_catalog_to_db, get_assigned_unssigned_product_id_list, save_catalog_mapping, \
     CatalogMappingAction, save_product_detail_images, update_boolean, value_type_caste, save_products_specifications, \
-    save_discount_data
+    save_discount_data, update_success_status
 from eProc_Shopping_Cart.Utilities.shopping_cart_generic import get_prod_cat, get_supplier_first_second_name
 from eProc_Shopping_Cart.context_processors import update_user_info
 from eProc_Upload.Utilities.upload_data.upload_pk_tables import CompareTableHeader
@@ -287,6 +287,16 @@ def save_catalog_db(request):
     catalog_data_response = save_catalog_to_db(catalog_data)
     return JsonResponse(catalog_data_response, safe=False)
 
+def success_message(request):
+    """
+
+    """
+    update_user_info(request)
+    catalog_data = JsonParser_obj.get_json_from_req(request)
+    update_success_status(catalog_data)
+    response = {'success_message': "Changed Successfully"}
+
+    return JsonResponse(response, safe=False)
 
 def generate_guid(request):
     """
@@ -591,3 +601,4 @@ def check_product_detail(request):
     ui_data = ui_data_dictionary['data_list']
     messages = check_product_detail_data(ui_data,'UPLOAD')
     return JsonResponse({'messages': messages}, safe=False)
+

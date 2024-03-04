@@ -5,83 +5,87 @@
 {% block maincontent %}
 
 {% include 'root/loader.html' %}
-<style>
-.toggle {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  display: block;
-  height: auto;
-  width: 7.5rem;
-  margin: auto;
-  cursor: pointer;
-}
-.toggle-input {
-  display: none;
-  margin: 0;
-}
-.toggle-off,
-.toggle-on {
-  height: 1.8125rem;
-  width: 1.8125rem;
-  color: rgba(46, 45, 44, 0.1);
-  vertical-align: top;
-  text-align: center;
-  line-height: 1.8125rem !important;
-}
-.toggle-input:checked + .toggle-controller.default-success {
-  border: 0.125rem solid rgba(108, 211, 61, 0.75);
-  background: rgba(108, 211, 61, 0.375);
-}
-.toggle-input:checked + .toggle-controller.default-success:after {
-  left: 1.5625rem;
-}
-.toggle-controller.default-success {
-  position: relative;
-  display: inline-block;
-  height: 1.5625rem;
-  width: 3.125rem;
-  border: 0.125rem solid rgba(46, 45, 44, 0.05);
-  -webkit-border-radius: 1.5625rem;
-  -moz-border-radius: 1.5625rem;
-  border-radius: 1.5625rem;
-  -webkit-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
-  -moz-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
-  box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);
-  background: rgba(46, 45, 44, 0.025);
-  -webkit-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  -o-transition: all 0.25s ease;
-  transition: all 0.25s ease;
-}
-.toggle-controller.default-success:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: '';
-  display: block;
-  height: 1.5625rem;
-  width: 1.5625rem;
-  -webkit-border-radius: 1.5625rem;
-  -moz-border-radius: 1.5625rem;
-  border-radius: 1.5625rem;
-  -webkit-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
-  -moz-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
-  box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);
-  background: white;
-  -webkit-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  -o-transition: all 0.25s ease;
-  transition: all 0.25s ease;
-}
-.toggle-off.active {color:red;}
-.toggle-on.active {color:blue;}
-.hg-icon-blue-primary.hg-delete-icon-disabled {
-  cursor: not-allowed;
-  color: #a9a9a9;
-}
+<!--<style>-->
+<!--.toggle {-->
+<!--  -webkit-box-sizing: border-box;-->
+<!--  -moz-box-sizing: border-box;-->
+<!--  box-sizing: border-box;-->
+<!--  display: block;-->
+<!--  height: auto;-->
+<!--  width: 7.5rem;-->
+<!--  margin: auto;-->
+<!--  cursor: pointer;-->
+<!--}-->
+<!--.toggle-input {-->
+<!--  display: none;-->
+<!--  margin: 0;-->
+<!--}-->
+<!--.toggle-off,-->
+<!--.toggle-on {-->
+<!--  height: 1.8125rem;-->
+<!--  width: 1.8125rem;-->
+<!--  color: rgba(46, 45, 44, 0.1);-->
+<!--  vertical-align: top;-->
+<!--  text-align: center;-->
+<!--  line-height: 1.8125rem !important;-->
+<!--}-->
+<!--.toggle-input:checked + .toggle-controller.default-success {-->
+<!--  border: 0.125rem solid rgba(108, 211, 61, 0.75);-->
+<!--  background: rgba(108, 211, 61, 0.375);-->
+<!--}-->
+<!--.toggle-input:checked + .toggle-controller.default-success:after {-->
+<!--  left: 1.5625rem;-->
+<!--}-->
+<!--.toggle-controller.default-success {-->
+<!--  position: relative;-->
+<!--  display: inline-block;-->
+<!--  height: 1.5625rem;-->
+<!--  width: 3.125rem;-->
+<!--  border: 0.125rem solid rgba(46, 45, 44, 0.05);-->
+<!--  -webkit-border-radius: 1.5625rem;-->
+<!--  -moz-border-radius: 1.5625rem;-->
+<!--  border-radius: 1.5625rem;-->
+<!--  -webkit-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);-->
+<!--  -moz-box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);-->
+<!--  box-shadow: inset 0 0 0.1875rem rgba(46, 45, 44, 0.25);-->
+<!--  background: rgba(46, 45, 44, 0.025);-->
+<!--  -webkit-transition: all 0.25s ease;-->
+<!--  -moz-transition: all 0.25s ease;-->
+<!--  -o-transition: all 0.25s ease;-->
+<!--  transition: all 0.25s ease;-->
+<!--}-->
+<!--.toggle-controller.default-success:after {-->
+<!--  position: absolute;-->
+<!--  top: 0;-->
+<!--  left: 0;-->
+<!--  content: '';-->
+<!--  display: block;-->
+<!--  height: 1.5625rem;-->
+<!--  width: 1.5625rem;-->
+<!--  -webkit-border-radius: 1.5625rem;-->
+<!--  -moz-border-radius: 1.5625rem;-->
+<!--  border-radius: 1.5625rem;-->
+<!--  -webkit-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);-->
+<!--  -moz-box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);-->
+<!--  box-shadow: 0 0.0625rem 0.125rem rgba(46, 45, 44, 0.2);-->
+<!--  background: white;-->
+<!--  -webkit-transition: all 0.25s ease;-->
+<!--  -moz-transition: all 0.25s ease;-->
+<!--  -o-transition: all 0.25s ease;-->
+<!--  transition: all 0.25s ease;-->
+<!--}-->
+<!--.toggle-off.active {color:red;}-->
+<!--.toggle-on.active {color:blue;}-->
+<!--.hg-icon-blue-primary.hg-delete-icon-disabled {-->
+<!--  cursor: not-allowed;-->
+<!--  color: #a9a9a9;-->
+<!--}-->
+<!--.hg-icon-blue-primary{-->
+<!--    cursor : allowed;-->
+<!--    color: red;-->
+<!--}-->
 
-</style>
+<!--</style>-->
 <div class="container-fluid">
     <div class="mep-form_wrapper">
         <div class="d-flex justify-content-between">
@@ -148,6 +152,7 @@
             </div>
         {% endif %}
         {% if catalog_query %}
+            <div id="error_msg_div" class="alert alert-success" hidden><span id="success_msg_id"></span></div>
             <div class="card mt-5">
                 <div>
                     <table id="catalog_main_table_id" class="table myclass">
@@ -157,7 +162,7 @@
                             <th >Catalog Description</th>
                             <th >Catalog Name</th>
                             <th >Product Type</th>
-                            <th >Update Catalog</th>
+<!--                            <th >Update Catalog</th>-->
                             <th >Assign Products</th>
                             <th >Unassign Products</th>
                             <th >View Assigned Products</th>
@@ -169,30 +174,38 @@
                         <tbody id="catalog_tbody">
                          {% for catalog_detail in catalog_query %}
                             <tr id="{{catalog_detail.catalog_guid}}">
-                                <td>{{catalog_detail.catalog_id}}</td>
+<!--                                <td>{{catalog_detail.catalog_id}}</td>-->
+                                <td><a id="{{ catalog_detail.catalog_guid }}-UPDATE" onclick="update_catalog(this.id);" href="#">{{catalog_detail.catalog_id}}</a></td>
                                 <td>{{catalog_detail.description}}</td>
                                 <td>{{catalog_detail.name}}</td>
                                 <td>{{catalog_detail.prod_type}}</td>
-                                <td><span class="badge badge-pill badge-button-purple"> <a id="{{catalog_detail.catalog_guid}}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>
+<!--                                <td><span class="badge badge-pill badge-button-purple"> <a id="{{catalog_detail.catalog_guid}}-UPDATE" onclick="update_catalog(this.id);" href="#">Update <i class="fas fa-edit"></i></a>  </span></td>-->
                                 <td><span class="badge badge-pill badge-button-green"><a id="{{catalog_detail.catalog_id}}-ASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)"   href="#">Assign <i class="fas fa-link"></i></a> </span> </td>
                                 <td><span class="badge badge-pill badge-button-red"><a id="{{catalog_detail.catalog_id}}-UNASSIGN" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">Unassign <i class="fas fa-unlink"></i></a> </span> </td>
                                 <td><span class="badge badge-pill badge-button-blue"><a id="{{catalog_detail.catalog_id}}-VIEW" class="dummy_assign_unassign" onclick="get_assign_unassign_products(this)" href="#">View <i class="fa fa-eye" aria-hidden="true"></i></a></span>  </td>
                                 <td>
                                     <label class="switch">
-                                        <label class="toggle">
-                                            {% if catalog_detail.is_active_flag %}
-                                            <input type="checkbox" id="{{catalog_detail.catalog_id}}-ACTIVATE" class="toggle-input" checked>
+                                        <label class="toggle-control">
+                                            {% if catalog_detail.block %}
+                                            <input type="checkbox" id="{{results.supplier_id}}-block" class="toggle-block" checked>
+                                            <span class="control"></span>
                                             {% else %}
-                                            <input type="checkbox" id="{{catalog_detail.catalog_id}}-DEACTIVATE" class="toggle-input">
+                                            <input type="checkbox" id="{{results.supplier_id}}-unblock" class="toggle-block">
+                                            <span class="control"></span>
                                             {% endif %}
-                                            <div class="toggle-controller default-success"></div>
+<!--                                            <div class="toggle-controller default-success"></div>-->
                                         </label>
                                     </label>
                                 </td>
-                                <td>
+                                    <td>
                                     <i class="material-icons hg-icon-blue-primary {% if catalog_detail.catalog_transaction %} hg-delete-icon-disabled {% endif %}"
                                         title="Delete Form" id="{{catalog_detail.catalog_id}}-{{catalog_detail.catalog_transaction}}" onclick="get_form_id_to_delete(this.id)" > delete_outline </i>
                                 </td>
+<!--                                <td class="item-action-icon-section">-->
+<!--                                    <span title="Delete Form" id="{{catalog_detail.catalog_id}}-{{catalog_detail.catalog_transaction}}" onclick="get_form_id_to_delete(this.id)">-->
+<!--                                    <i class="material-icons item-action-icons {% if catalog_detail.catalog_transaction %} hg-delete-icon-disabled {% endif %}">delete_outline</i>-->
+<!--                                </span>-->
+<!--                                </td>             -->
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -202,6 +215,29 @@
         {% endif %}
     </div>
 </div>
+
+
+    <div class="modal fade" id="id_block_confirm_popup" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to Change?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="toggle()"><i class="fas fa-times"></i> cancel</button>
+                    <button type="button" onclick="block_unblock_catalog();" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of delete confirmation popup-->
+
 
 <!-- ######################################################## -->
 <div class="modal fade" id="add_update_modal">
@@ -253,8 +289,11 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button class="btn btn-outline-primary" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
-                <button class="btn btn-primary" onclick="save_catalog()" ><i class="fas fa-save"></i> save</button>
+                <button type="button" id="ft_edit" class="btn btn-primary dummy_ft_button_class" onclick="edit_catalog('EDIT')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                <button class="btn btn-outline-primary" id="ft_cancel" type="button" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                <button class="btn btn-primary" id="ft_save" type="button" onclick="save_catalog()" ><i class="fas fa-save"></i> save</button>
             </div>
         </div>
     </div>
@@ -319,7 +358,7 @@
                 <div class="tab-content">
                     <div id="prod_detail_table_div"data-tab-content class="active mt-4 pl-3 pr-3" >
                         <h4>Product Details</h4>
-                        <table class="class_popup_table table table-bordered mt-2" id="id_product_list_popup_table" >
+                        <table class="class_popup_table table table-bordered mt-2" id="id_product_list_popup_table" style="width:100%">
                             <thead>
                             <tr>
                                 <th id="select_th" hidden><input id="select_all" type="checkbox" name="hg_checkbox"></th>
@@ -336,7 +375,7 @@
                     </div>
                     <div id="freetext_table_div" data-tab-content class="mt-4 pl-3 pr-3" >
                         <h4 class="mb-2">FreeText</h4>
-                        <table class="class_popup_table table table-bordered mt-2" id="id_freetext_popup_table" >
+                        <table class="class_popup_table table table-bordered mt-2" id="id_freetext_popup_table" style="width:100%">
                             <thead>
                             <tr>
                                 <th id="select_th_freetext" hidden><input id="select_all_freetext" type="checkbox" name="hg_checkbox"></th>
@@ -388,6 +427,14 @@
             var catalog_desc = $('#'+catalog_guid).find("TD").eq(1).text();
             var catalog_name = $('#'+catalog_guid).find("TD").eq(2).text();
             var product_type = $('#'+catalog_guid).find("TD").eq(3).text().trim();
+
+            $("#ft_edit").show();
+            $("#ft_save").hide();
+            $("#ft_cancel").hide();
+            document.getElementById("add_update_catalog_description").disabled = true;
+            document.getElementById("add_update_catalog_name").disabled = true;
+            document.getElementById("add_update_catalog_prodtype").disabled = true;
+
             var option = ''
             document.getElementById('add_update_catalog_id').innerHTML = catalog_id;
             document.getElementById('add_update_catalog_guid').innerHTML = catalog_guid;
@@ -403,9 +450,25 @@
             document.getElementById('add_update_catalog_id').innerHTML = guid_generator.catalog_id;
         }
         $("#add_update_modal").modal("show");
+
+    };
+
+    function edit_catalog(action){
+        if(action == 'EDIT'){
+            $("#ft_save").show();
+            $("#ft_cancel").show();
+            $("#ft_edit").hide();
+            document.getElementById("add_update_catalog_description").disabled = false;
+            document.getElementById("add_update_catalog_name").disabled = false;
+            document.getElementById("add_update_catalog_prodtype").disabled = false;
+        }
+        else{
+            $("#ft_edit").show();
+        }
     };
 
     function save_catalog(){
+        OpenLoaderPopup();
         $("#save_catlog_error").css("display", "none")
         var catalog_data_description = document.getElementById('add_update_catalog_description').value;
         var catalog_data_name=document.getElementById('add_update_catalog_name').value;
@@ -433,6 +496,7 @@
                     if(GLOBAL_ACTION == 'UPDATE'){
                         update_main_table(Response)
                         $("#add_update_modal").modal("hide");
+                        CloseLoaderPopup();
                     }
                     else{
                         $("#add_update_modal").modal("hide");
@@ -466,9 +530,9 @@
                 var catalog_html = '';
                 $.each(result, function (i, catalog_detail) {
                     if (catalog_detail.is_active_flag){
-                        active_flag = `<input type="checkbox" id="${catalog_detail.catalog_id}-ACTIVATE" class="toggle-input" checked>`
+                        block_input = '<input type="checkbox" id="'+catalog_detail.catalog_id+'-block" class="toggle-block dummy_supplier_block" checked><span class="control"></span>'
                     }else{
-                        active_flag =  `<input type="checkbox" id="${catalog_detail.catalog_id}-DEACTIVATE" class="toggle-input">`
+                        block_input = '<input type="checkbox" id="'+catalog_detail.catalog_id+'-unblock" class="toggle-block dummy_supplier_block"><span class="control"></span>'
                     }
                     var hg_delete_icon_disabled = '';
                     if(catalog_detail.catalog_transaction){
@@ -775,5 +839,56 @@
         });
         $("#id_freetext_popup_tbody").append(freetext_html);
     }
+
+    function toggle(){
+        var abc = $('#'+block_id)
+        if($('#'+block_id).is(':checked')) {
+            $('#'+block_id).prop("checked", false);
+        }
+        else{
+            $('#'+block_id).prop("checked", true);
+        }
+    }
+
+    var data = {}
+    var block_id = '';
+    $('.toggle-block').change(function() {
+        if($(this).is(':checked')) {
+            $('.toggle-off').removeClass('active');
+            $('.toggle-on').addClass('active');
+            data.flag = true
+        } else {
+            $('.toggle-off').addClass('active');
+            $('.toggle-on').removeClass('active');
+            data.flag = false
+        }
+        var id = this.id
+        block_id = id
+        data.catalog_id = id.split('-')[0]
+        $('#id_block_confirm_popup').modal('show');
+    });
+
+        function block_unblock_catalog(){
+        OpenLoaderPopup();
+        jQuery.ajax({
+            type: 'POST',
+            url: "{% url 'eProc_Manage_Content:success_message' %}",
+            dataType :'json',
+            data: JSON.stringify(data),
+            success: function(response){
+                    $('#id_block_confirm_popup').modal('hide');
+                     $('#success_msg_id').text(response.success_message);
+                    $("#error_msg_div").prop("hidden",false)
+<!--                    message_display_time();-->
+                    CloseLoaderPopup();
+            },
+            error: function(xhr, resp, text) {
+            },
+            cache: false,
+            processData: false,
+            contentType: false,
+        });
+    }
+
 </script>
 {% endblock %}

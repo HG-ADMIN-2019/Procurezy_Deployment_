@@ -657,9 +657,9 @@
                                     <td>{{item_data.item_del_date}}</td>
                                     <td>{{item_data.price_unit}}</td>
                                     <td>{{item_data.unit}}</td>
-                                    <td>{{po_item_detail.price}} {{po_item_detail.currency}} </td>
-                                    <td>{{item_data.quantity}}</td>
                                     {% for header_data in header_details %}
+                                    <td>{{item_data.price}} {{header_data.currency}} </td>
+                                    <td>{{item_data.quantity}}</td>
                                     <td>{{header_data.total_value}} {{header_data.currency}}</td>
                                     {% endfor %}
                                 </tr>
@@ -1006,68 +1006,105 @@
                                                         </div>
                                                     </div>
 
-                                                    <div id="id_cost_center{{ forloop.counter }}">
-                                                        <div class="form-group row">
-                                                            <label class="col-4 col-form-label">Cost Center </label>
-                                                            <div class="col-8" id="input_costcenter{{forloop.counter}}">
-
-                                                                <input type="text" id="ScAccounting-cost_center-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{accounting_data.cost_center}}" value="{{accounting_data.cost_center}}" onclick="open_account_assign_values_modal(this);" disabled>
-
+                                                    {% if accounting_data.cost_center %}
+                                                        <div id="id_cost_center{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Cost Center </label>
+                                                                <div class="col-8" id="input_costcenter{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-cost_center-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.cost_center }}" value="{{ accounting_data.cost_center }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-
-                                                    <div id="id_asset{{ forloop.counter }}" style="display:none;">
-                                                        <div class="form-group row">
-                                                            <label class="col-4 col-form-label">Asset </label>
-                                                            <div class="col-8" id="input_asset{{forloop.counter}}">
-                                                                <input type="text" id="ScAccounting-asset_number-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{po_accounting_detail.asset_number}}" value="{{po_accounting_detail.asset_number}}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                    {% elif accounting_data.asset_number %}
+                                                        <div id="id_asset{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Asset </label>
+                                                                <div class="col-8" id="input_asset{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-asset_number-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ po_accounting_detail.asset_number }}" value="{{ accounting_data.asset_number }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    {% elif accounting_data.internal_order %}
+                                                        <div id="id_int_ord{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Internal Order </label>
+                                                                <div class="col-8" id="input_intorder{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-internal_order-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.internal_order }}" value="{{ accounting_data.internal_order }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% elif accounting_data.wbs_ele %}
+                                                        <div id="id_wbs{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">WBS </label>
+                                                                <div class="col-8" id="input_wbs{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-wbs_ele-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.wbs_ele }}" value="{{ accounting_data.wbs_ele }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
 
-                                                <div id="id_int_ord{{ forloop.counter }}" style="display:none;">
                                                     <div class="form-group row">
-                                                        <label class="col-4 col-form-label">Internal Order </label>
-                                                        <div class="col-8" id="input_intorder{{forloop.counter}}">
+                                                        <label class="col-4 col-form-label">General Ledger Account </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" value="{{accounting_data.gl_acc_num}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled>
 
-                                                            <input type="text" id="ScAccounting-internal_order-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{accounting_data.internal_order}}" value="{{accounting_data.internal_order}}" onclick="open_account_assign_values_modal(this);" disabled>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div id="id_wbs{{ forloop.counter }}" style="display:none;">
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label">WBS </label>
-                                                        <div class="col-8" id="input_wbs{{forloop.counter}}">
-                                                            <input type="text" id="ScAccounting-wbs_ele-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{accounting_data.wbs_ele}}" value="{{accounting_data.wbs_ele}}" onclick="open_account_assign_values_modal(this);" disabled>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-group row">
-                                                    <label class="col-4 col-form-label">General Ledger Account </label>
-                                                    <div class="col-8">
-                                                        <input type="text" class="form-control" value="{{accounting_data.gl_acc_num}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled>
-
-                                                    </div>
-                                                </div>
-
-                                                <!--                        <div class="form-group row" id="id_generic_acc_ass{{ forloop.counter }}">-->
-                                                <!--                            <label class="col-4 col-form-label">General Ledger Description: </label>-->
-                                                <!--                            <div class="col-8">-->
-                                                <!--                                {% for gl_acc_append in gl_acc_value_append %}-->
-                                                <!--                                {% if gl_acc_append.account_assign_value == po_accounting_detail.gl_acc_num %}-->
-                                                <!--                                <input type="text" class="form-control" value="{{gl_acc_append.append_val}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled onclick="open_change_gl_account_modal(this.id);">-->
-                                                <!--                                {% endif %}-->
-                                                <!--                                {% endfor %}-->
-                                                <!--                            </div>-->
-                                                <!--                        </div>-->
+                                                    <!--                        <div class="form-group row" id="id_generic_acc_ass{{ forloop.counter }}">-->
+                                                    <!--                            <label class="col-4 col-form-label">General Ledger Description: </label>-->
+                                                    <!--                            <div class="col-8">-->
+                                                    <!--                                {% for gl_acc_append in gl_acc_value_append %}-->
+                                                    <!--                                {% if gl_acc_append.account_assign_value == po_accounting_detail.gl_acc_num %}-->
+                                                    <!--                                <input type="text" class="form-control" value="{{gl_acc_append.append_val}}" id="ScAccounting-gl_acc_num-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled onclick="open_change_gl_account_modal(this.id);">-->
+                                                    <!--                                {% endif %}-->
+                                                    <!--                                {% endfor %}-->
+                                                    <!--                            </div>-->
+                                                    <!--                        </div>-->
+                                               </div>
                                             </div>
                                         </div>
                                     </div>
                                     {% endfor %}
+                                </div>
+                            </div>
+                            <div id="item_approval_process_overview" data-tab-content>
+                                <div class="m-4">
+                                    <div id="id_dynamic1"></div>
+                                     <div style="overflow: auto;">
+                                         <div class="workflow-overview">
+                                             <div class="card text-dark workflow-overview__process-card" id="workflow_status_div1">
+                                               <div class="card-body">
+                                                   <span class="h3">Approval Process Overview</span> by
+                                                   <span class="badge badge-secondary">Financial Approval</span>
+                                               </div>
+                                             </div>
+                                             <div class="workflow-overview__section">
+                                                 <div class="workflow-overview__user-icon-container ao-logged-in-user">
+                                                     <div class="workflow-user-bg">
+                                                         <i class="fa fa-user fa-3x" aria-hidden="true"> </i>
+                                                     </div>
+                                                     {% for header_data in header_details %}
+                                                     <button type="button" class="button-workflow-user">{{header_data.requester}}</button>
+                                                     {% endfor %}
+                                                 </div>
+                                                 <div id="div_manager_detail" class="workflow-overview__managers-section">
+                                                     <div class="workflow-overview__next-icon-container">
+                                                        <i class="fas fa-angle-double-right fa-3x"></i>
+                                                     </div>
+                                                     <div class="workflow-overview__user-icon-container">
+                                                         <div class="workflow-user-bg workflow-completed">
+                                                            <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>
+                                                         </div>
+                                                         {% for approval_data in approval_details %}
+                                                         <button onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
+                                                         {% endfor %}
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
                                 </div>
                             </div>
                             {% endfor %}

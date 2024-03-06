@@ -20,4 +20,5 @@ urlpatterns = [
     path('get_image_details', get_image_details, name='get_image_details'),
     path('delete_freetext_form/', delete_freetext_form, name='delete_freetext_form'),
     path('delete_product/', delete_product, name='delete_product'),
+    path('success_message/', success_message, name='success_message'),
 ]

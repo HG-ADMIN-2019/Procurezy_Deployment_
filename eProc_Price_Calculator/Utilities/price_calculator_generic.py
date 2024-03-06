@@ -9,8 +9,9 @@ from eProc_Basic.Utilities.functions.dictionary_list_functions import rename_dic
 from eProc_Basic.Utilities.functions.django_query_set import DjangoQueries
 from eProc_Basic.Utilities.functions.sort_dictionary import sort_dic_list_by_value
 from eProc_Basic.Utilities.global_defination import global_variables
-from eProc_Configuration.models import EformFieldConfig, ProductEformPricing, ProductsDetail, VariantConfig, \
+from eProc_Configuration.models import EformFieldConfig, ProductsDetail, VariantConfig, \
     DiscountData
+from eProc_Configuration.models.application_data import ProductEformPricing
 from eProc_Exchange_Rates.Utilities.exchange_rates_generic import convert_currency
 from eProc_Form_Builder.models import EformFieldData
 from eProc_Shopping_Cart.models import CartItemDetails, ScItem
@@ -175,10 +176,13 @@ def get_additional_default_price_details(variant_id):
                                                                     additional_price_eform_details)
     # query_list = form_q_query_from_list(additional_price_eform_detail_list)
     for additional_price_eform_detail in additional_price_eform_detail_list:
-        additional_price_list.append(django_query_instance.django_filter_query(ProductEformPricing,
-                                                                               additional_price_eform_detail,
-                                                                               None,
-                                                                               ['price', 'operator'])[0])
+        query_results = django_query_instance.django_filter_query(ProductEformPricing,
+                                                                  additional_price_eform_detail,
+                                                                  None,
+                                                                  ['price', 'operator'])
+        if query_results:
+            additional_price_list.append(query_results[0])
+
     return additional_price_list
 
 

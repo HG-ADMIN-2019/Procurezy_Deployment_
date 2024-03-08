@@ -574,14 +574,24 @@
                                         {{po_header_level_address.region}} {{po_header_level_address.country_code}}
                                     </span>
                                 </div>
+                                {% for item_data in item_details %}
                                 <div class="col-md-3">
-                                    <span class="po-header-label">Payment Terms</span><br>
-                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>
+                                    <span class="po-header-label">Purchasing Organisation</span><br>
+                                    <span class="po-header-desc">{{item_data.purch_org}}</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <span class="po-header-label">Incoterm</span><br>
-                                    <span class="po-header-desc">{{po_header_details.0.incoterm}} - {{po_header_details.0.incoterm_loc}}</span>
+                                    <span class="po-header-label">Purchasing Group</span><br>
+                                    <span class="po-header-desc">{{item_data.purch_grp}}</span>
                                 </div>
+                                {% endfor %}
+<!--                                <div class="col-md-3">-->
+<!--                                    <span class="po-header-label">Payment Terms</span><br>-->
+<!--                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-3">-->
+<!--                                    <span class="po-header-label">Incoterm</span><br>-->
+<!--                                    <span class="po-header-desc">{{po_header_details.0.incoterm}} - {{po_header_details.0.incoterm_loc}}</span>-->
+<!--                                </div>-->
                                 <div class="col-md-3">
                                     <span class="po-header-label">Status</span><br>
                                     <span class="badge badge-pill badge_status_approved po-header-desc po-header-desc__status ">{{header_data.status}}</span>
@@ -594,16 +604,6 @@
                                     <span class="po-header-label">Requested By</span><br>
                                     <span class="po-header-desc"> {{header_data.created_by}}</span>
                                 </div>
-                                {% for item_data in item_details %}
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Organisation</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_org}}</span>
-                                </div>
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Group</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_grp}}</span>
-                                </div>
-                                {% endfor %}
                             </div>
                             {% endfor %}
                         </div>
@@ -611,10 +611,8 @@
                 </div>
             </div>
         </div>
-
         <div class="row mt-4">
-            {% for item_data in item_details %}
-            <div class="col-md-8">
+           <div class="col-md-8">
                 <div class="card card-shadow-1">
                     <div class="card-body elements-space-between">
                         <h5>Items Overview</h5>
@@ -634,18 +632,17 @@
                                     <th>Quantity</th>
                                     <th>Total</th>
                                 </tr>
-
                                 </thead>
                                 <tbody>
-
+                                {% for item_data in item_details %}
                                 <tr>
-                                    <td>{{item_data.item_num}}</td>
+                                    <td>{{forloop.counter}}</td>
                                     <td>
                                         <a href="#" onclick="view_detail('{{ po_item_detail.int_product_id}}','{{ po_item_detail.po_item_guid}}')">
                                             <img class="sc-item-table__item-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{po_item_detail.image_url}}">
                                         </a>
                                     </td>
-                                    <td>
+                                     <td>
                                         <div id="desc-{{items.guid}}">
                                             {% if item_data.call_off == '01'%}
                                             <a href="#" onclick="view_detail('{{ po_item_detail.int_product_id}}','{{ po_item_detail.po_item_guid}}')">{{item_data.prod_description}}</a>
@@ -654,7 +651,7 @@
                                             {% endif %}
                                         </div>
                                     </td>
-                                    <td>{{item_data.item_del_date}}</td>
+                                    <td>{{item_data.item_del_date|date:'Y-m-d'}}</td>
                                     <td>{{item_data.price_unit}}</td>
                                     <td>{{item_data.unit}}</td>
                                     {% for header_data in header_details %}
@@ -663,37 +660,29 @@
                                     <td>{{header_data.total_value}} {{header_data.currency}}</td>
                                     {% endfor %}
                                 </tr>
-
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-            </div>
+           </div>
             <div class="col-md-4">
                 <div class="card card-shadow-1 po-value-card">
                     <div class="card-body">
+                        {% for item_data in item_details %}
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Net)</span>
                             <span class="po-value-desc" >{{item_data.price}} INR</span>
                         </div>
                         <div class="po-value-section">
-                            <span class="po-value-label">Total Discount</span>
-                            <span class="po-value-desc" >- <span id="discount_value">{{discount_value}}</span> INR </span>
-                        </div>
-                        <div class="po-value-section">
-                            <span class="po-value-label">Total Tax</span>
-                            <span class="po-value-desc" >{{tax_value}} INR</span>
-                        </div>
-                        <hr>
-                        <div class="po-value-section">
                             <span class="po-value-label">Total Value (Gross)</span>
                             <span class="po-value-desc" >{{item_data.gross_price}} INR</span>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
         <div class="row mt-4">
             <div class="col">
@@ -723,26 +712,11 @@
                                     <i class="material-icons-outlined"> account_balance_wallet </i><span> Accounting Details</span>
                                 </div>
                             </li>
-<!--                            <li data-tab-target="#item_notes_and_attachments" class="sub-tab">-->
-<!--                                <div class="sub-tab-link text-size-x-small">-->
-<!--                                    <i class="material-icons-outlined">description</i><span> Notes & Attachments</span>-->
-<!--                                </div>-->
-<!--                            </li>-->
                             <li data-tab-target="#item_approval_process_overview" class="sub-tab" id="item_approval_overview">
                                 <div class="sub-tab-link text-size-x-small" onclick="open_item_details(event, 'approval_process_summary')">
                                     <i class="material-icons">check_circle </i><span> Approval Process Overview</span>
                                 </div>
                             </li>
-                            <!-- <li data-tab-target="#item_supplier_details" class="sub-tab">
-                                <div class="sub-tab-link text-size-x-small">
-                                    <i class="material-icons">local_shipping</i><span> Supplier Details</span>
-                                </div>
-                            </li> -->
-<!--                            <li data-tab-target="#item_shipping_address_details" class="sub-tab">-->
-<!--                                <div class="sub-tab-link text-size-x-small">-->
-<!--                                    <i class="fas fa-address-card"></i><span> Shipping Address </span>-->
-<!--                                </div>-->
-<!--                            </li>-->
                             <li data-tab-target="#related_document" class="sub-tab">
                                 <div class="sub-tab-link text-size-x-small">
                                     <i class="fas fa-address-card"></i><span> Related Documents</span>
@@ -834,13 +808,13 @@
                                                                    value="{{item_data.supp_prod_num}}" id="ScItem-supp_product_id-{{itm.guid}}" disabled>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label">Required on</label>
-                                                        <div class="col-8">
-                                                            <input type="text" class="form-control" name="{{itm.required_on}}"
-                                                                   value="{{itm.required_on}}" id="ScItem-required_on-{{itm.guid}}" disabled>
-                                                        </div>
-                                                    </div>
+<!--                                                    <div class="form-group row">-->
+<!--                                                        <label class="col-4 col-form-label">Required on</label>-->
+<!--                                                        <div class="col-8">-->
+<!--                                                            <input type="text" class="form-control" name="{{itm.required_on}}"-->
+<!--                                                                   value="{{itm.required_on}}" id="ScItem-required_on-{{itm.guid}}" disabled>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
                                                     <div class="form-group row">
                                                         <label class="col-4 col-form-label">UNSPSC</label>
                                                         <div class="col-8">
@@ -848,20 +822,20 @@
                                                                    id="ScItem-prod_cat_id-{{itm.guid}}" disabled>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label">Contract no.</label>
-                                                        <div class="col-8">
-                                                            <input type="text" class="form-control" name="{{itm.ctr_num}}"
-                                                                   value="{{itm.ctr_num}}" id="ScItem-supplier_contact-{{itm.guid}}" disabled>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label">Contract Name</label>
-                                                        <div class="col-8">
-                                                            <input type="text" class="form-control" name="{{itm.ctr_item_num}}"
-                                                                   value="{{itm.ctr_item_num}}" id="ScItem-supplier_name-{{itm.guid}}" disabled>
-                                                        </div>
-                                                    </div>
+<!--                                                    <div class="form-group row">-->
+<!--                                                        <label class="col-4 col-form-label">Contract no.</label>-->
+<!--                                                        <div class="col-8">-->
+<!--                                                            <input type="text" class="form-control" name="{{itm.ctr_num}}"-->
+<!--                                                                   value="{{itm.ctr_num}}" id="ScItem-supplier_contact-{{itm.guid}}" disabled>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="form-group row">-->
+<!--                                                        <label class="col-4 col-form-label">Contract Name</label>-->
+<!--                                                        <div class="col-8">-->
+<!--                                                            <input type="text" class="form-control" name="{{itm.ctr_item_num}}"-->
+<!--                                                                   value="{{itm.ctr_item_num}}" id="ScItem-supplier_name-{{itm.guid}}" disabled>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
                                                     {% if itm.silent_po %}
                                                     <div class="form-group row" hidden>
                                                         <label class="col-4 col-form-label">Silent PO</label>
@@ -923,15 +897,15 @@
                                                         {% endfor %}
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <label class="col-4 col-form-label">Incoterm/location</label>
-                                                    <div class="col">
-                                                        <input type="text" class="form-control" name="{{itm.incoterm}}" value="{{itm.incoterm}}" id="ScItem-incoterm-{{itm.guid}}" disabled>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input type="text" class="form-control" name="{{itm.incoterm_loc}}" value="{{itm.incoterm_loc}}" id="ScItem-incoterm_loc-{{itm.guid}}" disabled>
-                                                    </div>
-                                                </div>
+<!--                                                <div class="form-group row">-->
+<!--                                                    <label class="col-4 col-form-label">Incoterm/location</label>-->
+<!--                                                    <div class="col">-->
+<!--                                                        <input type="text" class="form-control" name="{{itm.incoterm}}" value="{{itm.incoterm}}" id="ScItem-incoterm-{{itm.guid}}" disabled>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="col">-->
+<!--                                                        <input type="text" class="form-control" name="{{itm.incoterm_loc}}" value="{{itm.incoterm_loc}}" id="ScItem-incoterm_loc-{{itm.guid}}" disabled>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
                                                 <div class="form-group row">
                                                     <label class="col-4 col-form-label">Goods/Services Recipient </label>
                                                     <div class="col-8">
@@ -952,18 +926,18 @@
                                                         <input type="text" class="form-control read_only_field" name="{{item_data.item_del_date}}" value="{{item_data.item_del_date|date:'Y-m-d'}}" id="ScItem-item_del_date-{{itm.guid}}" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <label class="col-4 col-form-label">Goods Marking</label>
-                                                    <div class="col-8">
-                                                        <input type="text" class="form-control" name="{{item_data.goods_marking}}" value="{{item_data.goods_marking}}" id="ScItem-goods_marking-{{itm.guid}}" disabled>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-4 col-form-label">Payment Terms </label>
-                                                    <div class="col-8">
-                                                        <input type="text" class="form-control check_number" name="{{item_data.payment_term}}" value="{{item_data.payment_term}}" id="ScItem-payment_term-{{itm.guid}}" disabled>
-                                                    </div>
-                                                </div>
+<!--                                                <div class="form-group row">-->
+<!--                                                    <label class="col-4 col-form-label">Goods Marking</label>-->
+<!--                                                    <div class="col-8">-->
+<!--                                                        <input type="text" class="form-control" name="{{item_data.goods_marking}}" value="{{item_data.goods_marking}}" id="ScItem-goods_marking-{{itm.guid}}" disabled>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                                <div class="form-group row">-->
+<!--                                                    <label class="col-4 col-form-label">Payment Terms </label>-->
+<!--                                                    <div class="col-8">-->
+<!--                                                        <input type="text" class="form-control check_number" name="{{item_data.payment_term}}" value="{{item_data.payment_term}}" id="ScItem-payment_term-{{itm.guid}}" disabled>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
                                             </div>
                                         </div>
                                     </div>
@@ -1015,7 +989,9 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    {% elif accounting_data.asset_number %}
+                                                    {% endif %}
+
+                                                    {% if accounting_data.asset_number %}
                                                         <div id="id_asset{{ forloop.counter }}">
                                                             <div class="form-group row">
                                                                 <label class="col-4 col-form-label">Asset </label>
@@ -1024,7 +1000,9 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    {% elif accounting_data.internal_order %}
+                                                    {% endif %}
+
+                                                    {% if accounting_data.internal_order %}
                                                         <div id="id_int_ord{{ forloop.counter }}">
                                                             <div class="form-group row">
                                                                 <label class="col-4 col-form-label">Internal Order </label>
@@ -1033,7 +1011,9 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    {% elif accounting_data.wbs_ele %}
+                                                    {% endif %}
+
+                                                    {% if accounting_data.wbs_ele %}
                                                         <div id="id_wbs{{ forloop.counter }}">
                                                             <div class="form-group row">
                                                                 <label class="col-4 col-form-label">WBS </label>
@@ -1043,6 +1023,7 @@
                                                             </div>
                                                         </div>
                                                     {% endif %}
+
 
                                                     <div class="form-group row">
                                                         <label class="col-4 col-form-label">General Ledger Account </label>
@@ -1098,13 +1079,96 @@
                                                             <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>
                                                          </div>
                                                          {% for approval_data in approval_details %}
-                                                         <button onclick="show_manager_detail(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
+                                                         <button onclick="show_manager_detail1(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>
                                                          {% endfor %}
                                                      </div>
                                                  </div>
                                              </div>
                                          </div>
                                      </div>
+                                </div>
+                                <!--  start of manager detail pop up-->
+                                <div class="modal fade show" id="manager-detail-popup1" tabindex="-1" aria-hidden="true" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Financial Approval</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                                                    <span aria-hidden="true">x</span>
+                                                </button>
+                                            </div>
+                                            <div class="">
+                                                <table class="table table-bordered" id="manager_detail_table1">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th scope="col">Approval Type</th>
+                                                            <th scope="col">Step Number</th>
+                                                            <th scope="col">Process Level Status</th>
+                                                            <th scope="col">Approval Status</th>
+                                                            <th scope="col">Approver</th>
+                                                            <th scope="col">Processed On</th>
+                                                            <th scope="col">Received On</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr></tr>
+                                                        {% for approval_data in approval_details %}
+                                                            <tr>
+                                                                <td>{{approval_data.app_desc}}</td>
+                                                                <td>{{approval_data.step_num }}</td>
+                                                                <td>{{approval_data.proc_lvl_sts}}</td>
+                                                                <td>{{approval_data.app_sts}}</td>
+                                                                <td>{{approval_data.app_id}}</td>
+                                                                <td>{{approval_data.proc_time}}</td>
+                                                                <td>{{approval_data.recevied_time}}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="related_document" data-tab-content >
+                                <div class="m-4">
+                                    <div class="hg_class_related_documents">
+                                        <h4>History</h4>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Document</th>
+                                                    <th>Name</th>
+                                                    <th>Document Number</th>
+                                                    <th>Status</th>
+                                                    <th>Date</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit</th>
+                                                    <th>Net Value</th>
+                                                    <th>Currency</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for header_data in header_details %}
+                                                <tr>
+                                                    <td>Shopping Cart</td>
+                                                    <td>{{header_data.description}}</td>
+                                                    {% for item_data in item_details %}
+                                                    <td><a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">{{item_data.sc_num}}</a></td>
+                                                    {% endfor %}
+                                                    <td>{{header_data.status}}</td>
+                                                    <td>{{item_data.item_del_date|date:'Y-m-d'}}</td>
+                                                    <td>{{item_data.quantity}}</td>
+                                                    <td>{{item_data.unit}}</td>
+                                                    <td>{{item_data.price}}</td>
+                                                    <td>{{header_data.currency}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -1241,7 +1305,7 @@ function ajax_get_manager_detail(data) {
 
 $(document).ready(function () {
     $('#nav_menu_items').remove();
-    $("body").css("padding-top", "3.7rem");
+<!--    $("body").css("padding-top", "3.7rem");-->
     NavigateTabs(); // Custom function to switch tabs
     {% for item in po_item_details %}
         rendered_call_off.push('{{item.call_off|safe}}');
@@ -1280,6 +1344,112 @@ $(document).ready(function () {
         {% endfor %}
         show_item_detail_div();
 });
+
+function show_item_detail_div() {
+
+    $(".hg_class_item_data").hide();
+    $(".hg_class_prod_desc").hide();
+    $(".hg_class_sc_acc_details").hide();
+    $(".hg_supp_note_content").hide();
+    $(".hg_int_note_content").hide();
+    $(".dummy_eform_class").hide();
+    $(".hg_attachment_content").hide();
+    $(".hg_class_del_addrs").hide();
+    $(".hg_class_related_documents").hide();
+    $(".hg_class_attachement").hide();
+    $(".hg_supplier_class").hide();
+    $(".hg_class_item_data:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_prod_desc:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_sc_acc_details:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_supp_note_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_int_note_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_attachment_content:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_del_addrs:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_related_documents:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_class_attachement:eq(" + item_detail_visible_div + ")").show();
+    $(".hg_supplier_class:eq(" + item_detail_visible_div + ")").show();
+    item_num = item_detail_visible_div + 1;
+    if (rendered_eform[item_detail_visible_div] !== "None") {
+        $('#eform_tab').show();
+        $('.hg_class_eform').hide()
+        $("#display_eform-" + rendered_item_guid[item_detail_visible_div]+"-"+item_detail_visible_div).show()
+        if (GLOBAL_TAB_ID == "eForm"){
+            document.getElementById("eForm").style.display = "block";
+        }
+    }
+    else{
+
+        //document.getElementById(GLOBAL_TAB_ID).style.display = "none";
+        $('#eform_tab').hide();
+        $('.hg_class_eform').hide()
+        if (GLOBAL_TAB_ID == "eForm"){
+            GLOBAL_TAB_ID ="item_data"
+            document.getElementById("item_tab_id").style.background = '#007BFF';
+            document.getElementById("item_tab_id").style.color = '#FFFFFF';
+            document.getElementById("eform_tab").style.background = '#FFFFFF';
+            document.getElementById("eform_tab").style.color = '#007BFF';
+            document.getElementById("item_data").style.display = "block";
+
+
+        }
+
+    }
+    if (edit_flag) {
+        // Item data
+        $('.pr_lead_time').prop('disabled', false)
+        $("#ScItem-purch_grp-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-silent_po-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-silent_po-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-catalog_qty-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-quantity-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-goods_recep-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-goods_marking-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        // Accounting data
+        $("#ScAccounting-acc_cat-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-cost_center-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-asset_number-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-internal_order-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-wbs_ele-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAccounting-account_assign_value-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        //$("#ScAccounting-gl_acc_num-" + rendered_acc_guid[item_detail_visible_div]).prop("disabled", false);
+        // delivery address
+        $("#ScAddresses-name1-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-name2-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-fax_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-street-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-area-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-landmark-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-city-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-region-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-country_code-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-language_id-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-mobile_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-telephone_number-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-email-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+        $("#ScAddresses-postalcode-" + rendered_sc_addr[item_detail_visible_div]).prop("disabled", false);
+
+        //Internal and external note
+        $("#Notes-note_text-" + rendered_int_note[item_detail_visible_div] + "-I").prop("disabled", false);
+        $("#Notes-note_text-" + rendered_supp_note[item_detail_visible_div] + "-S").prop("disabled", false);
+        //supplier data
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div] + "-drop").prop("disabled", false);
+        $("#ScItem-pref_supplier-" + rendered_item_guid[item_detail_visible_div] + "-drop").prop("disabled", false);
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-pref_supplier-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        $("#ScItem-supplier_id-" + rendered_item_guid[item_detail_visible_div] + "-drop-ft").prop("disabled", false);
+
+        if (rendered_call_off[item_detail_visible_div] === "01" || rendered_call_off[item_detail_visible_div] === "02") {
+        //if (sc_calloff === "Catalog" || sc_calloff === "Freetext") {
+            $("#ScItem-payment_term-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        }
+        if (rendered_call_off[item_detail_visible_div] == '03') {
+            $("#ScItem-description-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+            $("#ScItem-price-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+            $("#ScItem-price_unit-" + rendered_item_guid[item_detail_visible_div]).prop("disabled", false);
+        }
+
+    }
+}
 
  function item_detail_next(button) {
     current_item_num = parseInt(button.id);
@@ -1320,6 +1490,37 @@ function show_image_div(){
     $(".catalog_img").hide();
     $(".catalog_img:eq(" + image_visible_div + ")").show();
 
+}
+<!--  To show Approval tab only if there is Data-->
+  $(document).ready(function() {
+    // Check if there is data for approval_data.app_id
+    var hasData = {% if approval_details %}true{% else %}false{% endif %};
+
+    // Hide or show the tab and list item based on data presence
+    if (!hasData) {
+        $("#item_approval_process_overview").hide();
+        $("#item_approval_overview").hide();
+    }
+ });
+<!--To display Financial Approval in Approval tab-->
+ function show_manager_detail1(id) {
+        sc_app_guid_data = {};
+        sc_app_guid_data['guid'] = id;
+
+        ajax_get_manager_detail(sc_app_guid_data)
+
+        $('#manager_detail_body').empty();
+        trHTML = '<tr></tr>';
+        $.each(response, function (i, sc_app) {
+            trHTML += '<tr><td>' + sc_app.fields.app_desc + '</td><td >' + sc_app.fields.step_num + '</td><td>' + sc_app.fields.proc_lvl_sts + '</td><td>' + sc_app.fields.app_sts + '</td><td>' + sc_app.fields.app_id + '</td><td>' + sc_app.fields.proc_time + '</td><td>' + sc_app.fields.received_time + '</td></tr>';
+        });
+        $('#manager_detail_body').append(trHTML);
+        $('#manager-detail-popup1').modal('show');
+ }
+
+function ajax_get_manager_detail(data) {
+    urlLink = "{% url 'eProc_Doc_Search:get_sc_app_data' %}";
+    AjaxCallAPI(urlLink, data);
 }
 
 </script>

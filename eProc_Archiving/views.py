@@ -272,7 +272,7 @@ def get_doc_det_by_doc_num(request, doc_type, doc_number):
             'type': doc_type,
             'guid': header_guid,
             'inc_side_panel': True,
-            'inc_nav': True,
+            # 'inc_nav': True,
         }
         return render(request, 'document_number_details.html', context)
     else:

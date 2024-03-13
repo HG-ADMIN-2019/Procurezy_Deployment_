@@ -1150,21 +1150,24 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for header_data in header_details %}
                                                 <tr>
                                                     <td>Shopping Cart</td>
-                                                    <td>{{header_data.description}}</td>
-                                                    {% for item_data in item_details %}
-                                                    <td><a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">{{item_data.sc_num}}</a></td>
+                                                    {% for header_data in header_details %}
+                                                    <td>{{ header_data.description }}</td>
+
+                                                    <td>
+                                                            <a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">
+                                                                {{ item_data.sc_num }}
+                                                            </a>
+                                                    </td>
+                                                    <td>{{ header_data.status }}</td>
+                                                    <td>{{ item_data.item_del_date|date:'Y-m-d' }}</td>
+                                                    <td>{{ item_data.quantity }}</td>
+                                                    <td>{{ item_data.unit }}</td>
+                                                    <td>{{ item_data.price }}</td>
+                                                    <td>{{ header_data.currency }}</td>
                                                     {% endfor %}
-                                                    <td>{{header_data.status}}</td>
-                                                    <td>{{item_data.item_del_date|date:'Y-m-d'}}</td>
-                                                    <td>{{item_data.quantity}}</td>
-                                                    <td>{{item_data.unit}}</td>
-                                                    <td>{{item_data.price}}</td>
-                                                    <td>{{header_data.currency}}</td>
                                                 </tr>
-                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>

@@ -139,22 +139,28 @@ def get_product_price_from_eform(form_id):
 
 
 def get_base_price(variant_id):
-    """
-
-    """
     base_price_value = 0
+
+    # Fetch base price details
     base_price_eform_details = django_query_instance.django_get_query(VariantConfig,
                                                                       {'variant_id': variant_id,
                                                                        'client': global_variables.GLOBAL_CLIENT,
                                                                        'del_ind': False,
-                                                                       'dropdown_pricetype': CONST_VARIANT_BASE_PRICING},
-                                                                      )
+                                                                       'dropdown_pricetype': CONST_VARIANT_BASE_PRICING})
+
+    # Check if base_price_eform_details is not empty
     if base_price_eform_details:
-        base_price_value = django_query_instance.django_filter_value_list_ordered_by_distinct_query(
+        # Fetch the base price value
+        base_price_values = django_query_instance.django_filter_value_list_ordered_by_distinct_query(
             ProductEformPricing,
             {'variant_config_guid': base_price_eform_details.variant_config_guid,
              'pricing_data_default': True,
-             'client': global_variables.GLOBAL_CLIENT}, 'price', None)[0]
+             'client': global_variables.GLOBAL_CLIENT}, 'price', None)
+
+        # Check if base_price_values is not empty
+        if base_price_values:
+            # Get the first value (if there are multiple)
+            base_price_value = base_price_values[0]
 
     return float(base_price_value)
 

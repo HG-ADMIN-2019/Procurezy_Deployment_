@@ -690,13 +690,14 @@
                     {% for item_data in item_details %}
                     <div class="hg_class_prod_desc card-body">
                         <div class="prev-next-btn-group">
-                            <button class="btn btn-round" onclick="item_detail_previous(this)">
-                                <i id="{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
-                            </button>
-                            <span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
-                            <button class="btn btn-round" onclick="item_detail_next(this)">
-                                <i id="{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
-                            </button>
+<button class="btn btn-round" onclick="item_detail_previous(this)">
+    <i id="previous_button_{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
+</button>
+<span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
+<button class="btn btn-round" onclick="item_detail_next(this)">
+    <i id="next_button_{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
+</button>
+
                         </div>
                     </div>
                     {% endfor %}
@@ -1167,6 +1168,14 @@
                                                     <td>{{ item_data.price }}</td>
                                                     <td>{{ header_data.currency }}</td>
                                                     {% endfor %}
+                                                    <script>
+                                {% for header_data in header_details %}
+                                    console.log("Description:", "{{ header_data.description }}");
+                                    console.log("Status:", "{{ header_data.status }}");
+                                    console.log("Quantity:", "{{ item_data.quantity }}");
+                                    console.log("Currency:", "{{ header_data.currency }}");
+                                {% endfor %}
+                            </script>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -1310,7 +1319,7 @@ $(document).ready(function () {
     $('#nav_menu_items').remove();
 <!--    $("body").css("padding-top", "3.7rem");-->
     NavigateTabs(); // Custom function to switch tabs
-    {% for item in po_item_details %}
+    {% for item in item_details %}
         rendered_call_off.push('{{item.call_off|safe}}');
         rendered_item_guid.push('{{item.guid|safe}}');
         rendered_price.push('{{item.price|safe}}');
@@ -1358,7 +1367,7 @@ function show_item_detail_div() {
     $(".dummy_eform_class").hide();
     $(".hg_attachment_content").hide();
     $(".hg_class_del_addrs").hide();
-    $(".hg_class_related_documents").hide();
+    $(".related_documents").hide();
     $(".hg_class_attachement").hide();
     $(".hg_supplier_class").hide();
     $(".hg_class_item_data:eq(" + item_detail_visible_div + ")").show();
@@ -1368,7 +1377,7 @@ function show_item_detail_div() {
     $(".hg_int_note_content:eq(" + item_detail_visible_div + ")").show();
     $(".hg_attachment_content:eq(" + item_detail_visible_div + ")").show();
     $(".hg_class_del_addrs:eq(" + item_detail_visible_div + ")").show();
-    $(".hg_class_related_documents:eq(" + item_detail_visible_div + ")").show();
+    $(".related_documents:eq(" + item_detail_visible_div + ")").show();
     $(".hg_class_attachement:eq(" + item_detail_visible_div + ")").show();
     $(".hg_supplier_class:eq(" + item_detail_visible_div + ")").show();
     item_num = item_detail_visible_div + 1;
@@ -1454,8 +1463,11 @@ function show_item_detail_div() {
     }
 }
 
- function item_detail_next(button) {
-    current_item_num = parseInt(button.id);
+function item_detail_next(button) {
+    console.log("Button object:", button);
+    console.log("Button ID:", button.id);
+    var current_item_num = parseInt(button.id);
+    console.log("Current item number:", current_item_num);
     var item_count = rendered_call_off.length;
     if (current_item_num >= item_count) {
         current_item_num = 0;
@@ -1463,19 +1475,21 @@ function show_item_detail_div() {
     sc_calloff = rendered_call_off[current_item_num];
     sc_acc_cat = rendered_acc[current_item_num];
 
-    var item_count = $(".hg_class_item_data").length - 1
+    var item_count = $(".hg_class_item_data").length - 1;
     if (item_detail_visible_div == $(".hg_class_item_data").length - 1) {
         item_detail_visible_div = 0;
-    }
-    else {
+    } else {
         item_detail_visible_div++;
     }
+    console.log("Next item number:", item_detail_visible_div);
     show_item_detail_div();
 }
 
-
 function item_detail_previous(button) {
-    current_item_num = parseInt(button.id) - 1;
+    console.log("Button object:", button);
+    console.log("Button ID:", button.id);
+    var current_item_num = parseInt(button.id) - 1;
+    console.log("Current item number:", current_item_num);
     var item_count = rendered_call_off.length;
     if (current_item_num == -1) {
         current_item_num = item_count - 1;
@@ -1483,12 +1497,13 @@ function item_detail_previous(button) {
     sc_calloff = rendered_call_off[current_item_num]
     if (item_detail_visible_div == 0) {
         item_detail_visible_div = $(".hg_class_item_data").length - 1;
-    }
-    else {
+    } else {
         item_detail_visible_div--;
     }
+    console.log("Previous item number:", item_detail_visible_div);
     show_item_detail_div();
 }
+
 function show_image_div(){
     $(".catalog_img").hide();
     $(".catalog_img:eq(" + image_visible_div + ")").show();

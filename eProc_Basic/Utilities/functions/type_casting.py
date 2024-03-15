@@ -8,11 +8,12 @@ str_decimal - get str and convert into decimal
 Author:
     Deepika K/Shreyas
 """
-
 # convert string to datetime format
 from datetime import datetime
 from decimal import Decimal
 from decimal import Decimal
+import datetime
+
 
 
 def get_date_value(str_value):
@@ -123,6 +124,30 @@ def date_to_diff_days(created_date):
 
     return diff_days
 
+
+def date_to_diff_dayss(created_date):
+    """
+
+    :param created_date:
+    :return:
+    """
+    weeks = 0
+    today_date = datetime.datetime.now()
+    days, hours, minutes, seconds = dhms_from_seconds(date_diff_in_seconds(today_date, created_date))
+    diff_days = str(days) + 'D ' + str(hours) + 'H ' + str(minutes) + 'M ' + str(seconds) + 'S '
+    if int(days) == 0 and int(hours) == 0 and int(minutes) == 0:
+        diff_days = str(seconds) + 'S '
+    elif int(days) == 0 and int(hours) == 0 and int(minutes) in range(1, 60):
+        diff_days = str(minutes) + 'M '
+    elif int(days) == 0 and int(hours) in range(1, 24):
+        diff_days = str(hours) + 'H '
+    elif int(days) in range(1, 7):
+        diff_days = str(days) + 'D '
+    elif int(days) >= 7:
+        weeks, days = divmod(days, 7)
+        diff_days = str(weeks) + 'W '
+
+    return diff_days
 
 def date_diff_in_seconds(dt2, dt1):
     """

@@ -482,9 +482,10 @@
                 <div id="create_error_div"  class="alert alert-danger display-none" role="alert"></div>
                 <div class="form-group">
                     <label for="field_name">Variant name <span class="hg_required"></span></label>
-                    <input class="form-control dynamic_field" type="text" id="field_name" onkeypress="return /[0-9a-zA-Z_ ]/i.test(event.key)">
-                    <small class="form-text text-muted">  Valid characters are  A-Z a-z 0-9 </small>
+                    <input class="form-control dynamic_field" type="text" id="field_name" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)">
+                    <small class="form-text text-muted">Valid characters are A-Z, a-z, 0-9, and underscores</small>
                 </div>
+
 
                 <div class="form-group">
                     <label for="field_name">Select variant type <span class="hg_required"></span></label>
@@ -1032,6 +1033,12 @@ var eform_data_new = new Array();
 
 const create_fields = () => {
     var variant_type_selected_id = $('input:radio[name="variant_type"]:checked').attr('id');
+    validations = create_popup_validations(variant_type_selected_id)
+    if (validations != '') {
+        $('#create_error_div').html(validations);
+        $('#create_error_div').show();
+        return
+    } else $('#create_error_div').hide()
     var variant_option_data = {};
     var table_data = new Array();
     variant_option_data.field_name = $('#field_name').val();
@@ -1219,40 +1226,19 @@ function create_prod_variant_table(eform_data_new) {
 //########################## START of create_popup_validations ######################################
 label_name_array=[];
 const create_popup_validations = (variant_type_selected_id) => {
-    var get_label_name = $('#field_name').val().toLowerCase().replace(/\s/g,'');
-
-    for(i=0; i < eform_data_new.length; i++) {
-        var new_label_name = eform_data_new[i].field_name.toLowerCase().replace(/\s/g,'');
-        label_name_array.push(new_label_name);
-    }
-
-    var error_message = '';
-    if (document.getElementById('field_name').value == '') {
-        error_message = 'Please enter the Variant name';
-        return error_message;
-    } else if (label_name_array.includes(get_label_name)) {
-        error_message = ' Variant name already exists';
-        return error_message;
-    }
-
     var radioName = '';
     if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
         radioName = 'vo_wo_iobp';
-
-    }  else if (variant_type_selected_id == 'VARIANT_BASE_PRICING') {
+    } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING') {
         radioName = 'vo_wi_iobp';
     } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
         radioName = 'vo_wi_apbp';
     }
 
-    if ($('input[name='+ radioName +']:checked').length) {
-        // at least one of the radio buttons was checked
-        // allow whatever action would normally happen to continue
-    }
-    else {
+    var error_message = '';
+    if (!$('input[name='+ radioName +']:checked').length) {
         // no radio button was checked
         error_message = ' Please select default';
-        return error_message;
     }
 
     return error_message;
@@ -1455,28 +1441,26 @@ $('input:radio[name="variant_type"]').change(function() {
 });
 
 function AddNewRow_vo_wo_iobp() {
-    var add_new_row = "";
-    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wo_iobp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>'
+    var add_new_row = '<tr> <td><input type="radio" id="" name="vo_wo_iobp"></td> <td><input type="text" class="form-control" placeholder="Options" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" title="Delete option"><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_vo_wo_iobp').append(add_new_row);
 }
 
+
 function AddNewRow_vo_wi_iobp() {
-    var add_new_row = "";
-    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_iobp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><input type="number" class="form-control" placeholder="Price"></td> <td><input type="text" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+    var add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_iobp"></td> <td><input type="text" class="form-control" placeholder="Options" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)"></td> <td><input type="number" class="form-control" placeholder="Price" onkeypress="return /[0-9]/i.test(event.key)"></td> <td><input type="text" class="form-control" placeholder="Description" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_vo_wi_iobp').append(add_new_row);
 }
 
 function AddNewRow_vo_wi_apbp() {
-    var add_new_row = "";
-    add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_apbp"></td> <td><input type="text" class="form-control" placeholder="Options"></td> <td><input type="number" class="form-control" placeholder="Price"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
+    var add_new_row = '<tr> <td><input type="radio" id="" name="vo_wi_apbp"></td> <td><input type="text" class="form-control" placeholder="Options" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)"></td> <td><input type="number" class="form-control" placeholder="Price" onkeypress="return /[0-9]/i.test(event.key)"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_vo_wi_apbp').append(add_new_row);
 }
 
 function AddNewRow_product_discount() {
-    var add_new_row = "";
-    add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+    var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_product_discount').append(add_new_row);
 }
+
 
 $("#table_id_vo_wo_iobp").on('click','.row-delete-btn',function(){
     $(this).closest('tr').remove();

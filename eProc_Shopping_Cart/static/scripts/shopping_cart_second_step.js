@@ -172,8 +172,6 @@ function submitSCname(){
         $('#edit_sc_name_window').modal('hide');
     }
 }
-
-
 // Function to get sc data to check
 function get_data_for_check(){
     var sc_item_guid = JSON.parse(document.getElementById('cart_items_guid_list').textContent);

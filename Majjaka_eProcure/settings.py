@@ -164,7 +164,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # Database engine
         'HOST': 'sg2plzcpnl489587.prod.sin2.secureserver.net',  # Database host
-        'NAME': 'MEP_MIGRATE_DEV',
+        'NAME': 'MEP_DEPLOY',
         # Database name MEP_MIGRATE_DEV MEP_FIXING MEP_DEPLOYED_NEW_QA_23 MEP_DEPLOYED_NEW_29 MEP_DEPLOYED_NEW_QA_0506
         'USER': 'MajjakaShopEProcure',  # Database username
         'PASSWORD': 'Project@2019',  # Database credentialsgi

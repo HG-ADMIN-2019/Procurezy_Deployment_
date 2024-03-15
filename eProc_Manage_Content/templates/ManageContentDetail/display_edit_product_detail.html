@@ -836,6 +836,19 @@ $(document).ready(function(){
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
 
+function create_product_specification() {
+    product_specification_data = new Array();
+    $("#product_spec_table TBODY TR").each(function () {
+            var row = $(this);
+            var product_specification={};
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
+            product_specification_data.push(product_specification);
+    });
+    update_product_specification_main_table();
+    $('#create_product_spec_popup').modal('hide');
+
+}
 
 function update_product_specification_main_table(){
     $('#product_spec_main_tbody').empty();
@@ -1797,42 +1810,6 @@ $("#save_product_details").on("click", function () {
 });
 
 
-function create_product_specification() {
-    product_specification_data = new Array();
-    $("#product_spec_table TBODY TR").each(function () {
-        var row = $(this);
-        var product_specification = {};
-
-        // Get the input values
-        var keyInput = row.find("TD").eq(1).find('input[type="text"]');
-        var valueInput = row.find("TD").eq(2).find('input[type="text"]');
-
-        // Sanitize and convert to uppercase before pushing into the array
-        var sanitizedKey = sanitizeInput(keyInput.val());
-        var sanitizedValue = sanitizeInput(valueInput.val());
-
-        // Add sanitized values to the product_specification object
-        product_specification.product_info_key = sanitizedKey;
-        product_specification.product_info_value = sanitizedValue;
-
-        // Push the product_specification object into the product_specification_data array
-        product_specification_data.push(product_specification);
-    });
-    update_product_specification_main_table();
-    $('#create_product_spec_popup').modal('hide');
-}
-
-// Function to sanitize input and remove special characters
-function sanitizeInput(input) {
-    // Remove any special characters using a regular expression
-    return input.replace(/[^\w\s]/gi, '');
-}
-
-// Attach event listeners to input fields
-$(document).on('input', '#product_spec_table input[type="text"]', function() {
-    var sanitizedValue = sanitizeInput($(this).val());
-    $(this).val(sanitizedValue);
-});
 
 </script>
 {% endblock %}

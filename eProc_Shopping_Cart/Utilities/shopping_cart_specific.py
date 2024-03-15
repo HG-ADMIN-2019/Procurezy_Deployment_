@@ -25,6 +25,9 @@ Usage:
                              10) save_attachments       : This method is used to store attachments at item level
     get_manger_detail - get manger detail based on total value of the Cart Item
 """
+import pytz
+from django.conf.global_settings import TIME_ZONE
+
 from eProc_Attributes.models.org_attribute_models import OrgAttributesLevel
 from eProc_Basic.Utilities.functions.django_query_set import DjangoQueries
 from eProc_Basic.Utilities.functions.messages_config import get_msg_desc, get_message_desc
@@ -45,6 +48,7 @@ from eProc_Registration.models import *
 from eProc_Exchange_Rates.Utilities.exchange_rates_specific import get_currency_by_max_spending_value
 from eProc_Exchange_Rates.Utilities.exchange_rates_generic import convert_currency
 from eProc_System_Settings.Utilities.system_settings_generic import sys_attributes
+from eProc_User_Settings.User_Settings_Forms.personal_settings_forms import PersonalSettingsDisplayForm
 from eProc_Workflow.Utilities.work_flow_generic import save_sc_approval
 import datetime
 
@@ -1159,7 +1163,26 @@ def get_default_cart_name(requester_first_name):
     """
 
     """
-    date_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    timezone = ""
+    time_zone = ""
+    time_zone1 = ""
+    if django_query_instance.django_existence_check(TimeZone, {}):
+        time_zone = django_query_instance.django_filter_value_list_query(TimeZone, {}, 'time_zone')
+    if django_query_instance.django_existence_check(UserData, {}):
+        time_zone1 = django_query_instance.django_filter_value_list_query(UserData, {}, 'time_zone')[0]
+    for time in time_zone:
+        if time == time_zone1:
+            timezone = str(time)
+    try:
+        if timezone == 'IST':
+            local_time = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+        else:
+            local_time = datetime.datetime.now(pytz.timezone(time_zone))
+    except:
+        local_time = datetime.datetime.now(pytz.utc)
+
+        # Format the local time
+    date_time = local_time.strftime("%Y-%m-%d %H:%M:%S")
     cart_name = concatenate_str_with_space(requester_first_name, date_time)
 
     return cart_name

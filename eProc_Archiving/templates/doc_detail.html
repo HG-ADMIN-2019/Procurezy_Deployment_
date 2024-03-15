@@ -574,16 +574,16 @@
                                         {{po_header_level_address.region}} {{po_header_level_address.country_code}}
                                     </span>
                                 </div>
-                                {% for item_data in item_details %}
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Organisation</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_org}}</span>
-                                </div>
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Group</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_grp}}</span>
-                                </div>
-                                {% endfor %}
+                                {% if item_details and item_details|length > 0 %}
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Organisation</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_org }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Group</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_grp }}</span>
+                                    </div>
+                                {% endif %}
 <!--                                <div class="col-md-3">-->
 <!--                                    <span class="po-header-label">Payment Terms</span><br>-->
 <!--                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>-->
@@ -657,7 +657,7 @@
                                     {% for header_data in header_details %}
                                     <td>{{item_data.price}} {{header_data.currency}} </td>
                                     <td>{{item_data.quantity}}</td>
-                                    <td>{{header_data.total_value}} {{header_data.currency}}</td>
+                                    <td class="total-value">{{header_data.total_value}} {{header_data.currency}}</td>
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}
@@ -670,14 +670,14 @@
             <div class="col-md-4">
                 <div class="card card-shadow-1 po-value-card">
                     <div class="card-body">
-                        {% for item_data in item_details %}
+                        {% for header_data in header_details %}
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Net)</span>
-                            <span class="po-value-desc" >{{item_data.price}} INR</span>
+                            <span class="po-value-desc" id="total-value-sum" > {{header_data.currency}}</span>
                         </div>
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Gross)</span>
-                            <span class="po-value-desc" >{{item_data.gross_price}} INR</span>
+                            <span class="po-value-desc"> {{header_data.currency}}</span>
                         </div>
                         {% endfor %}
                     </div>
@@ -690,14 +690,13 @@
                     {% for item_data in item_details %}
                     <div class="hg_class_prod_desc card-body">
                         <div class="prev-next-btn-group">
-<button class="btn btn-round" onclick="item_detail_previous(this)">
-    <i id="previous_button_{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
-</button>
-<span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
-<button class="btn btn-round" onclick="item_detail_next(this)">
-    <i id="next_button_{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
-</button>
-
+                            <button class="btn btn-round" onclick="item_detail_previous(this)">
+                                <i id="previous_button_{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
+                            </button>
+                            <span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
+                            <button class="btn btn-round" onclick="item_detail_next(this)">
+                                <i id="next_button_{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -1169,13 +1168,13 @@
                                                     <td>{{ header_data.currency }}</td>
                                                     {% endfor %}
                                                     <script>
-                                {% for header_data in header_details %}
-                                    console.log("Description:", "{{ header_data.description }}");
-                                    console.log("Status:", "{{ header_data.status }}");
-                                    console.log("Quantity:", "{{ item_data.quantity }}");
-                                    console.log("Currency:", "{{ header_data.currency }}");
-                                {% endfor %}
-                            </script>
+                                                        {% for header_data in header_details %}
+                                                            console.log("Description:", "{{ header_data.description }}");
+                                                            console.log("Status:", "{{ header_data.status }}");
+                                                            console.log("Quantity:", "{{ item_data.quantity }}");
+                                                            console.log("Currency:", "{{ header_data.currency }}");
+                                                        {% endfor %}
+                                                    </script>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -1541,6 +1540,27 @@ function ajax_get_manager_detail(data) {
     AjaxCallAPI(urlLink, data);
 }
 
+<!--Function to calculate total sum of items in cart & to display sum in Total Value Card-->
+    document.addEventListener("DOMContentLoaded", function () {
+        var totalValueSum = 0;
+        var totalValueElements = document.querySelectorAll(".total-value");
+
+        totalValueElements.forEach(function (element) {
+            var totalValue = parseFloat(element.textContent);
+            totalValueSum += totalValue;
+        });
+         var poValueDescElements = document.querySelectorAll(".po-value-desc");
+         poValueDescElements.forEach(function (element) {
+           var existingContent = element.textContent.trim();
+            if (existingContent !== "") {
+                // If the span already contains content, concatenate the total value sum after the existing content
+                element.textContent = totalValueSum + " " + existingContent  ;
+            } else {
+                // If the span is empty, set the total value sum as its content
+                element.textContent = totalValueSum ;
+            }
+         });
+    });
 </script>
 {% endblock %}
 

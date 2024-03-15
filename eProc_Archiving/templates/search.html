@@ -31,7 +31,7 @@
                             {{ sform.non_field_errors }}
                             {% for field in sform %}
                             <div id="{{ field.name }}" class="sfield" title="{{ field.label }}">
-                                {{ field.errors }}
+<!--                                {{ field.errors }}-->
                                 <div class="col-md">
                                     {{ field.label_tag }} {{ field }}
                                 </div>
@@ -47,7 +47,8 @@
                         </div>
                 <br>
         <div class="elements-space-between">
-                <div>
+            <div>
+<!--                <button class="btn btn-outline-primary" type="reset" value="Reset" id="resetButton"><i class="fas fa-sync-alt"></i> reset</button>-->
                 <button id="hg_doc_report_search" class="btn btn-primary" onclick="search_click()" type="submit" title="Please click to get the search details!">
                     <i class="fas fa-search"></i>Search
                 </button>
@@ -66,7 +67,9 @@
         <h6>Total number of results found :<b>{{total_number_results}}</b></h6>
 
 <!--        <h2>{{ total_count }}</h2>-->
-
+<div class="det_tbl_div search-div">
+    {{ results }}
+</div>
 
 <!--Display the result-->
 <div class="card mt-5">
@@ -176,10 +179,11 @@
 </div>
 
     </div></div>
-{% else %}
-<div class="det_tbl_div search-div">
-    {{ results }}
-</div>
+{% elif total_count|length == 0 %}
+<!--<div class="det_tbl_div search-div">-->
+<!--    {{ results }}-->
+<!--</div>-->
+<h6>No Results Found</h6>
 {% endif %}
 <!--{% if total_count > 5 %}-->
 <!--<div class="top"><a style="padding-right:30px;" href="#top"> Back to top </a></div>-->
@@ -336,7 +340,32 @@ function expandTree() {
         });
     });
 
+// Listen for the "Reset" button click
+    $('#resetButton').click(function (e) {
+<!--         OpenLoaderPopup();-->
+<!--        e.preventDefault();-->
+        resetFields();
+    });
 
+    function resetFields() {
+        // Reset specific input fields
+        $('#id_doc_num').val('');
+        $('#id_created_by').val('');
+        $('#id_requester').val('');
+
+        // Reset specific dropdowns to their default values
+        resetDropdownToDefault("Select Document Type", "defaultTypeValue");
+        resetDropdownToDefault("From Date", "defaultTimeFrameValue");
+        resetDropdownToDefault("To Date", "defaultStatusValue");
+        localStorage.removeItem('formData');
+        $('form').submit();
+    }
+
+    // Function to reset a dropdown to its default value based on the label text
+    function resetDropdownToDefault(labelText, defaultValue) {
+        var dropdown = $("label:contains('" + labelText + "')").next("select");
+        dropdown.val(defaultValue || dropdown.find("option:first").val());
+    }
 
 </script>
 

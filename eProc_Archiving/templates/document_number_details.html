@@ -574,16 +574,16 @@
                                         {{po_header_level_address.region}} {{po_header_level_address.country_code}}
                                     </span>
                                 </div>
-                                {% for item_data in item_details %}
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Organisation</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_org}}</span>
-                                </div>
-                                <div class="col-md-3">
-                                    <span class="po-header-label">Purchasing Group</span><br>
-                                    <span class="po-header-desc">{{item_data.purch_grp}}</span>
-                                </div>
-                                {% endfor %}
+                                {% if item_details and item_details|length > 0 %}
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Organisation</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_org }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Group</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_grp }}</span>
+                                    </div>
+                                {% endif %}
 <!--                                <div class="col-md-3">-->
 <!--                                    <span class="po-header-label">Payment Terms</span><br>-->
 <!--                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>-->
@@ -657,7 +657,7 @@
                                     {% for header_data in header_details %}
                                     <td>{{item_data.price}} {{header_data.currency}} </td>
                                     <td>{{item_data.quantity}}</td>
-                                    <td>{{header_data.total_value}} {{header_data.currency}}</td>
+                                    <td class="total-value">{{header_data.total_value}} {{header_data.currency}}</td>
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}
@@ -670,14 +670,14 @@
             <div class="col-md-4">
                 <div class="card card-shadow-1 po-value-card">
                     <div class="card-body">
-                        {% for item_data in item_details %}
+                        {% for header_data in header_details %}
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Net)</span>
-                            <span class="po-value-desc" >{{item_data.price}} INR</span>
+                            <span class="po-value-desc" id="total-value-sum" > {{header_data.currency}}</span>
                         </div>
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Gross)</span>
-                            <span class="po-value-desc" >{{item_data.gross_price}} INR</span>
+                            <span class="po-value-desc"> {{header_data.currency}}</span>
                         </div>
                         {% endfor %}
                     </div>
@@ -691,11 +691,11 @@
                     <div class="hg_class_prod_desc card-body">
                         <div class="prev-next-btn-group">
                             <button class="btn btn-round" onclick="item_detail_previous(this)">
-                                <i id="{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
+                                <i id="previous_button_{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
                             </button>
                             <span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
                             <button class="btn btn-round" onclick="item_detail_next(this)">
-                                <i id="{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
+                                <i id="next_button_{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
                             </button>
                         </div>
                     </div>
@@ -1150,21 +1150,32 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for header_data in header_details %}
                                                 <tr>
                                                     <td>Shopping Cart</td>
-                                                    <td>{{header_data.description}}</td>
-                                                    {% for item_data in item_details %}
-                                                    <td><a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">{{item_data.sc_num}}</a></td>
+                                                    {% for header_data in header_details %}
+                                                    <td>{{ header_data.description }}</td>
+
+                                                    <td>
+                                                            <a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">
+                                                                {{ item_data.sc_num }}
+                                                            </a>
+                                                    </td>
+                                                    <td>{{ header_data.status }}</td>
+                                                    <td>{{ item_data.item_del_date|date:'Y-m-d' }}</td>
+                                                    <td>{{ item_data.quantity }}</td>
+                                                    <td>{{ item_data.unit }}</td>
+                                                    <td>{{ item_data.price }}</td>
+                                                    <td>{{ header_data.currency }}</td>
                                                     {% endfor %}
-                                                    <td>{{header_data.status}}</td>
-                                                    <td>{{item_data.item_del_date|date:'Y-m-d'}}</td>
-                                                    <td>{{item_data.quantity}}</td>
-                                                    <td>{{item_data.unit}}</td>
-                                                    <td>{{item_data.price}}</td>
-                                                    <td>{{header_data.currency}}</td>
+                                                    <script>
+                                                        {% for header_data in header_details %}
+                                                            console.log("Description:", "{{ header_data.description }}");
+                                                            console.log("Status:", "{{ header_data.status }}");
+                                                            console.log("Quantity:", "{{ item_data.quantity }}");
+                                                            console.log("Currency:", "{{ header_data.currency }}");
+                                                        {% endfor %}
+                                                    </script>
                                                 </tr>
-                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1307,7 +1318,7 @@ $(document).ready(function () {
     $('#nav_menu_items').remove();
 <!--    $("body").css("padding-top", "3.7rem");-->
     NavigateTabs(); // Custom function to switch tabs
-    {% for item in po_item_details %}
+    {% for item in item_details %}
         rendered_call_off.push('{{item.call_off|safe}}');
         rendered_item_guid.push('{{item.guid|safe}}');
         rendered_price.push('{{item.price|safe}}');
@@ -1355,7 +1366,7 @@ function show_item_detail_div() {
     $(".dummy_eform_class").hide();
     $(".hg_attachment_content").hide();
     $(".hg_class_del_addrs").hide();
-    $(".hg_class_related_documents").hide();
+    $(".related_documents").hide();
     $(".hg_class_attachement").hide();
     $(".hg_supplier_class").hide();
     $(".hg_class_item_data:eq(" + item_detail_visible_div + ")").show();
@@ -1365,7 +1376,7 @@ function show_item_detail_div() {
     $(".hg_int_note_content:eq(" + item_detail_visible_div + ")").show();
     $(".hg_attachment_content:eq(" + item_detail_visible_div + ")").show();
     $(".hg_class_del_addrs:eq(" + item_detail_visible_div + ")").show();
-    $(".hg_class_related_documents:eq(" + item_detail_visible_div + ")").show();
+    $(".related_documents:eq(" + item_detail_visible_div + ")").show();
     $(".hg_class_attachement:eq(" + item_detail_visible_div + ")").show();
     $(".hg_supplier_class:eq(" + item_detail_visible_div + ")").show();
     item_num = item_detail_visible_div + 1;
@@ -1451,8 +1462,11 @@ function show_item_detail_div() {
     }
 }
 
- function item_detail_next(button) {
-    current_item_num = parseInt(button.id);
+function item_detail_next(button) {
+    console.log("Button object:", button);
+    console.log("Button ID:", button.id);
+    var current_item_num = parseInt(button.id);
+    console.log("Current item number:", current_item_num);
     var item_count = rendered_call_off.length;
     if (current_item_num >= item_count) {
         current_item_num = 0;
@@ -1460,19 +1474,21 @@ function show_item_detail_div() {
     sc_calloff = rendered_call_off[current_item_num];
     sc_acc_cat = rendered_acc[current_item_num];
 
-    var item_count = $(".hg_class_item_data").length - 1
+    var item_count = $(".hg_class_item_data").length - 1;
     if (item_detail_visible_div == $(".hg_class_item_data").length - 1) {
         item_detail_visible_div = 0;
-    }
-    else {
+    } else {
         item_detail_visible_div++;
     }
+    console.log("Next item number:", item_detail_visible_div);
     show_item_detail_div();
 }
 
-
 function item_detail_previous(button) {
-    current_item_num = parseInt(button.id) - 1;
+    console.log("Button object:", button);
+    console.log("Button ID:", button.id);
+    var current_item_num = parseInt(button.id) - 1;
+    console.log("Current item number:", current_item_num);
     var item_count = rendered_call_off.length;
     if (current_item_num == -1) {
         current_item_num = item_count - 1;
@@ -1480,12 +1496,13 @@ function item_detail_previous(button) {
     sc_calloff = rendered_call_off[current_item_num]
     if (item_detail_visible_div == 0) {
         item_detail_visible_div = $(".hg_class_item_data").length - 1;
-    }
-    else {
+    } else {
         item_detail_visible_div--;
     }
+    console.log("Previous item number:", item_detail_visible_div);
     show_item_detail_div();
 }
+
 function show_image_div(){
     $(".catalog_img").hide();
     $(".catalog_img:eq(" + image_visible_div + ")").show();
@@ -1523,6 +1540,27 @@ function ajax_get_manager_detail(data) {
     AjaxCallAPI(urlLink, data);
 }
 
+<!--Function to calculate total sum of items in cart & to display sum in Total Value Card-->
+    document.addEventListener("DOMContentLoaded", function () {
+        var totalValueSum = 0;
+        var totalValueElements = document.querySelectorAll(".total-value");
+
+        totalValueElements.forEach(function (element) {
+            var totalValue = parseFloat(element.textContent);
+            totalValueSum += totalValue;
+        });
+         var poValueDescElements = document.querySelectorAll(".po-value-desc");
+         poValueDescElements.forEach(function (element) {
+           var existingContent = element.textContent.trim();
+            if (existingContent !== "") {
+                // If the span already contains content, concatenate the total value sum after the existing content
+                element.textContent = totalValueSum + " " + existingContent  ;
+            } else {
+                // If the span is empty, set the total value sum as its content
+                element.textContent = totalValueSum ;
+            }
+         });
+    });
 </script>
 {% endblock %}
 

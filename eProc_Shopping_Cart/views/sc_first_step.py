@@ -14,13 +14,13 @@ from django.shortcuts import render
 
 from eProc_Attributes.Utilities.attributes_generic import OrgAttributeValues
 from eProc_Basic.Utilities.constants.constants import CONST_LIMIT_ORDER_CALLOFF, CONST_CATALOG_CALLOFF, \
-    CONST_CALENDAR_ID, CONST_FREETEXT_CALLOFF, CONST_PR_CALLOFF
+    CONST_CALENDAR_ID, CONST_FREETEXT_CALLOFF
 from eProc_Basic.Utilities.functions.dictionary_key_to_list import dictionary_key_to_list
 from eProc_Basic.Utilities.functions.django_query_set import DjangoQueries
 from eProc_Basic.Utilities.functions.get_db_query import get_currency_list, get_country_data, get_requester_currency, \
     get_login_obj_id
 from django.contrib.auth.decorators import login_required
-from eProc_Basic.Utilities.global_defination import global_variables
+
 from eProc_Calendar_Settings.Utilities.calender_settings_generic import get_list_of_holidays, calculate_delivery_date, \
     calculate_delivery_date_base_on_lead_time
 from eProc_Configuration.models import UnitOfMeasures, Currency
@@ -34,6 +34,7 @@ from eProc_Shopping_Cart.Utilities.shopping_cart_specific import check_for_eform
     get_free_text_content, get_limit_item_details, update_supplier_uom, update_supplier_uom_for_prod, \
     update_suppliers_uom_details, get_limit_order_item_details
 from eProc_Shopping_Cart.context_processors import update_user_info
+
 from eProc_Shopping_Cart.models import *
 from eProc_Basic.Utilities.functions.get_db_query import get_user_currency
 from eProc_Exchange_Rates.Utilities.exchange_rates_generic import convert_currency
@@ -321,3 +322,49 @@ def update_quantity(request):
     cart_resp['total'] = calculate_total_value(request)
     cart_resp['quantity'] = quantity
     return JsonResponse(cart_resp)
+
+#
+# class ShoppingCartSave:
+#     def __init__(self):
+#         self.current_date_time = datetime.datetime.now()
+#         self.username = global_variables.GLOBAL_LOGIN_USERNAME
+#         self.client = global_variables.GLOBAL_CLIENT
+#
+#     def save_shoppingcart(self, shopping_data):
+#         """
+#
+#         """
+#         shopping_db_list = []
+#         for shoppingItems in shopping_data:
+#             if not django_query_instance.django_existence_check(CartItemDetails,
+#                                                                 {'item_num': shoppingItems['item_num']}):
+#                 shopping_db_dictionary = {'cart_item_created_at': self.current_date_time,
+#                                           'cart_item_created_by': self.username,
+#                                           'cart_item_changed_at': self.current_date_time,
+#                                           'cart_item_changed_by': self.username,
+#                                           'client': self.client
+#                                           }
+#                 shopping_db_list.append(shopping_db_dictionary)
+#             else:
+#                 django_query_instance.django_update_query(CartItemDetails,
+#                                                           {'item_num': shoppingItems['item_num']},
+#                                                           {'cart_item_changed_at': self.current_date_time,
+#                                                            'cart_item_changed_by': self.username,
+#                                                            'client': self.client})
+#         bulk_create_entry_db(CartItemDetails, shopping_db_list)
+#
+#     def save_shopping_data_into_db(self, shopping_data):
+#         """
+#
+#         """
+#         self.save_shoppingcart(shopping_data['data'])
+#         if shopping_data['action'] == CONST_ACTION_DELETE:
+#             msgid = 'MSG113'
+#         else:
+#             msgid = 'MSG112'
+#         message = get_message_desc(msgid)[1]
+#
+#         upload_response = django_query_instance.django_filter_query(CartItemDetails, {}, None,
+#                                                                     ['item_num', 'description'])
+#         return upload_response, message
+

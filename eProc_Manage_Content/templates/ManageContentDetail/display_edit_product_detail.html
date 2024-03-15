@@ -79,23 +79,26 @@
 
                                         <div class="form-group">
                                             <label for="product_name">Product Name</label> <span class="hg_required"></span>
-                                            <input type="text" class="form-control input-disable-class" id="prd_desc" value="{{product_details.short_desc}}" disabled required>
+                                            <input type="text" class="form-control mandatory_fields input-disable-class check_special_char" id="prd_desc" value="{{product_details.short_desc}}" disabled required>
+                                            <span id="err_prd_desc" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="product_name">Product Description</label> <span class="hg_required"></span>
-                                            <textarea rows="4" id ="prd_lng_txt" class="form-control input-disable-class" disabled required>{{product_details.long_desc}}</textarea>
+                                            <textarea rows="4" id ="prd_lng_txt" class="form-control mandatory_fields input-disable-class check_special_char" disabled required>{{product_details.long_desc}}</textarea>
+                                            <span id="err_prd_lng_txt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prc">Price</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_prc" required class="form-control input-disable-class check_price" value="{{product_details.price}}" disabled>
+                                                <input type="text" id="prd_prc" required class="form-control mandatory_fields input-disable-class check_price" value="{{product_details.price}}" disabled>
+                                                <span id="err_prd_prc" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_currency_list">Currency</label> <span class="hg_required"></span>
-                                                <select class="form-control input-disable-class selectpicker" id="pfm_currency_list" data-live-search="true" name="currencies" disabled>
+                                                <select class="form-control mandatory_fields input-disable-class selectpicker" id="pfm_currency_list" data-live-search="true" name="currencies" disabled>
                                                     {% for currency in currency_desc %}
                                                     <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
                                                     {% endfor %}
@@ -106,15 +109,17 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
-                                                <select name="units_l" class="form-control input-disable-class selectpicker" id="pfm_units_list" disabled>
+                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker" id="pfm_units_list" disabled>
                                                     {% for unit in unit_desc %}
                                                     <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_currency_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prs_unit">Price Unit</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_prs_unit" class="form-control input-disable-class" value="{{product_details.price_unit}}" required disabled>
+                                                <input type="text" id="prd_prs_unit" class="form-control mandatory_fields input-disable-class" value="{{product_details.price_unit}}" required disabled>
+                                                <span id="err_prd_prs_unit" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
@@ -122,30 +127,35 @@
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_unspsc_list">Product Category(UNSPSC)</label> <span class="hg_required"></span>
                                                 <!-- <input type="text" placeholder="Click to select product category" class="form-control input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required> -->
-                                                <select class="form-control input-disable-class" id="pfm_unspsc_list" name="unspsc_l" disabled>
+                                                <select class="form-control mandatory_fields input-disable-class" id="pfm_unspsc_list" name="unspsc_l" disabled>
                                                     {% for unspsc in unspsc_desc %}
                                                     <option value="{{unspsc.attribute_values}}">{{unspsc.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_unspsc_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_lead" class="form-control input-disable-class" value="{{product_details.lead_time}}" required disabled>
+                                                <input type="text" id="prd_lead" class="form-control mandatory_fields input-disable-class" value="{{product_details.lead_time}}" required disabled>
+                                                <span id="err_prd_lead" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Minimum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_mini_qnt" required class="form-control input-disable-class" value="{{product_details.quantity_min}}" disabled>
+                                                <input type="text" id="prd_mini_qnt" required class="form-control mandatory_fields input-disable-class" value="{{product_details.quantity_min}}" disabled>
+                                                <span id="err_prd_mini_qnt" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_value">Minimum Order Value</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_value" class="form-control input-disable-class"  value="{{product_details.value_min}}" disabled required>
+                                                <input type="number" id="prd_mini_value" class="form-control mandatory_fields input-disable-class"  value="{{product_details.value_min}}" disabled required>
+                                                <span id="err_prd_mini_value" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Maximum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_max_qnt" class="form-control input-disable-class" value="{{product_details.quantity_max}}" disabled required>
+                                                <input type="number" id="prd_max_qnt" class="form-control mandatory_fields input-disable-class" value="{{product_details.quantity_max}}" disabled required>
+                                                <span id="err_prd_max_qnt" class="error_message" hidden></span>
                                             </div>
 
                                         </div>
@@ -184,7 +194,8 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mnf">Manufacturer</label> <span class="hg_required"></span>
-                                                <input type="text" id ="prd_mnf" required class="form-control input-disable-class" value="{{product_details.manufacturer}}" disabled>
+                                                <input type="text" id ="prd_mnf" required class="form-control mandatory_fields input-disable-class" value="{{product_details.manufacturer}}" disabled>
+                                                <span id="err_prd_mnf" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-4">
@@ -285,7 +296,7 @@
 
                                         <div class="form-group">
                                             <label for="pro_type"> Product type</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class" id="pro_type" name="prod_types" disabled required>
+                                            <select class="form-control mandatory_fields input-disable-class" id="pro_type" name="prod_types" disabled required>
                                                 <option value="01"> 01 Product</option>
                                                 <option value="02"> 02 Service</option>
                                             </select>
@@ -293,12 +304,12 @@
 
                                         <div class="form-group">
                                             <label for="prd_qnt"> Quantity Available</label>
-                                            <input type="text" id="prd_qnt" class="form-control input-disable-class check_number" value="{{product_details.quantity_avail}}" disabled>
+                                            <input type="text" id="prd_qnt" class="form-control mandatory_fields input-disable-class check_number" value="{{product_details.quantity_avail}}" disabled>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
-                                            <select class="form-control selectpicker input-disable-class" data-live-search="true" id="pfm_country_list" name="countries_l" disabled>
+                                            <select class="form-control mandatory_fields selectpicker input-disable-class" data-live-search="true" id="pfm_country_list" name="countries_l" disabled>
                                                 {% for country in country_desc %}
                                                 <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
                                                 {% endfor %}
@@ -307,7 +318,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
-                                            <select class="form-control selectpicker input-disable-class" data-live-search="true" id="pfm_language_list" name="Language_l" disabled>
+                                            <select class="form-control mandatory_fields selectpicker input-disable-class" data-live-search="true" id="pfm_language_list" name="Language_l" disabled>
                                                 {% for language in language_desc %}
                                                 <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
                                                 {% endfor %}
@@ -355,7 +366,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_supplier_prod_num">Supplier Product Number</label><span class="hg_required"></span>
-                                            <input type="text" id="pfm_supplier_prod_num" required  class=" form-control input-disable-class check_special_char" value="{{product_details.supp_product_id}}" disabled>
+                                            <input type="text" id="pfm_supplier_prod_num" required  class=" form-control mandatory_fields input-disable-class check_special_char" value="{{product_details.supp_product_id}}" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -416,8 +427,8 @@
                                                 <tbody id="product_spec_main_tbody">
                                                 {% for product_spec in product_specification %}
                                                 <tr>
-                                                    <td>{{product_spec.product_info_key}}</td>
-                                                    <td>{{product_spec.product_info_value}}</td>
+                                                    <td><input type="text" class="spec-type-input" value="{{ product_spec.product_info_key }}"></td>
+                                                    <td><input type="text" class="spec-description-input" value="{{ product_spec.product_info_value }}"></td>
 
                                                 </tr>
                                                 {% endfor %}
@@ -446,7 +457,6 @@
                                             </button>
                                         </div>
                                         <p>Add discount to the product if purchased in certain quantity.</p>
-
                                         <div id="prod_discount_table_section">
 
                                         </div>
@@ -709,6 +719,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="variant_option_delete(this)" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <!--Select Product category popup -->
 {% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
 <!-- end Select Product category popup-->
@@ -807,19 +836,6 @@ $(document).ready(function(){
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
 
-function create_product_specification() {
-    product_specification_data = new Array();
-    $("#product_spec_table TBODY TR").each(function () {
-            var row = $(this);
-            var product_specification={};
-            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
-            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
-            product_specification_data.push(product_specification);
-    });
-    update_product_specification_main_table();
-    $('#create_product_spec_popup').modal('hide');
-
-}
 
 function update_product_specification_main_table(){
     $('#product_spec_main_tbody').empty();
@@ -937,95 +953,111 @@ function create_new_specification_popup(){
 var eform_data_new = new Array();
 
 const create_fields = () => {
+    GLOBAL_EDIT_VARIANT_FLAG = true
     var variant_type_selected_id = $('input:radio[name="variant_type"]:checked').attr('id');
+
     validations = create_popup_validations(variant_type_selected_id)
     if (validations != '') {
         $('#create_error_div').html(validations);
         $('#create_error_div').show();
         return
     } else $('#create_error_div').hide()
-    var variant_option_data = {};
-    var table_data = new Array();
-    variant_option_data.field_name = $('#field_name').val();
-    variant_option_data.field_type = variant_type_selected_id;
 
-    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING' || variant_type_selected_id == 'VARIANT_BASE_PRICING' || variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+    if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+
         var error_flag = false;
-        var existingIndex = -1;
+        var variant_option_data = {};
+        var table_data = new Array();
+        variant_option_data.field_name = $('#field_name').val();
+        variant_option_data.field_type = variant_type_selected_id;
+        $("#table_id_vo_wo_iobp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
 
-        // Check if the variant being added already exists in eform_data_new
-        eform_data_new.forEach(function(existingVariant, index) {
-            if (existingVariant.field_name === variant_option_data.field_name && existingVariant.field_type === variant_option_data.field_type) {
-                existingIndex = index;
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+
+            if (vo_table_data.option_value == '') {
+                error_flag = true;
             }
+
+            table_data.push(vo_table_data);
         });
 
-        // Populate table_data based on the selected variant type
-        if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
-            $("#table_id_vo_wo_iobp TBODY TR").each(function() {
-                var row = $(this);
-                var vo_table_data = {};
-
-                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-
-                if (vo_table_data.option_value == '') {
-                    error_flag = true;
-                }
-
-                table_data.push(vo_table_data);
-            });
-        } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING') {
-            $("#table_id_vo_wi_iobp TBODY TR").each(function() {
-                var row = $(this);
-                var vo_table_data = {};
-
-                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
-                vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
-
-                if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '') {
-                    error_flag = true;
-                }
-
-                table_data.push(vo_table_data);
-            });
-        } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
-            $("#table_id_vo_wi_apbp TBODY TR").each(function() {
-                var row = $(this);
-                var vo_table_data = {};
-
-                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
-                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
-                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
-
-                if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
-                    error_flag = true;
-                }
-
-                table_data.push(vo_table_data);
-            });
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
+            $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
         }
 
-        // Add variant_data to variant_option_data if there's no error
-        if (!error_flag) {
-            variant_option_data.variant_data = table_data;
 
-            // If the variant already exists, update the existing record; otherwise, add a new record
-            if (existingIndex !== -1) {
-                eform_data_new[existingIndex] = variant_option_data;
-            } else {
-                eform_data_new.push(variant_option_data);
+    } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
+        var error_flag = false;
+        var variant_option_data = {};
+        var table_data = new Array();
+        variant_option_data.field_name = $('#field_name').val();
+        variant_option_data.field_type = variant_type_selected_id;
+        $("#table_id_vo_wi_iobp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
+
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+            vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
+
+            if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '' ) {
+                error_flag = true;
             }
 
-            create_prod_variant_table(eform_data_new);
-        } else {
-            $('#create_error_div').html('Please fill all the options');
+            table_data.push(vo_table_data);
+        });
+
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
             $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
+        }
+
+    } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+        var error_flag = false;
+        var variant_option_data = {};
+        var table_data = new Array();
+        variant_option_data.field_name = $('#field_name').val();
+        variant_option_data.field_type = variant_type_selected_id;
+        $("#table_id_vo_wi_apbp TBODY TR").each(function() {
+            var row = $(this);
+            var vo_table_data = {};
+
+            vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+            vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+            vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+
+            if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
+                error_flag = true;
+            }
+
+            table_data.push(vo_table_data);
+        });
+
+        variant_option_data.variant_data = table_data
+        if(error_flag) {
+            $('#create_error_div').html('Please fill the options');
+            $('#create_error_div').show();
+        } else {
+            eform_data_new.push(variant_option_data)
+            create_prod_variant_table(eform_data_new);
         }
     }
+    $('.eform_button_dummy_class').prop('disabled', false);
 }
+
 
 function create_prod_variant_table(eform_data_new) {
 
@@ -1119,8 +1151,8 @@ function create_prod_variant_table(eform_data_new) {
 
         var edit_button
         var delete_button
-            delete_button =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="variant_option_delete(this)" disabled> Delete</button>'
-            edit_button = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_popup(this.id)" disabled> Edit</button>'
+            delete_button =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
+            edit_button = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_popup(this.id)"> Edit</button>'
 
         // Create a div to display variant option name and functional button group
         var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button +' '+ edit_button +' </div>  </div>'
@@ -1271,6 +1303,29 @@ function onclick_save_product_details(){
     product_details_data.value_min= document.getElementById("prd_mini_value").value
     product_details_data.ctr_item_num= document.getElementById("prd_contract_item_number").value
 
+    var productName = document.getElementById('prd_desc').value;
+    var productDescription = document.getElementById('prd_lng_txt').value;
+    var productPrice = document.getElementById('prd_prc').value;
+    var productCurrency = document.getElementById('pfm_currency_list').value;
+    var productUnits = document.getElementById('pfm_units_list').value;
+    var productPriceUnit = document.getElementById('prd_prs_unit').value;
+    var productUNSPSC = document.getElementById('pfm_unspsc_list').value;
+    var productLeadTime = document.getElementById('prd_lead').value;
+    var productMinimumQuantity = document.getElementById('prd_mini_qnt').value;
+    var productMinimumValue = document.getElementById('prd_mini_value').value;
+    var productMaximumQuantity = document.getElementById('prd_max_qnt').value;
+    var productManufacturer = document.getElementById('prd_mnf').value;
+
+    // Check if any required field is empty
+    if (productName.trim() === '' || productDescription.trim() === '' || productPrice.trim() === '' ||
+        productCurrency.trim() === '' || productUnits.trim() === '' || productPriceUnit.trim() === '' ||
+        productUNSPSC.trim() === '' || productLeadTime.trim() === '' || productMinimumQuantity.trim() === '' ||
+        productMinimumValue.trim() === '' || productMaximumQuantity.trim() === '' || productManufacturer.trim() === '') {
+        // If any required field is empty, display an alert message
+<!--        document.getElementById('product_details_success').innerHTML = "please fill the required fields";-->
+<!--        $('#product_details_success').show();-->
+        return; // Stop further execution
+    }
 
     console.log(eform_configured)
     data.append('eform_configured', JSON.stringify(eform_data_new))
@@ -1294,6 +1349,9 @@ function onclick_save_product_details(){
             if (Response.length !== 0){
                 create_prod_variant_table(Response)
             }
+            setTimeout(function() {
+        $('#product_details_success').hide();
+            }, 4000);
 
         },
         cache: false,
@@ -1303,6 +1361,8 @@ function onclick_save_product_details(){
 
         }
     });
+
+
 
     console.log(attachment_data_array);
 
@@ -1458,17 +1518,17 @@ $('input:radio[name="variant_type"]').change(function() {
         $('#tbody_vo_wi_apbp').empty();
         if(id == "VARIANT_WITHOUT_PRICING") {
             $("#table_vo_wo_iobp").show();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wo_iobp();
         } else if (id == "VARIANT_BASE_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").show(); 
+            $("#table_vo_wi_iobp").show();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wi_iobp();
         } else if (id == "VARIANT_ADDITIONAL_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").show();
             AddNewRow_vo_wi_apbp();
         }
@@ -1514,15 +1574,20 @@ $("#table_id_product_discount").on('click','.row-delete-btn',function(){
 
 
 function variant_option_delete(obj) {
+    $('#id_delete_confirm_popup').modal('show');
     var id = obj.id;
     GLOBAL_EDIT_VARIANT_FLAG = true
     var get_index = id.split('-')[1];
     eform_data_new.splice(get_index, 1)
     create_prod_variant_table(eform_data_new);
+    $('#id_delete_confirm_popup').modal('hide');
     $('.eform_button_dummy_class').prop('disabled', false);
 }
 
 function create_product_discount_popup(){
+
+    $('#discount_field_name').val('');
+    $('#tbody_product_discount input[type="number"]').val('');
     $('#create_product_discount_popup').modal('show')
 }
 
@@ -1536,7 +1601,7 @@ function create_fields_product_discount() {
     } else $('#create_prod_discount_error_div').hide()
 
     var variant_option_data = {};
-    var table_data = new Array(); 
+    var table_data = new Array();
     variant_option_data.field_name = $('#discount_field_name').val();
     variant_option_data.field_type = "QUANTITY_BASED_DISCOUNT";
 
@@ -1547,7 +1612,7 @@ function create_fields_product_discount() {
         vo_table_data.discount_min_quantity = row.find("TD").eq(0).find('input[type="number"]').val();
         vo_table_data.discount_percentage_value = row.find("TD").eq(1).find('input[type="number"]').val();
         table_data.push(vo_table_data);
-        
+
     });
 
     variant_option_data.variant_data = table_data;
@@ -1659,13 +1724,108 @@ function update_row_vo_wi_apbp(eform_data) {
 
 
 
+
 function AddNewRow_product_discount(eform_data) {
     var add_new_row = "";
     $.each(eform_data.variant_data, function (i, item) {
         add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+
+<!--function AddNewRow_product_discount(eform_data) {-->
+<!--    var add_new_row = "";-->
+<!--    $.each(eform_data.variant_data, function (i, item) {-->
+<!--        add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'-->
+<!--    });-->
+<!--    $('#tbody_product_discount').append(add_new_row);-->
+<!--}-->
+
+
+
+    $(".mandatory_fields").on("input", function () {
+        var currentValue = $(this).val().trim();
+        var errorSpan = $(this).next('.error_message');
+
+        if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+            errorSpan.prop('hidden', false);
+            errorSpan.text("Please enter valid value");
+        } else {
+            errorSpan.prop('hidden', true);
+        }
+
     });
-    $('#tbody_product_discount').append(add_new_row);
+
+$("#save_product_details").on("click", function () {
+    // Iterate over each mandatory field and trigger the input event
+    $(".mandatory_fields").each(function () {
+        $(this).trigger("input");
+    });
+
+    // Check if there are no visible error messages, then proceed with saving the form
+    var errorsExist = $(".error_message:visible").length > 0;
+    if (!errorsExist) {
+        // Additional logic for saving the form if needed
+        console.log('Form submitted successfully.');
+    }
+
+    // Add change event to remove error message when a value is selected
+    $(".custom-select").on("change", function () {
+        var errorSpan = $(this).next('.error_message');
+        errorSpan.prop('hidden', true);
+    });
+
+    // Iterate over each dropdown with class .custom-select and check if it is empty
+        $(".custom-select").each(function () {
+            var currentValue = $(this).val();
+            var errorSpan = $(this).next('.error_message');
+
+            // If the dropdown is empty, show red border and error message
+            if (currentValue === "") {
+                errorSpan.prop('hidden', false);
+                errorSpan.text('Please select a value.');
+            } else {
+                // If the dropdown has a value, hide the error message
+                errorSpan.prop('hidden', true);
+            }
+        });
+});
+
+
+function create_product_specification() {
+    product_specification_data = new Array();
+    $("#product_spec_table TBODY TR").each(function () {
+        var row = $(this);
+        var product_specification = {};
+
+        // Get the input values
+        var keyInput = row.find("TD").eq(1).find('input[type="text"]');
+        var valueInput = row.find("TD").eq(2).find('input[type="text"]');
+
+        // Sanitize and convert to uppercase before pushing into the array
+        var sanitizedKey = sanitizeInput(keyInput.val());
+        var sanitizedValue = sanitizeInput(valueInput.val());
+
+        // Add sanitized values to the product_specification object
+        product_specification.product_info_key = sanitizedKey;
+        product_specification.product_info_value = sanitizedValue;
+
+        // Push the product_specification object into the product_specification_data array
+        product_specification_data.push(product_specification);
+    });
+    update_product_specification_main_table();
+    $('#create_product_spec_popup').modal('hide');
 }
+
+// Function to sanitize input and remove special characters
+function sanitizeInput(input) {
+    // Remove any special characters using a regular expression
+    return input.replace(/[^\w\s]/gi, '');
+}
+
+// Attach event listeners to input fields
+$(document).on('input', '#product_spec_table input[type="text"]', function() {
+    var sanitizedValue = sanitizeInput($(this).val());
+    $(this).val(sanitizedValue);
+});
+
 </script>
 {% endblock %}
 

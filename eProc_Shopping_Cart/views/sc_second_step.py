@@ -27,6 +27,7 @@ from eProc_Basic.Utilities.messages.messages import MSG109, MSG134
 from eProc_Doc_Search_and_Display.Utilities.search_display_specific import get_order_status
 from eProc_Emails.Utilities.email_notif_generic import appr_notify, send_po_attachment_email
 from eProc_Price_Calculator.Utilities.price_calculator_generic import calculate_item_total_value
+from eProc_Purchase_Order.Utilities.purchase_order_generic import CreatePurchaseOrder
 #from eProc_Purchase_Order.Utilities.purchase_order_generic import *
 #from eProc_Purchase_Order.Utilities.purchase_order_generic import CreatePurchaseOrder
 # from eProc_Purchase_Order.Utilities.purchase_order_generic import CreatePurchaseOrder

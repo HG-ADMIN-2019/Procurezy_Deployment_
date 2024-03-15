@@ -482,9 +482,10 @@
                 <div id="create_error_div"  class="alert alert-danger display-none" role="alert"></div>
                 <div class="form-group">
                     <label for="field_name">Variant name <span class="hg_required"></span></label>
-                    <input class="form-control dynamic_field" type="text" id="field_name" onkeypress="return /[0-9a-zA-Z_ ]/i.test(event.key)">
-                    <small class="form-text text-muted">  Valid characters are  A-Z a-z 0-9 </small>
+                    <input class="form-control dynamic_field" type="text" id="field_name" onkeypress="return /[0-9a-zA-Z_]/i.test(event.key)">
+                    <small class="form-text text-muted">Valid characters are A-Z, a-z, 0-9, and underscores</small>
                 </div>
+
 
                 <div class="form-group">
                     <label for="field_name">Select variant type <span class="hg_required"></span></label>

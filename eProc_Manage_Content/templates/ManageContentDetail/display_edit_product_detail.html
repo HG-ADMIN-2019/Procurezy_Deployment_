@@ -961,6 +961,9 @@ function variant_fields_clear () {
 function create_new_specification_popup(){
     var spec_add_new_html
     $('#product_spec_tbody').empty();
+    $('#create_prod_spec_error_div').css('display', 'none');
+
+    $('#create_prod_spec_error_div').css('display', 'none');
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
             spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';

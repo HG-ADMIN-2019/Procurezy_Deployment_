@@ -427,8 +427,8 @@
                                                 <tbody id="product_spec_main_tbody">
                                                 {% for product_spec in product_specification %}
                                                 <tr>
-                                                    <td><input type="text" class="spec-type-input" value="{{ product_spec.product_info_key }}"></td>
-                                                    <td><input type="text" class="spec-description-input" value="{{ product_spec.product_info_value }}"></td>
+                                                    <td><label class="spec-type-label">{{ product_spec.product_info_key }}</label></td>
+                                                    <td><label class="spec-description-label">{{ product_spec.product_info_value }}</label></td>
 
                                                 </tr>
                                                 {% endfor %}
@@ -632,6 +632,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="create_prod_spec_error_div"  class="alert alert-danger display-none" role="alert"></div>
                 <div id="id_del_add_button" class="mb-2">
                     <button class="btn btn-outline-primary" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>
                     <button class="btn btn-outline-primary" onclick="product_spec_popup_delete('product_spec_table')"><i class="fa fa-trash"></i> delete</button>
@@ -830,12 +831,35 @@ $(document).ready(function(){
 
  //##################################### START ADD NEW LINE IN SPEC POPUP ###########################
  function add_popup_row() {
-    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
+    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
     $('#product_spec_tbody').append(spec_add_new_html);
  }
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
+function create_product_specification() {
 
+    const validations = create_product_specification_validations();
+
+    if (validations !== '') {
+        $('#create_prod_spec_error_div').html(validations);
+        $('#create_prod_spec_error_div').show();
+        return;
+    } else {
+        $('#create_prod_spec_error_div').hide();
+    }
+
+    product_specification_data = new Array();
+    $("#product_spec_table TBODY TR").each(function () {
+            var row = $(this);
+            var product_specification={};
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
+            product_specification_data.push(product_specification);
+    });
+    update_product_specification_main_table();
+    $('#create_product_spec_popup').modal('hide');
+
+}
 
 function update_product_specification_main_table(){
     $('#product_spec_main_tbody').empty();
@@ -939,11 +963,11 @@ function create_new_specification_popup(){
     $('#product_spec_tbody').empty();
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
-            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
         });
     }
     else{
-        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
     }
     $('#product_spec_tbody').append(spec_add_new_html);
     $('#create_product_spec_popup').modal('show')
@@ -1796,43 +1820,48 @@ $("#save_product_details").on("click", function () {
         });
 });
 
+const create_product_specification_validations = () => {
+    const tableRows = $("#product_spec_table tbody tr");
+    const newKeys = [];
 
-function create_product_specification() {
-    product_specification_data = new Array();
-    $("#product_spec_table TBODY TR").each(function () {
-        var row = $(this);
-        var product_specification = {};
+    let error_message = '';
 
-        // Get the input values
-        var keyInput = row.find("TD").eq(1).find('input[type="text"]');
-        var valueInput = row.find("TD").eq(2).find('input[type="text"]');
+    // Validate key column
+    for (let i = 0; i < tableRows.length; i++) {
+        const key = $(tableRows[i]).find("td:eq(1) input[type='text']").val().toUpperCase().trim();
+        const value = $(tableRows[i]).find("td:eq(2) input[type='text']").val().trim();
 
-        // Sanitize and convert to uppercase before pushing into the array
-        var sanitizedKey = sanitizeInput(keyInput.val());
-        var sanitizedValue = sanitizeInput(valueInput.val());
 
-        // Add sanitized values to the product_specification object
-        product_specification.product_info_key = sanitizedKey;
-        product_specification.product_info_value = sanitizedValue;
+        if (key === '') {
+            error_message = 'Please enter Key ';
+            break; // Exit loop early
+        }
 
-        // Push the product_specification object into the product_specification_data array
-        product_specification_data.push(product_specification);
-    });
-    update_product_specification_main_table();
-    $('#create_product_spec_popup').modal('hide');
-}
+        if (value === ''){
+            error_message = "please enter value ";
+            break;
+        }
 
-// Function to sanitize input and remove special characters
-function sanitizeInput(input) {
-    // Remove any special characters using a regular expression
-    return input.replace(/[^\w\s]/gi, '');
-}
+        if (newKeys.includes(key)) {
+            error_message = 'Duplicate Key found: ' + key;
+            break; // Exit loop early
+        } else {
+            newKeys.push(key);
+        }
 
-// Attach event listeners to input fields
-$(document).on('input', '#product_spec_table input[type="text"]', function() {
-    var sanitizedValue = sanitizeInput($(this).val());
-    $(this).val(sanitizedValue);
-});
+        if (key.length > 15) {
+            error_message = 'Key must be between 1 and 15 characters';
+            break; // Exit loop early
+        }
+
+        if (value.length > 15) {
+            error_message = 'Value must be between 1 and 15 characters';
+            break; // Exit loop early
+        }
+    }
+
+    return error_message;
+};
 
 </script>
 {% endblock %}

@@ -273,7 +273,7 @@ function nav_bar_user_settings() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_shop() {
@@ -289,7 +289,7 @@ function nav_bar_shop() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_goods_receipts() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -304,7 +304,7 @@ function nav_bar_goods_receipts() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_admin() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -319,7 +319,7 @@ function nav_bar_admin() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_purchaser() {
@@ -335,7 +335,7 @@ function nav_bar_purchaser() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_approvals() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -350,7 +350,7 @@ function nav_bar_approvals() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_content_management() {
@@ -366,7 +366,7 @@ function nav_bar_content_management() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_configuration() {
@@ -382,7 +382,7 @@ function nav_bar_configuration() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_timesheet() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -398,7 +398,7 @@ function nav_bar_timesheet() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 
 }
 function nav_bar_som() {
@@ -415,7 +415,7 @@ function nav_bar_som() {
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'block';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_shop_assist() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -431,7 +431,7 @@ function nav_bar_shop_assist() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'block';
     document.getElementById("archiving_sub_menu").style.display = 'none';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_archiving() {
@@ -448,7 +448,7 @@ function nav_bar_archiving() {
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("archiving_sub_menu").style.display = 'block';
-//    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function hide_nav_and_leftpanel(parent_url) {
     let url = parent_url.split('/')

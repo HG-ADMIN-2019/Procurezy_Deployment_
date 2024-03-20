@@ -72,7 +72,7 @@ urlpatterns = [
     path('projects/', include('eProc_Projects.urls')),
     path('som/', include('eProc_Supplier_Order_Management.urls')),
     path('Archiving/', include('eProc_Archiving.urls')),
-    # path('marketing/', include('eProc_Marketing.urls')),
+    path('marketing/', include('eProc_Marketing.urls')),
 
 ]
 

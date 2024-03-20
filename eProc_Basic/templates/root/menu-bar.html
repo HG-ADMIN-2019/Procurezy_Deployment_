@@ -201,6 +201,28 @@
             </ul>
         </div>
 
+        <div id="whatsapp_marketing_sub_menu" >
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active" id="nav-item__marketing">
+                    {% if sub_menu.SEND_MESSAGE %}
+                    {% url 'eProc_Marketing:index'  as marketing_url %}
+                    <div class="nav-link" id="whatsapp_btn">
+                        <a href="{{marketing_url}}" {% if request.path == marketing_url %} class="active"{% endif %} > Send Message</a>
+                    </div>
+                    {% endif %}
+                </li>
+<!--                <li class="nav-item active" id="nav-item__marketing">-->
+<!--                    {% if sub_menu.SEND_MESSAGE %}-->
+<!--                    {% url 'eProc_Marketing:index'  as marketing_url %}-->
+<!--                    <div class="nav-link" id="whatsapp_btn">-->
+<!--                        <a href="{{marketing_url}}" {% if request.path == marketing_url %} class="active"{% endif %} > Config</a>-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+<!--                </li>-->
+
+            </ul>
+        </div>
+
 
         <div id="archiving_sub_menu" style="display:none" >
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">

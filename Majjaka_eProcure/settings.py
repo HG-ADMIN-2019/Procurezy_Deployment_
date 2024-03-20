@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 # import django_heroku
 import os
-os.environ['DISPLAY'] = ':1'
+os.environ.pop('DISPLAY', None)
 SEARCH_FORM1 = "X"  # To enable or disable Extended search form
 # import dj_database_url
 

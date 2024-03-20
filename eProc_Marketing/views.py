@@ -7,7 +7,7 @@ import time
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
-
+import pywhatkit as kit
 from io import TextIOWrapper
 from io import StringIO
 
@@ -46,9 +46,13 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
             time.sleep(delay)
 
         # Send the completed message (either text or image or both)
-        if message or image_path:
-            # Assuming you have another method to send WhatsApp messages here
-            print(f"WhatsApp message sent successfully to {phone_number}")
+        if message:
+            kit.sendwhats_image(phone_number, image_path, message)
+
+        elif image_path:
+            kit.sendwhats_image(phone_number, image_path)
+
+        print(f"WhatsApp message sent successfully to {phone_number}")
 
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')

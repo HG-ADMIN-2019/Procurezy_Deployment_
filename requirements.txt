@@ -54,3 +54,4 @@ twilio~=7.14.0
 tabula~=1.0.5
 APScheduler~=3.9.1.post1
 pypdf~=3.8.0
+pywhatkit

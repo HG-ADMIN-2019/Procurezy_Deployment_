@@ -2,7 +2,7 @@ from eProc_Basic.Utilities.constants.constants import CONST_LINK_DOC_DETAIL, CON
 from eProc_Basic.Utilities.functions.django_query_set import DjangoQueries
 from eProc_Basic.Utilities.functions.encryption_util import encrypt
 from eProc_Basic.Utilities.functions.replace_str import replace_val1_val2
-from eProc_Basic.Utilities.functions.type_casting import date_to_diff_days
+from eProc_Basic.Utilities.functions.type_casting import date_to_diff_days, date_to_diff_dayss
 from eProc_Basic.Utilities.global_defination import global_variables
 from eProc_Configuration.models.development_data import NotificationTypeDesc
 from eProc_Notification.Utilities.notification_generic import get_dictionary_instance
@@ -66,19 +66,20 @@ def get_login_user_notification():
             notification_msg = {}
             notif_message = get_dictionary_instance(notif_type_desc, notification_detail['notification_type_id'],
                                                     'notification_type_id')
-            modified_msg = replace_val1_val2(notif_message['notification_message'], '&key&',
-                                             notification_detail['values'])
+            modified_msg = replace_val1_val2(notif_message, '&key&', notification_detail['values'])
+
             notification_msg['msg_info'] = modified_msg
             notification_msg['url_link'] = get_notification_url(notification_detail['notification_type_id'],
                                                                 notification_detail['values'])
             notification_msg['read_status'] = notification_detail['read_status']
             notification_msg['notif_id'] = notification_detail['notification_id']
-            notification_msg['notif_changed_at'] = date_to_diff_days(notification_detail['notif_changed_at'])
+            notification_msg['notif_changed_at'] = date_to_diff_dayss(notification_detail['notif_changed_at'])
             notification_msg['star_notif_flag'] = notification_detail['star_notif_flag']
             notification_msg['notification_type_id'] = notification_detail['notification_type_id']
 
             notification_message_list.append(notification_msg)
     notification_messages['notification'] = notification_message_list
     notification_messages['unread_notification_count'] = unread_notification_count
+    print(notification_messages)
 
     return notification_messages

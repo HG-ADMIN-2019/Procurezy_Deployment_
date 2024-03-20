@@ -10,7 +10,10 @@ from django.shortcuts import render
 import pywhatkit as kit
 from io import TextIOWrapper
 from io import StringIO
+import os
 
+# Set a mock DISPLAY environment variable
+os.environ['DISPLAY'] = ':0.0'
 from django.views.decorators.csrf import csrf_exempt
 from flask.app import Flask
 

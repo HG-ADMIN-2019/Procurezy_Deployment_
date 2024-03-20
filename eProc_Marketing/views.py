@@ -130,4 +130,9 @@ def send_message(request):
 
 
 if __name__ == '__main__':
+    # Set the display environment variable conditionally for the deployed environment
+    is_deployed = os.environ.get('DEPLOYED', '').lower() == 'true'
+    if is_deployed:
+        os.environ['DISPLAY'] = ':0.0'
+
     app.run(debug=True)

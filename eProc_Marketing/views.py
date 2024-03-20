@@ -10,10 +10,7 @@ from django.shortcuts import render
 import pywhatkit as kit
 from io import TextIOWrapper
 from io import StringIO
-import os
 
-# Set a mock DISPLAY environment variable
-os.environ['DISPLAY'] = ':0.0'
 from django.views.decorators.csrf import csrf_exempt
 from flask.app import Flask
 
@@ -30,6 +27,7 @@ def index(request):
     return render(request, 'marketing.html', context)
 
 
+# Function to send WhatsApp message
 def send_whatsapp_message(phone_number, message, image_path, send_time):
     try:
         # Check if either message or image is missing
@@ -63,6 +61,7 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
         traceback.print_exc()
 
 
+# View for sending messages
 @csrf_exempt
 def send_message(request):
     global image_path
@@ -84,7 +83,6 @@ def send_message(request):
         csv_content = csv_file.read().decode('utf-8', errors='replace')
 
         # Use StringIO to create a file-like object for csv.reader
-        from io import StringIO
         text_csv_file = StringIO(csv_content)
 
         # Read phone numbers from the CSV file
@@ -132,5 +130,6 @@ def send_message(request):
         return JsonResponse({'result': f'Error: {str(e)}'})
 
 
+# Main block
 if __name__ == '__main__':
     app.run(debug=True)

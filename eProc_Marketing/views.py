@@ -1,4 +1,3 @@
-import io
 import csv
 import os
 import re
@@ -14,48 +13,32 @@ from django.views.decorators.csrf import csrf_exempt
 
 app = Flask(__name__)
 
-
 def index(request):
     return render(request, 'home.html')
 
-
-def send_whatsapp_message(phone_number, message, image_path, send_time):
+def send_whatsapp_message(phone_number, message, send_time):
     try:
-        # Check if either message or image is missing
-        if not message and not image_path:
-            print("Both message and image are missing. Nothing to send.")
+        # Check if message is missing
+        if not message:
+            print("Message is missing. Nothing to send.")
             return
 
-        # Send the completed message (either text or image or both)
-        if message or image_path:
-            kit.sendwhats_image(phone_number, image_path, caption=message)
+        # Send the message
+        kit.sendwhatmsg(phone_number, message, send_time.hour, send_time.minute)
 
-            # Wait for a few seconds before moving on
-            time.sleep(5)
-
-            print(f"Message sent successfully to {phone_number}")
+        print(f"Message sent successfully to {phone_number}")
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
         import traceback
         traceback.print_exc()
 
-
 @csrf_exempt
 def send_message(request):
-    global image_path
     try:
         message = request.POST.get('message', '')  # Get 'message' with default value ''
         start_hours = int(request.POST.get('hours', 0))  # Get 'hours' with default value 0
         start_minutes = int(request.POST.get('minutes', 0))  # Get 'minutes' with default value 0
         csv_file = request.FILES.get('csv')
-        image_file = request.FILES.get('image')
-
-        # Save the image to the specified directory if provided
-        if image_file:
-            image_path = os.path.join(settings.MEDIA_ROOT, 'image.jpg')
-            with open(image_path, 'wb') as f:
-                for chunk in image_file.chunks():
-                    f.write(chunk)
 
         # Decode the content manually
         csv_content = csv_file.read().decode('utf-8', errors='replace')
@@ -79,26 +62,18 @@ def send_message(request):
 
                     phone_numbers.append(phone_number)
 
-        # Calculate the interval between each contact (adjust as needed)
-        interval = datetime.timedelta(minutes=1)
-
         # Get the current time and calculate send_time for the first contact
         now = datetime.datetime.now()
-        send_time = now.replace(hour=start_hours, minute=start_minutes, second=0, microsecond=0) + datetime.timedelta(
-            seconds=5)
+        send_time = now.replace(hour=start_hours, minute=start_minutes, second=0, microsecond=0) + datetime.timedelta(seconds=5)
 
         # Call the existing function for each phone number
         for phone_number in phone_numbers:
             try:
-                # Send both text message and image at the same time
-                send_whatsapp_message(phone_number, message, image_path, send_time)
+                # Send text message
+                send_whatsapp_message(phone_number, message, send_time)
 
                 # Increment send_time for the next contact
-                send_time += interval
-
-                # Handle hour transition
-                if send_time.minute >= 60:
-                    send_time = send_time.replace(hour=send_time.hour + 1, minute=send_time.minute % 60)
+                send_time += datetime.timedelta(minutes=1)
 
             except Exception as e:
                 print(f'Error sending message to {phone_number}: {str(e)}')
@@ -107,7 +82,6 @@ def send_message(request):
     except Exception as e:
         print(f'Error: {str(e)}')
         return JsonResponse({'result': f'Error: {str(e)}'})
-
 
 if __name__ == '__main__':
     app.run(debug=True)

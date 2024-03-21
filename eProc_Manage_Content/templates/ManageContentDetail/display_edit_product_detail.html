@@ -683,7 +683,7 @@
                     <br>
                     <div class="new-option-row-button-wrapper">
                         <span>Add Products Discount</span>
-                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_discount();"><i class="fa fa-plus"></i> Add new discount</button>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_Discount();"><i class="fa fa-plus"></i> Add new discount</button>
                     </div>
                     <table class="table" id="table_id_product_discount">
                         <thead>
@@ -852,8 +852,8 @@ function create_product_specification() {
     $("#product_spec_table TBODY TR").each(function () {
             var row = $(this);
             var product_specification={};
-            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
-            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase().trim()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase().trim()
             product_specification_data.push(product_specification);
     });
     update_product_specification_main_table();
@@ -1008,6 +1008,7 @@ const create_fields = () => {
                 error_flag = true;
             }
 
+
             table_data.push(vo_table_data);
         });
 
@@ -1020,6 +1021,14 @@ const create_fields = () => {
             create_prod_variant_table(eform_data_new);
         }
 
+
+        });
+
+        // Populate table_data based on the selected variant type
+        if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+            $("#table_id_vo_wo_iobp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
 
     } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
         var error_flag = false;
@@ -1084,6 +1093,7 @@ const create_fields = () => {
     }
     $('.eform_button_dummy_class').prop('disabled', false);
 }
+
 
 function create_prod_variant_table(eform_data_new) {
 
@@ -1604,9 +1614,9 @@ function AddNewRow_vo_wi_apbp() {
     $('#tbody_vo_wi_apbp').append(add_new_row);
 }
 
-function AddNewRow_product_discount() {
-    var add_new_row = "";
-    add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+
+function AddNewRow_product_Discount() {
+    var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_product_discount').append(add_new_row);
 }
 
@@ -1642,6 +1652,9 @@ function create_product_discount_popup(){
 
     $('#discount_field_name').val('');
     $('#tbody_product_discount input[type="number"]').val('');
+    $('#tbody_product_discount').empty();
+    var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
+    $('#tbody_product_discount').append(add_new_row);
     $('#create_product_discount_popup').modal('show')
 }
 
@@ -1750,6 +1763,7 @@ function update_row_vo_wo_iobp(eform_data) {
 
 function update_row_vo_wi_iobp(eform_data) {
 
+<<<<<<< HEAD
     var add_new_row = "";
     $.each(eform_data.variant_data, function (i, item) {
     add_new_row += '<tr> <td><input type="radio" id="" name="vo_wi_iobp"></td> <td><input type="text" value="'+item.option_value+'" class="form-control" placeholder="Options"></td> <td><input type="number" value="'+item.option_price+'" class="form-control" placeholder="Price"></td> <td><input type="text" value="'+item.option_value+'" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>'
@@ -1766,13 +1780,26 @@ function update_row_vo_wi_apbp(eform_data) {
     $('#tbody_vo_wi_apbp').append(add_new_row);
 }
 
-<!--function AddNewRow_product_discount(eform_data) {-->
-<!--    var add_new_row = "";-->
-<!--    $.each(eform_data.variant_data, function (i, item) {-->
-<!--        add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'-->
-<!--    });-->
-<!--    $('#tbody_product_discount').append(add_new_row);-->
-<!--}-->
+function AddNewRow_product_discount(eform_data) {
+    var add_new_row = "";
+    $.each(eform_data.variant_data, function (i, item) {
+        add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+    });
+    $('#tbody_product_discount').append(add_new_row);
+}
+
+
+function update_row_vo_wi_apbp(eform_data) {
+    $.each(eform_data.variant_data, function(i, item) {
+        // Create a new row with input fields populated with data from variant_data
+        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+
+        var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" class="form-control" placeholder="Options" value="' + item.option_value + '"></td> <td><input type="number" class="form-control" placeholder="Price" value="' + item.option_price + '"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
+        // Append the new row to the table body
+        $('#tbody_vo_wi_apbp').append(add_new_row);
+    });
+}
+
 
 
 
@@ -1786,6 +1813,7 @@ function update_row_vo_wi_apbp(eform_data) {
         } else {
             errorSpan.prop('hidden', true);
         }
+
     });
 
 $("#save_product_details").on("click", function () {

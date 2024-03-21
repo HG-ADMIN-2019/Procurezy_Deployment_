@@ -1,6 +1,8 @@
 import io
 import csv
 import os
+os.environ['DISPLAY'] = ':0'  # Set to a valid display value
+
 import re
 import datetime
 import time

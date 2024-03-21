@@ -272,6 +272,7 @@ function nav_bar_user_settings() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_shop() {
@@ -286,6 +287,7 @@ function nav_bar_shop() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_goods_receipts() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -299,6 +301,7 @@ function nav_bar_goods_receipts() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_admin() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -312,6 +315,7 @@ function nav_bar_admin() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_purchaser() {
@@ -326,6 +330,7 @@ function nav_bar_purchaser() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_approvals() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -339,6 +344,7 @@ function nav_bar_approvals() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_content_management() {
@@ -353,6 +359,7 @@ function nav_bar_content_management() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 
 function nav_bar_configuration() {
@@ -367,6 +374,7 @@ function nav_bar_configuration() {
     document.getElementById("configuration_sub_menu").style.display = 'block';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_timesheet() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -381,6 +389,7 @@ function nav_bar_timesheet() {
     document.getElementById("time_sheet_sub_menu").style.display = 'block';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 
 }
 function nav_bar_som() {
@@ -396,6 +405,7 @@ function nav_bar_som() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'block';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
 }
 function nav_bar_shop_assist() {
     document.getElementById("shop_shop_plus_submenu").style.display = 'none';
@@ -410,6 +420,22 @@ function nav_bar_shop_assist() {
     document.getElementById("time_sheet_sub_menu").style.display = 'none';
     document.getElementById("som_sub_menu").style.display = 'none';
     document.getElementById("shop_assist_sub_menu").style.display = 'block';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'none';
+}
+function nav_bar_whatsapp_marketing() {
+    document.getElementById("shop_shop_plus_submenu").style.display = 'none';
+    document.getElementById("user_settings_sub_menu").style.display = 'none';
+    document.getElementById("admin_sub_menu").style.display = 'none';
+    document.getElementById("purchaser_sub_menu").style.display = 'none';
+    document.getElementById("goods_receipts_sub_menu").style.display = 'none';
+    document.getElementById("approvals_sub_menu").style.display = 'none';
+    document.getElementById("content_management_sub_menu").style.display = 'none';
+    document.getElementById("configuration_sub_menu").style.display = 'none';
+    document.getElementById("user_settings_sub_menu").style.display = 'none';
+    document.getElementById("time_sheet_sub_menu").style.display = 'none';
+    document.getElementById("som_sub_menu").style.display = 'none';
+    document.getElementById("shop_assist_sub_menu").style.display = 'none';
+    document.getElementById("whatsapp_marketing_sub_menu").style.display = 'block';
 }
 
 function hide_nav_and_leftpanel(parent_url) {

@@ -44,10 +44,10 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
 def send_message(request):
     global image_path
     try:
-        message = request.POST['message']
-        start_hours = int(request.POST['hours'].strip('"'))
-        start_minutes = int(request.POST['minutes'])
-        csv_file = request.FILES['csv']
+        message = request.POST.get('message', '')  # Get 'message' with default value ''
+        start_hours = int(request.POST.get('hours', 0))  # Get 'hours' with default value 0
+        start_minutes = int(request.POST.get('minutes', 0))  # Get 'minutes' with default value 0
+        csv_file = request.FILES.get('csv')
         image_file = request.FILES.get('image')
 
         # Save the image to the specified directory if provided

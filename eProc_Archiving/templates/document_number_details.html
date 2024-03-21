@@ -259,9 +259,9 @@
                                     <td>{{item_data.unit}}</td>
                                     <td>{{item_data.quantity}}</td>
                                     {% if type == 'PO' %}
-                                    <td><a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">{{item_data.sc_num}}</a></td>
+                                    <td><a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank" style="color: blue;">{{item_data.sc_num}}</a></td>
                                     {% elif type == 'SC' %}
-                                    <td><a href="{% url 'eProc_Archiving:document_info' 'PO' item_data.po_num %}" target="_blank">{{item_data.po_num}}</a></td>
+                                    <td><a href="{% url 'eProc_Archiving:document_info' 'PO' item_data.po_num %}" target="_blank" style="color: blue;">{{item_data.po_num}}</a></td>
                                     {% endif %}
                                     <td>
                                         <div class="item-action-icon-section">
@@ -675,6 +675,7 @@
                             <span class="po-value-label">Total Value (Net)</span>
                             <span class="po-value-desc" id="total-value-sum" > {{header_data.currency}}</span>
                         </div>
+                        <hr>
                         <div class="po-value-section">
                             <span class="po-value-label">Total Value (Gross)</span>
                             <span class="po-value-desc"> {{header_data.currency}}</span>
@@ -1156,7 +1157,7 @@
                                                     <td>{{ header_data.description }}</td>
 
                                                     <td>
-                                                            <a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank">
+                                                            <a href="{% url 'eProc_Archiving:document_info' 'SC' item_data.sc_num %}" target="_blank" style="color: blue;">
                                                                 {{ item_data.sc_num }}
                                                             </a>
                                                     </td>

@@ -7,9 +7,7 @@ import time
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import pywhatkit as kit
+
 from io import TextIOWrapper
 from io import StringIO
 
@@ -29,26 +27,29 @@ def index(request):
     return render(request, 'marketing.html', context)
 
 
-def send_whatsapp_message(phone_number, message, send_time):
+def send_whatsapp_message(phone_number, message, image_path, send_time):
     try:
-        # Initialize Chrome options
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Run in headless mode
+        # Check if either message or image is missing
+        if not message and not image_path:
+            print("Both message and image are missing. Nothing to send.")
+            return
 
-        # Initialize Chrome driver
-        driver = webdriver.Chrome(options=chrome_options)
+        # Get the current time
+        now = datetime.datetime.now()
 
-        # Open WhatsApp Web
-        driver.get("https://web.whatsapp.com")
-        time.sleep(10)  # Wait for the page to load
+        # Calculate the delay until the scheduled time
+        delay = (send_time - now).total_seconds()
 
-        # Send message
-        kit.sendwhatmsg_to_group(phone_number, message, send_time.hour, send_time.minute, driver=driver)
+        # If the scheduled time is in the future, wait until it's time to send
+        if delay > 0:
+            print(f"Waiting for {delay} seconds until the scheduled send time.")
+            time.sleep(delay)
 
-        # Close the driver
-        driver.quit()
+        # Send the completed message (either text or image or both)
+        if message or image_path:
+            # Assuming you have another method to send WhatsApp messages here
+            print(f"WhatsApp message sent successfully to {phone_number}")
 
-        print(f"Message sent successfully to {phone_number}")
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
         import traceback

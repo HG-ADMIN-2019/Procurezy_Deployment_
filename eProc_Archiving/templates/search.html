@@ -25,22 +25,48 @@
         <div class="card card-shadow-1">
             <div class="card-body">
                 <div class="search-form">
-                    <form method="POST" action="{% url 'eProc_Archiving:docsearch' %}">
+                    <form method="POST" id="requisition_form" action="{% url 'eProc_Archiving:docsearch' %}">
                         {% csrf_token %}
                         <div class="row">
-                            {{ sform.non_field_errors }}
+                            <div class="col-md" id="errorMessages">
+                                {% if sform.errors %}
+                                    {% for field in sform %}
+                                        {% for error in field.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% if sform.cleaned_data.from_date and sform.cleaned_data.to_date %}
+                                    {% if sform.cleaned_data.from_date > sform.cleaned_data.to_date %}
+                                        <div class="alert alert-danger" role="alert">
+                                            'From Date' cannot be greater than 'To Date'
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
                             {% for field in sform %}
                             <div id="{{ field.name }}" class="sfield" title="{{ field.label }}">
-<!--                                {{ field.errors }}-->
                                 <div class="col-md">
                                     {{ field.label_tag }} {{ field }}
+                                    {% if field.label == 'Creator' %}
+                                        <span id="err_empnum" class="error_message" hidden></span>
+                                    {% endif %}
+                                    {% if field.label == 'Requester' %}
+                                        <span id="err_requester" class="error_message" hidden></span>
+                                    {% endif %}
+                                    {% if field.label == 'Enter supplier ID' %}
+                                        <span id="err_supplier" class="error_message" hidden></span>
+                                    {% endif %}
                                 </div>
                             </div>
-
-                            <!--From date and to date should be displayed in same line-->
+                            <!-- From date and to date should be displayed in the same line -->
                             {% if forloop.counter == 3 or forloop.counter == 5 or forloop.counter == 6 %}
                             {% else %}
-
                             <br />
                             {% endif %}
                             {% endfor %}
@@ -48,7 +74,7 @@
                 <br>
         <div class="elements-space-between">
             <div>
-<!--                <button class="btn btn-outline-primary" type="reset" value="Reset" id="resetButton"><i class="fas fa-sync-alt"></i> reset</button>-->
+                <button id="clearFiltersButton" class="btn btn-link" type="button" onclick="clearFilters()">Clear filters</button>
                 <button id="hg_doc_report_search" class="btn btn-primary" onclick="search_click()" type="submit" title="Please click to get the search details!">
                     <i class="fas fa-search"></i>Search
                 </button>
@@ -340,32 +366,176 @@ function expandTree() {
         });
     });
 
-// Listen for the "Reset" button click
-    $('#resetButton').click(function (e) {
-<!--         OpenLoaderPopup();-->
-<!--        e.preventDefault();-->
-        resetFields();
+//*******************************************************
+    document.addEventListener("DOMContentLoaded", function() {
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+    // Event listener for the "Clear filters" button
+        $('#clearFiltersButton').click(function () {
+            clearFilters();
+            $('#requisition_form').submit();
+        });
+
+        // Function to clear filters
+        function clearFilters() {
+            const docTypeField = document.querySelector('select[name="doc_type"]');
+            if (docTypeField) {
+                docTypeField.selectedIndex = 0; // Reset to the first option
+                sessionStorage.setItem("DOC_TYPE", docTypeField.value);
+            }
+            var storedDocType = sessionStorage.getItem("DOC_TYPE");
+            if (storedDocType) {
+                $('#id_doc_type').val(storedDocType);
+            }
+            const docNumField = document.querySelector('input[name="doc_num"]');
+            if (docNumField) {
+                docNumField.value = '';
+            }
+            const today = new Date();
+            const fromDateField = document.querySelector('input[name="from_date"]');
+            if (fromDateField) {
+                fromDateField.value = formatDate(today);
+            }
+            const toDateField = document.querySelector('input[name="to_date"]');
+            if (toDateField) {
+                toDateField.value = formatDate(today);
+            }
+            const createdByField = document.querySelector('input[name="created_by"]');
+            if (createdByField) {
+                createdByField.value = '';
+            }
+            const requesterField = document.querySelector('input[name="requester"]');
+            if (requesterField) {
+                requesterField.value = '';
+            }
+            const companyCodeField = document.querySelector('select[name="company_code"]');
+            if (companyCodeField) {
+                companyCodeField.selectedIndex = 0; // Reset to the first option
+                sessionStorage.setItem("COMPANY", companyCodeField.value);
+            }
+            var storedCompany = sessionStorage.getItem("COMPANY");
+            if (storedCompany) {
+                $('#id_company_code').val(storedCompany);
+            }
+            const supplierField = document.getElementById('id_supplier');
+            if (supplierField) {
+                supplierField.value = '';
+                sessionStorage.removeItem("SUPPLIER");
+            }
+            toggleTableVisibility(true);
+        }
+
+        // Make the clearFilters function accessible in the global scope
+        window.clearFilters = clearFilters;
+            toggleTableVisibility(true); // Show the table initially
+
+         //****************************
+        function toggleSupplierField() {
+            const docTypeField = $('#id_doc_type'); // Assuming "id_doc_type" is the ID of the Document Type field.
+            const supplierField = $('#supplierField'); // The ID of the Supplier field container.
+            if (docTypeField.val() === "PO") {
+                supplierField.show();
+            } else {
+                supplierField.hide();
+            }
+        }
+
+        // Add an event listener to the Document Type field to toggle Supplier field visibility
+        const docTypeField = document.querySelector('select[name="doc_type"]');
+        if (docTypeField) {
+            docTypeField.addEventListener('change', function() {
+                const selectedDocType = docTypeField.options[docTypeField.selectedIndex].value;
+                const supplierField = document.getElementById('supplierField');
+                const supplierNameElement = document.getElementById('supplierNameElement');
+                if (selectedDocType === 'Purchase Order') {
+                    supplierField.style.display = 'block';
+                    supplierNameElement.style.display = 'none';
+                } else {
+                    supplierField.style.display = 'none';
+                    supplierNameElement.style.display = 'none';
+                }
+            });
+        }
+    })
+
+    // Function to toggle the visibility of the table and associated elements
+    function toggleTableVisibility(showTable) {
+        const docListTable = document.getElementById('doc_list');
+        if (docListTable) {
+            const pagination = docListTable.nextElementSibling; // Assuming pagination is a sibling element
+            const searchResultCard = document.querySelector('.search_result_count_card');
+            const headerDetailsCard = document.querySelector('.card.mt-5');
+            if (showTable) {
+                docListTable.style.display = 'table';
+                if (pagination) {
+                    pagination.style.display = 'block';
+                }
+                if (searchResultCard) {
+                    searchResultCard.style.display = 'block';
+                }
+                if (headerDetailsCard) {
+                    headerDetailsCard.style.display = 'block';
+                }
+            } else {
+                docListTable.style.display = 'none';
+                if (pagination) {
+                    pagination.style.display = 'none';
+                }
+                if (searchResultCard) {
+                    searchResultCard.style.display = 'none';
+                }
+                if (headerDetailsCard) {
+                    headerDetailsCard.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    $('form').on('submit',function (e) {
+        OpenLoaderPopup();
+        var valid = true;
+        var temp = document.getElementsByClassName('mandatory_fields');
+        for (var i = 0; i<temp.length; i++) {
+            if(!(temp[i].value == '') || !(temp[i].value == null)){
+                data = temp[i].value;
+                var count = data.split('**').length - 1;
+                if((count >= 1) || (data == '*')){
+                    var display_id = temp[i].nextElementSibling.id;
+                    $('#'+display_id).prop('hidden', false);
+                    document.getElementById(temp[i].nextElementSibling.id).innerHTML = "Please enter valid value";
+                    valid = false;
+                }
+            }
+        }
+        if(!valid){
+            localStorage.setItem("error_flag", 1);
+            e.preventDefault();
+            $("#err_username").prop("hidden", false);
+                setTimeout(function() {
+                       CloseLoaderPopup();
+         }, 500);
+        }
     });
 
-    function resetFields() {
-        // Reset specific input fields
-        $('#id_doc_num').val('');
-        $('#id_created_by').val('');
-        $('#id_requester').val('');
-
-        // Reset specific dropdowns to their default values
-        resetDropdownToDefault("Select Document Type", "defaultTypeValue");
-        resetDropdownToDefault("From Date", "defaultTimeFrameValue");
-        resetDropdownToDefault("To Date", "defaultStatusValue");
-        localStorage.removeItem('formData');
-        $('form').submit();
-    }
-
-    // Function to reset a dropdown to its default value based on the label text
-    function resetDropdownToDefault(labelText, defaultValue) {
-        var dropdown = $("label:contains('" + labelText + "')").next("select");
-        dropdown.val(defaultValue || dropdown.find("option:first").val());
-    }
+    $("body").on("keypress blur change", ".mandatory_fields", function (event) {
+         var get_value = event.currentTarget.value;
+            var count = get_value.split('**').length - 1;
+            if((count>=1)|| (get_value == '*'))
+            {
+            var display_id = event.currentTarget.nextElementSibling.id;
+            $('#'+display_id).prop('hidden', false);
+            document.getElementById(display_id).style.display = "block";
+            event.currentTarget.nextElementSibling.innerHTML = "Please enter valid value";
+            }
+            else{
+                $(".error_message").prop("hidden", true);
+                document.getElementById(event.currentTarget.nextElementSibling.id).style.display = "true";
+            }
+    });
 
 </script>
 

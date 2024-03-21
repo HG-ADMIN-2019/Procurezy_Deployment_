@@ -26,7 +26,7 @@ class SearchForm1(forms.Form):
         min_value=10000,
         max_value=9999999999,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "Number"}),
     )
     from_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -45,7 +45,7 @@ class SearchForm1(forms.Form):
         label='Enter supplier ID',
         max_length=20,
         required=False,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control check_for_search mandatory_fields"}),
     )
     po_number = forms.CharField(
         label='PO Number',
@@ -128,11 +128,11 @@ class ExtSearch1(SearchForm1):
         label='Creator',
         required=False,
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control check_for_search mandatory_fields"}),
     )
     requester = forms.CharField(
         label='Requester',
         required=False,
         max_length=20,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control check_for_search mandatory_fields"}),
     )

@@ -5,26 +5,18 @@ import re
 import datetime
 import time
 from django.conf import settings
-from django.http import JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render
-
+from flask import Flask, request
+import pywhatkit as kit
 from io import TextIOWrapper
-from io import StringIO
-
 from django.views.decorators.csrf import csrf_exempt
-from flask.app import Flask
 
 app = Flask(__name__)
 
 
 def index(request):
-    context = {
-        'inc_nav': True,
-        'inc_footer': True,
-        'is_slide_menu': True,
-        'is_configuration_active': True
-    }
-    return render(request, 'marketing.html', context)
+    return render(request, 'home.html')
 
 
 def send_whatsapp_message(phone_number, message, image_path, send_time):
@@ -34,22 +26,14 @@ def send_whatsapp_message(phone_number, message, image_path, send_time):
             print("Both message and image are missing. Nothing to send.")
             return
 
-        # Get the current time
-        now = datetime.datetime.now()
-
-        # Calculate the delay until the scheduled time
-        delay = (send_time - now).total_seconds()
-
-        # If the scheduled time is in the future, wait until it's time to send
-        if delay > 0:
-            print(f"Waiting for {delay} seconds until the scheduled send time.")
-            time.sleep(delay)
-
         # Send the completed message (either text or image or both)
         if message or image_path:
-            # Assuming you have another method to send WhatsApp messages here
-            print(f"WhatsApp message sent successfully to {phone_number}")
+            kit.sendwhats_image(phone_number, image_path, caption=message)
 
+            # Wait for a few seconds before moving on
+            time.sleep(5)
+
+            print(f"Message sent successfully to {phone_number}")
     except Exception as e:
         print(f'Error sending message to {phone_number}: {str(e)}')
         import traceback

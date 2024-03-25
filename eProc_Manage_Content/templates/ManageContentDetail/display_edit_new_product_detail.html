@@ -1258,6 +1258,7 @@ const create_popup_validations = (variant_type_selected_id) => {
 var product_specification_data = [];
 function create_new_specification_popup(){
     var spec_add_new_html
+    $('#create_prod_spec_error_div').hide();
     $('#product_spec_tbody').empty();
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
@@ -1269,6 +1270,22 @@ function create_new_specification_popup(){
     }
     $('#product_spec_tbody').append(spec_add_new_html);
     $('#create_product_spec_popup').modal('show')
+
+    $('#product_spec_tbody input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
 }
 //############################### END OF NEW PRODUCT SPECIFICATION POPUP ##########################
 
@@ -1276,6 +1293,22 @@ function create_new_specification_popup(){
  function add_popup_row() {
     var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
     $('#product_spec_tbody').append(spec_add_new_html);
+
+    $('#product_spec_tbody tr:last-child input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
  }
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
 
@@ -1500,6 +1533,7 @@ function variant_option_delete(obj) {
 }
 
 function create_product_discount_popup(){
+    $('#create_prod_discount_error_div').hide();
     $('#discount_field_name').val('');
     $('#tbody_product_discount input[type="number"]').val('');
     $('#tbody_product_discount').empty();

@@ -1193,6 +1193,600 @@
     <div style="height:30px; font-size:12px; text-align:right; padding-right:10px;" >© 2022 Hiranya-Garbha Consultancy. All rights reserved.</div>
 </div>
 {% endif %}
+{% if type == 'CONF' %}
+<div class="container-fluid" style="padding: 1.5rem;">
+    <div id="button2" class="d-flex justify-content-between mb-3">
+        {% for header_data in header_details %}
+        {% if type == 'CONF' %}
+        <h3>&nbsp;&nbsp;Confirmation #{{ header_data.doc_number }}</h3>
+        {% endif %}
+        {% endfor %}
+        <div class="d-flex">
+             <div class="mo-doc-button-group__saved" >
+                    <button type="button" class="btn btn-outline-primary" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+             </div>
+        </div>
+    </div>
+    <div class="mo-doc-body-wrapper">
+        <!--Display Header Details-->
+        <div class="mo-doc-header">
+            <div class="card card-shadow-1">
+                <div class="card-body mo-doc-header__doc-details" id="header_div2">
+                    <div>
+                        <div>
+                            {% for header_data in header_details %}
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Document Number</span><br>
+                                    <span class="po-header-desc">{{ header_data.doc_number }}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Document Name</span><br>
+                                    <span class="po-header-desc">{{header_data.description}}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Supplier</span><br>
+                                    <span class="po-header-desc">{{header_data.supplier_id}}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Created On</span><br>
+                                    <span class="po-header-desc">{{header_data.created_at}}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Shipping Address</span><br>
+                                    <span class="po-header-desc">
+                                        {{po_header_level_address.title}} {{po_header_level_address.name1}}
+                                        {{po_header_level_address.name2}}, {{po_header_level_address.street}}
+                                        {{po_header_level_address.area}} {{po_header_level_address.landmark}}
+                                        {{po_header_level_address.city}} {{po_header_level_address.postal_code}}
+                                        {{po_header_level_address.region}} {{po_header_level_address.country_code}}
+                                    </span>
+                                </div>
+                                {% if item_details and item_details|length > 0 %}
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Organisation</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_org }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="po-header-label">Purchasing Group</span><br>
+                                        <span class="po-header-desc">{{ item_details.0.purch_grp }}</span>
+                                    </div>
+                                {% endif %}
+<!--                                <div class="col-md-3">-->
+<!--                                    <span class="po-header-label">Payment Terms</span><br>-->
+<!--                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-3">-->
+<!--                                    <span class="po-header-label">Incoterm</span><br>-->
+<!--                                    <span class="po-header-desc">{{po_header_details.0.incoterm}} - {{po_header_details.0.incoterm_loc}}</span>-->
+<!--                                </div>-->
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Status</span><br>
+                                    <span class="badge badge-pill badge_status_approved po-header-desc po-header-desc__status ">{{header_data.status}}</span>
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <span class="po-header-label">Requested By</span><br>
+                                    <span class="po-header-desc"> {{header_data.created_by}}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+           <div class="col-md-8">
+                <div class="card card-shadow-1">
+                    <div class="card-body elements-space-between">
+                        <h5>Items Overview</h5>
+                    </div>
+                    <div>
+                        <div class="table-responsive-lg">
+                            <table class="table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Item</th>
+                                    <th style="width: 20%;">Description</th>
+                                    <th>Delivery Date</th>
+                                    <th>Price Unit</th>
+                                    <th>Unit</th>
+                                    <th>Price per unit</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item_data in item_details %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>
+                                        <a href="#" onclick="view_detail('{{ po_item_detail.int_product_id}}','{{ po_item_detail.po_item_guid}}')">
+                                            <img class="sc-item-table__item-img" onerror='this.src="/static/images/no-image-cropped.png"' src="/media/{{po_item_detail.image_url}}">
+                                        </a>
+                                    </td>
+                                     <td>
+                                        <div id="desc2-{{items.guid}}">
+                                            {% if item_data.call_off == '01'%}
+                                            <a href="#" onclick="view_detail('{{ po_item_detail.int_product_id}}','{{ po_item_detail.po_item_guid}}')">{{item_data.prod_description}}</a>
+                                            {% else %}
+                                            <a  >{{item_data.prod_description}}</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{item_data.item_del_date|date:'Y-m-d'}}</td>
+                                    <td>{{item_data.price_unit}}</td>
+                                    <td>{{item_data.unit}}</td>
+                                    {% for header_data in header_details %}
+                                    <td>{{item_data.price}} {{header_data.currency}} </td>
+                                    <td>{{item_data.quantity}}</td>
+                                    <td class="total-value">{{header_data.total_value}} {{header_data.currency}}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+           </div>
+            <div class="col-md-4">
+                <div class="card card-shadow-1 po-value-card">
+                    <div class="card-body">
+                        {% for header_data in header_details %}
+                        <div class="po-value-section">
+                            <span class="po-value-label">Total Value (Net)</span>
+                            <span class="po-value-desc" id="total-value-sum2" > {{header_data.currency}}</span>
+                        </div>
+                        <hr>
+                        <div class="po-value-section">
+                            <span class="po-value-label">Total Value (Gross)</span>
+                            <span class="po-value-desc"> {{header_data.currency}}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card sc-completion-item-detail card-shadow-1">
+                    {% for item_data in item_details %}
+                    <div class="hg_class_prod_desc card-body">
+                        <div class="prev-next-btn-group">
+                            <button class="btn btn-round" onclick="item_detail_previous(this)">
+                                <i id="previous_button2_{{forloop.counter0}}" class="fas fa-arrow-left" title="Previous Item"></i>
+                            </button>
+                            <span class="item-description text-overflow-ellipsis">Item - {{ forloop.counter }} - {{item_data.prod_description}}</span>
+                            <button class="btn btn-round" onclick="item_detail_next(this)">
+                                <i id="next_button2_{{forloop.counter}}" class="fas fa-arrow-right" title="Next Item"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div>
+                       <ul class="sub-tabs h-scrollbar">
+                            <li data-tab-target="#item_basic_information" class="sub-tab active">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="material-icons">info</i><span> Basic Details</span>
+                                </div>
+                            </li>
+                           <li data-tab-target="#item_accountng_details" class="sub-tab">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="material-icons-outlined"> account_balance_wallet </i><span> Accounting Details</span>
+                                </div>
+                            </li>
+<!--                           <li data-tab-target="#item_approval_process_overview" class="sub-tab" id="item_approval_overview">-->
+<!--                                <div class="sub-tab-link text-size-x-small" onclick="open_item_details(event, 'approval_process_summary')">-->
+<!--                                    <i class="material-icons">check_circle </i><span> Approval Process Overview</span>-->
+<!--                                </div>-->
+<!--                           </li>-->
+                           <li data-tab-target="#related_document" class="sub-tab">
+                                <div class="sub-tab-link text-size-x-small">
+                                    <i class="fas fa-address-card"></i><span> Related Documents</span>
+                                </div>
+                           </li>
+                       </ul>
+                        <div class="tab-content">
+                            {% for item_data in item_details %}
+                            <div id="item_basic_information2" data-tab-content class="active">
+                                <div class="m-4">
+
+                                    <div class="hg_class_item_data">
+
+                                        <div class="row">
+
+                                            <div class="col">
+                                                <h4>Identification</h4>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Item Type</label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control" name="{{item_data.prod_type}}" value="{{item_data.prod_type}}"
+                                                               id="ScItem-prod_type2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Description</label>
+                                                    <div class="col-8">
+                                                        <input class="form-control call_off-{{itm.call_off}}-description" type="text" name="{{item_data.prod_description}}"
+                                                               value="{{item_data.prod_description}}" id="ScItem-description2-{{itm.guid}}" onchange="update_description(this.id);" disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Product Category</label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control call_off-{{itm.call_off}}-prod_cat" name="{{item_data.prod_cat}}" value="{{item_data.prod_cat}}"
+                                                               id="ScItem-prod_cat2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% if itm.call_off in '01' or itm.call_off in '02'%}
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Catalog</label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control" name="{{item_data.catalog_id}}"
+                                                               value="{{item_data.catalog_id}} - {{itm.catalog_name}}" id="ScItem-catalog_id2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                                <div class="mt-3">
+                                                    <h5 class="h4">Organization</h5>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Company Code</label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{item_data.comp_code}}"
+                                                                   value="{{item_data.comp_code}}" id="ScItem-comp_code2-{{itm.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Purchasing Organization</label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{item_data.purch_org}}"
+                                                                   value="{{item_data.purch_org}}" id="ScItem-purch_org2-{{itm.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Purchasing Group</label>
+                                                        <div class="col-8">
+                                                            <select name="{{itm.pgrp_description}}" id="ScItem-purch_grp2-{{itm.guid}}" class="form-control" disabled>
+
+                                                                <option>{{item_data.purch_grp}}</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <h4>Further Properties</h4>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Supplier Product Number</label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{item_data.supp_prod_num}}"
+                                                                   value="{{item_data.supp_prod_num}}" id="ScItem-supp_product_id2-{{itm.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">UNSPSC</label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{item_data.unspsc}}" value="{{item_data.unspsc}}"
+                                                                   id="ScItem-prod_cat_id2-{{itm.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+                                                    {% if itm.silent_po %}
+                                                    <div class="form-group row" hidden>
+                                                        <label class="col-4 col-form-label">Silent PO</label>
+                                                        <div class="col-8">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="{{itm.silent_po}}"
+                                                                       id="ScItem-silent_po-{{itm.guid}}_check2" checked disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="form-group row" hidden>
+                                                        <label class="col-4 col-form-label">Silent PO</label>
+                                                        <div class="col-8">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="{{itm.silent_po}}"
+                                                                       id="ScItem-silent_po2-{{itm.guid}}" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <h4>Currency, Values and Delivery Date</h4>
+
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Price/Currency/Price Unit</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{item_data.price}}" value="{{item_data.price}}" id="ScItem-price2-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                                    </div>
+                                                    <div class="col">
+                                                        {% for header_data in header_details %}
+                                                        <input type="text" class="form-control" name="{{header_data.currency}}" value="{{header_data.currency}}" id="ScItem-currency2-{{itm.guid}}" disabled>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{item_data.price_unit}}" value="{{item_data.price_unit}}" id="ScItem-price_unit2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Quantity/Unit</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control call_off-{{itm.call_off}}-quantity check_number" name="{{item_data.quantity}}" value="{{item_data.quantity}}" id="ScItem-quantity2-{{itm.guid}}" onchange="approve_tab_click_trigger_wf(event,this.id,'PRICING_TYPE')" disabled>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" name="{{item_data.unit}}" value="{{item_data.unit}}" id="EACH2" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Total Item Value </label>
+                                                    <div class="col-8">
+                                                        {% for header_data in header_details %}
+                                                        <input type="text" class="form-control" name="{{header_data.total_value}}" value="{{header_data.total_value}}" id="ScItem-value2-{{itm.guid}}" disabled>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Goods/Services Recipient </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control check_product_name" name="{{item_data.goods_recep}}" value="{{item_data.goods_recep}}" id="ScItem-goods_recep2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                                {% if itm.call_off == 'PR' %}
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Lead Time </label>
+                                                    <div class="col-8">
+                                                        <input type="number" min="1" class="form-control pr_lead_time" name="{{itm.lead_time}}" value="{{itm.lead_time}}" id="ScItem-lead_time2-{{itm.guid}}" onchange="update_delivery_date('on_lead_time_change', this.id)" disabled>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label">Delivery Date </label>
+                                                    <div class="col-8">
+                                                        <input type="text" class="form-control read_only_field" name="{{item_data.item_del_date}}" value="{{item_data.item_del_date|date:'Y-m-d'}}" id="ScItem-item_del_date2-{{itm.guid}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="item_accountng_details" data-tab-content >
+                                <div class="m-4">
+                                    {% for accounting_data in accounting_details %}
+                                    <div class="hg_class_sc_acc_details">
+
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4>Accounting Details</h4>
+                                                <div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Number </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{accounting_data.acc_item_num }}"
+                                                                   value="{{accounting_data.acc_item_num }}" id="ScAccounting-acc_item_num2-{{po_accounting_detail.guid}}" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Percentage </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" name="{{accounting_data.dist_perc}}"
+                                                                   value="{{accounting_data.dist_perc}}" id="ScAccounting-dist_perc2-{{ po_accounting_detail.guid }}" disabled>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">Account Assignment Category </label>
+                                                        <div class="col-8">
+                                                            <select class="form-control check_multiple_account_asign_type" id="ScAccounting-acc_cat2-{{ po_accounting_detail.guid }}"
+                                                                    onchange="display_acc_val(this)" class="hg_modal_select_field" disabled>
+
+                                                                <option value="CC - Cost Center">{{accounting_data.acc_cat}}</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    {% if accounting_data.cost_center %}
+                                                        <div id="id_cost_center2{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Cost Center </label>
+                                                                <div class="col-8" id="input_costcenter2{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-cost_center2-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.cost_center }}" value="{{ accounting_data.cost_center }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if accounting_data.asset_number %}
+                                                        <div id="id_asset2{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Asset </label>
+                                                                <div class="col-8" id="input_asset2{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-asset_number2-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ po_accounting_detail.asset_number }}" value="{{ accounting_data.asset_number }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if accounting_data.internal_order %}
+                                                        <div id="id_int_ord2{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">Internal Order </label>
+                                                                <div class="col-8" id="input_intorder2{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-internal_order2-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.internal_order }}" value="{{ accounting_data.internal_order }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if accounting_data.wbs_ele %}
+                                                        <div id="id_wbs2{{ forloop.counter }}">
+                                                            <div class="form-group row">
+                                                                <label class="col-4 col-form-label">WBS </label>
+                                                                <div class="col-8" id="input_wbs2{{ forloop.counter }}">
+                                                                    <input type="text" id="ScAccounting-wbs_ele2-{{ po_accounting_detail.guid }}" class="hg_modal_select_field form-control" name="{{ accounting_data.wbs_ele }}" value="{{ accounting_data.wbs_ele }}" onclick="open_account_assign_values_modal(this);" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label">General Ledger Account </label>
+                                                        <div class="col-8">
+                                                            <input type="text" class="form-control" value="{{accounting_data.gl_acc_num}}" id="ScAccounting-gl_acc_num2-{{ po_accounting_detail.guid }}" class="hg_modal_select_field" disabled>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+<!--                            <div id="item_approval_process_overview" data-tab-content>-->
+<!--                                <div class="m-4">-->
+<!--                                    <div id="id_dynamic1"></div>-->
+<!--                                     <div style="overflow: auto;">-->
+<!--                                         <div class="workflow-overview">-->
+<!--                                             <div class="card text-dark workflow-overview__process-card" id="workflow_status_div1">-->
+<!--                                               <div class="card-body">-->
+<!--                                                   <span class="h3">Approval Process Overview</span> by-->
+<!--                                                   <span class="badge badge-secondary">Financial Approval</span>-->
+<!--                                               </div>-->
+<!--                                             </div>-->
+<!--                                             <div class="workflow-overview__section">-->
+<!--                                                 <div class="workflow-overview__user-icon-container ao-logged-in-user">-->
+<!--                                                     <div class="workflow-user-bg">-->
+<!--                                                         <i class="fa fa-user fa-3x" aria-hidden="true"> </i>-->
+<!--                                                     </div>-->
+<!--                                                     {% for header_data in header_details %}-->
+<!--                                                     <button type="button" class="button-workflow-user">{{header_data.requester}}</button>-->
+<!--                                                     {% endfor %}-->
+<!--                                                 </div>-->
+<!--                                                 <div id="div_manager_detail" class="workflow-overview__managers-section">-->
+<!--                                                     <div class="workflow-overview__next-icon-container">-->
+<!--                                                        <i class="fas fa-angle-double-right fa-3x"></i>-->
+<!--                                                     </div>-->
+<!--                                                     <div class="workflow-overview__user-icon-container">-->
+<!--                                                         <div class="workflow-user-bg workflow-completed">-->
+<!--                                                            <i class="fas fa-user-check fa-2x icon-workflow-completed" aria-hidden="true"> </i>-->
+<!--                                                         </div>-->
+<!--                                                         {% for approval_data in approval_details %}-->
+<!--                                                         <button onclick="show_manager_detail1(this.id);" type="button" class="button-workflow-user">{{approval_data.app_id}}</button>-->
+<!--                                                         {% endfor %}-->
+<!--                                                     </div>-->
+<!--                                                 </div>-->
+<!--                                             </div>-->
+<!--                                         </div>-->
+<!--                                     </div>-->
+<!--                                </div>-->
+<!--                                &lt;!&ndash;  start of manager detail pop up&ndash;&gt;-->
+<!--                                <div class="modal fade show" id="manager-detail-popup1" tabindex="-1" aria-hidden="true" role="dialog">-->
+<!--                                    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">-->
+<!--                                        <div class="modal-content">-->
+<!--                                            <div class="modal-header">-->
+<!--                                                <h5 class="modal-title">Financial Approval</h5>-->
+<!--                                                <button type="button" class="close" data-dismiss="modal" aria-label="close">-->
+<!--                                                    <span aria-hidden="true">x</span>-->
+<!--                                                </button>-->
+<!--                                            </div>-->
+<!--                                            <div class="">-->
+<!--                                                <table class="table table-bordered" id="manager_detail_table1">-->
+<!--                                                    <thead class="thead-light">-->
+<!--                                                        <tr>-->
+<!--                                                            <th scope="col">Approval Type</th>-->
+<!--                                                            <th scope="col">Step Number</th>-->
+<!--                                                            <th scope="col">Process Level Status</th>-->
+<!--                                                            <th scope="col">Approval Status</th>-->
+<!--                                                            <th scope="col">Approver</th>-->
+<!--                                                            <th scope="col">Processed On</th>-->
+<!--                                                            <th scope="col">Received On</th>-->
+<!--                                                        </tr>-->
+<!--                                                    </thead>-->
+<!--                                                    <tbody>-->
+<!--                                                        <tr></tr>-->
+<!--                                                        {% for approval_data in approval_details %}-->
+<!--                                                            <tr>-->
+<!--                                                                <td>{{approval_data.app_desc}}</td>-->
+<!--                                                                <td>{{approval_data.step_num }}</td>-->
+<!--                                                                <td>{{approval_data.proc_lvl_sts}}</td>-->
+<!--                                                                <td>{{approval_data.app_sts}}</td>-->
+<!--                                                                <td>{{approval_data.app_id}}</td>-->
+<!--                                                                <td>{{approval_data.proc_time}}</td>-->
+<!--                                                                <td>{{approval_data.recevied_time}}</td>-->
+<!--                                                            </tr>-->
+<!--                                                        {% endfor %}-->
+<!--                                                    </tbody>-->
+<!--                                                </table>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div id="related_document" data-tab-content >
+                                <div class="m-4">
+                                    <div class="hg_class_related_documents">
+                                        <h4>History</h4>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Document</th>
+                                                    <th>Name</th>
+                                                    <th>Document Number</th>
+                                                    <th>Status</th>
+                                                    <th>Date</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit</th>
+                                                    <th>Net Value</th>
+                                                    <th>Currency</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>Purchase Order</td>
+                                                    {% for header_data in header_details %}
+                                                    <td>{{ header_data.description }}</td>
+                                                    {% if type == 'CONF' %}
+                                                    <td><a href="{% url 'eProc_Archiving:document_info' 'PO' header_data.po_doc_number %}" target="_blank" style="color: blue;">{{ header_data.po_doc_number }}</a></td>
+                                                    {% endif %}
+                                                    <td>{{ header_data.status }}</td>
+                                                    <td>{{ item_data.item_del_date|date:'Y-m-d' }}</td>
+                                                    <td>{{ item_data.quantity }}</td>
+                                                    <td>{{ item_data.unit }}</td>
+                                                    <td>{{ item_data.price }}</td>
+                                                    <td>{{ header_data.currency }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% include 'ProductDetailPopup/basic_product_detail_popup.html' %}
 <script src="{% static 'scripts/manager-details.js' %}"></script>
 <script>

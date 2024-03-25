@@ -427,8 +427,8 @@
                                                 <tbody id="product_spec_main_tbody">
                                                 {% for product_spec in product_specification %}
                                                 <tr>
-                                                    <td><input type="text" class="spec-type-input" value="{{ product_spec.product_info_key }}"></td>
-                                                    <td><input type="text" class="spec-description-input" value="{{ product_spec.product_info_value }}"></td>
+                                                    <td><label class="spec-type-label">{{ product_spec.product_info_key }}</label></td>
+                                                    <td><label class="spec-description-label">{{ product_spec.product_info_value }}</label></td>
 
                                                 </tr>
                                                 {% endfor %}
@@ -632,6 +632,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="create_prod_spec_error_div"  class="alert alert-danger display-none" role="alert"></div>
                 <div id="id_del_add_button" class="mb-2">
                     <button class="btn btn-outline-primary" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>
                     <button class="btn btn-outline-primary" onclick="product_spec_popup_delete('product_spec_table')"><i class="fa fa-trash"></i> delete</button>
@@ -682,7 +683,7 @@
                     <br>
                     <div class="new-option-row-button-wrapper">
                         <span>Add Products Discount</span>
-                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_discount();"><i class="fa fa-plus"></i> Add new discount</button>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_Discount();"><i class="fa fa-plus"></i> Add new discount</button>
                     </div>
                     <table class="table" id="table_id_product_discount">
                         <thead>
@@ -830,12 +831,52 @@ $(document).ready(function(){
 
  //##################################### START ADD NEW LINE IN SPEC POPUP ###########################
  function add_popup_row() {
-    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
+    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
     $('#product_spec_tbody').append(spec_add_new_html);
+
+    // Add event listener to newly added input fields
+    $('#product_spec_tbody tr:last-child input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
  }
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
+function create_product_specification() {
 
+    const validations = create_product_specification_validations();
+
+    if (validations !== '') {
+        $('#create_prod_spec_error_div').html(validations);
+        $('#create_prod_spec_error_div').show();
+        return;
+    } else {
+        $('#create_prod_spec_error_div').hide();
+    }
+
+    product_specification_data = new Array();
+    $("#product_spec_table TBODY TR").each(function () {
+            var row = $(this);
+            var product_specification={};
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase().trim()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase().trim()
+            product_specification_data.push(product_specification);
+    });
+    update_product_specification_main_table();
+    $('#create_product_spec_popup').modal('hide');
+
+}
 
 function update_product_specification_main_table(){
     $('#product_spec_main_tbody').empty();
@@ -936,17 +977,34 @@ function variant_fields_clear () {
 //############################### START OF NEW PRODUCT SPECIFICATION POPUP ##########################
 function create_new_specification_popup(){
     var spec_add_new_html
+    $('#create_prod_spec_error_div').hide();
     $('#product_spec_tbody').empty();
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
-            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
         });
     }
     else{
-        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
     }
     $('#product_spec_tbody').append(spec_add_new_html);
     $('#create_product_spec_popup').modal('show')
+
+    $('#product_spec_tbody input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
 }
 //############################### END OF NEW PRODUCT SPECIFICATION POPUP ##########################
 
@@ -981,6 +1039,7 @@ const create_fields = () => {
                 error_flag = true;
             }
 
+
             table_data.push(vo_table_data);
         });
 
@@ -992,6 +1051,15 @@ const create_fields = () => {
             eform_data_new.push(variant_option_data)
             create_prod_variant_table(eform_data_new);
         }
+
+
+        });
+
+        // Populate table_data based on the selected variant type
+        if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
+            $("#table_id_vo_wo_iobp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
 
 
     } else if (variant_type_selected_id == 'VARIANT_BASE_PRICING'){
@@ -1157,6 +1225,21 @@ function create_prod_variant_table(eform_data_new) {
         // Create a div to display variant option name and functional button group
         var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button +' '+ edit_button +' </div>  </div>'
 
+<!--                                     DISCOUNT TAB CHANGES STARTS                       -->
+        var edit_button1
+        var delete_button1
+        delete_button1 =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
+        edit_button1 = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_discount_popup(this.id)"> Edit</button>'
+
+        // Create a div to display variant option name and functional button group
+        var table_heading_section1 = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button1 +' '+ edit_button1 +' </div>  </div>'
+
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+                $('#prod_discount_table_section').append(table_heading_section1);
+        }
+
+<!--                                     DISCOUNT TAB CHANGES ENDS                         -->
+
         // Create <table> element
         var create_tbl = document.createElement("table");
         create_tbl.className = 'table table-bordered';
@@ -1192,9 +1275,7 @@ function create_prod_variant_table(eform_data_new) {
 
         // Append <tbody> to <table>
         create_tbl.append(create_tblBody);
-        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
-            $('#prod_discount_table_section').append(table_heading_section);
-        } else {
+        if(variant_option_data.field_type != "QUANTITY_BASED_DISCOUNT"){
             $('#variant_table_section').append(table_heading_section);
         }
 
@@ -1551,7 +1632,7 @@ function AddNewRow_vo_wi_apbp() {
     $('#tbody_vo_wi_apbp').append(add_new_row);
 }
 
-function AddNewRow_product_discount() {
+function AddNewRow_product_Discount() {
     var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_product_discount').append(add_new_row);
 }
@@ -1585,9 +1666,12 @@ function variant_option_delete(obj) {
 }
 
 function create_product_discount_popup(){
-
+    $('#create_prod_discount_error_div').hide();
     $('#discount_field_name').val('');
     $('#tbody_product_discount input[type="number"]').val('');
+    $('#tbody_product_discount').empty();
+    var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
+    $('#tbody_product_discount').append(add_new_row);
     $('#create_product_discount_popup').modal('show')
 }
 
@@ -1643,6 +1727,7 @@ const create_product_discounts_validations = () => {
 }
 
 function edit_popup(variant_index) {
+    $('#create_error_div').hide();
     GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
     var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
     console.log('eform_data:', eform_data);
@@ -1703,7 +1788,7 @@ function update_row_vo_wo_iobp(eform_data) {
 function update_row_vo_wi_iobp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a radio button for the variant type
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
         // Construct the row with the radio button and checkbox for the default option
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Options"></td> <td><input type="number" value="' + item.option_price + '" class="form-control" placeholder="Price"></td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         $('#tbody_vo_wi_iobp').append(add_new_row);
@@ -1714,7 +1799,7 @@ function update_row_vo_wi_iobp(eform_data) {
 function update_row_vo_wi_apbp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a new row with input fields populated with data from variant_data
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
 
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" class="form-control" placeholder="Options" value="' + item.option_value + '"></td> <td><input type="number" class="form-control" placeholder="Price" value="' + item.option_price + '"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         // Append the new row to the table body
@@ -1722,13 +1807,11 @@ function update_row_vo_wi_apbp(eform_data) {
     });
 }
 
-
-
-
 function AddNewRow_product_discount(eform_data) {
     var add_new_row = "";
     $.each(eform_data.variant_data, function (i, item) {
         add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
+
 
 <!--function AddNewRow_product_discount(eform_data) {-->
 <!--    var add_new_row = "";-->
@@ -1751,7 +1834,25 @@ function AddNewRow_product_discount(eform_data) {
             errorSpan.prop('hidden', true);
         }
 
+
     });
+    $('#tbody_product_discount').append(add_new_row);
+}
+
+
+
+$(".mandatory_fields").on("input", function () {
+      var currentValue = $(this).val().trim();
+      var errorSpan = $(this).next('.error_message');
+
+      if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+          errorSpan.prop('hidden', false);
+          errorSpan.text("Please enter valid value");
+      } else {
+          errorSpan.prop('hidden', true);
+      }
+
+});
 
 $("#save_product_details").on("click", function () {
     // Iterate over each mandatory field and trigger the input event
@@ -1788,44 +1889,54 @@ $("#save_product_details").on("click", function () {
         });
 });
 
+const create_product_specification_validations = () => {
+    const tableRows = $("#product_spec_table tbody tr");
+    const newKeys = [];
 
-function create_product_specification() {
-    product_specification_data = new Array();
-    $("#product_spec_table TBODY TR").each(function () {
-        var row = $(this);
-        var product_specification = {};
+    let error_message = '';
 
-        // Get the input values
-        var keyInput = row.find("TD").eq(1).find('input[type="text"]');
-        var valueInput = row.find("TD").eq(2).find('input[type="text"]');
+    // Validate key column
+    for (let i = 0; i < tableRows.length; i++) {
+        const key = $(tableRows[i]).find("td:eq(1) input[type='text']").val().toUpperCase().trim().replace(/^\s+|\s+$/g, '');;
+        const value = $(tableRows[i]).find("td:eq(2) input[type='text']").val().trim().replace(/^\s+|\s+$/g, '');;
 
-        // Sanitize and convert to uppercase before pushing into the array
-        var sanitizedKey = sanitizeInput(keyInput.val());
-        var sanitizedValue = sanitizeInput(valueInput.val());
 
-        // Add sanitized values to the product_specification object
-        product_specification.product_info_key = sanitizedKey;
-        product_specification.product_info_value = sanitizedValue;
+        if (key === '') {
+            error_message = 'Please enter Key ';
+            break; // Exit loop early
+        }
 
-        // Push the product_specification object into the product_specification_data array
-        product_specification_data.push(product_specification);
-    });
-    update_product_specification_main_table();
-    $('#create_product_spec_popup').modal('hide');
+        if (value === ''){
+            error_message = "please enter value ";
+            break;
+        }
+
+        if (newKeys.includes(key)) {
+            error_message = 'Duplicate Key found: ' + key;
+            break; // Exit loop early
+        } else {
+            newKeys.push(key);
+        }
+
+        if (key.length > 20) {
+            error_message = 'Key must be between 1 and 20 characters';
+            break; // Exit loop early
+        }
+
+        if (value.length > 20) {
+            error_message = 'Value must be between 1 and 20 characters';
+            break; // Exit loop early
+        }
+    }
+
+    return error_message;
+};
+
+function edit_discount_popup(variant_index){
+    GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
+    var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+    $('#discount_field_name').val(eform_data.field_name);
+    $('#create_product_discount_popup').modal('show');
 }
-
-// Function to sanitize input and remove special characters
-function sanitizeInput(input) {
-    // Remove any special characters using a regular expression
-    return input.replace(/[^\w\s]/gi, '');
-}
-
-// Attach event listeners to input fields
-$(document).on('input', '#product_spec_table input[type="text"]', function() {
-    var sanitizedValue = sanitizeInput($(this).val());
-    $(this).val(sanitizedValue);
-});
-
 </script>
 {% endblock %}
-

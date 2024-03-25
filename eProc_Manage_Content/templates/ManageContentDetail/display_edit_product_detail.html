@@ -833,6 +833,23 @@ $(document).ready(function(){
  function add_popup_row() {
     var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
     $('#product_spec_tbody').append(spec_add_new_html);
+
+    // Add event listener to newly added input fields
+    $('#product_spec_tbody tr:last-child input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
  }
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
@@ -960,6 +977,7 @@ function variant_fields_clear () {
 //############################### START OF NEW PRODUCT SPECIFICATION POPUP ##########################
 function create_new_specification_popup(){
     var spec_add_new_html
+    $('#create_prod_spec_error_div').hide();
     $('#product_spec_tbody').empty();
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
@@ -971,6 +989,22 @@ function create_new_specification_popup(){
     }
     $('#product_spec_tbody').append(spec_add_new_html);
     $('#create_product_spec_popup').modal('show')
+
+    $('#product_spec_tbody input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
 }
 //############################### END OF NEW PRODUCT SPECIFICATION POPUP ##########################
 
@@ -1166,6 +1200,21 @@ function create_prod_variant_table(eform_data_new) {
         // Create a div to display variant option name and functional button group
         var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button +' '+ edit_button +' </div>  </div>'
 
+<!--                                     DISCOUNT TAB CHANGES STARTS                       -->
+        var edit_button1
+        var delete_button1
+        delete_button1 =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
+        edit_button1 = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_discount_popup(this.id)"> Edit</button>'
+
+        // Create a div to display variant option name and functional button group
+        var table_heading_section1 = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button1 +' '+ edit_button1 +' </div>  </div>'
+
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+                $('#prod_discount_table_section').append(table_heading_section1);
+        }
+
+<!--                                     DISCOUNT TAB CHANGES ENDS                         -->
+
         // Create <table> element
         var create_tbl = document.createElement("table");
         create_tbl.className = 'table table-bordered';
@@ -1201,9 +1250,7 @@ function create_prod_variant_table(eform_data_new) {
 
         // Append <tbody> to <table>
         create_tbl.append(create_tblBody);
-        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
-            $('#prod_discount_table_section').append(table_heading_section);
-        } else {
+        if(variant_option_data.field_type != "QUANTITY_BASED_DISCOUNT"){
             $('#variant_table_section').append(table_heading_section);
         }
 
@@ -1594,7 +1641,7 @@ function variant_option_delete(obj) {
 }
 
 function create_product_discount_popup(){
-
+    $('#create_prod_discount_error_div').hide();
     $('#discount_field_name').val('');
     $('#tbody_product_discount input[type="number"]').val('');
     $('#tbody_product_discount').empty();
@@ -1655,6 +1702,7 @@ const create_product_discounts_validations = () => {
 }
 
 function edit_popup(variant_index) {
+    $('#create_error_div').hide();
     GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
     var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
     console.log('eform_data:', eform_data);
@@ -1715,7 +1763,7 @@ function update_row_vo_wo_iobp(eform_data) {
 function update_row_vo_wi_iobp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a radio button for the variant type
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
         // Construct the row with the radio button and checkbox for the default option
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Options"></td> <td><input type="number" value="' + item.option_price + '" class="form-control" placeholder="Price"></td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         $('#tbody_vo_wi_iobp').append(add_new_row);
@@ -1726,7 +1774,7 @@ function update_row_vo_wi_iobp(eform_data) {
 function update_row_vo_wi_apbp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a new row with input fields populated with data from variant_data
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
 
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" class="form-control" placeholder="Options" value="' + item.option_value + '"></td> <td><input type="number" class="form-control" placeholder="Price" value="' + item.option_price + '"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         // Append the new row to the table body
@@ -1743,18 +1791,18 @@ function AddNewRow_product_discount(eform_data) {
 
 
 
-    $(".mandatory_fields").on("input", function () {
-        var currentValue = $(this).val().trim();
-        var errorSpan = $(this).next('.error_message');
+$(".mandatory_fields").on("input", function () {
+      var currentValue = $(this).val().trim();
+      var errorSpan = $(this).next('.error_message');
 
-        if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
-            errorSpan.prop('hidden', false);
-            errorSpan.text("Please enter valid value");
-        } else {
-            errorSpan.prop('hidden', true);
-        }
+      if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+          errorSpan.prop('hidden', false);
+          errorSpan.text("Please enter valid value");
+      } else {
+          errorSpan.prop('hidden', true);
+      }
 
-    });
+});
 
 $("#save_product_details").on("click", function () {
     // Iterate over each mandatory field and trigger the input event
@@ -1799,8 +1847,8 @@ const create_product_specification_validations = () => {
 
     // Validate key column
     for (let i = 0; i < tableRows.length; i++) {
-        const key = $(tableRows[i]).find("td:eq(1) input[type='text']").val().toUpperCase().trim();
-        const value = $(tableRows[i]).find("td:eq(2) input[type='text']").val().trim();
+        const key = $(tableRows[i]).find("td:eq(1) input[type='text']").val().toUpperCase().trim().replace(/^\s+|\s+$/g, '');;
+        const value = $(tableRows[i]).find("td:eq(2) input[type='text']").val().trim().replace(/^\s+|\s+$/g, '');;
 
 
         if (key === '') {
@@ -1820,13 +1868,13 @@ const create_product_specification_validations = () => {
             newKeys.push(key);
         }
 
-        if (key.length > 15) {
-            error_message = 'Key must be between 1 and 15 characters';
+        if (key.length > 20) {
+            error_message = 'Key must be between 1 and 20 characters';
             break; // Exit loop early
         }
 
-        if (value.length > 15) {
-            error_message = 'Value must be between 1 and 15 characters';
+        if (value.length > 20) {
+            error_message = 'Value must be between 1 and 20 characters';
             break; // Exit loop early
         }
     }
@@ -1834,5 +1882,11 @@ const create_product_specification_validations = () => {
     return error_message;
 };
 
+function edit_discount_popup(variant_index){
+    GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
+    var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+    $('#discount_field_name').val(eform_data.field_name);
+    $('#create_product_discount_popup').modal('show');
+}
 </script>
 {% endblock %}

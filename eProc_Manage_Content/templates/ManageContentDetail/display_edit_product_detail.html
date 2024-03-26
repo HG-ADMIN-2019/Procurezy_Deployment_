@@ -1086,17 +1086,6 @@ const create_fields = () => {
         if (!error_flag) {
             variant_option_data.variant_data = table_data;
 
-
-        });
-
-        // Populate table_data based on the selected variant type
-        if (variant_type_selected_id == 'VARIANT_WITHOUT_PRICING') {
-            $("#table_id_vo_wo_iobp TBODY TR").each(function() {
-                var row = $(this);
-                var vo_table_data = {};
-
-
-
             // If the variant already exists, update the existing record; otherwise, add a new record
             if (existingIndex !== -1) {
                 eform_data_new[existingIndex] = variant_option_data;
@@ -1792,44 +1781,10 @@ function update_row_vo_wi_apbp(eform_data) {
         $('#tbody_vo_wi_apbp').append(add_new_row);
     });
 }
-
-
-
-
 function AddNewRow_product_discount(eform_data) {
     var add_new_row = "";
     $.each(eform_data.variant_data, function (i, item) {
         add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'
-
-    });
-    $('#tbody_product_discount').append(add_new_row);
-}
-
-
-
-<!--function AddNewRow_product_discount(eform_data) {-->
-<!--    var add_new_row = "";-->
-<!--    $.each(eform_data.variant_data, function (i, item) {-->
-<!--        add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>'-->
-<!--    });-->
-<!--    $('#tbody_product_discount').append(add_new_row);-->
-<!--}-->
-
-
-
-
-    $(".mandatory_fields").on("input", function () {
-        var currentValue = $(this).val().trim();
-        var errorSpan = $(this).next('.error_message');
-
-        if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
-            errorSpan.prop('hidden', false);
-            errorSpan.text("Please enter valid value");
-        } else {
-            errorSpan.prop('hidden', true);
-        }
-
-
     });
     $('#tbody_product_discount').append(add_new_row);
 }

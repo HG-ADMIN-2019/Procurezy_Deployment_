@@ -1693,9 +1693,6 @@ const create_product_discounts_validations = () => {
     if (document.getElementById('discount_field_name').value == '') {
         error_message = 'Please enter the Product Discount label'
         return error_message;
-    } else if (discount_label_name_array.includes(get_label_name)) {
-        error_message = 'Product Discount label already exists'
-        return error_message
     }
 
     return error_message;
@@ -1882,11 +1879,37 @@ const create_product_specification_validations = () => {
     return error_message;
 };
 
-function edit_discount_popup(variant_index){
+function edit_discount_popup(variant_index) {
     GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
     var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+
+    // Update discount label input
     $('#discount_field_name').val(eform_data.field_name);
+
+    // Clear existing rows from the discount table
+    $('#tbody_product_discount').empty();
+
+    // Iterate over the discount data and add rows to the discount table
+    $.each(eform_data.variant_data, function(index, item) {
+        var newRow = '<tr>' +
+            '<td><input type="number" class="form-control" placeholder="Quantity" value="' + item.discount_min_quantity + '"></td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control" placeholder="Discount value" value="' + item.discount_percentage_value + '">' +
+            '<div class="input-group-append">' +
+            '<span class="input-group-text">%</span>' +
+            '</div>' +
+            '</div>' +
+            '</td>' +
+            '<td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td>' +
+            '</tr>';
+
+        $('#tbody_product_discount').append(newRow);
+    });
+
+    // Show the modal
     $('#create_product_discount_popup').modal('show');
 }
+
 </script>
 {% endblock %}

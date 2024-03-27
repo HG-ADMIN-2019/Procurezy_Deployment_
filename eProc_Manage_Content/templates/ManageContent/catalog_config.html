@@ -106,15 +106,15 @@
                                 <input type="text" class="form-control check_for_search" id="catalog_id" name="catalog_id">
                             </div>
                             <div class="col-md">
-                                <label for="">Catalog Description</label>
+                                <label for="">Description</label>
                                 <input type="text" class="form-control check_for_search" id="catalog_desc" name="catalog_desc">
                             </div>
                             <div class="col-md">
-                                <label for="">Catalog Name</label>
+                                <label for="">Name</label>
                                 <input type="text" class="form-control check_for_search" id="catalog_name" name="catalog_name">
                             </div>
                             <div class="col-md">
-                                <label for="">Product type</label>
+                                <label for="">type</label>
                                 <input type="text" class="form-control check_for_search" id='product_type' name='product_type'>
                             </div>
                             <div class="col-md">
@@ -159,15 +159,15 @@
                         <thead class="thead-light">
                         <tr>
                             <th >Catalog Id</th>
-                            <th >Catalog Description</th>
-                            <th >Catalog Name</th>
-                            <th >Product Type</th>
+                            <th >Description</th>
+                            <th >Name</th>
+                            <th >Type</th>
 <!--                            <th >Update Catalog</th>-->
-                            <th >Assign Products</th>
-                            <th >Unassign Products</th>
-                            <th >View Assigned Products</th>
-                            <th> Activate</th>
-                            <th>action</th>
+                            <th >Assign</th>
+                            <th >Unassign</th>
+                            <th >View Assigned</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
 
@@ -497,6 +497,7 @@
                         update_main_table(Response)
                         $("#add_update_modal").modal("hide");
                         CloseLoaderPopup();
+                        window.location.reload();
                     }
                     else{
                         $("#add_update_modal").modal("hide");

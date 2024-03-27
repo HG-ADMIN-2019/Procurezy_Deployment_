@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\eProc_User_Settings",
+    "\\eProc_User_Settings\\templates",
+    "\\eProc_User_Settings\\templates\\User_settings"
   ],
   "PreviewInSolutionExplorer": false
 }

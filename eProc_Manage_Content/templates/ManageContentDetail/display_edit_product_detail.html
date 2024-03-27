@@ -79,23 +79,26 @@
 
                                         <div class="form-group">
                                             <label for="product_name">Product Name</label> <span class="hg_required"></span>
-                                            <input type="text" class="form-control input-disable-class" id="prd_desc" value="{{product_details.short_desc}}" disabled required>
+                                            <input type="text" class="form-control mandatory_fields input-disable-class check_special_char" id="prd_desc" value="{{product_details.short_desc}}" disabled required>
+                                            <span id="err_prd_desc" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="product_name">Product Description</label> <span class="hg_required"></span>
-                                            <textarea rows="4" id ="prd_lng_txt" class="form-control input-disable-class" disabled required>{{product_details.long_desc}}</textarea>
+                                            <textarea rows="4" id ="prd_lng_txt" class="form-control mandatory_fields input-disable-class check_special_char" disabled required>{{product_details.long_desc}}</textarea>
+                                            <span id="err_prd_lng_txt" class="error_message" hidden></span>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prc">Price</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_prc" required class="form-control input-disable-class check_price" value="{{product_details.price}}" disabled>
+                                                <input type="text" id="prd_prc" required class="form-control mandatory_fields input-disable-class check_price" value="{{product_details.price}}" disabled>
+                                                <span id="err_prd_prc" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_currency_list">Currency</label> <span class="hg_required"></span>
-                                                <select class="form-control input-disable-class selectpicker" id="pfm_currency_list" data-live-search="true" name="currencies" disabled>
+                                                <select class="form-control mandatory_fields input-disable-class selectpicker" id="pfm_currency_list" data-live-search="true" name="currencies" disabled>
                                                     {% for currency in currency_desc %}
                                                     <option value="{{currency.attribute_values}}">{{currency.attribute_values_description}}</option>
                                                     {% endfor %}
@@ -106,15 +109,17 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="units_l">Unit of Measure</label> <span class="hg_required"></span>
-                                                <select name="units_l" class="form-control input-disable-class selectpicker" id="pfm_units_list" disabled>
+                                                <select name="units_l" class="form-control mandatory_fields input-disable-class selectpicker" id="pfm_units_list" disabled>
                                                     {% for unit in unit_desc %}
                                                     <option value="{{unit.attribute_values}}">{{unit.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_currency_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_prs_unit">Price Unit</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_prs_unit" class="form-control input-disable-class" value="{{product_details.price_unit}}" required disabled>
+                                                <input type="text" id="prd_prs_unit" class="form-control mandatory_fields input-disable-class" value="{{product_details.price_unit}}" required disabled>
+                                                <span id="err_prd_prs_unit" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
@@ -122,30 +127,35 @@
                                             <div class="form-group col-md-6">
                                                 <label for="pfm_unspsc_list">Product Category(UNSPSC)</label> <span class="hg_required"></span>
                                                 <!-- <input type="text" placeholder="Click to select product category" class="form-control input-disable-class" id="pfm_unspsc_list" required onkeydown="event.preventDefault()" required> -->
-                                                <select class="form-control input-disable-class" id="pfm_unspsc_list" name="unspsc_l" disabled>
+                                                <select class="form-control mandatory_fields input-disable-class" id="pfm_unspsc_list" name="unspsc_l" disabled>
                                                     {% for unspsc in unspsc_desc %}
                                                     <option value="{{unspsc.attribute_values}}">{{unspsc.attribute_values_description}}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <span id="err_pfm_unspsc_list" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="prd_lead">Lead Time</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_lead" class="form-control input-disable-class" value="{{product_details.lead_time}}" required disabled>
+                                                <input type="text" id="prd_lead" class="form-control mandatory_fields input-disable-class" value="{{product_details.lead_time}}" required disabled>
+                                                <span id="err_prd_lead" class="error_message" hidden></span>
                                             </div>
                                         </div>
 
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Minimum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="text" id="prd_mini_qnt" required class="form-control input-disable-class" value="{{product_details.quantity_min}}" disabled>
+                                                <input type="text" id="prd_mini_qnt" required class="form-control mandatory_fields input-disable-class" value="{{product_details.quantity_min}}" disabled>
+                                                <span id="err_prd_mini_qnt" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_value">Minimum Order Value</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_mini_value" class="form-control input-disable-class"  value="{{product_details.value_min}}" disabled required>
+                                                <input type="number" id="prd_mini_value" class="form-control mandatory_fields input-disable-class"  value="{{product_details.value_min}}" disabled required>
+                                                <span id="err_prd_mini_value" class="error_message" hidden></span>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mini_qnt">Maximum Order Quantity</label> <span class="hg_required"></span>
-                                                <input type="number" id="prd_max_qnt" class="form-control input-disable-class" value="{{product_details.quantity_max}}" disabled required>
+                                                <input type="number" id="prd_max_qnt" class="form-control mandatory_fields input-disable-class" value="{{product_details.quantity_max}}" disabled required>
+                                                <span id="err_prd_max_qnt" class="error_message" hidden></span>
                                             </div>
 
                                         </div>
@@ -184,7 +194,8 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label for="prd_mnf">Manufacturer</label> <span class="hg_required"></span>
-                                                <input type="text" id ="prd_mnf" required class="form-control input-disable-class" value="{{product_details.manufacturer}}" disabled>
+                                                <input type="text" id ="prd_mnf" required class="form-control mandatory_fields input-disable-class" value="{{product_details.manufacturer}}" disabled>
+                                                <span id="err_prd_mnf" class="error_message" hidden></span>
                                             </div>
 
                                             <div class="form-group col-md-4">
@@ -285,7 +296,7 @@
 
                                         <div class="form-group">
                                             <label for="pro_type"> Product type</label> <span class="hg_required"></span>
-                                            <select class="form-control input-disable-class" id="pro_type" name="prod_types" disabled required>
+                                            <select class="form-control mandatory_fields input-disable-class" id="pro_type" name="prod_types" disabled required>
                                                 <option value="01"> 01 Product</option>
                                                 <option value="02"> 02 Service</option>
                                             </select>
@@ -293,12 +304,12 @@
 
                                         <div class="form-group">
                                             <label for="prd_qnt"> Quantity Available</label>
-                                            <input type="text" id="prd_qnt" class="form-control input-disable-class check_number" value="{{product_details.quantity_avail}}" disabled>
+                                            <input type="text" id="prd_qnt" class="form-control mandatory_fields input-disable-class check_number" value="{{product_details.quantity_avail}}" disabled>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="pfm_country_list"> Country of Origin</label> <span class="hg_required"></span>
-                                            <select class="form-control selectpicker input-disable-class" data-live-search="true" id="pfm_country_list" name="countries_l" disabled>
+                                            <select class="form-control mandatory_fields selectpicker input-disable-class" data-live-search="true" id="pfm_country_list" name="countries_l" disabled>
                                                 {% for country in country_desc %}
                                                 <option value="{{country.attribute_values}}">{{country.attribute_values_description}}</option>
                                                 {% endfor %}
@@ -307,7 +318,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_language_list">Product Language</label> <span class="hg_required"></span>
-                                            <select class="form-control selectpicker input-disable-class" data-live-search="true" id="pfm_language_list" name="Language_l" disabled>
+                                            <select class="form-control mandatory_fields selectpicker input-disable-class" data-live-search="true" id="pfm_language_list" name="Language_l" disabled>
                                                 {% for language in language_desc %}
                                                 <option value="{{language.attribute_values}}">{{language.attribute_values_description}}</option>
                                                 {% endfor %}
@@ -355,7 +366,7 @@
 
                                         <div class="form-group">
                                             <label for="pfm_supplier_prod_num">Supplier Product Number</label><span class="hg_required"></span>
-                                            <input type="text" id="pfm_supplier_prod_num" required  class=" form-control input-disable-class check_special_char" value="{{product_details.supp_product_id}}" disabled>
+                                            <input type="text" id="pfm_supplier_prod_num" required  class=" form-control mandatory_fields input-disable-class check_special_char" value="{{product_details.supp_product_id}}" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -416,8 +427,8 @@
                                                 <tbody id="product_spec_main_tbody">
                                                 {% for product_spec in product_specification %}
                                                 <tr>
-                                                    <td>{{product_spec.product_info_key}}</td>
-                                                    <td>{{product_spec.product_info_value}}</td>
+                                                    <td><label class="spec-type-label">{{ product_spec.product_info_key }}</label></td>
+                                                    <td><label class="spec-description-label">{{ product_spec.product_info_value }}</label></td>
 
                                                 </tr>
                                                 {% endfor %}
@@ -446,7 +457,6 @@
                                             </button>
                                         </div>
                                         <p>Add discount to the product if purchased in certain quantity.</p>
-
                                         <div id="prod_discount_table_section">
 
                                         </div>
@@ -622,6 +632,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="create_prod_spec_error_div"  class="alert alert-danger display-none" role="alert"></div>
                 <div id="id_del_add_button" class="mb-2">
                     <button class="btn btn-outline-primary" type="button" onclick="add_popup_row()"><i class="fa fa-plus"></i> add new row</button>
                     <button class="btn btn-outline-primary" onclick="product_spec_popup_delete('product_spec_table')"><i class="fa fa-trash"></i> delete</button>
@@ -672,7 +683,7 @@
                     <br>
                     <div class="new-option-row-button-wrapper">
                         <span>Add Products Discount</span>
-                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_discount();"><i class="fa fa-plus"></i> Add new discount</button>
+                        <button class="btn btn-outline-success btn-sm" onclick="AddNewRow_product_Discount();"><i class="fa fa-plus"></i> Add new discount</button>
                     </div>
                     <table class="table" id="table_id_product_discount">
                         <thead>
@@ -709,6 +720,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="id_delete_confirm_popup">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h5 class="modal-title">Please Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="variant_option_delete(this)" class="btn btn-primary"><i class="fas fa-check"></i> yes </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <!--Select Product category popup -->
 {% include 'Shopping_Cart/select_product_category_modal/select_product_category.html' %}
 <!-- end Select Product category popup-->
@@ -801,19 +831,46 @@ $(document).ready(function(){
 
  //##################################### START ADD NEW LINE IN SPEC POPUP ###########################
  function add_popup_row() {
-    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
+    var spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text"   name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" type="text"  name="value"  style="text-transform:uppercase;" required></td></tr>';
     $('#product_spec_tbody').append(spec_add_new_html);
+
+    // Add event listener to newly added input fields
+    $('#product_spec_tbody tr:last-child input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
  }
   //##################################### END ADD NEW LINE IN SPEC POPUP ###########################
    //##################################### START CREATE MAIN TABLE DATA  ###########################
-
 function create_product_specification() {
+
+    const validations = create_product_specification_validations();
+
+    if (validations !== '') {
+        $('#create_prod_spec_error_div').html(validations);
+        $('#create_prod_spec_error_div').show();
+        return;
+    } else {
+        $('#create_prod_spec_error_div').hide();
+    }
+
     product_specification_data = new Array();
     $("#product_spec_table TBODY TR").each(function () {
             var row = $(this);
             var product_specification={};
-            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase()
-            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase()
+            product_specification.product_info_key = row.find("TD").eq(1).find('input[type="text"]').val().toUpperCase().trim()
+            product_specification.product_info_value = row.find("TD").eq(2).find('input[type="text"]').val().toUpperCase().trim()
             product_specification_data.push(product_specification);
     });
     update_product_specification_main_table();
@@ -920,17 +977,34 @@ function variant_fields_clear () {
 //############################### START OF NEW PRODUCT SPECIFICATION POPUP ##########################
 function create_new_specification_popup(){
     var spec_add_new_html
+    $('#create_prod_spec_error_div').hide();
     $('#product_spec_tbody').empty();
     if (product_specification_data.length != 0){
         $.each(product_specification_data, function (i, item) {
-            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="input form-control" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+            spec_add_new_html += '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" value="' + item.product_info_key + '"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text" value="' + item.product_info_value + '"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
         });
     }
     else{
-        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="input form-control"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="input form-control" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
+        spec_add_new_html = '<tr ><td><input type="checkbox" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char"  type="text" name="key" style="text-transform:uppercase;" required></td><td><input class="form-control mandatory_fields input-disable-class check_special_char" name="value" type="text"  pattern="[A-Z]" style="text-transform:uppercase;" required></td></tr>';
     }
     $('#product_spec_tbody').append(spec_add_new_html);
     $('#create_product_spec_popup').modal('show')
+
+    $('#product_spec_tbody input[type="text"]').on('keydown', function(event) {
+        var $input = $(this);
+        var key = event.key;
+        var selectionStart = this.selectionStart;
+        var selectionEnd = this.selectionEnd;
+        var value = $input.val();
+
+        // Check if the pressed key is a space
+        if (key === ' ') {
+            // Check if there is already a space before or after the current cursor position
+            if (selectionStart === 0 || value.charAt(selectionStart - 1) === ' ' || value.charAt(selectionEnd) === ' ') {
+                event.preventDefault(); // Prevent adding more spaces or leading space
+            }
+        }
+    });
 }
 //############################### END OF NEW PRODUCT SPECIFICATION POPUP ##########################
 
@@ -1027,6 +1101,7 @@ const create_fields = () => {
     }
 }
 
+
 function create_prod_variant_table(eform_data_new) {
 
     $('#variant_table_section').empty();
@@ -1119,11 +1194,26 @@ function create_prod_variant_table(eform_data_new) {
 
         var edit_button
         var delete_button
-            delete_button =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="variant_option_delete(this)" disabled> Delete</button>'
-            edit_button = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_popup(this.id)" disabled> Edit</button>'
+            delete_button =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
+            edit_button = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_popup(this.id)"> Edit</button>'
 
         // Create a div to display variant option name and functional button group
         var table_heading_section = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button +' '+ edit_button +' </div>  </div>'
+
+<!--                                     DISCOUNT TAB CHANGES STARTS                       -->
+        var edit_button1
+        var delete_button1
+        delete_button1 =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
+        edit_button1 = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_discount_popup(this.id)"> Edit</button>'
+
+        // Create a div to display variant option name and functional button group
+        var table_heading_section1 = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button1 +' '+ edit_button1 +' </div>  </div>'
+
+        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
+                $('#prod_discount_table_section').append(table_heading_section1);
+        }
+
+<!--                                     DISCOUNT TAB CHANGES ENDS                         -->
 
         // Create <table> element
         var create_tbl = document.createElement("table");
@@ -1160,9 +1250,7 @@ function create_prod_variant_table(eform_data_new) {
 
         // Append <tbody> to <table>
         create_tbl.append(create_tblBody);
-        if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
-            $('#prod_discount_table_section').append(table_heading_section);
-        } else {
+        if(variant_option_data.field_type != "QUANTITY_BASED_DISCOUNT"){
             $('#variant_table_section').append(table_heading_section);
         }
 
@@ -1271,6 +1359,29 @@ function onclick_save_product_details(){
     product_details_data.value_min= document.getElementById("prd_mini_value").value
     product_details_data.ctr_item_num= document.getElementById("prd_contract_item_number").value
 
+    var productName = document.getElementById('prd_desc').value;
+    var productDescription = document.getElementById('prd_lng_txt').value;
+    var productPrice = document.getElementById('prd_prc').value;
+    var productCurrency = document.getElementById('pfm_currency_list').value;
+    var productUnits = document.getElementById('pfm_units_list').value;
+    var productPriceUnit = document.getElementById('prd_prs_unit').value;
+    var productUNSPSC = document.getElementById('pfm_unspsc_list').value;
+    var productLeadTime = document.getElementById('prd_lead').value;
+    var productMinimumQuantity = document.getElementById('prd_mini_qnt').value;
+    var productMinimumValue = document.getElementById('prd_mini_value').value;
+    var productMaximumQuantity = document.getElementById('prd_max_qnt').value;
+    var productManufacturer = document.getElementById('prd_mnf').value;
+
+    // Check if any required field is empty
+    if (productName.trim() === '' || productDescription.trim() === '' || productPrice.trim() === '' ||
+        productCurrency.trim() === '' || productUnits.trim() === '' || productPriceUnit.trim() === '' ||
+        productUNSPSC.trim() === '' || productLeadTime.trim() === '' || productMinimumQuantity.trim() === '' ||
+        productMinimumValue.trim() === '' || productMaximumQuantity.trim() === '' || productManufacturer.trim() === '') {
+        // If any required field is empty, display an alert message
+<!--        document.getElementById('product_details_success').innerHTML = "please fill the required fields";-->
+<!--        $('#product_details_success').show();-->
+        return; // Stop further execution
+    }
 
     console.log(eform_configured)
     data.append('eform_configured', JSON.stringify(eform_data_new))
@@ -1294,6 +1405,9 @@ function onclick_save_product_details(){
             if (Response.length !== 0){
                 create_prod_variant_table(Response)
             }
+            setTimeout(function() {
+        $('#product_details_success').hide();
+            }, 4000);
 
         },
         cache: false,
@@ -1303,6 +1417,8 @@ function onclick_save_product_details(){
 
         }
     });
+
+
 
     console.log(attachment_data_array);
 
@@ -1458,17 +1574,17 @@ $('input:radio[name="variant_type"]').change(function() {
         $('#tbody_vo_wi_apbp').empty();
         if(id == "VARIANT_WITHOUT_PRICING") {
             $("#table_vo_wo_iobp").show();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wo_iobp();
         } else if (id == "VARIANT_BASE_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").show(); 
+            $("#table_vo_wi_iobp").show();
             $("#table_vo_wi_apbp").hide();
             AddNewRow_vo_wi_iobp();
         } else if (id == "VARIANT_ADDITIONAL_PRICING") {
             $("#table_vo_wo_iobp").hide();
-            $("#table_vo_wi_iobp").hide(); 
+            $("#table_vo_wi_iobp").hide();
             $("#table_vo_wi_apbp").show();
             AddNewRow_vo_wi_apbp();
         }
@@ -1491,7 +1607,7 @@ function AddNewRow_vo_wi_apbp() {
     $('#tbody_vo_wi_apbp').append(add_new_row);
 }
 
-function AddNewRow_product_discount() {
+function AddNewRow_product_Discount() {
     var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
     $('#tbody_product_discount').append(add_new_row);
 }
@@ -1514,15 +1630,23 @@ $("#table_id_product_discount").on('click','.row-delete-btn',function(){
 
 
 function variant_option_delete(obj) {
+    $('#id_delete_confirm_popup').modal('show');
     var id = obj.id;
     GLOBAL_EDIT_VARIANT_FLAG = true
     var get_index = id.split('-')[1];
     eform_data_new.splice(get_index, 1)
     create_prod_variant_table(eform_data_new);
+    $('#id_delete_confirm_popup').modal('hide');
     $('.eform_button_dummy_class').prop('disabled', false);
 }
 
 function create_product_discount_popup(){
+    $('#create_prod_discount_error_div').hide();
+    $('#discount_field_name').val('');
+    $('#tbody_product_discount input[type="number"]').val('');
+    $('#tbody_product_discount').empty();
+    var add_new_row = '<tr> <td><input type="number" class="form-control" placeholder="Quantity" onkeypress="return /[0-9]/i.test(event.key)"></td> <td> <div class="input-group"> <input type="number" class="form-control" placeholder="Discount value" onkeypress="return /[0-9]/i.test(event.key)"> <div class="input-group-append"> <span class="input-group-text">%</span> </div> </div> </td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td></tr>';
+    $('#tbody_product_discount').append(add_new_row);
     $('#create_product_discount_popup').modal('show')
 }
 
@@ -1536,7 +1660,7 @@ function create_fields_product_discount() {
     } else $('#create_prod_discount_error_div').hide()
 
     var variant_option_data = {};
-    var table_data = new Array(); 
+    var table_data = new Array();
     variant_option_data.field_name = $('#discount_field_name').val();
     variant_option_data.field_type = "QUANTITY_BASED_DISCOUNT";
 
@@ -1547,7 +1671,7 @@ function create_fields_product_discount() {
         vo_table_data.discount_min_quantity = row.find("TD").eq(0).find('input[type="number"]').val();
         vo_table_data.discount_percentage_value = row.find("TD").eq(1).find('input[type="number"]').val();
         table_data.push(vo_table_data);
-        
+
     });
 
     variant_option_data.variant_data = table_data;
@@ -1569,15 +1693,13 @@ const create_product_discounts_validations = () => {
     if (document.getElementById('discount_field_name').value == '') {
         error_message = 'Please enter the Product Discount label'
         return error_message;
-    } else if (discount_label_name_array.includes(get_label_name)) {
-        error_message = 'Product Discount label already exists'
-        return error_message
     }
 
     return error_message;
 }
 
 function edit_popup(variant_index) {
+    $('#create_error_div').hide();
     GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
     var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
     console.log('eform_data:', eform_data);
@@ -1638,7 +1760,7 @@ function update_row_vo_wo_iobp(eform_data) {
 function update_row_vo_wi_iobp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a radio button for the variant type
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
         // Construct the row with the radio button and checkbox for the default option
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Options"></td> <td><input type="number" value="' + item.option_price + '" class="form-control" placeholder="Price"></td> <td><input type="text" value="' + item.option_value + '" class="form-control" placeholder="Description"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         $('#tbody_vo_wi_iobp').append(add_new_row);
@@ -1649,16 +1771,13 @@ function update_row_vo_wi_iobp(eform_data) {
 function update_row_vo_wi_apbp(eform_data) {
     $.each(eform_data.variant_data, function(i, item) {
         // Create a new row with input fields populated with data from variant_data
-        var variantRadio = '<input type="radio" class="form-check-input" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
+        var variantRadio = '<input type="radio" name="variant_option" ' + (item.default_option ? 'checked' : '') + '>';
 
         var add_new_row = '<tr> <td>' + variantRadio + '</td> <td><input type="text" class="form-control" placeholder="Options" value="' + item.option_value + '"></td> <td><input type="number" class="form-control" placeholder="Price" value="' + item.option_price + '"></td> <td><button type="button" class="row-delete-btn btn btn-round btn-sm"><i class="far fa-trash-alt"></i></button></td></tr>';
         // Append the new row to the table body
         $('#tbody_vo_wi_apbp').append(add_new_row);
     });
 }
-
-
-
 function AddNewRow_product_discount(eform_data) {
     var add_new_row = "";
     $.each(eform_data.variant_data, function (i, item) {
@@ -1666,6 +1785,131 @@ function AddNewRow_product_discount(eform_data) {
     });
     $('#tbody_product_discount').append(add_new_row);
 }
+
+
+
+$(".mandatory_fields").on("input", function () {
+      var currentValue = $(this).val().trim();
+      var errorSpan = $(this).next('.error_message');
+
+      if (currentValue === "" || currentValue.indexOf("  ") >= 0) {
+          errorSpan.prop('hidden', false);
+          errorSpan.text("Please enter valid value");
+      } else {
+          errorSpan.prop('hidden', true);
+      }
+
+});
+
+$("#save_product_details").on("click", function () {
+    // Iterate over each mandatory field and trigger the input event
+    $(".mandatory_fields").each(function () {
+        $(this).trigger("input");
+    });
+
+    // Check if there are no visible error messages, then proceed with saving the form
+    var errorsExist = $(".error_message:visible").length > 0;
+    if (!errorsExist) {
+        // Additional logic for saving the form if needed
+        console.log('Form submitted successfully.');
+    }
+
+    // Add change event to remove error message when a value is selected
+    $(".custom-select").on("change", function () {
+        var errorSpan = $(this).next('.error_message');
+        errorSpan.prop('hidden', true);
+    });
+
+    // Iterate over each dropdown with class .custom-select and check if it is empty
+        $(".custom-select").each(function () {
+            var currentValue = $(this).val();
+            var errorSpan = $(this).next('.error_message');
+
+            // If the dropdown is empty, show red border and error message
+            if (currentValue === "") {
+                errorSpan.prop('hidden', false);
+                errorSpan.text('Please select a value.');
+            } else {
+                // If the dropdown has a value, hide the error message
+                errorSpan.prop('hidden', true);
+            }
+        });
+});
+
+const create_product_specification_validations = () => {
+    const tableRows = $("#product_spec_table tbody tr");
+    const newKeys = [];
+
+    let error_message = '';
+
+    // Validate key column
+    for (let i = 0; i < tableRows.length; i++) {
+        const key = $(tableRows[i]).find("td:eq(1) input[type='text']").val().toUpperCase().trim().replace(/^\s+|\s+$/g, '');;
+        const value = $(tableRows[i]).find("td:eq(2) input[type='text']").val().trim().replace(/^\s+|\s+$/g, '');;
+
+
+        if (key === '') {
+            error_message = 'Please enter Key ';
+            break; // Exit loop early
+        }
+
+        if (value === ''){
+            error_message = "please enter value ";
+            break;
+        }
+
+        if (newKeys.includes(key)) {
+            error_message = 'Duplicate Key found: ' + key;
+            break; // Exit loop early
+        } else {
+            newKeys.push(key);
+        }
+
+        if (key.length > 20) {
+            error_message = 'Key must be between 1 and 20 characters';
+            break; // Exit loop early
+        }
+
+        if (value.length > 20) {
+            error_message = 'Value must be between 1 and 20 characters';
+            break; // Exit loop early
+        }
+    }
+
+    return error_message;
+};
+
+function edit_discount_popup(variant_index) {
+    GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
+    var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+
+    // Update discount label input
+    $('#discount_field_name').val(eform_data.field_name);
+
+    // Clear existing rows from the discount table
+    $('#tbody_product_discount').empty();
+
+    // Iterate over the discount data and add rows to the discount table
+    $.each(eform_data.variant_data, function(index, item) {
+        var newRow = '<tr>' +
+            '<td><input type="number" class="form-control" placeholder="Quantity" value="' + item.discount_min_quantity + '"></td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control" placeholder="Discount value" value="' + item.discount_percentage_value + '">' +
+            '<div class="input-group-append">' +
+            '<span class="input-group-text">%</span>' +
+            '</div>' +
+            '</div>' +
+            '</td>' +
+            '<td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td>' +
+            '</tr>';
+
+        $('#tbody_product_discount').append(newRow);
+    });
+
+    // Show the modal
+    $('#create_product_discount_popup').modal('show');
+}
+
 </script>
 {% endblock %}
-

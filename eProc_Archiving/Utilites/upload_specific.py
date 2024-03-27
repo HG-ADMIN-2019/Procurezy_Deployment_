@@ -10,6 +10,7 @@ from eProc_Basic.Utilities.db_queries import getClients
 from eProc_Archiving.models import arch_CountryCompCode, arch_ScHeader, arch_ScItem, arch_ScAccounting, arch_ScApproval, \
     arch_PoHeader, arch_PoItem, arch_PoAccounting, arch_PoApproval, ConfHeader, ConfItem, ConfAccounting, \
     arch_UserSearch, arch_SupplierSearch, arch_CompanyCode
+from eProc_Basic.Utilities.global_defination import global_variables
 from eProc_Configuration.models import OrgClients, Country
 from eProc_Doc_Search.models import *
 from eProc_Basic.models import *
@@ -104,6 +105,7 @@ class UploadScPO:
                                                                          recevied_time=get_date_value(column[7]),
                                                                          proc_time=get_date_value(column[8]),
                                                                          time_zone=column[9],client=OrgClients.objects.get(client=client))
+
                         if (not created):
                             return False
             return True
@@ -215,6 +217,7 @@ class UploadScPO:
                                                                          app_sts=column[5], app_id=column[6],
                                                                          recevied_time=get_date_value(column[7]), proc_time=get_date_value(column[8]),
                                                                          time_zone=column[9],client=OrgClients.objects.get(client=client))
+
                         if (not created):
                             return False
 

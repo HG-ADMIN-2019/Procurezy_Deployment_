@@ -1077,8 +1077,59 @@ const create_fields = () => {
             vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
             vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
 
+
             if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '' ) {
                 error_flag = true;
+
+                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+                vo_table_data.option_description = row.find("TD").eq(3).find('input[type="text"]').val();
+
+                if (vo_table_data.option_value == '' || vo_table_data.option_price == '' || vo_table_data.option_description == '') {
+                    error_flag = true;
+                }
+
+                table_data.push(vo_table_data);
+            });
+        } else if (variant_type_selected_id == 'VARIANT_ADDITIONAL_PRICING') {
+            $("#table_id_vo_wi_apbp TBODY TR").each(function() {
+                var row = $(this);
+                var vo_table_data = {};
+
+                vo_table_data.default_option = row.find("TD").eq(0).find('input[type="radio"]').is(':checked');
+                vo_table_data.option_value = row.find("TD").eq(1).find('input[type="text"]').val();
+                vo_table_data.option_price = row.find("TD").eq(2).find('input[type="number"]').val();
+
+                if (vo_table_data.option_value == '' || vo_table_data.option_price == '') {
+                    error_flag = true;
+                }
+
+                table_data.push(vo_table_data);
+            });
+        }
+
+        // variant_name should be max 15 characters validation
+        if (variant_option_data.field_name.length > 15) {
+                $('#create_error_div').html('Variant name should be maximum of 15 characters.');
+                $('#create_error_div').show();
+                return
+        } else {
+            $('#save_error_div').hide()
+            $('#create_error_div').hide()
+            $('#create_new_fields_popup').modal('show')
+        }
+
+        // Add variant_data to variant_option_data if there's no error
+        if (!error_flag) {
+            variant_option_data.variant_data = table_data;
+
+            // If the variant already exists, update the existing record; otherwise, add a new record
+            if (existingIndex !== -1) {
+                eform_data_new[existingIndex] = variant_option_data;
+            } else {
+                eform_data_new.push(variant_option_data);
+
             }
 
             table_data.push(vo_table_data);
@@ -1188,7 +1239,7 @@ function create_prod_variant_table(eform_data_new) {
             })
         }
         else if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
-            variant_table_headers.push("Minimum Qunatity", "Discount");
+            variant_table_headers.push("Minimum Quantity", "Discount");
             var variant_table_data = variant_option_data.variant_data;
 
             $.each(variant_table_data, function(index, option_value){
@@ -1227,12 +1278,10 @@ function create_prod_variant_table(eform_data_new) {
 
 <!--                                     DISCOUNT TAB CHANGES STARTS                       -->
         var edit_button1
-        var delete_button1
-        delete_button1 =  '<button class="btn btn-outline-danger btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" data-toggle="modal" data-target="#id_delete_confirm_popup"> Delete</button>'
         edit_button1 = '<button class="btn btn-outline-danger  btn-sm eform_button_dummy_class" id="variant_option_delete-'+variant_index+'" onclick="edit_discount_popup(this.id)"> Edit</button>'
 
         // Create a div to display variant option name and functional button group
-        var table_heading_section1 = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button1 +' '+ edit_button1 +' </div>  </div>'
+        var table_heading_section1 = '<hr><div class="new-option-row-button-wrapper"><div> <span style="font-weight: 600;">'+ variant_option_data.field_name+'</span> '+ variant_type_badge +' </div> <div> '+ delete_button +' '+ edit_button1 +' </div>  </div>'
 
         if(variant_option_data.field_type == "QUANTITY_BASED_DISCOUNT") {
                 $('#prod_discount_table_section').append(table_heading_section1);
@@ -1699,14 +1748,21 @@ function create_fields_product_discount() {
 
     });
 
-    variant_option_data.variant_data = table_data;
-    eform_data_new.push(variant_option_data);
-    create_prod_variant_table(eform_data_new);
+    // Update the existing record in eform_data_new
+    if (GLOBAL_VARIANT_INDEX !== null && GLOBAL_VARIANT_INDEX !== undefined) {
+        eform_data_new[GLOBAL_VARIANT_INDEX].field_name = variant_option_data.field_name;
+        eform_data_new[GLOBAL_VARIANT_INDEX].variant_data = table_data;
+    } else {
+        variant_option_data.variant_data = table_data;
+        eform_data_new.push(variant_option_data);
+    }
 
+    create_prod_variant_table(eform_data_new);
 }
 
 discount_label_name_array=[];
 const create_product_discounts_validations = () => {
+    var error_message = '';
     var get_label_name = $('#discount_field_name').val().toLowerCase().replace(/\s/g,'');
 
     for(i=0; i < eform_data_new.length; i++) {
@@ -1718,11 +1774,26 @@ const create_product_discounts_validations = () => {
     if (document.getElementById('discount_field_name').value == '') {
         error_message = 'Please enter the Product Discount label'
         return error_message;
-    } else if (discount_label_name_array.includes(get_label_name)) {
-        error_message = 'Product Discount label already exists'
-        return error_message
     }
 
+    $("#table_id_product_discount TBODY TR").each(function() {
+        var row = $(this);
+        var vo_table_data = {};
+
+        // Validate discount min quantity
+        var discount_min_quantity = row.find("TD").eq(0).find('input[type="number"]').val().trim();
+        if (discount_min_quantity === '') {
+            error_message =  'Please enter the discount min quantity for all rows';
+            return error_message;
+        }
+
+        // Validate discount percentage value
+        var discount_percentage_value = row.find("TD").eq(1).find('input[type="number"]').val().trim();
+        if (discount_percentage_value === '') {
+            error_message =  'Please enter the discount percentage value for all rows';
+            return error_message;
+        }
+    });
     return error_message;
 }
 
@@ -1932,11 +2003,37 @@ const create_product_specification_validations = () => {
     return error_message;
 };
 
-function edit_discount_popup(variant_index){
+function edit_discount_popup(variant_index) {
     GLOBAL_VARIANT_INDEX = variant_index.split('-')[1];
     var eform_data = eform_data_new[GLOBAL_VARIANT_INDEX];
+
+    // Update discount label input
     $('#discount_field_name').val(eform_data.field_name);
+
+    // Clear existing rows from the discount table
+    $('#tbody_product_discount').empty();
+
+    // Iterate over the discount data and add rows to the discount table
+    $.each(eform_data.variant_data, function(index, item) {
+        var newRow = '<tr>' +
+            '<td><input type="number" class="form-control" placeholder="Quantity" value="' + item.discount_min_quantity + '"></td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control" placeholder="Discount value" value="' + item.discount_percentage_value + '">' +
+            '<div class="input-group-append">' +
+            '<span class="input-group-text">%</span>' +
+            '</div>' +
+            '</div>' +
+            '</td>' +
+            '<td><button type="button" class="row-delete-btn btn btn-round btn-sm" onclick=""><i class="far fa-trash-alt"></i></button></td>' +
+            '</tr>';
+
+        $('#tbody_product_discount').append(newRow);
+    });
+
+    // Show the modal
     $('#create_product_discount_popup').modal('show');
 }
+
 </script>
 {% endblock %}

@@ -21,12 +21,6 @@
         <h3>&nbsp;&nbsp;Shopping Cart #{{ header_data.doc_number }}</h3>
         {% endif %}
         {% endfor %}
-<!--        {% if type == 'PO' %}-->
-<!--        <h3>&nbsp;&nbsp;Details of Purchase Order</h3>-->
-<!--        {% endif %}-->
-<!--        {% if type == 'CONF' %}-->
-<!--        <h3>&nbsp;&nbsp;Details of Confirmation</h3>-->
-<!--        {% endif %}-->
         <div class="d-flex">
             <div id="on_page_load">
                 {% if hdr_det.status == 'SAVED' %}
@@ -50,15 +44,6 @@
                     <div class="header-details">
                         <div style="font-weight:normal;" hidden>Header Details&nbsp;&nbsp;</div>
                     </div>
-<!--                    <div>-->
-<!--                        &lt;!&ndash;Display Attachments and POPDF buttons if type is PO&ndash;&gt;-->
-<!--                        <div>-->
-<!--                            {% if type == 'PO' %}-->
-<!--                            <a target="_blank" href="{% url 'eProc_Archiving:attach_page' guid %}"><button type="button" title = "Click here to get Documents! " >PO PDF & Attachments</button></a>-->
-<!--                            {% endif %}-->
-<!--                        </div>-->
-<!--                    </div>-->
-
                     <div>
                         <div>
                             <table class="table-sm" style="margin:0px 10px 0px 10px; width:98%;">
@@ -76,14 +61,6 @@
                                     <th scope="col">Created On</th>
                                     <th scope="col">Created By</th>
                                     <th scope="col">Status</th>
-<!--                                    <th scope="col">Total Value</th>-->
-<!--                                    <th scope="col">Currency</th>-->
-<!--                                    <th scope="col">Requester</th>-->
-<!--                                    <th scope="col">Creator</th>-->
-<!--                                    <th scope="col">Changed At</th>-->
-<!--                                    <th scope="col">Changed By</th>-->
-<!--                                    <th scope="col">Ordered At</th>-->
-<!--                                    <th scope="col">Time Zone</th>-->
                                 </tr>
                                 </thead>
                                 <tbody style="font-style: normal; font-weight: 600; font-size: 18px;">
@@ -97,13 +74,6 @@
                                     <td>{{header_data.created_at}}</td>
                                     <td>{{header_data.created_by}}</td>
                                     <td><span class="badge badge-pill badge_status_approved">{{header_data.status}}</span></td>
-<!--                                    <td>{{header_data.total_value}}</td>-->
-<!--                                    <td>{{header_data.currency}}</td>-->
-<!--                                    <td>{{header_data.requester}}</td>-->
-<!--                                    <td>{{header_data.changed_at}}</td>-->
-<!--                                    <td>{{header_data.changed_by}}</td>-->
-<!--                                    <td>{{header_data.ordered_at}}</td>-->
-<!--                                    <td>{{header_data.time_zone}}</td>-->
                                 </tr>
                                 {% endfor %}
                                 </tbody>
@@ -584,14 +554,6 @@
                                         <span class="po-header-desc">{{ item_details.0.purch_grp }}</span>
                                     </div>
                                 {% endif %}
-<!--                                <div class="col-md-3">-->
-<!--                                    <span class="po-header-label">Payment Terms</span><br>-->
-<!--                                    <span class="po-header-desc">{{po_header_details.0.payment_term}}</span>-->
-<!--                                </div>-->
-<!--                                <div class="col-md-3">-->
-<!--                                    <span class="po-header-label">Incoterm</span><br>-->
-<!--                                    <span class="po-header-desc">{{po_header_details.0.incoterm}} - {{po_header_details.0.incoterm_loc}}</span>-->
-<!--                                </div>-->
                                 <div class="col-md-3">
                                     <span class="po-header-label">Status</span><br>
                                     <span class="badge badge-pill badge_status_approved po-header-desc po-header-desc__status ">{{header_data.status}}</span>
@@ -723,11 +685,6 @@
                                     <i class="fas fa-address-card"></i><span> Related Documents</span>
                                 </div>
                             </li>
-<!--                            <li data-tab-target="#item_efrom_details" class="sub-tab" id="eform_tab">-->
-<!--                                <div class="sub-tab-link text-size-x-small">-->
-<!--                                    <i class="material-icons">list_alt</i><span> eForm Details</span>-->
-<!--                                </div>-->
-<!--                            </li>-->
                        </ul>
                         <div class="tab-content">
                             {% for item_data in item_details %}
